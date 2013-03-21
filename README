@@ -1,0 +1,16 @@
+Quick(Qt) Online Music Player
+
+Dependences:
+	Qt 4.8.x, phonon
+
+Build:
+  linux:
+	qmake && make && sudo make install
+
+	
+  windows:
+	qmake
+	mingw32-make
+
+
+
