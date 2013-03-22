@@ -35,9 +35,10 @@ public:
 	void init();
 
 private slots:
+	void exit();
 
-protected:
-	bool eventFilter(QObject *obj, QEvent *e);
+//protected:
+//	bool eventFilter(QObject *obj, QEvent *e);
 
 private:
 	QompMainWin* mainWin_;	

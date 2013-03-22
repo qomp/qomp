@@ -17,33 +17,10 @@
  *
  */
 
-#include "qomp.h"
-#include "qompmainwin.h"
+#ifndef DEFINES_H
+#define DEFINES_H
 
-#include <QEvent>
-#include <QApplication>
-#include <QtPlugin>
+#define APPLICATION_NAME "qomp"
+#define APPLICATION_VERSION "0.1 beta"
 
-
-Qomp::Qomp(QObject *parent) :
-	QObject(parent)
-{
-	mainWin_ = new QompMainWin();
-	connect(mainWin_, SIGNAL(exit()), SLOT(exit()));
-
-	mainWin_->show();
-}
-
-Qomp::~Qomp()
-{
-	delete mainWin_;
-}
-
-void Qomp::init()
-{
-}
-
-void Qomp::exit()
-{
-	qApp->exit();
-}
+#endif // DEFINES_H

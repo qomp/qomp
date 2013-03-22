@@ -51,6 +51,15 @@ private slots:
 	void updatePlayIcon();
 	void setCurrentPosition(qint64 ms);
 	void playNext();
+
+	void trayDoubleclicked();
+	void trayActivated(Qt::MouseButton);
+
+signals:
+	void exit();
+
+protected:
+	void closeEvent(QCloseEvent *e);
 	
 private:
 	Ui::QompMainWin *ui;

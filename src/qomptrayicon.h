@@ -17,33 +17,27 @@
  *
  */
 
-#include "qomp.h"
-#include "qompmainwin.h"
+#ifndef QOMPTRAYICON_H
+#define QOMPTRAYICON_H
 
-#include <QEvent>
-#include <QApplication>
-#include <QtPlugin>
+#include <QSystemTrayIcon>
 
-
-Qomp::Qomp(QObject *parent) :
-	QObject(parent)
+class QompTrayIcon : public QObject
 {
-	mainWin_ = new QompMainWin();
-	connect(mainWin_, SIGNAL(exit()), SLOT(exit()));
+	Q_OBJECT
+public:
+	explicit QompTrayIcon(QObject *parent = 0);
+	
+signals:
+	void trayClicked(Qt::MouseButton);
+	void trayDoubleClicked();
+	
+private slots:
+	void trayActivated(QSystemTrayIcon::ActivationReason reason);
 
-	mainWin_->show();
-}
+private:
+	QSystemTrayIcon* icon_;
+	
+};
 
-Qomp::~Qomp()
-{
-	delete mainWin_;
-}
-
-void Qomp::init()
-{
-}
-
-void Qomp::exit()
-{
-	qApp->exit();
-}
+#endif // QOMPTRAYICON_H

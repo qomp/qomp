@@ -19,13 +19,14 @@
 
 #include <QApplication>
 #include "qomp.h"
+#include "defines.h"
 
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	a.setApplicationName("qomp");
-	a.setApplicationVersion("0.1 beta");
-	a.setOrganizationName("qomp");
+	a.setApplicationName(APPLICATION_NAME);
+	a.setApplicationVersion(APPLICATION_VERSION);
+	a.setOrganizationName(APPLICATION_NAME);
 	Qomp qomp;
 	qomp.init();
 	return a.exec();

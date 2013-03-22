@@ -22,11 +22,13 @@
 #include "playlistmodel.h"
 #include "options.h"
 #include "pluginmanager.h"
+#include "qomptrayicon.h"
 
 #include "ui_qompmainwin.h"
 
 #include <QTime>
 #include <QNetworkAccessManager>
+#include <QCloseEvent>
 
 
 QompMainWin::QompMainWin(QWidget *parent) :
@@ -62,12 +64,16 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	connect(ui->tb_prev, SIGNAL(clicked()), SLOT(actPrevActivated()));
 
 	connect(ui->actionOpen, SIGNAL(triggered()), SLOT(actOpenActivated()));
-	connect(ui->actionExit, SIGNAL(triggered()), SLOT(close()));
+	connect(ui->actionExit, SIGNAL(triggered()), SIGNAL(exit()));
 
 	connect(ui->playList, SIGNAL(activated(QModelIndex)), SLOT(mediaActivated(QModelIndex)));
 	connect(ui->playList, SIGNAL(clicked(QModelIndex)), SLOT(mediaClicked(QModelIndex)));
 	connect(player_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(updatePlayIcon()));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
+
+	QompTrayIcon* ico = new QompTrayIcon(this);
+	connect(ico, SIGNAL(trayDoubleClicked()), SLOT(trayDoubleclicked()));
+	connect(ico, SIGNAL(trayClicked(Qt::MouseButton)), SLOT(trayActivated(Qt::MouseButton)));
 }
 
 
@@ -206,4 +212,47 @@ void QompMainWin::playNext()
 		model_->setCurrentTune(model_->tune(index));
 		actPlayActivated();
 	}
+}
+
+void QompMainWin::trayDoubleclicked()
+{
+	bool b = isHidden();
+	if(b)
+		show();
+	else
+		hide();
+}
+
+void QompMainWin::trayActivated(Qt::MouseButton b)
+{
+	if(b == Qt::RightButton) {
+		QMenu m;
+		QList<QAction*> acts;
+		if(isHidden()) {
+			acts << new QAction(tr("Show"), &m);
+		}
+		else {
+			acts << new QAction(tr("Hide"), &m);
+		}
+		acts << new QAction(tr("Open"), &m);
+		QAction* sep = new QAction(&m);
+		sep->setSeparator(true);
+		acts << sep;
+		acts << new QAction(tr("Exit"), &m);
+		m.addActions(acts);
+		m.move(QCursor::pos());
+		int ret = acts.indexOf(m.exec());
+		if(ret == 0)
+			trayDoubleclicked();
+		else if(ret == 1)
+			actOpenActivated();
+		else if(ret == 3)
+			emit exit();
+	}
+}
+
+void QompMainWin::closeEvent(QCloseEvent *e)
+{
+	hide();
+	e->ignore();
 }

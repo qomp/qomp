@@ -7,7 +7,8 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/qompplayer.cpp \
     $$PWD/playlistmodel.cpp \
     $$PWD/pluginmanager.cpp \
-    $$PWD/tune.cpp
+    $$PWD/tune.cpp \
+    src/qomptrayicon.cpp
 
 HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qomp.h \
@@ -16,7 +17,9 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/playlistmodel.h \
     $$PWD/tune.h \
     $$PWD/qompplugin.h \
-    $$PWD/pluginmanager.h
+    $$PWD/pluginmanager.h \
+    src/qomptrayicon.h \
+    src/defines.h
 
 FORMS    += $$PWD/qompmainwin.ui
 
