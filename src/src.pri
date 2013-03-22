@@ -21,3 +21,5 @@ HEADERS  += $$PWD/qompmainwin.h \
 FORMS    += $$PWD/qompmainwin.ui
 
 include (plugins/plugins.pri)
+
+RESOURCES += $$PWD/qomp.qrc

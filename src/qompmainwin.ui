@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Qomp</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="qomp.qrc">
+    <normaloff>:/icons/icons/qomp.png</normaloff>:/icons/icons/qomp.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
@@ -225,6 +229,8 @@
    <header location="global">phonon/volumeslider.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="qomp.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -4,7 +4,7 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	a.setApplicationName("Qomp");
+	a.setApplicationName("qomp");
 	a.setApplicationVersion("0.1 beta");
 	Qomp qomp;
 	qomp.init();

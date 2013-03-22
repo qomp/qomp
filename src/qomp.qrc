@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/qomp.png</file>
+    </qresource>
+</RCC>

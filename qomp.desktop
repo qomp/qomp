@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=qomp
+GenericName=Online Music Player
+Encoding=UTF-8
+Comment=Online Music Player
+Icon=qomp
+Exec=qomp
+Categories=Audio;Player;Qt;
+Terminal=false
