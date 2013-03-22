@@ -57,6 +57,10 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>le_login</tabstop>
+  <tabstop>le_pass</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
