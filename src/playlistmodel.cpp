@@ -100,10 +100,17 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
 	if(role == Qt::DisplayRole && index.column() == 0) {
 		Tune t = tunes_.at(index.row()).second;
 		QString ret;
-		QStringList fields;
-		fields << t.trackNumber << t.artist << t.title;
-		ret = fields.join(" ").trimmed();
-		if(!ret.isEmpty()) {
+		if(!t.title.isEmpty()) {
+			if(!t.trackNumber.isEmpty()) {
+				ret = t.trackNumber+". ";
+			}
+			if(!t.artist.isEmpty()) {
+				ret += t.artist+" - ";
+			}
+			ret += t.title;
+			if(!t.duration.isEmpty()) {
+				ret += QString("    [%1]").arg(t.duration);
+			}
 			return QString("%1.%2").arg(QString::number(index.row()+1), ret);
 		}
 
