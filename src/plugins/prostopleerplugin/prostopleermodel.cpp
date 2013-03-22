@@ -1,5 +1,50 @@
+/*
+ * Copyright (C) 2013  Khryukin Evgeny
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
+
 #include "prostopleermodel.h"
 #include <QTime>
+
+
+QString ProstopleerTune::durationToStr() const
+{
+	QString ret;
+	if(!duration.isEmpty()) {
+		int sec = duration.toInt();
+		int h = sec / (60*60);
+		sec -= h*(60*60);
+		int m = sec / 60;
+		sec -= m*60;
+		QTime time(h, m, sec, 0);
+		const QString format = h ? "hh:mm:ss" : "mm:ss";
+		ret = time.toString(format);
+	}
+	return ret;
+}
+
+bool ProstopleerTune::operator==(const ProstopleerTune& other)
+{
+	return id == other.id;
+}
+
+
+
+
 
 ProstopleerModel::ProstopleerModel(QObject *parent) :
 	QAbstractListModel(parent)
@@ -29,14 +74,7 @@ QVariant ProstopleerModel::data(const QModelIndex &index, int role) const
 	if(index.column() == 0) {
 		if(role == Qt::DisplayRole) {
 			ProstopleerTune t = tunes_.at(index.row());
-			int sec = t.duration.toInt();
-			int h = sec / (60*60);
-			sec -= h*(60*60);
-			int m = sec / 60;
-			sec -= m*60;
-			QTime time(h, m, sec, 0);
-			const QString format = h ? "hh:mm:ss" : "mm:ss";
-			QString ret = QString("%1 - %2  %3").arg(t.artist, t.title, time.toString(format));
+			QString ret = QString("%1 - %2  %3").arg(t.artist, t.title, t.durationToStr());
 			if(!t.url.isNull())
 				ret += "  [OK]";
 			return ret;

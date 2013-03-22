@@ -1,6 +1,5 @@
 /*
- * options.cpp
- * Copyright (C) 2011  Khryukin Evgeny
+ * Copyright (C) 2011-2013  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,7 +38,8 @@ Options::Options()
 	: QObject(QCoreApplication::instance())
 	, set_(0)
 {
-	set_ = new QSettings(qApp->organizationName(), qApp->applicationName(), this);
+	set_ = new QSettings(QSettings::IniFormat, QSettings::UserScope,
+			     qApp->organizationName(), qApp->applicationName(), this);
 }
 
 Options::~Options()
