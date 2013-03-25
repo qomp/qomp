@@ -86,6 +86,9 @@ QompMainWin::~QompMainWin()
 
 void QompMainWin::actPlayActivated()
 {
+	if(!model_->rowCount())
+		return;
+
 	QModelIndex i = model_->indexForTune(model_->currentTune());
 	if(!i.isValid()) {
 		i = model_->index(0);
