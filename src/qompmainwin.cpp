@@ -31,6 +31,10 @@
 #include <QTime>
 #include <QNetworkAccessManager>
 #include <QCloseEvent>
+#include <QDesktopServices>
+#include <QDir>
+
+static const QString cachedPlayListFileName = "/qomp-cached-playlist";
 
 
 QompMainWin::QompMainWin(QWidget *parent) :
@@ -48,6 +52,9 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 	model_ = new PlayListModel(this);
 	ui->playList->setModel(model_);
+
+	TuneList tl = Tune::tunesFromFile(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
+	model_->addTunes(tl);
 
 	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
 	ui->tb_prev->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
@@ -83,6 +90,21 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 QompMainWin::~QompMainWin()
 {
+	QDir dir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
+	if(!dir.exists())
+		dir.mkpath(dir.path());
+
+	QFile file(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
+	if(file.open(QFile::ReadWrite | QFile::Truncate)) {
+		if(model_->rowCount() > 0) {
+			QTextStream ts(&file);
+			ts.setCodec("UTF-8");
+			for(int i = 0; i < model_->rowCount(); i++) {
+				QString str = model_->tune(model_->index(i)).toString();
+				ts << str << endl;
+			}
+		}
+	}
 	delete ui;
 }
 

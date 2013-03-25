@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
 	a.setApplicationName(APPLICATION_NAME);
 	a.setApplicationVersion(APPLICATION_VERSION);
 	a.setOrganizationName(APPLICATION_NAME);
+	a.setQuitOnLastWindowClosed(false);
 	Qomp qomp;
 	qomp.init();
 	return a.exec();

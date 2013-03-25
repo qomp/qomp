@@ -22,6 +22,7 @@
 #include "options.h"
 #include "ui_qompoptionsmain.h"
 
+
 QompOptionsMain::QompOptionsMain(QWidget *parent) :
 	QompOptionsPage(parent),
 	ui(new Ui::QompOptionsMain)

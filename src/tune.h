@@ -34,9 +34,13 @@ public:
 	QString url;
 	QString file;
 
+	QString toString() const;
+	bool fromString(const QString& str);
 	int id() const;
 
 	bool operator==(const Tune& other);
+
+	static QList<Tune> tunesFromFile(const QString& fileName);
 
 private:
 	static int lastId_;
