@@ -24,11 +24,11 @@
 #include "prostopleerplugindefines.h"
 
 ProstopleerPluginSettings::ProstopleerPluginSettings(QWidget *parent) :
-	QWidget(parent),
+	QompOptionsPage(parent),
 	ui(new Ui::ProstopleerPluginSettings)
 {
 	ui->setupUi(this);
-	restore();
+	restoreOptions();
 }
 
 ProstopleerPluginSettings::~ProstopleerPluginSettings()
@@ -36,14 +36,18 @@ ProstopleerPluginSettings::~ProstopleerPluginSettings()
 	delete ui;
 }
 
-void ProstopleerPluginSettings::apply()
+QString ProstopleerPluginSettings::name() const
+{
+	return PROSTOPLEER_PLUGIN_NAME;
+}
+
+void ProstopleerPluginSettings::applyOptions()
 {
 	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN, ui->le_login->text());
 	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD, ui->le_pass->text());
 }
 
-
-void ProstopleerPluginSettings::restore()
+void ProstopleerPluginSettings::restoreOptions()
 {
 	ui->le_login->setText(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN).toString());
 	ui->le_pass->setText(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString());

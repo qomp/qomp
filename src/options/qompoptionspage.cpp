@@ -17,45 +17,9 @@
  *
  */
 
-#include "prostopleerplugin.h"
-#include "prostopleerplugingettunesdialog.h"
-#include "prostopleerplugindefines.h"
-#include "prostopleerpluginsettings.h"
+#include "qompoptionspage.h"
 
-#include <QtPlugin>
-
-
-ProstoPleerPlugin::ProstoPleerPlugin()
+QompOptionsPage::QompOptionsPage(QWidget *parent) :
+	QWidget(parent)
 {
 }
-
-QString ProstoPleerPlugin::name() const
-{
-	return PROSTOPLEER_PLUGIN_NAME;
-}
-
-QString ProstoPleerPlugin::version() const
-{
-	return PROSTOPLEER_PLUGIN_VERSION;
-}
-
-QString ProstoPleerPlugin::description() const
-{
-	return QString();
-}
-
-TuneList ProstoPleerPlugin::getTunes()
-{
-	TuneList list;
-	ProstoPleerPluginGetTunesDialog gtd;
-	if(gtd.exec() == QDialog::Accepted)
-		list = gtd.getTunes();
-	return list;
-}
-
-QompOptionsPage *ProstoPleerPlugin::options()
-{
-	return new ProstopleerPluginSettings();
-}
-
-Q_EXPORT_PLUGIN2(prostopleerplugin, ProstoPleerPlugin)

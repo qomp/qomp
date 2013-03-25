@@ -25,7 +25,7 @@ ProstoPleerPluginSettingsDlg::ProstoPleerPluginSettingsDlg(QWidget *parent) :
 	ui(new Ui::ProstoPleerPluginSettingsDlg)
 {
 	ui->setupUi(this);
-	connect(this, SIGNAL(accepted()), ui->widget, SLOT(apply()));
+	connect(this, SIGNAL(accepted()), ui->widget, SLOT(applyOptions()));
 }
 
 ProstoPleerPluginSettingsDlg::~ProstoPleerPluginSettingsDlg()

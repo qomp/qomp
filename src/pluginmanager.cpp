@@ -75,6 +75,15 @@ TuneList PluginManager::getTune(const QString &pluginName)
 	return tl;
 }
 
+QompOptionsPage *PluginManager::getOptions(const QString &pluginName)
+{
+	foreach(QompPlugin* p, plugins_) {
+		if(p->name() == pluginName)
+			return p->options();
+	}
+	return 0;
+}
+
 Q_IMPORT_PLUGIN(prostopleerplugin)
 Q_IMPORT_PLUGIN(filesystemplugin)
 Q_IMPORT_PLUGIN(urlplugin)

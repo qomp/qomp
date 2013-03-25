@@ -24,6 +24,8 @@
 
 #include <QObject>
 
+class QompOptionsPage;
+
 class QompPlugin
 {
 public:
@@ -31,6 +33,7 @@ public:
 	virtual QString version() const = 0;
 	virtual QString description() const = 0;
 	virtual TuneList getTunes() = 0;
+	virtual QompOptionsPage* options() = 0;
 };
 
 Q_DECLARE_INTERFACE(QompPlugin, "Qomp.QompPlugin/0.1")

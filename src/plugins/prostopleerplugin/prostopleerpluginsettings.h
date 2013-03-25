@@ -21,12 +21,13 @@
 #define PROSTOPLEERPLUGINSETTINGS_H
 
 #include <QWidget>
+#include "options/qompoptionspage.h"
 
 namespace Ui {
 class ProstopleerPluginSettings;
 }
 
-class ProstopleerPluginSettings : public QWidget
+class ProstopleerPluginSettings : public QompOptionsPage
 {
 	Q_OBJECT
 	
@@ -34,9 +35,11 @@ public:
 	explicit ProstopleerPluginSettings(QWidget *parent = 0);
 	~ProstopleerPluginSettings();
 
+	virtual QString name() const;
+
 public slots:
-	void apply();
-	void restore();
+	virtual void applyOptions();
+	virtual void restoreOptions();
 	
 private:
 	Ui::ProstopleerPluginSettings *ui;

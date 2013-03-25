@@ -40,4 +40,9 @@ TuneList UrlPlugin::getTunes()
 	return list;
 }
 
+QompOptionsPage *UrlPlugin::options()
+{
+	return 0;
+}
+
 Q_EXPORT_PLUGIN2(urlplugin, UrlPlugin)

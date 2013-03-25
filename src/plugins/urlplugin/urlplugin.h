@@ -36,6 +36,7 @@ public:
 	virtual QString version() const { return "0.1"; }
 	virtual QString description() const { return QString(); }
 	virtual TuneList getTunes();
+	virtual QompOptionsPage* options();
 	
 };
 

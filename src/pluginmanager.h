@@ -24,6 +24,7 @@
 
 class QompPlugin;
 class Tune;
+class QompOptionsPage;
 
 class PluginManager : public QObject
 {
@@ -32,6 +33,7 @@ public:
 	static PluginManager* instance();
 	QStringList availablePlugins() const;
 	QList<Tune> getTune(const QString& pluginName);
+	QompOptionsPage* getOptions(const QString& pluginName);
 
 	
 private:

@@ -36,6 +36,7 @@ public:
 	virtual QString version() const;
 	virtual QString description() const;
 	virtual TuneList getTunes();
+	virtual QompOptionsPage* options();
 };
 
 #endif // PROSTOPLEERPLUGIN_H

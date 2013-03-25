@@ -17,45 +17,36 @@
  *
  */
 
-#include "prostopleerplugin.h"
-#include "prostopleerplugingettunesdialog.h"
-#include "prostopleerplugindefines.h"
-#include "prostopleerpluginsettings.h"
+#ifndef QOMPOPTIONSDLG_H
+#define QOMPOPTIONSDLG_H
 
-#include <QtPlugin>
+#include <QDialog>
 
-
-ProstoPleerPlugin::ProstoPleerPlugin()
-{
+namespace Ui {
+class QompOptionsDlg;
 }
+class QompOptionsPage;
+class QAbstractButton;
 
-QString ProstoPleerPlugin::name() const
+class QompOptionsDlg : public QDialog
 {
-	return PROSTOPLEER_PLUGIN_NAME;
-}
+	Q_OBJECT
+	
+public:
+	QompOptionsDlg(QWidget *parent = 0);
+	~QompOptionsDlg();
 
-QString ProstoPleerPlugin::version() const
-{
-	return PROSTOPLEER_PLUGIN_VERSION;
-}
+public slots:
+	virtual void accept();
 
-QString ProstoPleerPlugin::description() const
-{
-	return QString();
-}
+private slots:
+	void applyOptions();
+	void itemChanged(int row);
+	void buttonClicked(QAbstractButton* b);
+	
+private:
+	Ui::QompOptionsDlg *ui;
+//	QList<QompOptionsPage*> pages_;
+};
 
-TuneList ProstoPleerPlugin::getTunes()
-{
-	TuneList list;
-	ProstoPleerPluginGetTunesDialog gtd;
-	if(gtd.exec() == QDialog::Accepted)
-		list = gtd.getTunes();
-	return list;
-}
-
-QompOptionsPage *ProstoPleerPlugin::options()
-{
-	return new ProstopleerPluginSettings();
-}
-
-Q_EXPORT_PLUGIN2(prostopleerplugin, ProstoPleerPlugin)
+#endif // QOMPOPTIONSDLG_H

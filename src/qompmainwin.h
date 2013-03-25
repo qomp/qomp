@@ -51,6 +51,7 @@ private slots:
 	void updatePlayIcon();
 	void setCurrentPosition(qint64 ms);
 	void playNext();
+	void doOptions();
 
 	void trayDoubleclicked();
 	void trayActivated(Qt::MouseButton);

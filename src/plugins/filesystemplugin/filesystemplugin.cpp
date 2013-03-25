@@ -46,4 +46,9 @@ TuneList FilesystemPlugin::getTunes()
 	return list;
 }
 
+QompOptionsPage *FilesystemPlugin::options()
+{
+	return 0;
+}
+
 Q_EXPORT_PLUGIN2(filesystemplugin, FilesystemPlugin)

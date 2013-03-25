@@ -23,6 +23,7 @@
 #include "options.h"
 #include "pluginmanager.h"
 #include "qomptrayicon.h"
+#include "options/qompoptionsdlg.h"
 
 #include "ui_qompmainwin.h"
 
@@ -86,8 +87,11 @@ QompMainWin::~QompMainWin()
 void QompMainWin::actPlayActivated()
 {
 	QModelIndex i = model_->indexForTune(model_->currentTune());
-	if(!i.isValid())
-		return;
+	if(!i.isValid()) {
+		i = model_->index(0);
+		ui->playList->setCurrentIndex(i);
+		model_->setCurrentTune(model_->tune(i));
+	}
 
 	if(!(player_->currentSource() == model_->device(i)))
 		player_->setSource(model_->device(i));
@@ -214,6 +218,12 @@ void QompMainWin::playNext()
 	}
 }
 
+void QompMainWin::doOptions()
+{
+	QompOptionsDlg dlg;
+	dlg.exec();
+}
+
 void QompMainWin::trayDoubleclicked()
 {
 	bool b = isHidden();
@@ -235,6 +245,7 @@ void QompMainWin::trayActivated(Qt::MouseButton b)
 			acts << new QAction(tr("Hide"), &m);
 		}
 		acts << new QAction(tr("Open"), &m);
+		acts << new QAction(tr("Settings"), &m);
 		QAction* sep = new QAction(&m);
 		sep->setSeparator(true);
 		acts << sep;
@@ -246,7 +257,9 @@ void QompMainWin::trayActivated(Qt::MouseButton b)
 			trayDoubleclicked();
 		else if(ret == 1)
 			actOpenActivated();
-		else if(ret == 3)
+		else if(ret == 2)
+			doOptions();
+		else if(ret == 4)
 			emit exit();
 	}
 }
