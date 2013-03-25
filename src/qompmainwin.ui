@@ -160,6 +160,26 @@
        </widget>
       </item>
       <item>
+       <widget class="QToolButton" name="tb_load">
+        <property name="toolTip">
+         <string>Open Playlist</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tb_save">
+        <property name="toolTip">
+         <string>Save Playlist</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="tb_clear">
         <property name="toolTip">
          <string>Clear</string>

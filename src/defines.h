@@ -23,6 +23,8 @@
 #define APPLICATION_NAME    "qomp"
 #define APPLICATION_VERSION "0.1 beta"
 
+#define LAST_DIR "main.last-dir"
+
 #define OPTION_START_MINIMIZED    "main.start-minimized"
 #define OPTION_AUTOSTART_PLAYBACK "main.autostart-playback"
 

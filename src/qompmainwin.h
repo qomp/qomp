@@ -53,6 +53,9 @@ private slots:
 	void playNext();
 	void doOptions();
 
+	void loadPlaylist();
+	void savePlaylist();
+
 	void trayDoubleclicked();
 	void trayActivated(Qt::MouseButton);
 
@@ -61,6 +64,10 @@ signals:
 
 protected:
 	void closeEvent(QCloseEvent *e);
+
+private:
+	void savePlaylist(const QString& fileName);
+	void updateTuneInfoFrame();
 	
 private:
 	Ui::QompMainWin *ui;

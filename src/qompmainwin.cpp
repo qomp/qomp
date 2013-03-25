@@ -33,6 +33,7 @@
 #include <QCloseEvent>
 #include <QDesktopServices>
 #include <QDir>
+#include <QFileDialog>
 
 static const QString cachedPlayListFileName = "/qomp-cached-playlist";
 
@@ -53,7 +54,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	model_ = new PlayListModel(this);
 	ui->playList->setModel(model_);
 
-	TuneList tl = Tune::tunesFromFile(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
+	TuneList tl = Tune::tunesFromFile(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName + ".qomp");
 	model_->addTunes(tl);
 
 	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
@@ -61,6 +62,8 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
 	ui->tb_stop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
 	ui->tb_clear->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton));
+	ui->tb_load->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
+	ui->tb_save->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
 	ui->tb_open->setIcon(style()->standardIcon(QStyle::SP_DriveCDIcon));
 
 	setCurrentPosition(0);
@@ -71,6 +74,8 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	connect(ui->tb_clear, SIGNAL(clicked()), SLOT(actClearActivated()));
 	connect(ui->tb_next, SIGNAL(clicked()), SLOT(actNextActivated()));
 	connect(ui->tb_prev, SIGNAL(clicked()), SLOT(actPrevActivated()));
+	connect(ui->tb_load, SIGNAL(clicked()), SLOT(loadPlaylist()));
+	connect(ui->tb_save, SIGNAL(clicked()), SLOT(savePlaylist()));
 
 	connect(ui->actionOpen, SIGNAL(triggered()), SLOT(actOpenActivated()));
 	connect(ui->actionExit, SIGNAL(triggered()), SIGNAL(exit()));
@@ -94,17 +99,8 @@ QompMainWin::~QompMainWin()
 	if(!dir.exists())
 		dir.mkpath(dir.path());
 
-	QFile file(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
-	if(file.open(QFile::ReadWrite | QFile::Truncate)) {
-		if(model_->rowCount() > 0) {
-			QTextStream ts(&file);
-			ts.setCodec("UTF-8");
-			for(int i = 0; i < model_->rowCount(); i++) {
-				QString str = model_->tune(model_->index(i)).toString();
-				ts << str << endl;
-			}
-		}
-	}
+	savePlaylist(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
+
 	delete ui;
 }
 
@@ -124,8 +120,7 @@ void QompMainWin::actPlayActivated()
 		player_->setSource(model_->device(i));
 
 	player_->play();
-	ui->lb_artist->setText(i.data(PlayListModel::ArtistRole).toString());
-	ui->lb_title->setText(i.data(PlayListModel::TitleRole).toString());
+	updateTuneInfoFrame();
 }
 
 void QompMainWin::updatePlayIcon()
@@ -203,6 +198,7 @@ void QompMainWin::actClearActivated()
 {
 	player_->stop();
 	model_->clear();
+	updateTuneInfoFrame();
 }
 
 void QompMainWin::mediaActivated(const QModelIndex &index)
@@ -251,6 +247,27 @@ void QompMainWin::doOptions()
 	dlg.exec();
 }
 
+void QompMainWin::loadPlaylist()
+{
+	QString file = QFileDialog::getOpenFileName(this, tr("Select Playlist"),
+						    Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*qomp");
+	if(!file.isEmpty()) {
+		Options::instance()->setOption(LAST_DIR, file);
+		TuneList tl = Tune::tunesFromFile(file);
+		model_->addTunes(tl);
+	}
+}
+
+void QompMainWin::savePlaylist()
+{
+	QString file = QFileDialog::getSaveFileName(this, tr("Save Playlist"),
+						    Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*qomp");
+	if(!file.isEmpty()) {
+		Options::instance()->setOption(LAST_DIR, file);
+		savePlaylist(file);
+	}
+}
+
 void QompMainWin::trayDoubleclicked()
 {
 	bool b = isHidden();
@@ -295,4 +312,29 @@ void QompMainWin::closeEvent(QCloseEvent *e)
 {
 	hide();
 	e->ignore();
+}
+
+void QompMainWin::savePlaylist(const QString &fileName)
+{
+	QString f(fileName);
+	if(!f.endsWith(".qomp"))
+		f += ".qomp";
+	QFile file(f);
+	if(file.open(QFile::ReadWrite | QFile::Truncate)) {
+		if(model_->rowCount() > 0) {
+			QTextStream ts(&file);
+			ts.setCodec("UTF-8");
+			for(int i = 0; i < model_->rowCount(); i++) {
+				QString str = model_->tune(model_->index(i)).toString();
+				ts << str << endl;
+			}
+		}
+	}
+}
+
+void QompMainWin::updateTuneInfoFrame()
+{
+	QModelIndex i = model_->indexForTune(model_->currentTune());
+	ui->lb_artist->setText(i.data(PlayListModel::ArtistRole).toString());
+	ui->lb_title->setText(i.data(PlayListModel::TitleRole).toString());
 }
