@@ -35,7 +35,7 @@
 #include <QDir>
 #include <QFileDialog>
 
-static const QString cachedPlayListFileName = "/qomp-cached-playlist";
+static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
 
 
 QompMainWin::QompMainWin(QWidget *parent) :
@@ -54,7 +54,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	model_ = new PlayListModel(this);
 	ui->playList->setModel(model_);
 
-	TuneList tl = Tune::tunesFromFile(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName + ".qomp");
+	TuneList tl = Tune::tunesFromFile(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
 	model_->addTunes(tl);
 
 	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));

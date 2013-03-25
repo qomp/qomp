@@ -24,6 +24,7 @@
 #include "options.h"
 #include "prostopleerpluginsettingsdlg.h"
 #include "prostopleerplugindefines.h"
+#include "common.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -247,7 +248,7 @@ void ProstoPleerPluginGetTunesDialog::doLogin()
 	nr.setRawHeader("Accept", "application/json, text/javascript");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
 	QString str = QString("login=%1&password=%2").arg(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN).toString(),
-							  Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString());
+				decodePassword(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString(), PROSTOPLEER_DECODE_KEY));
 	QNetworkReply *reply = nam_->post(nr, str.toLatin1());
 	connect(reply, SIGNAL(finished()), SLOT(loginFinished()));
 }

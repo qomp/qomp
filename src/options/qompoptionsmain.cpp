@@ -20,6 +20,7 @@
 #include "qompoptionsmain.h"
 #include "defines.h"
 #include "options.h"
+#include "common.h"
 #include "ui_qompoptionsmain.h"
 
 
@@ -41,7 +42,7 @@ void QompOptionsMain::applyOptions()
 	Options::instance()->setOption(OPTION_AUTOSTART_PLAYBACK, ui->cb_autostartPlayback->isChecked());
 	Options::instance()->setOption(OPTION_START_MINIMIZED, ui->cb_minimized->isChecked());
 	Options::instance()->setOption(OPTION_PROXY_HOST, ui->le_host->text());
-	Options::instance()->setOption(OPTION_PROXY_PASS, ui->le_pass->text());
+	Options::instance()->setOption(OPTION_PROXY_PASS, encodePassword(ui->le_pass->text(), DECODE_KEY));
 	Options::instance()->setOption(OPTION_PROXY_PORT, ui->le_port->text());
 	Options::instance()->setOption(OPTION_PROXY_USER, ui->le_user->text());
 	Options::instance()->setOption(OPTION_PROXY_USE, ui->gb_proxy->isChecked());
@@ -53,7 +54,7 @@ void QompOptionsMain::restoreOptions()
 	ui->cb_minimized->setChecked(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool());
 	ui->gb_proxy->setChecked(Options::instance()->getOption(OPTION_PROXY_USE).toBool());
 	ui->le_host->setText(Options::instance()->getOption(OPTION_PROXY_HOST).toString());
-	ui->le_pass->setText(Options::instance()->getOption(OPTION_PROXY_PASS).toString());
-	ui->le_port->setText(Options::instance()->getOption(OPTION_PROXY_PORT).toString());
+	ui->le_pass->setText(decodePassword(Options::instance()->getOption(OPTION_PROXY_PASS).toString(), DECODE_KEY));
+	ui->le_port->setText(Options::instance()->getOption(OPTION_PROXY_PORT,"3128").toString());
 	ui->le_user->setText(Options::instance()->getOption(OPTION_PROXY_USER).toString());
 }

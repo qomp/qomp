@@ -21,6 +21,7 @@
 #include "ui_prostopleerpluginsettings.h"
 
 #include "options.h"
+#include "common.h"
 #include "prostopleerplugindefines.h"
 
 ProstopleerPluginSettings::ProstopleerPluginSettings(QWidget *parent) :
@@ -44,11 +45,11 @@ QString ProstopleerPluginSettings::name() const
 void ProstopleerPluginSettings::applyOptions()
 {
 	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN, ui->le_login->text());
-	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD, ui->le_pass->text());
+	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD, encodePassword(ui->le_pass->text(), PROSTOPLEER_DECODE_KEY));
 }
 
 void ProstopleerPluginSettings::restoreOptions()
 {
 	ui->le_login->setText(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN).toString());
-	ui->le_pass->setText(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString());
+	ui->le_pass->setText(decodePassword(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString(), PROSTOPLEER_DECODE_KEY));
 }

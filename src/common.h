@@ -17,14 +17,12 @@
  *
  */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef COMMON_H
+#define COMMON_H
 
-#define PROSTOPLEER_PLUGIN_OPTION_LOGIN "prostopleerplugin.login"
-#define PROSTOPLEER_PLUGIN_OPTION_PASSWORD "prostopleerplugin.pass"
-#define PROSTOPLEER_PLUGIN_VERSION "0.1"
-#define PROSTOPLEER_PLUGIN_NAME "Prostopleer.com"
+class QString;
 
-#define PROSTOPLEER_DECODE_KEY "qompprostopleerkey"
+QString encodePassword(const QString& str, const QString &key);
+QString decodePassword(const QString& str, const QString &key);
 
-#endif // DEFINES_H
+#endif // COMMON_H

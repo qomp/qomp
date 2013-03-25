@@ -34,4 +34,6 @@
 #define OPTION_PROXY_USER "main.proxy-user"
 #define OPTION_PROXY_PASS "main.proxy-pass"
 
+#define DECODE_KEY "qompdecodekey"
+
 #endif // DEFINES_H
