@@ -24,6 +24,7 @@
 #include "pluginmanager.h"
 #include "qomptrayicon.h"
 #include "options/qompoptionsdlg.h"
+#include "defines.h"
 
 #include "ui_qompmainwin.h"
 
@@ -75,14 +76,15 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	QompTrayIcon* ico = new QompTrayIcon(this);
 	connect(ico, SIGNAL(trayDoubleClicked()), SLOT(trayDoubleclicked()));
 	connect(ico, SIGNAL(trayClicked(Qt::MouseButton)), SLOT(trayActivated(Qt::MouseButton)));
-}
 
+	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
+		actPlayActivated();
+}
 
 QompMainWin::~QompMainWin()
 {
 	delete ui;
 }
-
 
 void QompMainWin::actPlayActivated()
 {

@@ -17,37 +17,31 @@
  *
  */
 
-#include "qomp.h"
-#include "qompmainwin.h"
-#include "options.h"
-#include "defines.h"
+#ifndef QOMPOPTIONSMAIN_H
+#define QOMPOPTIONSMAIN_H
 
-#include <QEvent>
-#include <QApplication>
-#include <QtPlugin>
+#include "qompoptionspage.h"
 
-
-Qomp::Qomp(QObject *parent) :
-	QObject(parent)
-{
-	mainWin_ = new QompMainWin();
-	connect(mainWin_, SIGNAL(exit()), SLOT(exit()));
-
-	mainWin_->show();
-	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
-		mainWin_->hide();
+namespace Ui {
+class QompOptionsMain;
 }
 
-Qomp::~Qomp()
+class QompOptionsMain : public QompOptionsPage
 {
-	delete mainWin_;
-}
+	Q_OBJECT
+	
+public:
+	QompOptionsMain(QWidget *parent = 0);
+	~QompOptionsMain();
 
-void Qomp::init()
-{
-}
+	virtual QString name() const { return tr("Main"); }
 
-void Qomp::exit()
-{
-	qApp->exit();
-}
+public slots:
+	virtual void applyOptions();
+	virtual void restoreOptions();
+	
+private:
+	Ui::QompOptionsMain *ui;
+};
+
+#endif // QOMPOPTIONSMAIN_H

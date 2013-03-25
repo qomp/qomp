@@ -20,7 +20,16 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#define APPLICATION_NAME "qomp"
+#define APPLICATION_NAME    "qomp"
 #define APPLICATION_VERSION "0.1 beta"
+
+#define OPTION_START_MINIMIZED    "main.start-minimized"
+#define OPTION_AUTOSTART_PLAYBACK "main.autostart-playback"
+
+#define OPTION_PROXY_USE  "main.proxy-use"
+#define OPTION_PROXY_HOST "main.proxy-host"
+#define OPTION_PROXY_PORT "main.proxy-port"
+#define OPTION_PROXY_USER "main.proxy-user"
+#define OPTION_PROXY_PASS "main.proxy-pass"
 
 #endif // DEFINES_H
