@@ -33,6 +33,7 @@
 #define OPTION_PROXY_PORT "main.proxy-port"
 #define OPTION_PROXY_USER "main.proxy-user"
 #define OPTION_PROXY_PASS "main.proxy-pass"
+#define OPTION_PROXY_TYPE "main.proxy-type"
 
 #define DECODE_KEY "qompdecodekey"
 

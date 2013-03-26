@@ -250,7 +250,7 @@ void QompMainWin::doOptions()
 void QompMainWin::loadPlaylist()
 {
 	QString file = QFileDialog::getOpenFileName(this, tr("Select Playlist"),
-						    Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*qomp");
+						    Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*.qomp");
 	if(!file.isEmpty()) {
 		Options::instance()->setOption(LAST_DIR, file);
 		TuneList tl = Tune::tunesFromFile(file);
@@ -261,7 +261,7 @@ void QompMainWin::loadPlaylist()
 void QompMainWin::savePlaylist()
 {
 	QString file = QFileDialog::getSaveFileName(this, tr("Save Playlist"),
-						    Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*qomp");
+						    Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*.qomp");
 	if(!file.isEmpty()) {
 		Options::instance()->setOption(LAST_DIR, file);
 		savePlaylist(file);

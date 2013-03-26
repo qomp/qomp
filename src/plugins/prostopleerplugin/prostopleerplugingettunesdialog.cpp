@@ -19,17 +19,19 @@
 
 #include "prostopleerplugingettunesdialog.h"
 #include "prostopleermodel.h"
-
-#include "ui_prostopleerplugingettunesdialog.h"
 #include "options.h"
 #include "prostopleerpluginsettingsdlg.h"
 #include "prostopleerplugindefines.h"
 #include "common.h"
+#include "defines.h"
+
+#include "ui_prostopleerplugingettunesdialog.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QMessageBox>
 #include <QKeyEvent>
+#include <QNetworkProxy>
 
 
 ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QWidget *parent) :
@@ -47,6 +49,19 @@ ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QWidget *parent
 
 //	ui->lineEdit->installEventFilter(this);
 	ui->lv_results->installEventFilter(this);
+
+	if(Options::instance()->getOption(OPTION_PROXY_USE).toBool()) {
+		QNetworkProxy proxy(QNetworkProxy::HttpCachingProxy,
+				    Options::instance()->getOption(OPTION_PROXY_HOST).toString(),
+				    Options::instance()->getOption(OPTION_PROXY_PORT).toInt(),
+				    Options::instance()->getOption(OPTION_PROXY_USER).toString(),
+				    Options::instance()->getOption(OPTION_PROXY_PASS).toString() );
+
+		if(Options::instance()->getOption(OPTION_PROXY_TYPE) == "SOCKS5")
+			proxy.setType(QNetworkProxy::Socks5Proxy);
+
+		nam_->setProxy(proxy);
+	}
 
 	connect(ui->pb_search, SIGNAL(clicked()), SLOT(doSearch()));
 	connect(ui->lv_results, SIGNAL(pressed(QModelIndex)), SLOT(itemSelected(QModelIndex)));

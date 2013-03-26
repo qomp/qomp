@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef PROSTOPLEER_PLUGIN_DEFINES_H
+#define PROSTOPLEER_PLUGIN_DEFINES_H
 
 #define PROSTOPLEER_PLUGIN_OPTION_LOGIN "prostopleerplugin.login"
 #define PROSTOPLEER_PLUGIN_OPTION_PASSWORD "prostopleerplugin.pass"
@@ -27,4 +27,4 @@
 
 #define PROSTOPLEER_DECODE_KEY "qompprostopleerkey"
 
-#endif // DEFINES_H
+#endif // PROSTOPLEER_PLUGIN_DEFINES_H

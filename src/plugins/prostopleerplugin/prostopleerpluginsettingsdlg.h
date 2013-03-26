@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef SETTINGSDLG_H
-#define SETTINGSDLG_H
+#ifndef PROSTOPLEER_PLUGIN_SETTINGSDLG_H
+#define PROSTOPLEER_PLUGIN_SETTINGSDLG_H
 
 #include <QDialog>
 
