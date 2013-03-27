@@ -83,6 +83,8 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	connect(player_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(updatePlayIcon()));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
 
+	connect(model_, SIGNAL(layoutChanged()), SLOT(updateTuneInfoFrame()));
+
 	QompTrayIcon* ico = new QompTrayIcon(this);
 	connect(ico, SIGNAL(trayDoubleClicked()), SLOT(trayDoubleclicked()));
 	connect(ico, SIGNAL(trayClicked(Qt::MouseButton)), SLOT(trayActivated(Qt::MouseButton)));

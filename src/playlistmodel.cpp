@@ -136,10 +136,10 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
 		}
 		return QString("%1.%2").arg(QString::number(index.row()+1), fn);
 	}
-	if(role == ArtistRole) {
+	else if(role == ArtistRole) {
 		return tunes_.at(index.row()).tune.artist;
 	}
-	if(role == TitleRole) {
+	else if(role == TitleRole) {
 		Tune t = tunes_.at(index.row()).tune;
 		QString title = t.title;
 		if(title.isEmpty()) {
@@ -150,9 +150,28 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
 		}
 		return title;
 	}
-	if(role == TrackRole) {
+	else if(role == TrackRole) {
 		return tunes_.at(index.row()).tune.trackNumber;
 	}
+	else if(role == Qt::ToolTipRole) {
+		QString ret;
+		Tune t = tunes_.at(index.row()).tune;
+		if(!t.artist.isEmpty()) {
+			ret += tr("Artist: %1\n").arg(t.artist);
+		}
+		if(!t.title.isEmpty()) {
+			ret += tr("Title: %1\n").arg(t.title);
+		}
+		if(!t.album.isEmpty()) {
+			ret += tr("Album: %1\n").arg(t.album);
+		}
+		if(!t.bitRate.isEmpty()) {
+			ret += tr("Bitrate: %1\n").arg(t.bitRate);
+		}
+		ret.chop(1);
+		return ret;
+	}
+
 
 	return QVariant();
 }

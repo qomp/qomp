@@ -53,6 +53,7 @@ private slots:
 	void setCurrentPosition(qint64 ms);
 	void playNext();
 	void doOptions();
+	void updateTuneInfoFrame();
 
 	void loadPlaylist();
 	void savePlaylist();
@@ -68,7 +69,6 @@ protected:
 
 private:
 	void savePlaylist(const QString& fileName);
-	void updateTuneInfoFrame();
 	
 private:
 	Ui::QompMainWin *ui;
