@@ -23,7 +23,7 @@
 #include "prostopleerpluginsettingsdlg.h"
 #include "prostopleerplugindefines.h"
 #include "common.h"
-#include "defines.h"
+#include "qompnetworkingfactory.h"
 
 #include "ui_prostopleerplugingettunesdialog.h"
 
@@ -37,7 +37,6 @@
 ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::ProstoPleerPluginGetTunesDialog),
-	nam_(new QNetworkAccessManager(this)),
 	model_(new ProstopleerModel(this))
 {
 	ui->setupUi(this);
@@ -47,21 +46,10 @@ ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QWidget *parent
 
 	ui->tb_prev->hide();
 
+	nam_ = QompNetworkingFactory::instance()->getNetworkAccessManager();
+
 //	ui->lineEdit->installEventFilter(this);
 	ui->lv_results->installEventFilter(this);
-
-	if(Options::instance()->getOption(OPTION_PROXY_USE).toBool()) {
-		QNetworkProxy proxy(QNetworkProxy::HttpCachingProxy,
-				    Options::instance()->getOption(OPTION_PROXY_HOST).toString(),
-				    Options::instance()->getOption(OPTION_PROXY_PORT).toInt(),
-				    Options::instance()->getOption(OPTION_PROXY_USER).toString(),
-				    Options::instance()->getOption(OPTION_PROXY_PASS).toString() );
-
-		if(Options::instance()->getOption(OPTION_PROXY_TYPE) == "SOCKS5")
-			proxy.setType(QNetworkProxy::Socks5Proxy);
-
-		nam_->setProxy(proxy);
-	}
 
 	connect(ui->pb_search, SIGNAL(clicked()), SLOT(doSearch()));
 	connect(ui->lv_results, SIGNAL(pressed(QModelIndex)), SLOT(itemSelected(QModelIndex)));

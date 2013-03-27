@@ -22,6 +22,9 @@
 
 #include <QAbstractListModel>
 #include <Phonon/MediaSource>
+namespace Phonon {
+	class MediaObject;
+}
 
 #include "tune.h"
 
@@ -50,11 +53,30 @@ public:
 
 	void clear();
 
+private slots:
+	void metaDataReady();
+	void resolverStateChanged(Phonon::State newState, Phonon::State oldState);
+	void totalTimeChanged(qint64 msec);
 
 private:
-	typedef QPair <Phonon::MediaSource, Tune> Media;
+	const Phonon::MediaSource mediaSourceForId(int id) const;
+
+private:
+	struct Media {
+		Media(const Phonon::MediaSource& ms, const Tune& t) :
+			mediaSource(ms),
+			tune(t),
+			id(t.id())
+		{}
+
+		Phonon::MediaSource mediaSource;
+		Tune tune;
+		int id;
+	};
 	QList<Media> tunes_;
 	Tune currentTune_;
+	Phonon::MediaObject* resolver_;
+	QList<int> tuneIdsForResolve_;
 };
 
 #endif // PLAYLISTMODEL_H

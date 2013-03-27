@@ -23,6 +23,7 @@
 #include "common.h"
 #include "ui_qompoptionsmain.h"
 
+#include <phonon/BackendCapabilities>
 
 QompOptionsMain::QompOptionsMain(QWidget *parent) :
 	QompOptionsPage(parent),
@@ -47,6 +48,7 @@ void QompOptionsMain::applyOptions()
 	Options::instance()->setOption(OPTION_PROXY_USER, ui->le_user->text());
 	Options::instance()->setOption(OPTION_PROXY_USE, ui->gb_proxy->isChecked());
 	Options::instance()->setOption(OPTION_PROXY_TYPE, ui->cb_proxy_type->currentText());
+	Options::instance()->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->itemData(ui->cb_output->currentIndex()));
 }
 
 void QompOptionsMain::restoreOptions()
@@ -59,4 +61,12 @@ void QompOptionsMain::restoreOptions()
 	ui->le_port->setText(Options::instance()->getOption(OPTION_PROXY_PORT,"3128").toString());
 	ui->le_user->setText(Options::instance()->getOption(OPTION_PROXY_USER).toString());
 	ui->cb_proxy_type->setCurrentIndex(ui->cb_proxy_type->findText(Options::instance()->getOption(OPTION_PROXY_TYPE, "HTTP").toString()));
+
+	ui->cb_output->addItem(tr("default"), -1);
+	QList<Phonon::AudioOutputDevice> audioOutputDevices = Phonon::BackendCapabilities::availableAudioOutputDevices();
+	foreach(Phonon::AudioOutputDevice dev, audioOutputDevices) {
+		ui->cb_output->addItem(dev.name(), dev.index());
+	}
+	int index = Options::instance()->getOption(OPTION_AUDIO_DEVICE, -1).toInt();
+	ui->cb_output->setCurrentIndex(ui->cb_output->findData(index));
 }

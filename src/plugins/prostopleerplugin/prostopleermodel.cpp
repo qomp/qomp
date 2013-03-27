@@ -18,23 +18,11 @@
  */
 
 #include "prostopleermodel.h"
-#include <QTime>
-
+#include "common.h"
 
 QString ProstopleerTune::durationToStr() const
 {
-	QString ret;
-	if(!duration.isEmpty()) {
-		int sec = duration.toInt();
-		int h = sec / (60*60);
-		sec -= h*(60*60);
-		int m = sec / 60;
-		sec -= m*60;
-		QTime time(h, m, sec, 0);
-		const QString format = h ? "hh:mm:ss" : "mm:ss";
-		ret = time.toString(format);
-	}
-	return ret;
+	return durationSecondsToString(duration.toInt());
 }
 
 bool ProstopleerTune::operator==(const ProstopleerTune& other)

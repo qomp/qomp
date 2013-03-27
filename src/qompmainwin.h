@@ -29,7 +29,6 @@ namespace Ui {
 class QompPlayer;
 class PlayListModel;
 class QModelIndex;
-class QNetworkAccessManager;
 
 class QompMainWin : public QMainWindow
 {
@@ -38,6 +37,8 @@ class QompMainWin : public QMainWindow
 public:
 	QompMainWin(QWidget *parent = 0);
 	~QompMainWin();
+
+	QompPlayer* player() const;
 
 private slots:
 	void actPlayActivated();
@@ -73,7 +74,6 @@ private:
 	Ui::QompMainWin *ui;
 	QompPlayer* player_;
 	PlayListModel* model_;
-	QNetworkAccessManager* nam_;
 };
 
 #endif // QOMPMAINWIN_H

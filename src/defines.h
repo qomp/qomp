@@ -28,6 +28,8 @@
 #define OPTION_START_MINIMIZED    "main.start-minimized"
 #define OPTION_AUTOSTART_PLAYBACK "main.autostart-playback"
 
+#define OPTION_AUDIO_DEVICE	  "main.audio-device"
+
 #define OPTION_PROXY_USE  "main.proxy-use"
 #define OPTION_PROXY_HOST "main.proxy-host"
 #define OPTION_PROXY_PORT "main.proxy-port"

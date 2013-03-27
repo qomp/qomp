@@ -21,11 +21,10 @@
 #include "qompmainwin.h"
 #include "options.h"
 #include "defines.h"
+#include "qompnetworkingfactory.h"
+#include "qompplayer.h"
 
-#include <QEvent>
 #include <QApplication>
-#include <QtPlugin>
-
 
 Qomp::Qomp(QObject *parent) :
 	QObject(parent)
@@ -36,6 +35,8 @@ Qomp::Qomp(QObject *parent) :
 	mainWin_->show();
 	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
 		mainWin_->hide();
+
+	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateOptions()));
 }
 
 Qomp::~Qomp()
@@ -45,9 +46,16 @@ Qomp::~Qomp()
 
 void Qomp::init()
 {
+	updateOptions();
 }
 
 void Qomp::exit()
 {
 	qApp->exit();
+}
+
+void Qomp::updateOptions()
+{
+	QompNetworkingFactory::instance()->updateProxySettings();
+	mainWin_->player()->setAudioOutputDevice(Options::instance()->getOption(OPTION_AUDIO_DEVICE, -1).toInt());
 }

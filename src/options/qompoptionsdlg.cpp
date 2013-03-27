@@ -41,6 +41,7 @@
 
 #include "pluginmanager.h"
 #include "qompoptionsmain.h"
+#include "options.h"
 #include "ui_qompoptionsdlg.h"
 
 #include <QAbstractButton>
@@ -98,6 +99,8 @@ void QompOptionsDlg::applyOptions()
 		QompOptionsPage* p = static_cast<QompOptionsPage*>(ui->sw_pages->widget(i));
 		p->applyOptions();
 	}
+
+	Options::instance()->applyOptions();
 }
 
 void QompOptionsDlg::itemChanged(int row)

@@ -20,8 +20,6 @@
 #ifndef QOPMPLAYER_H
 #define QOPMPLAYER_H
 
-#include <QObject>
-
 namespace Phonon {
 	class SeekSlider;
 	class VolumeSlider;
@@ -43,21 +41,18 @@ public:
 	Phonon::MediaSource currentSource() const;
 	void play();
 	void stop();
+
+	void setAudioOutputDevice(int index);
 	
 signals:
 	void currentPosition(qint64 pos);
 	void stateChanged(Phonon::State newState, Phonon::State oldState);
 	void mediaFinished();
 	
-public slots:
-
-
-
-
 private:
 	Phonon::MediaObject* mediaObject_;
 	Phonon::AudioOutput* audioOutput_;
-	
+	Phonon::AudioOutputDevice defaultDevice_;
 };
 
 #endif // QOPMPLAYER_H

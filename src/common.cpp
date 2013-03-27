@@ -18,7 +18,7 @@
  */
 
 #include "common.h"
-#include <QString>
+#include <QTime>
 
 QString encodePassword(const QString &pass, const QString &key)
 {
@@ -66,4 +66,29 @@ QString decodePassword(const QString &pass, const QString &key)
 		}
 	}
 	return result;
+}
+
+
+QString durationSecondsToString(uint sec)
+{
+	int h = sec / (60*60);
+	sec -= h*(60*60);
+	int m = sec / 60;
+	sec -= m*60;
+	QTime time(h, m, sec, 0);
+	const QString format = h ? "hh:mm:ss" : "mm:ss";
+	return time.toString(format);
+}
+
+QString durationMiliSecondsToString(qint64 ms)
+{
+	int h = ms / (1000*60*60);
+	ms -= h*(1000*60*60);
+	int m = ms / (1000*60);
+	ms -= m*(1000*60);
+	int s = ms / 1000;
+	ms -= s*1000;
+	QTime t(h, m, s, ms);
+	const QString format = h ? "hh:mm:ss" : "mm:ss";
+	return t.toString(format);
 }

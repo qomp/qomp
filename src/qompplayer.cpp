@@ -22,6 +22,7 @@
 #include <Phonon/AudioOutput>
 #include <Phonon/SeekSlider>
 #include <Phonon/VolumeSlider>
+#include <phonon/BackendCapabilities>
 
 QompPlayer::QompPlayer(QObject *parent) :
 	QObject(parent)
@@ -29,6 +30,7 @@ QompPlayer::QompPlayer(QObject *parent) :
 	mediaObject_ = new Phonon::MediaObject(this);
 	audioOutput_ = new Phonon::AudioOutput(Phonon::MusicCategory, this);
 	/*Phonon::Path path = */Phonon::createPath(mediaObject_, audioOutput_);
+	defaultDevice_ = audioOutput_->outputDevice();
 
 	mediaObject_->setTickInterval(1000);
 	connect(mediaObject_, SIGNAL(tick(qint64)), this, SIGNAL(currentPosition(qint64)));
@@ -74,3 +76,18 @@ void QompPlayer::stop()
 	mediaObject_->stop();
 }
 
+void QompPlayer::setAudioOutputDevice(int index)
+{
+	if(index == -1) {
+		audioOutput_->setOutputDevice(defaultDevice_);
+		return;
+	}
+
+	QList<Phonon::AudioOutputDevice> audioOutputDevices = Phonon::BackendCapabilities::availableAudioOutputDevices();
+	foreach(Phonon::AudioOutputDevice dev, audioOutputDevices) {
+		if(dev.index() == index) {
+			audioOutput_->setOutputDevice(dev);
+			break;
+		}
+	}
+}

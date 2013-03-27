@@ -17,37 +17,25 @@
  *
  */
 
-#ifndef TUNE_H
-#define TUNE_H
+#ifndef QOMPNETWORKINGFACTORY_H
+#define QOMPNETWORKINGFACTORY_H
 
-#include <QString>
+#include <QObject>
+class QNetworkAccessManager;
 
-class Tune
+class QompNetworkingFactory : public QObject
 {
+	Q_OBJECT
 public:
-	Tune();
-	QString artist;
-	QString title;
-	QString trackNumber;
-	QString album;
-	QString duration;
-	QString url;
-	QString file;
-	QString bitRate;
-
-	QString toString() const;
-	bool fromString(const QString& str);
-	int id() const;
-
-	bool operator==(const Tune& other);
-
-	static QList<Tune> tunesFromFile(const QString& fileName);
-
+	static QompNetworkingFactory* instance();
+	void updateProxySettings();
+	QNetworkAccessManager* getNetworkAccessManager() const;
+	
 private:
-	static int lastId_;
-	int id_;
+	QompNetworkingFactory();
+	static QompNetworkingFactory* instance_;
+
+	QNetworkAccessManager* manager_;
 };
 
-typedef QList<Tune> TuneList;
-
-#endif // TUNE_H
+#endif // QOMPNETWORKINGFACTORY_H

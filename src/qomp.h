@@ -36,6 +36,7 @@ public:
 
 private slots:
 	void exit();
+	void updateOptions();
 
 //protected:
 //	bool eventFilter(QObject *obj, QEvent *e);

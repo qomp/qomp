@@ -25,14 +25,13 @@
 #include "qomptrayicon.h"
 #include "options/qompoptionsdlg.h"
 #include "defines.h"
+#include "common.h"
 
 #include "ui_qompmainwin.h"
 
 #include <QTime>
-#include <QNetworkAccessManager>
 #include <QCloseEvent>
 #include <QDesktopServices>
-#include <QDir>
 #include <QFileDialog>
 
 static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
@@ -40,8 +39,7 @@ static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
 
 QompMainWin::QompMainWin(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::QompMainWin),
-	nam_(new QNetworkAccessManager(this))
+	ui(new Ui::QompMainWin)
 {
 	ui->setupUi(this);
 
@@ -102,6 +100,11 @@ QompMainWin::~QompMainWin()
 	savePlaylist(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
 
 	delete ui;
+}
+
+QompPlayer *QompMainWin::player() const
+{
+	return player_;
 }
 
 void QompMainWin::actPlayActivated()
@@ -216,15 +219,7 @@ void QompMainWin::mediaClicked(const QModelIndex &index)
 
 void QompMainWin::setCurrentPosition(qint64 ms)
 {
-	int h = ms / (1000*60*60);
-	ms -= h*(1000*60*60);
-	int m = ms / (1000*60);
-	ms -= m*(1000*60);
-	int s = ms / 1000;
-	ms -= s*1000;
-	QTime t(h, m, s, ms);
-	const QString format = h ? "hh:mm:ss" : "mm:ss";
-	ui->lcd->display(t.toString(format));
+	ui->lcd->display(durationMiliSecondsToString(ms));
 }
 
 void QompMainWin::playNext()

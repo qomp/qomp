@@ -20,9 +20,12 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-class QString;
+#include <QString>
 
 QString encodePassword(const QString& str, const QString &key);
 QString decodePassword(const QString& str, const QString &key);
+
+QString durationSecondsToString(uint sec);
+QString durationMiliSecondsToString(qint64 ms);
 
 #endif // COMMON_H

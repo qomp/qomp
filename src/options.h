@@ -34,6 +34,11 @@ public:
 	QVariant getOption(const QString& name, const QVariant& defValue = QVariant::Invalid);
 	void setOption(const QString& name, const QVariant& value);
 
+	void applyOptions();
+
+signals:
+	void updateOptions();
+
 private:
 	Options();
 	static Options* instance_;

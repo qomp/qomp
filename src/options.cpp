@@ -63,3 +63,9 @@ void Options::setOption(const QString& name, const QVariant& value)
 {
 	set_->setValue(name, value);
 }
+
+void Options::applyOptions()
+{
+	set_->sync();
+	emit updateOptions();
+}
