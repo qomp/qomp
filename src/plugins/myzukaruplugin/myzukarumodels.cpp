@@ -17,28 +17,28 @@
  *
  */
 
-#ifndef DEFINES_H
-#define DEFINES_H
 
-#define APPLICATION_NAME    "qomp"
-#define APPLICATION_VERSION "0.1 beta"
+#include "myzukarumodels.h"
+#include "common.h"
 
-#define LAST_DIR "main.last-dir"
 
-#define OPTION_START_MINIMIZED    "main.start-minimized"
-#define OPTION_AUTOSTART_PLAYBACK "main.autostart-playback"
+MyzukaruTracksModel::MyzukaruTracksModel(QObject *parent) :
+	QompPluginTracksModel(parent)
+{
+}
 
-#define OPTION_AUDIO_DEVICE	  "main.audio-device"
+QVariant MyzukaruTracksModel::data(const QModelIndex &index, int role) const
+{
+	if(!index.isValid() || index.row() >= tunes_.size())
+		return QVariant();
 
-#define OPTION_PROXY_USE  "main.proxy-use"
-#define OPTION_PROXY_HOST "main.proxy-host"
-#define OPTION_PROXY_PORT "main.proxy-port"
-#define OPTION_PROXY_USER "main.proxy-user"
-#define OPTION_PROXY_PASS "main.proxy-pass"
-#define OPTION_PROXY_TYPE "main.proxy-type"
+	if(index.column() == 0 && role == Qt::DisplayRole) {
+		QompPluginTune t = tunes_.at(index.row());
+		QString ret = QString("%1 - %2").arg(t.artist, t.title);
+		if(!t.url.isNull())
+			ret += "  [OK]";
+		return ret;
+	}
 
-#define OPTION_SEARCH_HISTORY "plugins.search-history"
-
-#define DECODE_KEY "qompdecodekey"
-
-#endif // DEFINES_H
+	return QompPluginTracksModel::data(index, role);
+}

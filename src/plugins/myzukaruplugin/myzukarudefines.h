@@ -17,28 +17,11 @@
  *
  */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef MYZUKARUDEFINES_H
+#define MYZUKARUDEFINES_H
 
-#define APPLICATION_NAME    "qomp"
-#define APPLICATION_VERSION "0.1 beta"
+#define MYZUKA_PLUGIN_NAME "Myzuka.ru"
+#define MYZUKA_PLUGIN_VERSION "0.1"
 
-#define LAST_DIR "main.last-dir"
 
-#define OPTION_START_MINIMIZED    "main.start-minimized"
-#define OPTION_AUTOSTART_PLAYBACK "main.autostart-playback"
-
-#define OPTION_AUDIO_DEVICE	  "main.audio-device"
-
-#define OPTION_PROXY_USE  "main.proxy-use"
-#define OPTION_PROXY_HOST "main.proxy-host"
-#define OPTION_PROXY_PORT "main.proxy-port"
-#define OPTION_PROXY_USER "main.proxy-user"
-#define OPTION_PROXY_PASS "main.proxy-pass"
-#define OPTION_PROXY_TYPE "main.proxy-type"
-
-#define OPTION_SEARCH_HISTORY "plugins.search-history"
-
-#define DECODE_KEY "qompdecodekey"
-
-#endif // DEFINES_H
+#endif // MYZUKARUDEFINES_H

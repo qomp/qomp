@@ -17,28 +17,19 @@
  *
  */
 
-#ifndef DEFINES_H
-#define DEFINES_H
 
-#define APPLICATION_NAME    "qomp"
-#define APPLICATION_VERSION "0.1 beta"
+#ifndef MYZUKARUMODELS_H
+#define MYZUKARUMODELS_H
 
-#define LAST_DIR "main.last-dir"
+#include "qompplugintracksmodel.h"
 
-#define OPTION_START_MINIMIZED    "main.start-minimized"
-#define OPTION_AUTOSTART_PLAYBACK "main.autostart-playback"
+class MyzukaruTracksModel : public QompPluginTracksModel
+{
+	Q_OBJECT
+public:
+	MyzukaruTracksModel(QObject *parent = 0);
 
-#define OPTION_AUDIO_DEVICE	  "main.audio-device"
+	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+};
 
-#define OPTION_PROXY_USE  "main.proxy-use"
-#define OPTION_PROXY_HOST "main.proxy-host"
-#define OPTION_PROXY_PORT "main.proxy-port"
-#define OPTION_PROXY_USER "main.proxy-user"
-#define OPTION_PROXY_PASS "main.proxy-pass"
-#define OPTION_PROXY_TYPE "main.proxy-type"
-
-#define OPTION_SEARCH_HISTORY "plugins.search-history"
-
-#define DECODE_KEY "qompdecodekey"
-
-#endif // DEFINES_H
+#endif // MYZUKARUMODELS_H

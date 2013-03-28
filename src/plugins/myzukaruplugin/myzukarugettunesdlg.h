@@ -17,28 +17,39 @@
  *
  */
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef MYZUKARUGETTUNESDLG_H
+#define MYZUKARUGETTUNESDLG_H
 
-#define APPLICATION_NAME    "qomp"
-#define APPLICATION_VERSION "0.1 beta"
+#include "qompplugingettunesdlg.h"
 
-#define LAST_DIR "main.last-dir"
+class QompPluginTune;
+class QTabWidget;
+class QompPluginTracksView;
 
-#define OPTION_START_MINIMIZED    "main.start-minimized"
-#define OPTION_AUTOSTART_PLAYBACK "main.autostart-playback"
+class MyzukaruGettunesDlg : public QompPluginGettunesDlg
+{
+	Q_OBJECT
+	
+public:
+	explicit MyzukaruGettunesDlg(QWidget *parent = 0);
 
-#define OPTION_AUDIO_DEVICE	  "main.audio-device"
+public slots:
+	virtual void accept();
 
-#define OPTION_PROXY_USE  "main.proxy-use"
-#define OPTION_PROXY_HOST "main.proxy-host"
-#define OPTION_PROXY_PORT "main.proxy-port"
-#define OPTION_PROXY_USER "main.proxy-user"
-#define OPTION_PROXY_PASS "main.proxy-pass"
-#define OPTION_PROXY_TYPE "main.proxy-type"
+protected:
+//	bool eventFilter(QObject *o, QEvent *e);
 
-#define OPTION_SEARCH_HISTORY "plugins.search-history"
+protected slots:
+	virtual void doSearch();
 
-#define DECODE_KEY "qompdecodekey"
+private slots:
+	void searchFinished();
+	void urlFinished();
+	void tuneSelected(const QompPluginTune& tune);
 
-#endif // DEFINES_H
+private:
+	QTabWidget* tabWidget_;
+	QompPluginTracksView* tracksView_;
+};
+
+#endif // MYZUKARUGETTUNESDLG_H

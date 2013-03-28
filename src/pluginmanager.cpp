@@ -84,6 +84,7 @@ QompOptionsPage *PluginManager::getOptions(const QString &pluginName)
 	return 0;
 }
 
+Q_IMPORT_PLUGIN(myzukaruplugin)
 Q_IMPORT_PLUGIN(prostopleerplugin)
 Q_IMPORT_PLUGIN(filesystemplugin)
 Q_IMPORT_PLUGIN(urlplugin)

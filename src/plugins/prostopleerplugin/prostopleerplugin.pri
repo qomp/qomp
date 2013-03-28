@@ -1,20 +1,18 @@
 INCLUDEPATH += $$PWD
-DEPENDPATH += $$PWD
 
 HEADERS += $$PWD/prostopleerplugin.h \
-    plugins/prostopleerplugin/prostopleerplugingettunesdialog.h \
-    plugins/prostopleerplugin/prostopleermodel.h \
-    plugins/prostopleerplugin/prostopleerpluginsettings.h \
-    plugins/prostopleerplugin/prostopleerpluginsettingsdlg.h \
-    plugins/prostopleerplugin/prostopleerplugindefines.h
+    $$PWD/prostopleerplugingettunesdialog.h \
+    $$PWD/prostopleermodel.h \
+    $$PWD/prostopleerpluginsettings.h \
+    $$PWD/prostopleerpluginsettingsdlg.h \
+    $$PWD/prostopleerplugindefines.h
 
 SOURCES += $$PWD/prostopleerplugin.cpp \
-    plugins/prostopleerplugin/prostopleerplugingettunesdialog.cpp \
-    plugins/prostopleerplugin/prostopleermodel.cpp \
-    plugins/prostopleerplugin/prostopleerpluginsettings.cpp \
-    plugins/prostopleerplugin/prostopleerpluginsettingsdlg.cpp
+    $$PWD/prostopleerplugingettunesdialog.cpp \
+    $$PWD/prostopleermodel.cpp \
+    $$PWD/prostopleerpluginsettings.cpp \
+    $$PWD/prostopleerpluginsettingsdlg.cpp
 
-FORMS += \
-    plugins/prostopleerplugin/prostopleerplugingettunesdialog.ui \
-    plugins/prostopleerplugin/prostopleerpluginsettings.ui \
-    plugins/prostopleerplugin/prostopleerpluginsettingsdlg.ui
+FORMS += $$PWD/prostopleerplugingettunesdialog.ui \
+    $$PWD/prostopleerpluginsettings.ui \
+    $$PWD/prostopleerpluginsettingsdlg.ui
