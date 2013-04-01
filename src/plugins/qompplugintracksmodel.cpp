@@ -18,25 +18,40 @@
  */
 
 #include "qompplugintracksmodel.h"
+#include "qompplugintypes.h"
+
 
 QompPluginTracksModel::QompPluginTracksModel(QObject *parent) :
 	QAbstractListModel(parent)
 {
 }
 
-void QompPluginTracksModel::addTunes(const QList<QompPluginTune> &tunes)
+QompPluginTracksModel::~QompPluginTracksModel()
+{
+	reset();
+}
+
+void QompPluginTracksModel::addTunes(const QList<QompPluginTune *> &tunes)
 {
 	emit beginInsertRows(QModelIndex(), tunes_.size(), tunes_.size()+tunes.size());
 	tunes_.append(tunes);
 	emit endInsertRows();
 }
 
-QompPluginTune QompPluginTracksModel::tune(const QModelIndex &index) const
+QompPluginTune *QompPluginTracksModel::tune(const QModelIndex &index) const
 {
 	if(!index.isValid() || index.row() >= tunes_.size())
-		return QompPluginTune();
+		return 0;
 
 	return tunes_.at(index.row());
+}
+
+QList<QompPluginTune *> QompPluginTracksModel::selectedTunes() const
+{
+	QList<QompPluginTune*> list;
+	foreach(const QModelIndex& i, selected_)
+		list.append(tune(i));
+	return list;
 }
 
 QVariant QompPluginTracksModel::data(const QModelIndex &index, int role) const
@@ -63,22 +78,23 @@ Qt::ItemFlags QompPluginTracksModel::flags(const QModelIndex& index) const
 	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
 }
 
-void QompPluginTracksModel::urlChanged(const QString &id, const QString &url)
+bool QompPluginTracksModel::urlChanged(const QString &id, const QString &url)
 {
-	QList<QompPluginTune>::iterator it = tunes_.begin();
-	for(; it != tunes_.end(); ++it) {
-		if((*it).id == id) {
+	foreach(QompPluginTune* tune, tunes_) {
+		if(tune->id == id) {
 			emit layoutAboutToBeChanged();
-			(*it).url = url;
+			tune->url = url;
 			emit layoutChanged();
-			break;
+			return true;
 		}
 	}
+	return false;
 }
 
 void QompPluginTracksModel::reset()
 {
 	beginResetModel();
+	qDeleteAll(tunes_);
 	tunes_.clear();
 	selected_.clear();
 	endResetModel();

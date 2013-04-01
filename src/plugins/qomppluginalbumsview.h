@@ -17,28 +17,38 @@
  *
  */
 
-#ifndef QOMPPLUGINTRACKSVIEW_H
-#define QOMPPLUGINTRACKSVIEW_H
+#ifndef QOMPPLUGINALBUMSVIEW_H
+#define QOMPPLUGINALBUMSVIEW_H
 
-#include <QListView>
+#include <QTreeView>
+#include <QTime>
 
-struct QompPluginTune;
+class QompPluginTune;
+struct QompPluginAlbum;
 
-class QompPluginTracksView : public QListView
+class QompPluginAlbumsView : public QTreeView
 {
 	Q_OBJECT
 public:
-	QompPluginTracksView(QWidget *parent = 0);
-
+	QompPluginAlbumsView(QWidget *parent = 0);
+	
 protected:
 	void keyPressEvent(QKeyEvent *ke);
+	void mousePressEvent(QMouseEvent *e);
+	void mouseDoubleClickEvent(QMouseEvent *e);
 
 signals:
 	void tuneSelected(QompPluginTune*);
+	void albumSelected(QompPluginAlbum*);
 
-protected slots:
-	void itemSelected(const QModelIndex& index);
-	void itemActivated(const QModelIndex& index);
+private slots:
+	void itemSelected();
+
+private:
+	void itemActivated();
+
+private:
+	QTime lastClickTime_;
 };
 
-#endif // QOMPPLUGINTRACKSVIEW_H
+#endif // QOMPPLUGINALBUMSVIEW_H

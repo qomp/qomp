@@ -23,8 +23,9 @@
 #include "qompplugingettunesdlg.h"
 
 class QompPluginTune;
-class QTabWidget;
+class QompPluginAlbum;
 class QompPluginTracksView;
+class QompPluginAlbumsView;
 
 class MyzukaruGettunesDlg : public QompPluginGettunesDlg
 {
@@ -44,11 +45,17 @@ protected slots:
 
 private slots:
 	void searchFinished();
-	void urlFinished();
-	void tuneSelected(const QompPluginTune& tune);
+	void tuneUrlFinished();
+	void albumUrlFinished();
+	void tuneSelected(QompPluginTune* tune);
+	void albumSelected(QompPluginAlbum* album);
 
 private:
-	QTabWidget* tabWidget_;
+	void addTune(QompPluginTune* tune);
+
+private:
+	QompPluginAlbumsView* albumsView_;
+	QompPluginAlbumsView* artistsView_;
 	QompPluginTracksView* tracksView_;
 };
 

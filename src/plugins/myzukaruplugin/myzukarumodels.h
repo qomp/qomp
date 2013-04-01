@@ -22,6 +22,8 @@
 #define MYZUKARUMODELS_H
 
 #include "qompplugintracksmodel.h"
+#include "qomppluginalbumsmodel.h"
+
 
 class MyzukaruTracksModel : public QompPluginTracksModel
 {
@@ -31,5 +33,29 @@ public:
 
 	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 };
+
+
+
+
+class MyzukaruAlbumsModel : public QompPluginAlbumsModel
+{
+	Q_OBJECT
+
+public:
+	MyzukaruAlbumsModel(QObject *parent = 0);
+
+	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+};
+
+class MyzukaruArtistsModel : public QompPluginAlbumsModel
+{
+	Q_OBJECT
+
+public:
+	MyzukaruArtistsModel(QObject *parent = 0);
+
+	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+};
+
 
 #endif // MYZUKARUMODELS_H

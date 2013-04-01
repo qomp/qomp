@@ -36,6 +36,7 @@ QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 	QStringList searchHistory = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
 
 	ui->cb_search->addItems(searchHistory);
+	ui->cb_search->setInsertPolicy(QComboBox::InsertAtTop);
 	connect(ui->pb_search, SIGNAL(clicked()), SLOT(doSearch()));
 }
 

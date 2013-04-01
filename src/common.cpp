@@ -92,3 +92,13 @@ QString durationMiliSecondsToString(qint64 ms)
 	const QString format = h ? "hh:mm:ss" : "mm:ss";
 	return t.toString(format);
 }
+
+QString unescape(const QString& escaped)
+{
+	QString plain = escaped;
+	plain.replace("&lt;", "<");
+	plain.replace("&gt;", ">");
+	plain.replace("&quot;", "\"");
+	plain.replace("&amp;", "&");
+	return plain;
+}

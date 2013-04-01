@@ -28,4 +28,6 @@ QString decodePassword(const QString& str, const QString &key);
 QString durationSecondsToString(uint sec);
 QString durationMiliSecondsToString(qint64 ms);
 
+QString unescape(const QString& escaped);
+
 #endif // COMMON_H

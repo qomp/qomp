@@ -19,6 +19,7 @@
 
 
 #include "myzukarumodels.h"
+#include "qompplugintypes.h"
 #include "common.h"
 
 
@@ -33,12 +34,78 @@ QVariant MyzukaruTracksModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 	if(index.column() == 0 && role == Qt::DisplayRole) {
-		QompPluginTune t = tunes_.at(index.row());
-		QString ret = QString("%1 - %2").arg(t.artist, t.title);
-		if(!t.url.isNull())
+		QompPluginTune* t = tunes_.at(index.row());
+		QString ret = QString("%1 - %2").arg(t->artist, t->title);
+		if(!t->url.isNull())
 			ret += "  [OK]";
 		return ret;
 	}
 
 	return QompPluginTracksModel::data(index, role);
+}
+
+
+
+
+
+MyzukaruAlbumsModel::MyzukaruAlbumsModel(QObject *parent) :
+	QompPluginAlbumsModel(parent)
+{
+}
+
+
+QVariant MyzukaruAlbumsModel::data(const QModelIndex &index, int role) const
+{
+	if(!index.isValid() || index.column())
+		return QVariant();
+
+	if(role == Qt::DisplayRole)
+	{
+		if(isAlbum(index) && index.row() < albums_.size()) {
+			QompPluginAlbum* a = albums_.at(index.row());
+			return	a->artist + " - " +
+				a->album + " - " +
+				a->year + " [" +
+				QString::number(rowCount(index))/*QString::number(a.tunes.size())*/ + "]";
+		}
+		QompPluginTune* t = tune(index);
+		if(t) {
+			QString ret = QString("%1 - %2").arg(t->artist, t->title);
+			if(!t->url.isNull())
+				ret += "  [OK]";
+			return ret;
+		}
+	}
+
+	return QompPluginAlbumsModel::data(index, role);
+}
+
+
+MyzukaruArtistsModel::MyzukaruArtistsModel(QObject *parent)
+	: QompPluginAlbumsModel(parent)
+{
+}
+
+QVariant MyzukaruArtistsModel::data(const QModelIndex &index, int role) const
+{
+	if(!index.isValid() || index.column())
+		return QVariant();
+
+	if(role == Qt::DisplayRole)
+	{
+		if(isAlbum(index) && index.row() < albums_.size()) {
+			QompPluginAlbum* a = albums_.at(index.row());
+			return	a->artist + " - [" +
+				QString::number(rowCount(index)) + "]";
+		}
+		QompPluginTune* t = tune(index);
+		if(t) {
+			QString ret = QString("%1 - %2").arg(t->artist, t->title);
+			if(!t->url.isNull())
+				ret += "  [OK]";
+			return ret;
+		}
+	}
+
+	return QompPluginAlbumsModel::data(index, role);
 }

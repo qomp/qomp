@@ -19,6 +19,7 @@
 
 #include "qompplugintracksview.h"
 #include "qompplugintracksmodel.h"
+#include "qompplugintypes.h"
 
 #include <QKeyEvent>
 
@@ -31,19 +32,18 @@ QompPluginTracksView::QompPluginTracksView(QWidget *parent) :
 
 void QompPluginTracksView::itemSelected(const QModelIndex &index)
 {
-	if(index.isValid()) {
-		QompPluginTracksModel* m = qobject_cast<QompPluginTracksModel*>(model());
-		if(m)
-			emit tuneSelected(m->tune(index));
+	QompPluginTracksModel* m = qobject_cast<QompPluginTracksModel*>(model());
+	if(m && index.isValid()) {
+		emit tuneSelected(m->tune(index));
 	}
 }
 
 void QompPluginTracksView::itemActivated(const QModelIndex &index)
 {
 	QompPluginTracksModel* m = qobject_cast<QompPluginTracksModel*>(model());
-	if(m) {
+	if(m && index.isValid()) {
 		emit tuneSelected(m->tune(index));
-		m->setData(index, QompPluginTracksModel::DataToggle);
+		m->setData(index, DataToggle);
 	}
 }
 

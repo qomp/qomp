@@ -17,28 +17,42 @@
  *
  */
 
-#ifndef QOMPPLUGINTRACKSVIEW_H
-#define QOMPPLUGINTRACKSVIEW_H
+#ifndef QOMPPLUGINTYPES_H
+#define QOMPPLUGINTYPES_H
 
-#include <QListView>
+#include <QList>
 
-struct QompPluginTune;
+enum DataSelection { DataUnselect = 0, DataSelect = 1, DataToggle = 2 };
 
-class QompPluginTracksView : public QListView
+
+struct QompPluginTune
 {
-	Q_OBJECT
-public:
-	QompPluginTracksView(QWidget *parent = 0);
+	QString title;
+	QString artist;
+	QString album;
+	QString duration;
+	QString id;
+	QString url;
 
-protected:
-	void keyPressEvent(QKeyEvent *ke);
-
-signals:
-	void tuneSelected(QompPluginTune*);
-
-protected slots:
-	void itemSelected(const QModelIndex& index);
-	void itemActivated(const QModelIndex& index);
+//	bool operator==(const QompPluginTune& other);
 };
 
-#endif // QOMPPLUGINTRACKSVIEW_H
+struct QompPluginAlbum
+{
+	QompPluginAlbum() : tunesReceived(false) {}
+	~QompPluginAlbum()
+	{
+		qDeleteAll(tunes);
+	}
+
+	QString album;
+	QString artist;
+	QString year;
+	QString id;
+	bool tunesReceived;
+	QList<QompPluginTune*> tunes;
+
+//	bool operator==(const QompPluginAlbum& other);
+};
+
+#endif // QOMPPLUGINTYPES_H
