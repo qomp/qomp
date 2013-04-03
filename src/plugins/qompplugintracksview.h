@@ -32,12 +32,12 @@ public:
 
 protected:
 	void keyPressEvent(QKeyEvent *ke);
+	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 signals:
 	void tuneSelected(QompPluginModelItem*);
 
 protected slots:
-	void itemSelected(const QModelIndex& index);
 	void itemActivated(const QModelIndex& index);
 };
 

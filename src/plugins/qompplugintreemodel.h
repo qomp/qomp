@@ -38,7 +38,7 @@ public:
 	void addItems(const QList<QompPluginModelItem*>& items, QompPluginModelItem* parent);
 
 	QompPluginModelItem* itemForId(const QString& id, QompPluginModelItem* parent = 0);
-	QList<QompPluginModelItem*> selectedItems() const;
+	QList<QompPluginModelItem*> selectedItems(QompPluginModelItem* parent = 0) const;
 	QModelIndex index(QompPluginModelItem* item) const;
 	virtual void reset();
 

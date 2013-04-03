@@ -81,11 +81,15 @@ QompPluginModelItem *QompPluginTreeModel::itemForId(const QString &id, QompPlugi
 	return 0;
 }
 
-QList<QompPluginModelItem*> QompPluginTreeModel::selectedItems() const
+QList<QompPluginModelItem*> QompPluginTreeModel::selectedItems(QompPluginModelItem *parent) const
 {
 	QList<QompPluginModelItem*> list;
-	foreach(const QModelIndex& ind, selected_) {
-		list.append((QompPluginModelItem*)ind.internalId());
+	QList<QompPluginModelItem*> items = parent ? parent->items() : topLevelItems_;
+	for(int i = 0; i < items.size(); i++) {
+		if(selected_.contains(index(items.at(i))))
+			list.append(items.at(i));
+
+		list.append(selectedItems(items.at(i)));
 	}
 
 	return list;

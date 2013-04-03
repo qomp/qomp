@@ -58,8 +58,10 @@ QompPluginModelItem *QompPluginTracksModel::tuneForId(const QString &id) const
 QList<QompPluginModelItem *> QompPluginTracksModel::selectedTunes() const
 {
 	QList<QompPluginModelItem*> list;
-	foreach(const QModelIndex& i, selected_)
-		list.append(tune(i));
+	for(int i = 0; i < tunes_.size(); i++) {
+		if(selected_.contains(index(i, 0)))
+			list.append(tunes_.at(i));
+	}
 	return list;
 }
 

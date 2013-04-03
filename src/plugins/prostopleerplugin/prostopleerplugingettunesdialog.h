@@ -20,20 +20,18 @@
 #ifndef PROSTOPLEER_PLUGIN_GETTUNESDIALOG_H
 #define PROSTOPLEER_PLUGIN_GETTUNESDIALOG_H
 
-#include <QDialog>
+#include "qompplugingettunesdlg.h"
 
 #include "tune.h"
 
 namespace Ui {
-class ProstoPleerPluginGetTunesDialog;
+class ProstoPleerPluginResultsWidget;
 }
-class QNetworkAccessManager;
-class QNetworkReply;
-class ProstopleerModel;
-class QModelIndex;
-class QEvent;
 
-class ProstoPleerPluginGetTunesDialog : public QDialog
+class QompPluginModelItem;
+class QompPluginTracksModel;
+
+class ProstoPleerPluginGetTunesDialog : public QompPluginGettunesDlg
 {
 	Q_OBJECT
 	
@@ -46,31 +44,26 @@ public:
 public slots:
 	virtual void accept();
 
-private slots:
+protected slots:
 	void doSearch();
+
+private slots:
 	void searchFinished();
 	void urlFinished();
 	void loginFinished();
-	void itemSelected(const QModelIndex& index);
-	void itemActivated(const QModelIndex& index);
+	void itemSelected(QompPluginModelItem *);
 
 	void actPrevActivated();
 	void actNextActivated();
-	void doSettings();
-
-protected:
-	bool eventFilter(QObject *o, QEvent *e);
-	void keyPressEvent(QKeyEvent *e);
 
 private:
 	void doLogin();
 	void doSearchStepTwo();
 	
 private:
-	Ui::ProstoPleerPluginGetTunesDialog *ui;
+	Ui::ProstoPleerPluginResultsWidget *ui;
 	TuneList tunes_;
-	QNetworkAccessManager* nam_;
-	ProstopleerModel* model_;
+	QompPluginTracksModel* model_;
 	QString lastSearchStr_;
 };
 

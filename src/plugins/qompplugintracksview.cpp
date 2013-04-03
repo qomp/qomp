@@ -26,16 +26,8 @@
 QompPluginTracksView::QompPluginTracksView(QWidget *parent) :
 	QListView(parent)
 {
+	setSelectionMode(QAbstractItemView::ExtendedSelection);
 	connect(this, SIGNAL(activated(QModelIndex)), SLOT(itemActivated(QModelIndex)));
-	connect(this, SIGNAL(clicked(QModelIndex)), SLOT(itemSelected(QModelIndex)));
-}
-
-void QompPluginTracksView::itemSelected(const QModelIndex &index)
-{
-	QompPluginTracksModel* m = qobject_cast<QompPluginTracksModel*>(model());
-	if(m && index.isValid()) {
-		emit tuneSelected(m->tune(index));
-	}
 }
 
 void QompPluginTracksView::itemActivated(const QModelIndex &index)
@@ -50,10 +42,25 @@ void QompPluginTracksView::itemActivated(const QModelIndex &index)
 void QompPluginTracksView::keyPressEvent(QKeyEvent *ke)
 {
 	if(ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Space) {
-		itemActivated(currentIndex());
+		foreach(const QModelIndex& index, selectionModel()->selection().indexes()) {
+			itemActivated(index);
+		}
 		ke->accept();
 		return;
 	}
 
 	QListView::keyPressEvent(ke);
+}
+
+void QompPluginTracksView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+	QompPluginTracksModel* m = qobject_cast<QompPluginTracksModel*>(model());
+	if(m) {
+		foreach(const QModelIndex& index, selected.indexes()) {
+			if(index.isValid()) {
+				emit tuneSelected(m->tune(index));
+			}
+		}
+	}
+	QListView::selectionChanged(selected, deselected);
 }

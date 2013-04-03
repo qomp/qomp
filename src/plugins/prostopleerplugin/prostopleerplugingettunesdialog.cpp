@@ -18,14 +18,13 @@
  */
 
 #include "prostopleerplugingettunesdialog.h"
-#include "prostopleermodel.h"
+#include "qompplugintracksmodel.h"
+#include "qompplugintypes.h"
 #include "options.h"
-#include "prostopleerpluginsettingsdlg.h"
 #include "prostopleerplugindefines.h"
 #include "common.h"
-#include "qompnetworkingfactory.h"
 
-#include "ui_prostopleerplugingettunesdialog.h"
+#include "ui_prostopleerpluginresultswidget.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -34,29 +33,37 @@
 #include <QNetworkProxy>
 
 
-ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::ProstoPleerPluginGetTunesDialog),
-	model_(new ProstopleerModel(this))
+class ProstopleerTune : public QompPluginTune
 {
-	ui->setupUi(this);
+public:
+	ProstopleerTune() : QompPluginTune() {}
+	QString duration;
+	QString durationToStr() const
+	{
+		return durationSecondsToString(duration.toInt());
+	}
+};
+
+ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QWidget *parent) :
+	QompPluginGettunesDlg(parent),
+	ui(new Ui::ProstoPleerPluginResultsWidget),
+	model_(new QompPluginTracksModel(this))
+{
+	setWindowTitle(PROSTOPLEER_PLUGIN_NAME);
+
+	QWidget* widget = new QWidget(this);
+	ui->setupUi(widget);
+	setResultsWidget(widget);
+
 	ui->lv_results->setModel(model_);
 	ui->tb_prev->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
 	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
 
 	ui->tb_prev->hide();
 
-	nam_ = QompNetworkingFactory::instance()->getNetworkAccessManager();
-
-//	ui->lineEdit->installEventFilter(this);
-	ui->lv_results->installEventFilter(this);
-
-	connect(ui->pb_search, SIGNAL(clicked()), SLOT(doSearch()));
-	connect(ui->lv_results, SIGNAL(pressed(QModelIndex)), SLOT(itemSelected(QModelIndex)));
-	connect(ui->lv_results, SIGNAL(activated(QModelIndex)), SLOT(itemActivated(QModelIndex)));
+	connect(ui->lv_results, SIGNAL(tuneSelected(QompPluginModelItem*)), SLOT(itemSelected(QompPluginModelItem*)));
 	connect(ui->tb_next, SIGNAL(clicked()), SLOT(actNextActivated()));
 	connect(ui->tb_prev, SIGNAL(clicked()), SLOT(actPrevActivated()));
-	connect(ui->tb_settings, SIGNAL(clicked()), SLOT(doSettings()));
 
 	doLogin();
 }
@@ -73,30 +80,26 @@ TuneList ProstoPleerPluginGetTunesDialog::getTunes() const
 
 void ProstoPleerPluginGetTunesDialog::accept()
 {
-	for(int i = 0; i < model_->rowCount(); i++) {
-		QModelIndex index = model_->index(i);
-		if(index.data(Qt::CheckStateRole).toBool()){
-			ProstopleerTune pt = model_->tune(index);
-			if(pt.url.isNull())
-				continue;
-
+	foreach(QompPluginModelItem* item, model_->selectedTunes()) {
+		ProstopleerTune *pt = static_cast<ProstopleerTune*>(item);
+		if(!pt->url.isNull()) {
 			Tune tune;
-			tune.artist = pt.artist;
-			tune.title = pt.title;
-			tune.url = pt.url;
-			tune.duration = pt.durationToStr();
+			tune.artist = pt->artist;
+			tune.title = pt->title;
+			tune.url = pt->url;
+			tune.duration = pt->durationToStr();
 			tunes_.append(tune);
 		}
 	}
 
-	QDialog::accept();
+	QompPluginGettunesDlg::accept();
 }
 
 
 void ProstoPleerPluginGetTunesDialog::doSearch()
 {
 	model_->reset();
-	QString text = ui->lineEdit->text();
+	QString text = currentSearchText();
 	if(text.isEmpty())
 		return;
 
@@ -126,16 +129,16 @@ void ProstoPleerPluginGetTunesDialog::searchFinished()
 		QRegExp re("<li duration=\"([\\d]+)\" file_id=\"([^\"]+)\" singer=\"([^\"]+)\" "
 			   "song=\"([^\"]+)\" link=\"([^\"]+)\"");
 		re.setMinimal(true);
-		QList<ProstopleerTune> list;
+		QList<QompPluginModelItem*> list;
 		QString result = reply->readAll();
 		int off = 0;
 		while((off = re.indexIn(result, off)) != -1) {
 			off += re.matchedLength();
-			ProstopleerTune tune;
-			tune.artist = QString::fromUtf8(re.cap(3).toLatin1());
-			tune.title = QString::fromUtf8(re.cap(4).toLatin1());
-			tune.id = re.cap(5);
-			tune.duration = re.cap(1);
+			ProstopleerTune* tune = new ProstopleerTune();
+			tune->artist = QString::fromUtf8(re.cap(3).toLatin1());
+			tune->title = QString::fromUtf8(re.cap(4).toLatin1());
+			tune->internalId = re.cap(5);
+			tune->duration = re.cap(1);
 			list.append(tune);
 		}
 		if(!list.isEmpty())
@@ -162,11 +165,6 @@ void ProstoPleerPluginGetTunesDialog::searchFinished()
 	}
 }
 
-void ProstoPleerPluginGetTunesDialog::itemActivated(const QModelIndex &index)
-{
-	model_->setData(index, 3); //change selection state
-}
-
 void ProstoPleerPluginGetTunesDialog::actPrevActivated()
 {
 }
@@ -176,45 +174,12 @@ void ProstoPleerPluginGetTunesDialog::actNextActivated()
 	doSearchStepTwo();
 }
 
-void ProstoPleerPluginGetTunesDialog::doSettings()
+void ProstoPleerPluginGetTunesDialog::itemSelected(QompPluginModelItem* item)
 {
-	ProstoPleerPluginSettingsDlg dlg(this);
-	if(dlg.exec() == QDialog::Accepted)
-		doLogin();
-}
-
-bool ProstoPleerPluginGetTunesDialog::eventFilter(QObject *o, QEvent *e)
-{
-	if(o == ui->lv_results) {
-		if(e->type() == QEvent::KeyPress) {
-			QKeyEvent* ke = static_cast<QKeyEvent*>(e);
-			if(ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Space) {
-				QModelIndex index = ui->lv_results->currentIndex();
-				model_->setData(index, 3);
-				e->accept();
-				return true;
-			}
-		}
-	}
-	return QDialog::eventFilter(o, e);
-}
-
-void ProstoPleerPluginGetTunesDialog::keyPressEvent(QKeyEvent *e)
-{
-	if(e->key() == Qt::Key_Return && ui->lineEdit->hasFocus()) {
-		doSearch();
-		e->accept();
-		return;
-	}
-	return QDialog::keyPressEvent(e);
-}
-
-void ProstoPleerPluginGetTunesDialog::itemSelected(const QModelIndex &index)
-{
-	if(!model_->tune(index).url.isEmpty())
+	ProstopleerTune* pt = static_cast<ProstopleerTune*>(item);
+	if(!pt->url.isEmpty())
 		return;
 
-	ProstopleerTune pt = model_->tune(index);
 	QUrl url("http://prostopleer.com");
 	url.setPath("/site_api/files/get_url");
 	QNetworkRequest nr(url);
@@ -222,9 +187,9 @@ void ProstoPleerPluginGetTunesDialog::itemSelected(const QModelIndex &index)
 	nr.setRawHeader("Accept", "application/json, text/javascript");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
 	QByteArray ba("action=play&id=");
-	ba += pt.id;
+	ba += pt->internalId;
 	QNetworkReply *reply = nam_->post(nr, ba);
-	reply->setProperty("id", pt.id);
+	reply->setProperty("id", pt->internalId);
 	connect(reply, SIGNAL(finished()), SLOT(urlFinished()));
 }
 
@@ -237,7 +202,9 @@ void ProstoPleerPluginGetTunesDialog::urlFinished()
 		QRegExp re("http://[^\"]+");
 		QString text = reply->readAll();
 		if(re.indexIn(text) != -1) {
-			model_->urlChanged(id, re.cap());
+			ProstopleerTune* pt = static_cast<ProstopleerTune*>(model_->tuneForId(id));
+			pt->url = re.cap();
+			model_->emitUpdateSignal();
 		}
 	}
 }
