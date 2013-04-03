@@ -21,38 +21,78 @@
 #define QOMPPLUGINTYPES_H
 
 #include <QList>
+#include <QString>
 
+namespace Qomp {
 enum DataSelection { DataUnselect = 0, DataSelect = 1, DataToggle = 2 };
+enum ModelItemType { NoType = 0, TypeTune, TypeAlbum, TypeArtist };
+}
+class QIcon;
 
-
-struct QompPluginTune
+class QompPluginModelItem
 {
+public:
+	QompPluginModelItem(QompPluginModelItem* parent = 0);
+	virtual ~QompPluginModelItem();
+
+	virtual QString toString() const = 0;
+	void setParent(QompPluginModelItem* parent);
+	QompPluginModelItem* parent() const;
+	void setItems(QList<QompPluginModelItem*> items);
+	void addItems(QList<QompPluginModelItem*> items);
+	QList<QompPluginModelItem*> items() const;
+	virtual Qomp::ModelItemType type() const = 0;
+	virtual QIcon icon() const = 0;
+
+	QString internalId;
+
+private:
+	QompPluginModelItem* parent_;
+	QList<QompPluginModelItem*> items_;
+};
+
+class QompPluginTune : public QompPluginModelItem
+{
+public:
+	QompPluginTune(QompPluginModelItem* parent = 0);
+
 	QString title;
 	QString artist;
 	QString album;
 	QString duration;
-	QString id;
 	QString url;
 
-//	bool operator==(const QompPluginTune& other);
+	virtual QString toString() const;
+	virtual Qomp::ModelItemType type() const;
+	QIcon icon() const;
 };
 
-struct QompPluginAlbum
+class QompPluginAlbum : public QompPluginModelItem
 {
-	QompPluginAlbum() : tunesReceived(false) {}
-	~QompPluginAlbum()
-	{
-		qDeleteAll(tunes);
-	}
+public:
+	QompPluginAlbum(QompPluginModelItem* parent = 0);
 
 	QString album;
 	QString artist;
 	QString year;
-	QString id;
 	bool tunesReceived;
-	QList<QompPluginTune*> tunes;
 
-//	bool operator==(const QompPluginAlbum& other);
+	virtual QString toString() const;
+	virtual Qomp::ModelItemType type() const;
+	QIcon icon() const;
+};
+
+class QompPluginArtist : public QompPluginModelItem
+{
+public:
+	QompPluginArtist(QompPluginModelItem* parent = 0);
+
+	QString artist;
+	bool tunesReceived;
+
+	virtual QString toString() const;
+	virtual Qomp::ModelItemType type() const;
+	QIcon icon() const;
 };
 
 #endif // QOMPPLUGINTYPES_H

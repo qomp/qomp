@@ -21,40 +21,18 @@
 #ifndef MYZUKARUMODELS_H
 #define MYZUKARUMODELS_H
 
-#include "qompplugintracksmodel.h"
-#include "qomppluginalbumsmodel.h"
+#include "qompplugintreemodel.h"
 
 
-class MyzukaruTracksModel : public QompPluginTracksModel
-{
-	Q_OBJECT
-public:
-	MyzukaruTracksModel(QObject *parent = 0);
-
-	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-};
-
-
-
-
-class MyzukaruAlbumsModel : public QompPluginAlbumsModel
-{
-	Q_OBJECT
-
-public:
-	MyzukaruAlbumsModel(QObject *parent = 0);
-
-	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-};
-
-class MyzukaruArtistsModel : public QompPluginAlbumsModel
+class MyzukaruArtistsModel : public QompPluginTreeModel
 {
 	Q_OBJECT
 
 public:
 	MyzukaruArtistsModel(QObject *parent = 0);
-
+	Qt::ItemFlags flags(const QModelIndex& index) const;
 	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+	virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 };
 
 

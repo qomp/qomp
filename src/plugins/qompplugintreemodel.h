@@ -17,51 +17,47 @@
  *
  */
 
-#ifndef QOMPPLUGINALBUMSMODEL_H
-#define QOMPPLUGINALBUMSMODEL_H
+#ifndef QompPluginTreeModel_H
+#define QompPluginTreeModel_H
 
 #include <QAbstractItemModel>
 #include <QSet>
 
-class QompPluginAlbum;
-class QompPluginTune;
+class QompPluginModelItem;
 
-class QompPluginAlbumsModel : public QAbstractItemModel
+class QompPluginTreeModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
 public:
-	QompPluginAlbumsModel(QObject *parent = 0);
-	~QompPluginAlbumsModel();
+	QompPluginTreeModel(QObject *parent = 0);
+	~QompPluginTreeModel();
 
-	void addAlbums(const QList<QompPluginAlbum*>& albums);
-	void setTunes(const QList<QompPluginTune*>& tunes, const QString& parentAlbumId);
+	void addTopLevelItems(const QList<QompPluginModelItem*>& items);
+	void setItems(const QList<QompPluginModelItem*>& items, QompPluginModelItem* parent);
+	void addItems(const QList<QompPluginModelItem*>& items, QompPluginModelItem* parent);
 
-	bool isAlbum(const QModelIndex& index) const;
-	QompPluginAlbum* album(const QModelIndex& index) const;
-	QompPluginAlbum* album(const QString& id) const;
-	QModelIndex indexForAlbum(QompPluginAlbum* album) const;
-
-	QompPluginTune* tune(const QModelIndex& index) const;
-	QList<QompPluginTune*> selectedTunes() const;
-	virtual bool urlChanged(const QString& id, const QString& url);
-
-	void validateSelection(const QModelIndex& parent);
+	QompPluginModelItem* itemForId(const QString& id, QompPluginModelItem* parent = 0);
+	QList<QompPluginModelItem*> selectedItems() const;
+	QModelIndex index(QompPluginModelItem* item) const;
 	virtual void reset();
+
+	void emitUpdateSignal();
 
 	//reimplemented from QAbstractItemModel
 	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 	virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
 	virtual int columnCount(const QModelIndex& parent = QModelIndex()) const;
-	Qt::ItemFlags flags(const QModelIndex& index) const;
+	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 	virtual QModelIndex parent(const QModelIndex& index) const;
 	virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
 
 protected:
-	QList<QompPluginAlbum*> albums_;
+	void validateSelection(const QModelIndex& parent);
 
 private:
 	QSet<QModelIndex> selected_;
+	QList<QompPluginModelItem*> topLevelItems_;
 };
-#endif // QOMPPLUGINALBUMSMODEL_H
+#endif // QompPluginTreeModel_H

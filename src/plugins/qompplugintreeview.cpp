@@ -17,22 +17,22 @@
  *
  */
 
-#include "qomppluginalbumsview.h"
-#include "qomppluginalbumsmodel.h"
+#include "qompplugintreeview.h"
+#include "qompplugintreemodel.h"
 #include "qompplugintypes.h"
 
 #include <QKeyEvent>
 #include <QApplication>
 #include <QTimer>
 
-QompPluginAlbumsView::QompPluginAlbumsView(QWidget *parent) :
+QompPluginTreeView::QompPluginTreeView(QWidget *parent) :
 	QTreeView(parent)
 {
 	setHeaderHidden(true);
 	setItemsExpandable(true);
 }
 
-void QompPluginAlbumsView::keyPressEvent(QKeyEvent *ke)
+void QompPluginTreeView::keyPressEvent(QKeyEvent *ke)
 {
 	if(ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Space) {
 		itemActivated();
@@ -43,27 +43,19 @@ void QompPluginAlbumsView::keyPressEvent(QKeyEvent *ke)
 	QTreeView::keyPressEvent(ke);
 }
 
-void QompPluginAlbumsView::mousePressEvent(QMouseEvent *e)
+void QompPluginTreeView::mousePressEvent(QMouseEvent *e)
 {
 	lastClickTime_ = QTime::currentTime();
+
 	QModelIndex i = indexAt(e->pos());
 	if(i.isValid()) {
-		setCurrentIndex(i);
-		QompPluginAlbumsModel* m = qobject_cast<QompPluginAlbumsModel*>(model());
-		if(m) {
-			if(m->isAlbum(i))
-				emit albumSelected(m->album(i));
-			else
-				emit tuneSelected(m->tune(i));
-		}
-		QTimer::singleShot(QApplication::doubleClickInterval(), this, SLOT(itemSelected()));
-		return;
+		setCurrentIndex(i);;
+		emit itemSelected((QompPluginModelItem*)i.internalPointer());
 	}
-
 	return QTreeView::mousePressEvent(e);
 }
 
-void QompPluginAlbumsView::mouseDoubleClickEvent(QMouseEvent *e)
+void QompPluginTreeView::mouseDoubleClickEvent(QMouseEvent *e)
 {
 	lastClickTime_ = QTime::currentTime();
 	QModelIndex i = indexAt(e->pos());
@@ -75,7 +67,7 @@ void QompPluginAlbumsView::mouseDoubleClickEvent(QMouseEvent *e)
 	return QTreeView::mouseDoubleClickEvent(e);
 }
 
-void QompPluginAlbumsView::itemSelected()
+void QompPluginTreeView::itemSelected()
 {
 	if(lastClickTime_.msecsTo(QTime::currentTime()) < QApplication::doubleClickInterval())
 		return;
@@ -90,13 +82,16 @@ void QompPluginAlbumsView::itemSelected()
 	}
 }
 
-void QompPluginAlbumsView::itemActivated()
+void QompPluginTreeView::itemActivated()
 {
 	QModelIndex i = currentIndex();
 	if(i.isValid()) {
-		QompPluginAlbumsModel* m = qobject_cast<QompPluginAlbumsModel*>(model());
+		QompPluginTreeModel* m = qobject_cast<QompPluginTreeModel*>(model());
 		if(m) {
-			m->setData(i, DataToggle);
+			m->setData(i, Qomp::DataToggle);
+			QompPluginModelItem* item = (QompPluginModelItem*)i.internalPointer();
+			foreach(QompPluginModelItem* it, item->items())
+				emit itemSelected(it);
 		}
 	}
 }

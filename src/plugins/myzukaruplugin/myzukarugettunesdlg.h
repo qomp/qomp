@@ -21,11 +21,14 @@
 #define MYZUKARUGETTUNESDLG_H
 
 #include "qompplugingettunesdlg.h"
+#include <QHash>
 
-class QompPluginTune;
-class QompPluginAlbum;
-class QompPluginTracksView;
-class QompPluginAlbumsView;
+class QompPluginModelItem;
+class QompPluginTracksModel;
+class QompPluginTreeModel;
+class MyzukaruArtistsModel;
+class QNetworkReply;
+
 
 class MyzukaruGettunesDlg : public QompPluginGettunesDlg
 {
@@ -47,16 +50,17 @@ private slots:
 	void searchFinished();
 	void tuneUrlFinished();
 	void albumUrlFinished();
-	void tuneSelected(QompPluginTune* tune);
-	void albumSelected(QompPluginAlbum* album);
+	void artistUrlFinished();
+	void itemSelected(QompPluginModelItem *item);
 
 private:
-	void addTune(QompPluginTune* tune);
+	void addTune(QompPluginModelItem *tune);
 
 private:
-	QompPluginAlbumsView* albumsView_;
-	QompPluginAlbumsView* artistsView_;
-	QompPluginTracksView* tracksView_;
+	QompPluginTracksModel *tracksModel_;
+	QompPluginTreeModel *albumsModel_;
+	MyzukaruArtistsModel *artistsModel_;
+	QHash<QNetworkReply*, void*> requests_;
 };
 
 #endif // MYZUKARUGETTUNESDLG_H

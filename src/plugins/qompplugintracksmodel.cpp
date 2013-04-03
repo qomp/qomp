@@ -19,7 +19,7 @@
 
 #include "qompplugintracksmodel.h"
 #include "qompplugintypes.h"
-
+#include <QIcon>
 
 QompPluginTracksModel::QompPluginTracksModel(QObject *parent) :
 	QAbstractListModel(parent)
@@ -31,14 +31,14 @@ QompPluginTracksModel::~QompPluginTracksModel()
 	reset();
 }
 
-void QompPluginTracksModel::addTunes(const QList<QompPluginTune *> &tunes)
+void QompPluginTracksModel::addTunes(const QList<QompPluginModelItem *> &tunes)
 {
 	emit beginInsertRows(QModelIndex(), tunes_.size(), tunes_.size()+tunes.size());
 	tunes_.append(tunes);
 	emit endInsertRows();
 }
 
-QompPluginTune *QompPluginTracksModel::tune(const QModelIndex &index) const
+QompPluginModelItem *QompPluginTracksModel::tune(const QModelIndex &index) const
 {
 	if(!index.isValid() || index.row() >= tunes_.size())
 		return 0;
@@ -46,9 +46,18 @@ QompPluginTune *QompPluginTracksModel::tune(const QModelIndex &index) const
 	return tunes_.at(index.row());
 }
 
-QList<QompPluginTune *> QompPluginTracksModel::selectedTunes() const
+QompPluginModelItem *QompPluginTracksModel::tuneForId(const QString &id) const
 {
-	QList<QompPluginTune*> list;
+	foreach(QompPluginModelItem* i, tunes_) {
+		if(i->internalId == id)
+			return i;
+	}
+	return 0;
+}
+
+QList<QompPluginModelItem *> QompPluginTracksModel::selectedTunes() const
+{
+	QList<QompPluginModelItem*> list;
 	foreach(const QModelIndex& i, selected_)
 		list.append(tune(i));
 	return list;
@@ -56,11 +65,17 @@ QList<QompPluginTune *> QompPluginTracksModel::selectedTunes() const
 
 QVariant QompPluginTracksModel::data(const QModelIndex &index, int role) const
 {
-	if(!index.isValid() || index.row() >= tunes_.size())
+	if(!index.isValid() || index.row() >= tunes_.size() || index.column())
 		return QVariant();
 
-	if(index.column() == 0 && role == Qt::CheckStateRole) {
+	if(role == Qt::CheckStateRole) {
 		return QVariant(selected_.contains(index) ? 2 : 0);
+	}
+	else if(role == Qt::DisplayRole) {
+		return tunes_.at(index.row())->toString();
+	}
+	else if(role == Qt::DecorationRole) {
+		return tunes_.at(index.row())->icon();
 	}
 	return QVariant();
 }
@@ -78,19 +93,6 @@ Qt::ItemFlags QompPluginTracksModel::flags(const QModelIndex& index) const
 	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
 }
 
-bool QompPluginTracksModel::urlChanged(const QString &id, const QString &url)
-{
-	foreach(QompPluginTune* tune, tunes_) {
-		if(tune->id == id) {
-			emit layoutAboutToBeChanged();
-			tune->url = url;
-			emit layoutChanged();
-			return true;
-		}
-	}
-	return false;
-}
-
 void QompPluginTracksModel::reset()
 {
 	beginResetModel();
@@ -100,21 +102,27 @@ void QompPluginTracksModel::reset()
 	endResetModel();
 }
 
+void QompPluginTracksModel::emitUpdateSignal()
+{
+	emit layoutAboutToBeChanged();
+	emit layoutChanged();
+}
+
 bool QompPluginTracksModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
 	if(!index.isValid() || role != Qt::EditRole || index.column() != 0)
 		return false;
 
 	switch(value.toInt()) {
-	case(DataUnselect):
+	case(Qomp::DataUnselect):
 		if(selected_.contains(index))
 			selected_.remove(index);
 		break;
-	case(DataSelect):
+	case(Qomp::DataSelect):
 		if(!selected_.contains(index))
 			selected_ << index;
 		break;
-	case(DataToggle):
+	case(Qomp::DataToggle):
 		if(selected_.contains(index))
 			selected_.remove(index);
 		else

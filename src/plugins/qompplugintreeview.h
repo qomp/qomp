@@ -17,20 +17,20 @@
  *
  */
 
-#ifndef QOMPPLUGINALBUMSVIEW_H
-#define QOMPPLUGINALBUMSVIEW_H
+#ifndef QompPluginTreeView_H
+#define QompPluginTreeView_H
 
 #include <QTreeView>
 #include <QTime>
 
-class QompPluginTune;
-struct QompPluginAlbum;
+class QompPluginModelItem;
 
-class QompPluginAlbumsView : public QTreeView
+
+class QompPluginTreeView : public QTreeView
 {
 	Q_OBJECT
 public:
-	QompPluginAlbumsView(QWidget *parent = 0);
+	QompPluginTreeView(QWidget *parent = 0);
 	
 protected:
 	void keyPressEvent(QKeyEvent *ke);
@@ -38,8 +38,7 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent *e);
 
 signals:
-	void tuneSelected(QompPluginTune*);
-	void albumSelected(QompPluginAlbum*);
+	void itemSelected(QompPluginModelItem*);
 
 private slots:
 	void itemSelected();
@@ -51,4 +50,4 @@ private:
 	QTime lastClickTime_;
 };
 
-#endif // QOMPPLUGINALBUMSVIEW_H
+#endif // QompPluginTreeView_H

@@ -22,7 +22,7 @@
 
 #include <QListView>
 
-struct QompPluginTune;
+struct QompPluginModelItem;
 
 class QompPluginTracksView : public QListView
 {
@@ -34,7 +34,7 @@ protected:
 	void keyPressEvent(QKeyEvent *ke);
 
 signals:
-	void tuneSelected(QompPluginTune*);
+	void tuneSelected(QompPluginModelItem*);
 
 protected slots:
 	void itemSelected(const QModelIndex& index);

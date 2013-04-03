@@ -23,89 +23,39 @@
 #include "common.h"
 
 
-MyzukaruTracksModel::MyzukaruTracksModel(QObject *parent) :
-	QompPluginTracksModel(parent)
-{
-}
-
-QVariant MyzukaruTracksModel::data(const QModelIndex &index, int role) const
-{
-	if(!index.isValid() || index.row() >= tunes_.size())
-		return QVariant();
-
-	if(index.column() == 0 && role == Qt::DisplayRole) {
-		QompPluginTune* t = tunes_.at(index.row());
-		QString ret = QString("%1 - %2").arg(t->artist, t->title);
-		if(!t->url.isNull())
-			ret += "  [OK]";
-		return ret;
-	}
-
-	return QompPluginTracksModel::data(index, role);
-}
-
-
-
-
-
-MyzukaruAlbumsModel::MyzukaruAlbumsModel(QObject *parent) :
-	QompPluginAlbumsModel(parent)
-{
-}
-
-
-QVariant MyzukaruAlbumsModel::data(const QModelIndex &index, int role) const
-{
-	if(!index.isValid() || index.column())
-		return QVariant();
-
-	if(role == Qt::DisplayRole)
-	{
-		if(isAlbum(index) && index.row() < albums_.size()) {
-			QompPluginAlbum* a = albums_.at(index.row());
-			return	a->artist + " - " +
-				a->album + " - " +
-				a->year + " [" +
-				QString::number(rowCount(index))/*QString::number(a.tunes.size())*/ + "]";
-		}
-		QompPluginTune* t = tune(index);
-		if(t) {
-			QString ret = QString("%1 - %2").arg(t->artist, t->title);
-			if(!t->url.isNull())
-				ret += "  [OK]";
-			return ret;
-		}
-	}
-
-	return QompPluginAlbumsModel::data(index, role);
-}
-
-
 MyzukaruArtistsModel::MyzukaruArtistsModel(QObject *parent)
-	: QompPluginAlbumsModel(parent)
+	: QompPluginTreeModel(parent)
 {
+}
+
+Qt::ItemFlags MyzukaruArtistsModel::flags(const QModelIndex &index) const
+{
+	if(!index.isValid())
+		return Qt::NoItemFlags;
+
+	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+
+	if(index.parent().isValid())
+		flags |= Qt::ItemIsUserCheckable;
+
+	return  flags;
 }
 
 QVariant MyzukaruArtistsModel::data(const QModelIndex &index, int role) const
 {
-	if(!index.isValid() || index.column())
+	if(role == Qt::CheckStateRole &&
+		index.isValid() && !index.parent().isValid()) {
 		return QVariant();
-
-	if(role == Qt::DisplayRole)
-	{
-		if(isAlbum(index) && index.row() < albums_.size()) {
-			QompPluginAlbum* a = albums_.at(index.row());
-			return	a->artist + " - [" +
-				QString::number(rowCount(index)) + "]";
-		}
-		QompPluginTune* t = tune(index);
-		if(t) {
-			QString ret = QString("%1 - %2").arg(t->artist, t->title);
-			if(!t->url.isNull())
-				ret += "  [OK]";
-			return ret;
-		}
 	}
-
-	return QompPluginAlbumsModel::data(index, role);
+	return QompPluginTreeModel::data(index, role);
 }
+
+bool MyzukaruArtistsModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+	if(role == Qt::EditRole &&
+		index.isValid() && !index.parent().isValid())
+		return false;
+
+	return QompPluginTreeModel::setData(index, value, role);
+}
+

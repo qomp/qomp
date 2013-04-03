@@ -100,5 +100,6 @@ QString unescape(const QString& escaped)
 	plain.replace("&gt;", ">");
 	plain.replace("&quot;", "\"");
 	plain.replace("&amp;", "&");
+	plain.replace("&#39;", "'");
 	return plain;
 }

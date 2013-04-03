@@ -22,8 +22,9 @@
 	
 #include <QAbstractListModel>
 #include <QSet>
+#include <qompplugintypes.h>
 
-class QompPluginTune;
+class QompPluginModelItem;
 
 class QompPluginTracksModel : public QAbstractListModel
 {
@@ -32,25 +33,23 @@ public:
 	QompPluginTracksModel(QObject *parent = 0);
 	~QompPluginTracksModel();
 
-	void addTunes(const QList<QompPluginTune*> &tunes);
-	QompPluginTune* tune(const QModelIndex& index) const;
-	QList<QompPluginTune*> selectedTunes() const;
-	virtual bool urlChanged(const QString& id, const QString& url);
+	void addTunes(const QList<QompPluginModelItem*> &tunes);
+	QompPluginModelItem* tune(const QModelIndex& index) const;
+	QompPluginModelItem* tuneForId(const QString& id) const;
+	QList<QompPluginModelItem*> selectedTunes() const;
 	virtual void reset();
+
+	void emitUpdateSignal();
 
 	//reimlemented from QAbstractListModel
 	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 	virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
 	Qt::ItemFlags flags(const QModelIndex& index) const;
-
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-
-
-protected:
-	QList<QompPluginTune*> tunes_;
 
 private:
 	QSet<QModelIndex> selected_;
+	QList<QompPluginModelItem*> tunes_;
 };
 
 

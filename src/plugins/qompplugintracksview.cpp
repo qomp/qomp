@@ -43,7 +43,7 @@ void QompPluginTracksView::itemActivated(const QModelIndex &index)
 	QompPluginTracksModel* m = qobject_cast<QompPluginTracksModel*>(model());
 	if(m && index.isValid()) {
 		emit tuneSelected(m->tune(index));
-		m->setData(index, DataToggle);
+		m->setData(index, Qomp::DataToggle);
 	}
 }
 
