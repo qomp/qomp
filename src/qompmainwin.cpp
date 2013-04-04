@@ -33,6 +33,7 @@
 #include <QCloseEvent>
 #include <QDesktopServices>
 #include <QFileDialog>
+#include <QClipboard>
 
 static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
 
@@ -88,11 +89,12 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	connect(ui->tb_load, SIGNAL(clicked()), SLOT(loadPlaylist()));
 	connect(ui->tb_save, SIGNAL(clicked()), SLOT(savePlaylist()));
 
-	connect(ui->actionOpen, SIGNAL(triggered()), SLOT(actOpenActivated()));
 	connect(ui->actionExit, SIGNAL(triggered()), SIGNAL(exit()));
 
 	connect(ui->playList, SIGNAL(activated(QModelIndex)), SLOT(mediaActivated(QModelIndex)));
 	connect(ui->playList, SIGNAL(clicked(QModelIndex)), SLOT(mediaClicked(QModelIndex)));
+	connect(ui->playList, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doContextMenu(QPoint)));
+
 	connect(player_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(updateIcons()));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
 
@@ -171,7 +173,7 @@ void QompMainWin::updateIcons()
 
 void QompMainWin::actPrevActivated()
 {
-	QModelIndex index = ui->playList->currentIndex();
+	QModelIndex index = model_->indexForTune(model_->currentTune());
 	if(index.isValid() && index.row() > 0) {
 		bool play = (player_->state() == Phonon::PlayingState);
 		index = model_->index(index.row()-1);
@@ -184,7 +186,7 @@ void QompMainWin::actPrevActivated()
 
 void QompMainWin::actNextActivated()
 {
-	QModelIndex index = ui->playList->currentIndex();
+	QModelIndex index = model_->indexForTune(model_->currentTune());
 	if(index.isValid() && index.row() < model_->rowCount()-1) {
 		bool play = (player_->state() == Phonon::PlayingState);
 		index = model_->index(index.row()+1);
@@ -219,8 +221,36 @@ void QompMainWin::actOpenActivated()
 
 void QompMainWin::actClearActivated()
 {
-	player_->stop();
-	model_->clear();
+	QMenu m;
+	QList<QAction*> acts;
+	acts << new QAction(tr("Remove all"), &m)
+	     << new QAction(tr("Remove Selected"), &m);
+	m.addActions(acts);
+	m.move(QCursor::pos());
+	int x = acts.indexOf(m.exec());
+	if(x == 0) {
+		player_->stop();
+		model_->clear();
+	}
+	else if(x == 1) {
+		bool removingCurrent = false;
+		QList<Tune> list;
+		foreach(const QModelIndex& index, ui->playList->selectionModel()->selectedIndexes()) {
+			Tune t = model_->tune(index);
+			if(t == model_->currentTune())
+				removingCurrent = true;
+			list << t;
+		}
+		foreach(const Tune& tune, list)
+			model_->removeTune(tune);
+
+		if(removingCurrent) {
+			player_->stop();
+			model_->setCurrentTune(model_->tune(model_->index(0,0)));
+		}
+		ui->playList->setCurrentIndex(model_->indexForTune(model_->currentTune()));
+
+	}
 	updateTuneInfo();
 }
 
@@ -235,6 +265,40 @@ void QompMainWin::mediaClicked(const QModelIndex &index)
 	if(player_->state() == Phonon::StoppedState) {
 		model_->setCurrentTune(model_->tune(index));
 	}
+}
+
+void QompMainWin::doContextMenu(const QPoint &p)
+{
+	QModelIndex index = ui->playList->indexAt(p);
+	if(!index.isValid())
+		return;
+
+	ui->playList->setCurrentIndex(index);
+	Tune tune = model_->tune(index);
+	QMenu menu;
+	QList<QAction*> acts;
+	acts << new QAction(tr("Play/Pause"), &menu);
+	acts << new QAction(tr("Remove"), &menu);
+	if(!tune.url.isEmpty())
+		acts << new QAction(tr("Copy URL"), &menu);
+	menu.addActions(acts);
+	menu.move(QCursor::pos());
+	int x = acts.indexOf(menu.exec());
+	if(x == 0) {
+		model_->setCurrentTune(tune);
+		actPlayActivated();
+	}
+	else if(x == 1) {
+		model_->removeTune(tune);
+		if(model_->currentTune() == tune) {
+			model_->setCurrentTune(model_->tune(model_->index(0,0)));
+		}
+		ui->playList->setCurrentIndex(model_->indexForTune(model_->currentTune()));
+	}
+	else if(x == 2) {
+		qApp->clipboard()->setText(tune.url);
+	}
+
 }
 
 void QompMainWin::setCurrentPosition(qint64 ms)
@@ -320,7 +384,7 @@ void QompMainWin::trayActivated(Qt::MouseButton b)
 			doOptions();
 		else if(ret == 4)
 			emit exit();
-		else if(x->parent() == open) {
+		else if(x && x->parent() == open) {
 			getTunes(x->text());
 		}
 

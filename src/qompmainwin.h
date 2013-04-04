@@ -48,8 +48,11 @@ private slots:
 	void actStopActivated();
 	void actOpenActivated();
 	void actClearActivated();
+
 	void mediaActivated(const QModelIndex& index);
 	void mediaClicked(const QModelIndex& index);
+	void doContextMenu(const QPoint& p);
+
 	void updateIcons();
 	void setCurrentPosition(qint64 ms);
 	void playNext();

@@ -75,6 +75,18 @@ void PlayListModel::setCurrentTune(const Tune &tune)
 	currentTune_ = tune;
 }
 
+void PlayListModel::removeTune(const Tune &tune)
+{
+	for(int i = 0; i < tunes_.size(); i++) {
+		if(tunes_.at(i).id == tune.id()) {
+			beginRemoveRows(QModelIndex(), i, 0);
+			tunes_.removeAt(i);
+			endRemoveRows();
+			return;
+		}
+	}
+}
+
 //QIODevice *PlayListModel::device(const Tune& tune) const
 //{
 //	foreach(const media& pair, tunes_) {

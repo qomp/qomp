@@ -44,6 +44,7 @@ public:
 	Tune tune(const QModelIndex& index) const;
 	Tune currentTune() const;
 	void setCurrentTune(const Tune& tune);
+	void removeTune(const Tune& tune);
 //	QIODevice* device(const Tune& tune) const;
 	Phonon::MediaSource device(const QModelIndex& index) const;
 	QModelIndex indexForTune(const Tune& tune) const;
