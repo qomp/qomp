@@ -50,7 +50,7 @@ private slots:
 	void actClearActivated();
 	void mediaActivated(const QModelIndex& index);
 	void mediaClicked(const QModelIndex& index);
-	void updatePlayIcon();
+	void updateIcons();
 	void setCurrentPosition(qint64 ms);
 	void playNext();
 	void doOptions();

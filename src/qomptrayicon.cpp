@@ -24,7 +24,7 @@ QompTrayIcon::QompTrayIcon(QObject *parent) :
 	QObject(parent),
 	icon_(new QSystemTrayIcon( this))
 {
-	setIcon(QIcon(":/icons/icons/qomp.png"));
+	setIcon(QIcon(":/icons/icons/qomp_stop.png"));
 	icon_->setToolTip(QString("%1 %2").arg(APPLICATION_NAME, APPLICATION_VERSION));
 	connect(icon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
 

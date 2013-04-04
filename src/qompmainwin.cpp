@@ -93,7 +93,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 	connect(ui->playList, SIGNAL(activated(QModelIndex)), SLOT(mediaActivated(QModelIndex)));
 	connect(ui->playList, SIGNAL(clicked(QModelIndex)), SLOT(mediaClicked(QModelIndex)));
-	connect(player_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(updatePlayIcon()));
+	connect(player_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(updateIcons()));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
 
 	connect(model_, SIGNAL(layoutChanged()), SLOT(updateTuneInfo()));
@@ -120,7 +120,9 @@ QompMainWin::~QompMainWin()
 
 	int curTrack = 0;
 	if(player_->state() == Phonon::PausedState || player_->state() == Phonon::PlayingState) {
-		curTrack = model_->indexForTune(model_->currentTune()).row();
+		QModelIndex ind = model_->indexForTune(model_->currentTune());
+		if(ind.isValid())
+			curTrack = ind.row();
 	}
 	Options::instance()->setOption(OPTION_CURRENT_TRACK, curTrack);
 
@@ -151,12 +153,20 @@ void QompMainWin::actPlayActivated()
 	updateTuneInfo();
 }
 
-void QompMainWin::updatePlayIcon()
+void QompMainWin::updateIcons()
 {
-	if(player_->state() == Phonon::PlayingState)
-		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-	else
+	if(player_->state() == Phonon::PausedState) {
 		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+		trayIcon_->setIcon(QIcon(":/icons/icons/qomp_pause.png"));
+	}
+	else if(player_->state() == Phonon::PlayingState) {
+		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+		trayIcon_->setIcon(QIcon(":/icons/icons/qomp_play.png"));
+	}
+	else {
+		trayIcon_->setIcon(QIcon(":/icons/icons/qomp_stop.png"));
+		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+	}
 }
 
 void QompMainWin::actPrevActivated()
@@ -315,6 +325,10 @@ void QompMainWin::trayActivated(Qt::MouseButton b)
 		}
 
 		open->deleteLater();
+	}
+	else if(b == Qt::MidButton) {
+		if(player_->state() == Phonon::PlayingState || player_->state() == Phonon::PausedState)
+			player_->play();
 	}
 }
 
