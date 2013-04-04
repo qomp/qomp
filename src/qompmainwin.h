@@ -29,6 +29,7 @@ namespace Ui {
 class QompPlayer;
 class PlayListModel;
 class QModelIndex;
+class QompTrayIcon;
 
 class QompMainWin : public QMainWindow
 {
@@ -53,7 +54,7 @@ private slots:
 	void setCurrentPosition(qint64 ms);
 	void playNext();
 	void doOptions();
-	void updateTuneInfoFrame();
+	void updateTuneInfo();
 
 	void loadPlaylist();
 	void savePlaylist();
@@ -76,6 +77,7 @@ private:
 	Ui::QompMainWin *ui;
 	QompPlayer* player_;
 	PlayListModel* model_;
+	QompTrayIcon* trayIcon_;
 };
 
 #endif // QOMPMAINWIN_H

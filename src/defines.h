@@ -37,6 +37,13 @@
 #define OPTION_PROXY_PASS "main.proxy-pass"
 #define OPTION_PROXY_TYPE "main.proxy-type"
 
+#define OPTION_GEOMETRY_X "main.mainwin-x"
+#define OPTION_GEOMETRY_Y "main.mainwin-y"
+#define OPTION_GEOMETRY_HEIGHT "main.mainwin-height"
+#define OPTION_GEOMETRY_WIDTH "main.mainwin-width"
+
+#define OPTION_CURRENT_TRACK "main.current-track"
+
 #define OPTION_SEARCH_HISTORY "plugins.search-history"
 
 #define DECODE_KEY "qompdecodekey"

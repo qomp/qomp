@@ -24,11 +24,24 @@ QompTrayIcon::QompTrayIcon(QObject *parent) :
 	QObject(parent),
 	icon_(new QSystemTrayIcon( this))
 {
-	icon_->setIcon(QIcon(":/icons/icons/qomp.png"));
+	setIcon(QIcon(":/icons/icons/qomp.png"));
 	icon_->setToolTip(QString("%1 %2").arg(APPLICATION_NAME, APPLICATION_VERSION));
 	connect(icon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
 
 	icon_->show();
+}
+
+void QompTrayIcon::setToolTip(const QString &text)
+{
+	if(text.isEmpty())
+		icon_->setToolTip(QString("%1 %2").arg(APPLICATION_NAME, APPLICATION_VERSION));
+	else
+		icon_->setToolTip(QString("%1 %2\n%3").arg(APPLICATION_NAME, APPLICATION_VERSION, text));
+}
+
+void QompTrayIcon::setIcon(const QIcon &ico)
+{
+	icon_->setIcon(ico);
 }
 
 

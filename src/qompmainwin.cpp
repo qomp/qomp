@@ -39,21 +39,34 @@ static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
 
 QompMainWin::QompMainWin(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::QompMainWin)
+	ui(new Ui::QompMainWin),
+	player_(new QompPlayer(this)),
+	model_(new PlayListModel(this)),
+	trayIcon_(new QompTrayIcon(this))
 {
 	ui->setupUi(this);
 
-	player_ = new QompPlayer(this);
 	player_->setSeekSlider(ui->seekSlider);
 	player_->setVolumeSlider(ui->volumeSlider);
 
 	connect(player_, SIGNAL(currentPosition(qint64)), SLOT(setCurrentPosition(qint64)));
 
-	model_ = new PlayListModel(this);
 	ui->playList->setModel(model_);
 
 	TuneList tl = Tune::tunesFromFile(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
-	model_->addTunes(tl);
+	if(!tl.isEmpty()) {
+		model_->addTunes(tl);
+		QModelIndex ind = model_->index(Options::instance()->getOption(OPTION_CURRENT_TRACK, 0).toInt(),0);
+		model_->setCurrentTune(model_->tune(ind));
+		ui->playList->setCurrentIndex(ind);
+	}
+
+	QRect r(Options::instance()->getOption(OPTION_GEOMETRY_X, x()).toInt(),
+		Options::instance()->getOption(OPTION_GEOMETRY_Y, y()).toInt(),
+		Options::instance()->getOption(OPTION_GEOMETRY_WIDTH, width()).toInt(),
+		Options::instance()->getOption(OPTION_GEOMETRY_HEIGHT, height()).toInt());
+
+	setGeometry(r);
 
 	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
 	ui->tb_prev->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
@@ -83,11 +96,10 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	connect(player_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(updatePlayIcon()));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
 
-	connect(model_, SIGNAL(layoutChanged()), SLOT(updateTuneInfoFrame()));
+	connect(model_, SIGNAL(layoutChanged()), SLOT(updateTuneInfo()));
 
-	QompTrayIcon* ico = new QompTrayIcon(this);
-	connect(ico, SIGNAL(trayDoubleClicked()), SLOT(trayDoubleclicked()));
-	connect(ico, SIGNAL(trayClicked(Qt::MouseButton)), SLOT(trayActivated(Qt::MouseButton)));
+	connect(trayIcon_, SIGNAL(trayDoubleClicked()), SLOT(trayDoubleclicked()));
+	connect(trayIcon_, SIGNAL(trayClicked(Qt::MouseButton)), SLOT(trayActivated(Qt::MouseButton)));
 
 	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
 		actPlayActivated();
@@ -100,6 +112,17 @@ QompMainWin::~QompMainWin()
 		dir.mkpath(dir.path());
 
 	savePlaylist(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
+
+	Options::instance()->setOption(OPTION_GEOMETRY_X, x());
+	Options::instance()->setOption(OPTION_GEOMETRY_Y, y());
+	Options::instance()->setOption(OPTION_GEOMETRY_HEIGHT, height());
+	Options::instance()->setOption(OPTION_GEOMETRY_WIDTH, width());
+
+	int curTrack = 0;
+	if(player_->state() == Phonon::PausedState || player_->state() == Phonon::PlayingState) {
+		curTrack = model_->indexForTune(model_->currentTune()).row();
+	}
+	Options::instance()->setOption(OPTION_CURRENT_TRACK, curTrack);
 
 	delete ui;
 }
@@ -125,7 +148,7 @@ void QompMainWin::actPlayActivated()
 		player_->setSource(model_->device(i));
 
 	player_->play();
-	updateTuneInfoFrame();
+	updateTuneInfo();
 }
 
 void QompMainWin::updatePlayIcon()
@@ -188,7 +211,7 @@ void QompMainWin::actClearActivated()
 {
 	player_->stop();
 	model_->clear();
-	updateTuneInfoFrame();
+	updateTuneInfo();
 }
 
 void QompMainWin::mediaActivated(const QModelIndex &index)
@@ -344,9 +367,13 @@ void QompMainWin::getTunes(const QString &name)
 	}
 }
 
-void QompMainWin::updateTuneInfoFrame()
+void QompMainWin::updateTuneInfo()
 {
 	QModelIndex i = model_->indexForTune(model_->currentTune());
 	ui->lb_artist->setText(i.data(PlayListModel::ArtistRole).toString());
 	ui->lb_title->setText(i.data(PlayListModel::TitleRole).toString());
+
+	trayIcon_->setToolTip(tr("Now playing: %1 - %2")
+		.arg(i.data(PlayListModel::ArtistRole).toString(),
+		     i.data(PlayListModel::TitleRole).toString()));
 }

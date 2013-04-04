@@ -22,11 +22,15 @@
 
 #include <QSystemTrayIcon>
 
+class QIcon;
+
 class QompTrayIcon : public QObject
 {
 	Q_OBJECT
 public:
 	explicit QompTrayIcon(QObject *parent = 0);
+	void setToolTip(const QString& text);
+	void setIcon(const QIcon& ico);
 	
 signals:
 	void trayClicked(Qt::MouseButton);
