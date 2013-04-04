@@ -149,14 +149,14 @@ static QList<QompPluginModelItem*> parseAlbums(const QString& replyStr, int albu
 			album->album = unescape(albumRx.cap(7).trimmed());
 			album->year = albumRx.cap(8);
 			album->internalId = albumRx.cap(6).trimmed();
+
+			//add fake empty items
 			bool ok;
 			int count = albumRx.cap(9).toInt(&ok);
 			QList<QompPluginModelItem*> list;
 			if(ok) {
-				while(count) {
+				while(count--)
 					list.append(new QompPluginTune(album));
-					--count;
-				}
 			}
 			album->setItems(list);
 			albums.append(album);
@@ -200,14 +200,14 @@ void MyzukaruGettunesDlg::searchFinished()
 				QompPluginArtist* artist = new QompPluginArtist();
 				artist->artist = unescape(artistRx.cap(3).trimmed());
 				artist->internalId = artistRx.cap(2).trimmed();
+
+				//add fake empty items
 				bool ok;
 				int count = artistRx.cap(4).toInt(&ok);
 				QList<QompPluginModelItem*> list;
 				if(ok) {
-					while(count) {
+					while(count--)
 						list.append(new QompPluginAlbum(artist));
-						--count;
-					}
 				}
 				artist->setItems(list);
 				artists.append(artist);
@@ -288,20 +288,14 @@ void MyzukaruGettunesDlg::tuneUrlFinished()
 				}
 				return;
 			}
-			else if(model == albumsModel_) {
-				QompPluginModelItem* it = albumsModel_->itemForId(id);
+			else {
+				QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
+				QompPluginModelItem* it = model_->itemForId(id);
 				if(it && it->type() == Qomp::TypeTune) {
 					static_cast<QompPluginTune*>(it)->url = re.cap(1);
-					albumsModel_->emitUpdateSignal();
+					model_->emitUpdateSignal();
 				}
 				return;
-			}
-			else if(model == artistsModel_) {
-				QompPluginModelItem* it = artistsModel_->itemForId(id);
-				if(it && it->type() == Qomp::TypeTune) {
-					static_cast<QompPluginTune*>(it)->url = re.cap(1);
-					artistsModel_->emitUpdateSignal();
-				}
 			}
 		}
 	}
@@ -312,38 +306,34 @@ void MyzukaruGettunesDlg::albumUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
-	void* model = requests_.value(reply);
+	QompPluginTreeModel *model = (QompPluginTreeModel *)requests_.value(reply);
 	requests_.remove(reply);
 	if(reply->error() == QNetworkReply::NoError) {
 		QString replyStr = QString::fromUtf8(reply->readAll());
 		QList<QompPluginModelItem*> tunes = parseTunes(replyStr, 0);
 		if(!tunes.isEmpty()) {
 			QString id = reply->property("id").toString();
+			QompPluginModelItem* it = model->itemForId(id);
+			if(it && it->type() == Qomp::TypeAlbum) {
+				QompPluginAlbum* pa = static_cast<QompPluginAlbum*>(it);
+				model->setItems(tunes, it);
+				foreach(QompPluginModelItem* t, tunes) {
+					static_cast<QompPluginTune*>(t)->album = pa->album;
+					//SICK!!! But we couldn't call itemSelected(QompPluginModelItem *item)
+					//because of lose pointer on model
+					QUrl url("http://myzuka.ru/");
+					url.setPath(QString("/Song/GetFileUrl/%1").arg(t->internalId));
+					QNetworkRequest nr(url);
+					nr.setRawHeader("Accept", "*/*");
+					nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+					QNetworkReply *reply = nam_->get(nr);
+					reply->setProperty("id", t->internalId);
+					requests_.insert(reply, (void*)model);
+					connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinished()));
+				}
+				pa->tunesReceived = true;
+			}
 
-			if(model == albumsModel_) {
-				QompPluginModelItem* it = albumsModel_->itemForId(id);
-				if(it && it->type() == Qomp::TypeAlbum) {
-					QompPluginAlbum* pa = static_cast<QompPluginAlbum*>(it);
-					albumsModel_->setItems(tunes, it);
-					foreach(QompPluginModelItem* t, tunes) {
-						static_cast<QompPluginTune*>(t)->album = pa->album;
-					}
-					pa->tunesReceived = true;
-				}
-				return;
-			}
-			else if(model == artistsModel_) {
-				QompPluginModelItem* it = artistsModel_->itemForId(id);
-				if(it && it->type() == Qomp::TypeAlbum) {
-					QompPluginAlbum* pa = static_cast<QompPluginAlbum*>(it);
-					artistsModel_->setItems(tunes, it);
-					foreach(QompPluginModelItem* t, tunes) {
-						static_cast<QompPluginTune*>(t)->album = pa->album;
-						itemSelected(t);
-					}
-					pa->tunesReceived = true;
-				}
-			}
 		}
 	}
 }
@@ -352,11 +342,24 @@ void MyzukaruGettunesDlg::artistUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
+	void* model = requests_.value(reply);
+	requests_.remove(reply);
 	if(reply->error() == QNetworkReply::NoError) {
 		QString replyStr = QString::fromUtf8(reply->readAll());
 		QString id = reply->property("id").toString();
 		QompPluginModelItem* it = artistsModel_->itemForId(id);
-		artistsModel_->setItems(QList<QompPluginModelItem*>(), it);
+
+		//Check if we on first page
+		QString urlStr = reply->url().toString();
+		int page = 1;
+		QRegExp pageRx("Page(\\d+)");
+		if(pageRx.indexIn(urlStr) != -1) {
+			page = pageRx.cap(1).toInt();
+		}
+		else {
+			//If we on first page, then clear fake items
+			artistsModel_->setItems(QList<QompPluginModelItem*>(), it);
+		}
 
 		QList<QompPluginModelItem*> albums = parseAlbums(replyStr, 0);
 		if(!albums.isEmpty()) {
@@ -380,6 +383,25 @@ void MyzukaruGettunesDlg::artistUrlFinished()
 				pa->tunesReceived = true;
 			}
 			artistsModel_->addItems(tunes, it);
+		}
+
+		int maxPage = page;
+		QRegExp maxPageRx("<a href=\"/Artist/.+/Page[\\d]+\">([\\d]+)</a>");
+		maxPageRx.setMinimal(true);
+		if(maxPageRx.lastIndexIn(replyStr) != -1) {
+			maxPage = maxPageRx.cap(1).toInt();
+		}
+		//Take Next page
+		if(page < maxPage) {
+			QUrl url("http://myzuka.ru/");
+			url.setPath(QString("%1/Page%2").arg(QUrl::fromPercentEncoding(it->internalId.toLatin1()), QString::number(++page)));
+			QNetworkRequest nr(url);
+			nr.setRawHeader("Accept", "*/*");
+			nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+			QNetworkReply *newReply = nam_->get(nr);
+			newReply->setProperty("id", id);
+			requests_.insert(newReply, model);
+			connect(newReply, SIGNAL(finished()), SLOT(artistUrlFinished()));
 		}
 	}
 }

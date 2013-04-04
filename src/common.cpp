@@ -19,6 +19,7 @@
 
 #include "common.h"
 #include <QTime>
+#include <QTextDocument>
 
 QString encodePassword(const QString &pass, const QString &key)
 {
@@ -95,11 +96,13 @@ QString durationMiliSecondsToString(qint64 ms)
 
 QString unescape(const QString& escaped)
 {
-	QString plain = escaped;
-	plain.replace("&lt;", "<");
-	plain.replace("&gt;", ">");
-	plain.replace("&quot;", "\"");
-	plain.replace("&amp;", "&");
-	plain.replace("&#39;", "'");
-	return plain;
+	QTextDocument doc;
+	doc.setHtml(escaped);
+//	QString plain = escaped;
+//	plain.replace("&lt;", "<");
+//	plain.replace("&gt;", ">");
+//	plain.replace("&quot;", "\"");
+//	plain.replace("&amp;", "&");
+//	plain.replace("&#39;", "'");
+	return doc.toPlainText();
 }

@@ -89,9 +89,9 @@ void QompPluginTreeView::itemActivated()
 		QompPluginTreeModel* m = qobject_cast<QompPluginTreeModel*>(model());
 		if(m) {
 			m->setData(i, Qomp::DataToggle);
-			QompPluginModelItem* item = (QompPluginModelItem*)i.internalPointer();
-			foreach(QompPluginModelItem* it, item->items())
-				emit itemSelected(it);
+//			QompPluginModelItem* item = (QompPluginModelItem*)i.internalPointer();
+//			foreach(QompPluginModelItem* it, item->items())
+//				emit itemSelected(it);
 		}
 	}
 }
