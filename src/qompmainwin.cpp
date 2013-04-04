@@ -175,28 +175,13 @@ void QompMainWin::actStopActivated()
 
 void QompMainWin::actOpenActivated()
 {
-	TuneList list;
-	QMenu m;
-	QList<QAction*> acts;
-	foreach(const QString& name, PluginManager::instance()->availablePlugins()) {
-		acts.append(new QAction(name, &m));
-	}
-	m.addActions(acts);
-	m.move(QCursor::pos());
-	QAction* x = m.exec();
+	QMenu* m = buildPluginListMenu();
+	m->move(QCursor::pos());
+	QAction* x = m->exec();
 	if(x)
-		list = PluginManager::instance()->getTune(x->text());
+		getTunes(x->text());
 
-
-	if(!list.isEmpty()) {
-		model_->addTunes(list);
-		if(player_->state() == Phonon::StoppedState) {
-			QModelIndex index = model_->indexForTune(list.first());
-			ui->playList->setCurrentIndex(index);
-			model_->setCurrentTune(model_->tune(index));
-			actPlayActivated();
-		}
-	}
+	m->deleteLater();
 }
 
 void QompMainWin::actClearActivated()
@@ -277,6 +262,7 @@ void QompMainWin::trayDoubleclicked()
 void QompMainWin::trayActivated(Qt::MouseButton b)
 {
 	if(b == Qt::RightButton) {
+		QMenu *open = buildPluginListMenu();
 		QMenu m;
 		QList<QAction*> acts;
 		if(isHidden()) {
@@ -285,7 +271,7 @@ void QompMainWin::trayActivated(Qt::MouseButton b)
 		else {
 			acts << new QAction(tr("Hide"), &m);
 		}
-		acts << new QAction(tr("Open"), &m);
+		acts << open->menuAction();
 		acts << new QAction(tr("Settings"), &m);
 		QAction* sep = new QAction(&m);
 		sep->setSeparator(true);
@@ -293,15 +279,19 @@ void QompMainWin::trayActivated(Qt::MouseButton b)
 		acts << new QAction(tr("Exit"), &m);
 		m.addActions(acts);
 		m.move(QCursor::pos());
-		int ret = acts.indexOf(m.exec());
+		QAction* x = m.exec();
+		int ret = acts.indexOf(x);
 		if(ret == 0)
 			trayDoubleclicked();
-		else if(ret == 1)
-			actOpenActivated();
 		else if(ret == 2)
 			doOptions();
 		else if(ret == 4)
 			emit exit();
+		else if(x->parent() == open) {
+			getTunes(x->text());
+		}
+
+		open->deleteLater();
 	}
 }
 
@@ -325,6 +315,31 @@ void QompMainWin::savePlaylist(const QString &fileName)
 				QString str = model_->tune(model_->index(i)).toString();
 				ts << str << endl;
 			}
+		}
+	}
+}
+
+QMenu* QompMainWin::buildPluginListMenu()
+{
+	QMenu* m = new QMenu(tr("Open"), this);
+	QList<QAction*> acts;
+	foreach(const QString& name, PluginManager::instance()->availablePlugins()) {
+		acts.append(new QAction(name, m));
+	}
+	m->addActions(acts);
+	return m;
+}
+
+void QompMainWin::getTunes(const QString &name)
+{
+	TuneList list = PluginManager::instance()->getTune(name);
+	if(!list.isEmpty()) {
+		model_->addTunes(list);
+		if(player_->state() == Phonon::StoppedState) {
+			QModelIndex index = model_->indexForTune(list.first());
+			ui->playList->setCurrentIndex(index);
+			model_->setCurrentTune(model_->tune(index));
+			actPlayActivated();
 		}
 	}
 }

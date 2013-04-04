@@ -69,6 +69,8 @@ protected:
 
 private:
 	void savePlaylist(const QString& fileName);
+	QMenu *buildPluginListMenu();
+	void getTunes(const QString& name);
 	
 private:
 	Ui::QompMainWin *ui;
