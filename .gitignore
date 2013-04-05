@@ -19,5 +19,6 @@ debug/
 *.user
 *.user.*
 qomp
+object_script.qomp*
 
 

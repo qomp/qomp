@@ -265,7 +265,9 @@ void MyzukaruGettunesDlg::itemSelected(QompPluginModelItem *item)
 		requests_.insert(reply, (void*)view->model());
 	}
 
+#if ( __GNUC__ * 1000 + __GNUC_MINOR__ * 10  > 4050 )
 #pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
 	connect(reply, SIGNAL(finished()), slot);
 }
 
