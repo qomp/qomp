@@ -50,8 +50,6 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	player_->setSeekSlider(ui->seekSlider);
 	player_->setVolumeSlider(ui->volumeSlider);
 
-	connect(player_, SIGNAL(currentPosition(qint64)), SLOT(setCurrentPosition(qint64)));
-
 	ui->playList->setModel(model_);
 
 	TuneList tl = Tune::tunesFromFile(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
@@ -61,13 +59,6 @@ QompMainWin::QompMainWin(QWidget *parent) :
 		model_->setCurrentTune(model_->tune(ind));
 		ui->playList->setCurrentIndex(ind);
 	}
-
-	QRect r(Options::instance()->getOption(OPTION_GEOMETRY_X, x()).toInt(),
-		Options::instance()->getOption(OPTION_GEOMETRY_Y, y()).toInt(),
-		Options::instance()->getOption(OPTION_GEOMETRY_WIDTH, width()).toInt(),
-		Options::instance()->getOption(OPTION_GEOMETRY_HEIGHT, height()).toInt());
-
-	setGeometry(r);
 
 	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
 	ui->tb_prev->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
@@ -97,11 +88,20 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 	connect(player_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(updateIcons()));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
+	connect(player_, SIGNAL(currentPosition(qint64)), SLOT(setCurrentPosition(qint64)));
 
 	connect(model_, SIGNAL(layoutChanged()), SLOT(updateTuneInfo()));
 
 	connect(trayIcon_, SIGNAL(trayDoubleClicked()), SLOT(trayDoubleclicked()));
 	connect(trayIcon_, SIGNAL(trayClicked(Qt::MouseButton)), SLOT(trayActivated(Qt::MouseButton)));
+
+	resize(Options::instance()->getOption(OPTION_GEOMETRY_WIDTH, width()).toInt(),
+		Options::instance()->getOption(OPTION_GEOMETRY_HEIGHT, height()).toInt());
+
+	move(Options::instance()->getOption(OPTION_GEOMETRY_X, 10).toInt(),
+		Options::instance()->getOption(OPTION_GEOMETRY_Y, 50).toInt());
+
+	show();
 
 	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
 		actPlayActivated();
@@ -138,6 +138,8 @@ QompPlayer *QompMainWin::player() const
 
 void QompMainWin::actPlayActivated()
 {
+	setCurrentPosition(0);
+
 	if(!model_->rowCount())
 		return;
 
@@ -201,6 +203,7 @@ void QompMainWin::actNextActivated()
 void QompMainWin::actStopActivated()
 {
 	player_->stop();
+	setCurrentPosition(0);
 	QModelIndex index = ui->playList->currentIndex();
 	if(index.isValid())
 		model_->setCurrentTune(model_->tune(index));
@@ -308,6 +311,7 @@ void QompMainWin::setCurrentPosition(qint64 ms)
 
 void QompMainWin::playNext()
 {
+	setCurrentPosition(0);
 	if(model_->indexForTune(model_->currentTune()).row() == model_->rowCount()-1) {
 		actStopActivated();
 	}

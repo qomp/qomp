@@ -79,7 +79,7 @@ void PlayListModel::removeTune(const Tune &tune)
 {
 	for(int i = 0; i < tunes_.size(); i++) {
 		if(tunes_.at(i).id == tune.id()) {
-			beginRemoveRows(QModelIndex(), i, 0);
+			beginRemoveRows(QModelIndex(), i, i);
 			tunes_.removeAt(i);
 			endRemoveRows();
 			return;

@@ -32,7 +32,6 @@ Qomp::Qomp(QObject *parent) :
 	mainWin_ = new QompMainWin();
 	connect(mainWin_, SIGNAL(exit()), SLOT(exit()));
 
-	mainWin_->show();
 	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
 		mainWin_->hide();
 
