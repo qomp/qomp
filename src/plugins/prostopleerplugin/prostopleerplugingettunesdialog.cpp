@@ -18,7 +18,7 @@
  */
 
 #include "prostopleerplugingettunesdialog.h"
-#include "qompplugintracksmodel.h"
+#include "qompplugintreemodel.h"
 #include "qompplugintypes.h"
 #include "options.h"
 #include "prostopleerplugindefines.h"
@@ -42,12 +42,19 @@ public:
 	{
 		return durationSecondsToString(duration.toInt());
 	}
+
+	virtual Tune toTune() const
+	{
+		Tune t = QompPluginTune::toTune();
+		t.duration = durationToStr();
+		return t;
+	}
 };
 
 ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QWidget *parent) :
 	QompPluginGettunesDlg(parent),
 	ui(new Ui::ProstoPleerPluginResultsWidget),
-	model_(new QompPluginTracksModel(this))
+	model_(new QompPluginTreeModel(this))
 {
 	setWindowTitle(PROSTOPLEER_PLUGIN_NAME);
 
@@ -55,13 +62,13 @@ ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QWidget *parent
 	ui->setupUi(widget);
 	setResultsWidget(widget);
 
-	ui->lv_results->setModel(model_);
+	ui->tv_results->setModel(model_);
 	ui->tb_prev->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
 	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
 
 	ui->tb_prev->hide();
 
-	connect(ui->lv_results, SIGNAL(tuneSelected(QompPluginModelItem*)), SLOT(itemSelected(QompPluginModelItem*)));
+	connect(ui->tv_results, SIGNAL(clicked(QModelIndex)), SLOT(itemSelected(QModelIndex)));
 	connect(ui->tb_next, SIGNAL(clicked()), SLOT(actNextActivated()));
 	connect(ui->tb_prev, SIGNAL(clicked()), SLOT(actPrevActivated()));
 
@@ -80,15 +87,13 @@ TuneList ProstoPleerPluginGetTunesDialog::getTunes() const
 
 void ProstoPleerPluginGetTunesDialog::accept()
 {
-	foreach(QompPluginModelItem* item, model_->selectedTunes()) {
+	foreach(QompPluginModelItem* item, model_->selectedItems()) {
+		if(!item)
+			continue;
+
 		ProstopleerTune *pt = static_cast<ProstopleerTune*>(item);
 		if(!pt->url.isNull()) {
-			Tune tune;
-			tune.artist = pt->artist;
-			tune.title = pt->title;
-			tune.url = pt->url;
-			tune.duration = pt->durationToStr();
-			tunes_.append(tune);
+			tunes_.append(pt->toTune());
 		}
 	}
 
@@ -142,7 +147,7 @@ void ProstoPleerPluginGetTunesDialog::searchFinished()
 			list.append(tune);
 		}
 		if(!list.isEmpty())
-			model_->addTunes(list);
+			model_->addTopLevelItems(list);
 
 		QRegExp page("<ul class=\"pagination\" end=\"(\\d+)\"");
 		if(page.indexIn(result) != -1) {
@@ -174,8 +179,12 @@ void ProstoPleerPluginGetTunesDialog::actNextActivated()
 	doSearchStepTwo();
 }
 
-void ProstoPleerPluginGetTunesDialog::itemSelected(QompPluginModelItem* item)
+void ProstoPleerPluginGetTunesDialog::itemSelected(const QModelIndex &index)
 {
+	QompPluginModelItem* item = model_->item(index);
+	if(!item)
+		return;
+
 	ProstopleerTune* pt = static_cast<ProstopleerTune*>(item);
 	if(!pt->url.isEmpty())
 		return;
@@ -202,7 +211,7 @@ void ProstoPleerPluginGetTunesDialog::urlFinished()
 		QRegExp re("http://[^\"]+");
 		QString text = reply->readAll();
 		if(re.indexIn(text) != -1) {
-			ProstopleerTune* pt = static_cast<ProstopleerTune*>(model_->tuneForId(id));
+			ProstopleerTune* pt = static_cast<ProstopleerTune*>(model_->itemForId(id));
 			pt->url = re.cap();
 			model_->emitUpdateSignal();
 		}

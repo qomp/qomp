@@ -21,33 +21,25 @@
 #define QompPluginTreeView_H
 
 #include <QTreeView>
-#include <QTime>
-
-class QompPluginModelItem;
-
 
 class QompPluginTreeView : public QTreeView
 {
 	Q_OBJECT
 public:
+	/**
+	* This class shows search results and designed for use with QompPluginTreeModel.
+	* It's a tree of elements of artists - albums - songs.
+	* Can select and unselect elements with mouse doubleclick
+	* or Space and Return(Enter) keyboard keys.
+	*/
 	QompPluginTreeView(QWidget *parent = 0);
 	
 protected:
 	void keyPressEvent(QKeyEvent *ke);
-	void mousePressEvent(QMouseEvent *e);
 	void mouseDoubleClickEvent(QMouseEvent *e);
-
-signals:
-	void itemSelected(QompPluginModelItem*);
-
-private slots:
-	void itemSelected();
 
 private:
 	void itemActivated();
-
-private:
-	QTime lastClickTime_;
 };
 
 #endif // QompPluginTreeView_H

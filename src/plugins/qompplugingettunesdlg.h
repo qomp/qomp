@@ -40,23 +40,41 @@ public:
 	virtual ~QompPluginGettunesDlg();
 
 	/**
-	 * You should set results widget (like QompPluginTracksView)
+	 * You should set results widget (like QompPluginTreeView)
 	 * before use this dialog
 	 */
 	void setResultsWidget(QWidget* widget);
 
+	/**
+	 * Return list of Tune's
+	 *
+	 */
 	virtual TuneList getTunes() const;
+
+	/**
+	 * Return current text in combo box
+	 */
 	QString currentSearchText() const;
 	
 protected slots:
+	/**
+	 * This slot is called when Search button is clicked
+	 * or Enter key pressed
+	 */
 	virtual void doSearch() = 0;
 
 protected:
-//	bool eventFilter(QObject *o, QEvent *e);
 	void keyPressEvent(QKeyEvent *e);
 
 protected:
+	/**
+	 * List of selected Tune's
+	 */
 	TuneList tunes_;
+
+	/**
+	 * Use this Network Accesa Manager for obtaining data from music hostings
+	 */
 	QNetworkAccessManager* nam_;
 
 private:

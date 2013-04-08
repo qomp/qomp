@@ -18,6 +18,7 @@
  */
 
 #include "qompplugintypes.h"
+#include "tune.h"
 #include <QStyle>
 #include <QApplication>
 
@@ -91,6 +92,17 @@ Qomp::ModelItemType QompPluginTune::type() const
 QIcon QompPluginTune::icon() const
 {
 	return qApp->style()->standardIcon(QStyle::SP_FileIcon);
+}
+
+Tune QompPluginTune::toTune() const
+{
+	Tune t;
+	t.artist = artist;
+	t.title = title;
+	t.album == album;
+	t.url = url;
+	t.duration = duration;
+	return t;
 }
 
 

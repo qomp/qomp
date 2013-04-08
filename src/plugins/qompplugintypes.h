@@ -28,23 +28,66 @@ enum DataSelection { DataUnselect = 0, DataSelect = 1, DataToggle = 2 };
 enum ModelItemType { NoType = 0, TypeTune, TypeAlbum, TypeArtist };
 }
 class QIcon;
+class Tune;
 
 class QompPluginModelItem
 {
 public:
+	/**
+	 * Base class for items, that can be stored in QompPluginTreeModel.
+	 * Can represent tune, album, artist or something else
+	 */
 	QompPluginModelItem(QompPluginModelItem* parent = 0);
 	virtual ~QompPluginModelItem();
 
+	/**
+	* Visual reperesentation of tune item how user will see it in list
+	*/
 	virtual QString toString() const = 0;
+
+	/**
+	* Set parent for this item. When parent item will be deleted
+	* all children will be deleted too
+	*/
 	void setParent(QompPluginModelItem* parent);
+
+	/**
+	 * Returns pointer on parent item
+	 */
 	QompPluginModelItem* parent() const;
-	void setItems(QList<QompPluginModelItem*> items);
-	void addItems(QList<QompPluginModelItem*> items);
+
+	/**
+	* list of child items
+	*/
 	QList<QompPluginModelItem*> items() const;
+
+	/**
+	 * Type of this item (tune, album, artist)
+	 */
 	virtual Qomp::ModelItemType type() const = 0;
+
+	/**
+	 * Icon for this item (folder icon or file icon etc.)
+	 */
 	virtual QIcon icon() const = 0;
 
+	/**
+	* Internal pointer to item, depending on music hosting.
+	* Can be an url, or some internal id etc.
+	*/
 	QString internalId;
+
+	/**
+	 * Set list of child items. This item takes ownership and will delete
+	 * them in destructor. Old children will be deleted
+	 */
+	void setItems(QList<QompPluginModelItem*> items);
+
+	/**
+	 * Append list of child items. This item takes ownership and will delete
+	 * them in destructor.
+	 */
+	void addItems(QList<QompPluginModelItem*> items);
 
 private:
 	QompPluginModelItem* parent_;
@@ -65,6 +108,7 @@ public:
 	virtual QString toString() const;
 	virtual Qomp::ModelItemType type() const;
 	QIcon icon() const;
+	virtual Tune toTune() const;
 };
 
 class QompPluginAlbum : public QompPluginModelItem

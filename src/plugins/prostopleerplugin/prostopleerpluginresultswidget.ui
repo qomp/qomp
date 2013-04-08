@@ -12,11 +12,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QompPluginTracksView" name="lv_results">
-     <property name="selectionMode">
-      <enum>QAbstractItemView::ExtendedSelection</enum>
-     </property>
-    </widget>
+    <widget class="QompPluginTreeView" name="tv_results"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -128,9 +124,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QompPluginTracksView</class>
-   <extends>QListView</extends>
-   <header>qompplugintracksview.h</header>
+   <class>QompPluginTreeView</class>
+   <extends>QTreeView</extends>
+   <header>qompplugintreeview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

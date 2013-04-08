@@ -1,15 +1,11 @@
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/qompplugintracksmodel.h \
-    $$PWD/qompplugintracksview.h \
-    $$PWD/qompplugingettunesdlg.h \
+HEADERS += $$PWD/qompplugingettunesdlg.h \
     $$PWD/qompplugintreeview.h \
     $$PWD/qompplugintreemodel.h \
     $$PWD/qompplugintypes.h
 
-SOURCES += $$PWD/qompplugintracksmodel.cpp \
-    $$PWD/qompplugintracksview.cpp \
-    $$PWD/qompplugingettunesdlg.cpp \
+SOURCES += $$PWD/qompplugingettunesdlg.cpp \
     $$PWD/qompplugintreeview.cpp \
     $$PWD/qompplugintreemodel.cpp \
     $$PWD/qompplugintypes.cpp

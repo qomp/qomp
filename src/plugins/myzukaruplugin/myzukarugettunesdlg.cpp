@@ -19,9 +19,7 @@
 
 #include "myzukarugettunesdlg.h"
 #include "myzukarumodels.h"
-#include "qompplugintracksview.h"
 #include "qompplugintreeview.h"
-#include "qompplugintracksmodel.h"
 #include "common.h"
 #include "myzukarudefines.h"
 #include "qompplugintypes.h"
@@ -32,13 +30,13 @@
 
 MyzukaruGettunesDlg::MyzukaruGettunesDlg(QWidget *parent) :
 	QompPluginGettunesDlg(parent),
-	tracksModel_(new QompPluginTracksModel(this)),
+	tracksModel_(new QompPluginTreeModel(this)),
 	albumsModel_(new QompPluginTreeModel(this)),
 	artistsModel_(new MyzukaruArtistsModel(this))
 {
 	setWindowTitle(MYZUKA_PLUGIN_NAME);
 
-	QompPluginTracksView* tracksView = new QompPluginTracksView(this);
+	QompPluginTreeView* tracksView = new QompPluginTreeView(this);
 	QompPluginTreeView* albumsView = new QompPluginTreeView(this);
 	QompPluginTreeView* artistsView = new QompPluginTreeView(this);
 
@@ -53,37 +51,32 @@ MyzukaruGettunesDlg::MyzukaruGettunesDlg(QWidget *parent) :
 
 	setResultsWidget(tabWidget);
 
-	connect(tracksView, SIGNAL(tuneSelected(QompPluginModelItem*)), SLOT(itemSelected(QompPluginModelItem*)));
-	connect(albumsView, SIGNAL(itemSelected(QompPluginModelItem*)), SLOT(itemSelected(QompPluginModelItem*)));
-	connect(artistsView, SIGNAL(itemSelected(QompPluginModelItem*)), SLOT(itemSelected(QompPluginModelItem*)));
+	QList<QompPluginTreeView*> list = QList<QompPluginTreeView*> () << artistsView << albumsView << tracksView;
+	foreach(QompPluginTreeView* view, list) {
+		connect(view, SIGNAL(clicked(QModelIndex)), SLOT(itemSelected(QModelIndex)));
+		connect(view, SIGNAL(expanded(QModelIndex)), SLOT(itemSelected(QModelIndex)));
+	}
 }
 
 void MyzukaruGettunesDlg::accept()
 {
-	QList<QompPluginModelItem*> list(tracksModel_->selectedTunes());
-	list << albumsModel_->selectedItems() << artistsModel_->selectedItems();
+	QList<QompPluginModelItem*> list = QList<QompPluginModelItem*>()
+			<< artistsModel_->selectedItems()
+			<< albumsModel_->selectedItems()
+			<< tracksModel_->selectedItems();
 
-	foreach(QompPluginModelItem* t, list) {
-		addTune(t);
+	foreach(QompPluginModelItem* tune, list) {
+		if(!tune || tune->type() != Qomp::TypeTune)
+			continue;
+
+		QompPluginTune* pt = static_cast<QompPluginTune*>(tune);
+		if(pt->url.isEmpty())
+			continue;
+
+		tunes_.append(pt->toTune());
 	}
+
 	QDialog::accept();
-}
-
-void MyzukaruGettunesDlg::addTune(QompPluginModelItem *tune)
-{
-	if(!tune || tune->type() != Qomp::TypeTune)
-		return;
-
-	QompPluginTune* pt = static_cast<QompPluginTune*>(tune);
-	if(pt->url.isEmpty())
-		return;
-
-	Tune t;
-	t.artist = pt->artist;
-	t.title = pt->title;
-	t.album == pt->album;
-	t.url = pt->url;
-	tunes_.append(t);
 }
 
 void MyzukaruGettunesDlg::doSearch()
@@ -177,7 +170,7 @@ void MyzukaruGettunesDlg::searchFinished()
 		int songIndex = replyStr.indexOf("<a name=\"songs\"></a>");
 		QList<QompPluginModelItem*> tunes = parseTunes(replyStr, songIndex);
 		if(!tunes.isEmpty()) {
-			tracksModel_->addTunes(tunes);
+			tracksModel_->addTopLevelItems(tunes);
 		}
 
 		int albumsIndex = replyStr.indexOf("<a name=\"albums\"></a>");
@@ -217,8 +210,15 @@ void MyzukaruGettunesDlg::searchFinished()
 	}
 }
 
-void MyzukaruGettunesDlg::itemSelected(QompPluginModelItem *item)
+void MyzukaruGettunesDlg::itemSelected(const QModelIndex &ind)
 {
+	QAbstractItemView* view = qobject_cast<QAbstractItemView*>(sender());
+	if(!view)
+		return;
+
+	QompPluginTreeModel* model = qobject_cast<QompPluginTreeModel*>(view->model());
+	QompPluginModelItem* item = model->item(ind);
+
 	if(!item || item->internalId.isEmpty())
 		return;
 
@@ -260,11 +260,10 @@ void MyzukaruGettunesDlg::itemSelected(QompPluginModelItem *item)
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
 	QNetworkReply *reply = nam_->get(nr);
 	reply->setProperty("id", item->internalId);
-	QAbstractItemView* view = qobject_cast<QAbstractItemView*>(sender());
-	if(view) {
-		requests_.insert(reply, (void*)view->model());
-	}
 
+	requests_.insert(reply, model);
+
+	//try avoid warning
 #if ( __GNUC__ * 1000 + __GNUC_MINOR__ * 10  > 4050 )
 #pragma GCC diagnostic ignored "-Wuninitialized"
 #endif
@@ -282,26 +281,15 @@ void MyzukaruGettunesDlg::tuneUrlFinished()
 		QRegExp re("\"(http://[^\"]+)\"");
 		QString text = reply->readAll();
 		if(re.indexIn(text) != -1) {
-			if(model == tracksModel_) {
-				QompPluginModelItem* it = tracksModel_->tuneForId(id);
-				if(it && it->type() == Qomp::TypeTune) {
-					static_cast<QompPluginTune*>(it)->url = re.cap(1);
-					tracksModel_->emitUpdateSignal();
-				}
-				return;
+			QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
+			QompPluginModelItem* it = model_->itemForId(id);
+			if(it && it->type() == Qomp::TypeTune) {
+				static_cast<QompPluginTune*>(it)->url = re.cap(1);
+				model_->emitUpdateSignal();
 			}
-			else {
-				QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
-				QompPluginModelItem* it = model_->itemForId(id);
-				if(it && it->type() == Qomp::TypeTune) {
-					static_cast<QompPluginTune*>(it)->url = re.cap(1);
-					model_->emitUpdateSignal();
-				}
-				return;
-			}
+			return;
 		}
 	}
-
 }
 
 void MyzukaruGettunesDlg::albumUrlFinished()

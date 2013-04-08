@@ -29,7 +29,8 @@ class ProstoPleerPluginResultsWidget;
 }
 
 class QompPluginModelItem;
-class QompPluginTracksModel;
+class QompPluginTreeModel;
+class QModelIndex;
 
 class ProstoPleerPluginGetTunesDialog : public QompPluginGettunesDlg
 {
@@ -51,7 +52,7 @@ private slots:
 	void searchFinished();
 	void urlFinished();
 	void loginFinished();
-	void itemSelected(QompPluginModelItem *);
+	void itemSelected(const QModelIndex& index);
 
 	void actPrevActivated();
 	void actNextActivated();
@@ -63,7 +64,7 @@ private:
 private:
 	Ui::ProstoPleerPluginResultsWidget *ui;
 	TuneList tunes_;
-	QompPluginTracksModel* model_;
+	QompPluginTreeModel* model_;
 	QString lastSearchStr_;
 };
 

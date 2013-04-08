@@ -23,11 +23,9 @@
 #include "qompplugingettunesdlg.h"
 #include <QHash>
 
-class QompPluginModelItem;
-class QompPluginTracksModel;
 class QompPluginTreeModel;
-class MyzukaruArtistsModel;
 class QNetworkReply;
+class QModelIndex;
 
 
 class MyzukaruGettunesDlg : public QompPluginGettunesDlg
@@ -51,15 +49,10 @@ private slots:
 	void tuneUrlFinished();
 	void albumUrlFinished();
 	void artistUrlFinished();
-	void itemSelected(QompPluginModelItem *item);
+	void itemSelected(const QModelIndex& ind);
 
 private:
-	void addTune(QompPluginModelItem *tune);
-
-private:
-	QompPluginTracksModel *tracksModel_;
-	QompPluginTreeModel *albumsModel_;
-	MyzukaruArtistsModel *artistsModel_;
+	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;
 	QHash<QNetworkReply*, void*> requests_;
 };
 

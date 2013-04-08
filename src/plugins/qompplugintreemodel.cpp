@@ -81,6 +81,14 @@ QompPluginModelItem *QompPluginTreeModel::itemForId(const QString &id, QompPlugi
 	return 0;
 }
 
+QompPluginModelItem *QompPluginTreeModel::item(const QModelIndex &index)
+{
+	if(!index.isValid())
+		return 0;
+
+	return (QompPluginModelItem *)index.internalPointer();
+}
+
 QList<QompPluginModelItem*> QompPluginTreeModel::selectedItems(QompPluginModelItem *parent) const
 {
 	QList<QompPluginModelItem*> list;
@@ -116,7 +124,7 @@ QVariant QompPluginTreeModel::data(const QModelIndex &index, int role) const
 int QompPluginTreeModel::rowCount(const QModelIndex &parent) const
 {
 	if(parent.isValid()) {
-		return ((QompPluginModelItem*)parent.internalId())->items().size();
+		return ((QompPluginModelItem*)parent.internalPointer())->items().size();
 	}
 
 	return topLevelItems_.size();

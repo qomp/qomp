@@ -18,12 +18,10 @@
  */
 
 #include "qompplugintreeview.h"
-#include "qompplugintreemodel.h"
 #include "qompplugintypes.h"
 
 #include <QKeyEvent>
-#include <QApplication>
-#include <QTimer>
+
 
 QompPluginTreeView::QompPluginTreeView(QWidget *parent) :
 	QTreeView(parent)
@@ -43,21 +41,8 @@ void QompPluginTreeView::keyPressEvent(QKeyEvent *ke)
 	QTreeView::keyPressEvent(ke);
 }
 
-void QompPluginTreeView::mousePressEvent(QMouseEvent *e)
-{
-	lastClickTime_ = QTime::currentTime();
-
-	QModelIndex i = indexAt(e->pos());
-	if(i.isValid()) {
-		setCurrentIndex(i);;
-		emit itemSelected((QompPluginModelItem*)i.internalPointer());
-	}
-	return QTreeView::mousePressEvent(e);
-}
-
 void QompPluginTreeView::mouseDoubleClickEvent(QMouseEvent *e)
 {
-	lastClickTime_ = QTime::currentTime();
 	QModelIndex i = indexAt(e->pos());
 	if(i.isValid()) {
 		setCurrentIndex(i);
@@ -67,31 +52,10 @@ void QompPluginTreeView::mouseDoubleClickEvent(QMouseEvent *e)
 	return QTreeView::mouseDoubleClickEvent(e);
 }
 
-void QompPluginTreeView::itemSelected()
-{
-	if(lastClickTime_.msecsTo(QTime::currentTime()) < QApplication::doubleClickInterval())
-		return;
-
-	QModelIndex i = currentIndex();
-	if(i.isValid()) {
-		if(isExpanded(i))
-			collapse(i);
-		else {
-			expand(i);
-		}
-	}
-}
-
 void QompPluginTreeView::itemActivated()
 {
 	QModelIndex i = currentIndex();
 	if(i.isValid()) {
-		QompPluginTreeModel* m = qobject_cast<QompPluginTreeModel*>(model());
-		if(m) {
-			m->setData(i, Qomp::DataToggle);
-//			QompPluginModelItem* item = (QompPluginModelItem*)i.internalPointer();
-//			foreach(QompPluginModelItem* it, item->items())
-//				emit itemSelected(it);
-		}
+		model()->setData(i, Qomp::DataToggle);
 	}
 }
