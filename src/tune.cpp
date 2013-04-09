@@ -58,7 +58,7 @@ int Tune::id() const
 	return id_;
 }
 
-bool Tune::operator==(const Tune& other)
+bool Tune::operator==(const Tune& other) const
 {
 	return id() == other.id();
 }

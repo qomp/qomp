@@ -39,7 +39,7 @@ public:
 	bool fromString(const QString& str);
 	int id() const;
 
-	bool operator==(const Tune& other);
+	bool operator==(const Tune& other) const;
 
 	static QList<Tune> tunesFromFile(const QString& fileName);
 

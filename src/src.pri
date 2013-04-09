@@ -10,7 +10,8 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/tune.cpp \
     $$PWD/qomptrayicon.cpp \
     $$PWD/common.cpp \
-    $$PWD/qompnetworkingfactory.cpp
+    $$PWD/qompnetworkingfactory.cpp \
+    src/qompmetadataresolver.cpp
 
 
 HEADERS  += $$PWD/qompmainwin.h \
@@ -24,7 +25,8 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qomptrayicon.h \
     $$PWD/defines.h \
     $$PWD/common.h \
-    $$PWD/qompnetworkingfactory.h
+    $$PWD/qompnetworkingfactory.h \
+    src/qompmetadataresolver.h
 
 
 FORMS    += $$PWD/qompmainwin.ui

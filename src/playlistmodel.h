@@ -21,11 +21,6 @@
 #define PLAYLISTMODEL_H
 
 #include <QAbstractListModel>
-#include <Phonon/MediaSource>
-namespace Phonon {
-	class MediaObject;
-}
-
 #include "tune.h"
 
 class PlayListModel : public QAbstractListModel
@@ -45,8 +40,6 @@ public:
 	Tune currentTune() const;
 	void setCurrentTune(const Tune& tune);
 	void removeTune(const Tune& tune);
-//	QIODevice* device(const Tune& tune) const;
-	Phonon::MediaSource device(const QModelIndex& index) const;
 	QModelIndex indexForTune(const Tune& tune) const;
 
 	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
@@ -54,30 +47,13 @@ public:
 
 	void clear();
 
-private slots:
-	void metaDataReady();
-	void resolverStateChanged(Phonon::State newState, Phonon::State oldState);
-	void totalTimeChanged(qint64 msec);
+public slots:
+	void newDataReady(const Tune& tune, const QMap<QString, QString>& data);
+	void totalTimeChanged(const Tune& tune, qint64 msec);
 
 private:
-	const Phonon::MediaSource mediaSourceForId(int id) const;
-
-private:
-	struct Media {
-		Media(const Phonon::MediaSource& ms, const Tune& t) :
-			mediaSource(ms),
-			tune(t),
-			id(t.id())
-		{}
-
-		Phonon::MediaSource mediaSource;
-		Tune tune;
-		int id;
-	};
-	QList<Media> tunes_;
+	TuneList tunes_;
 	Tune currentTune_;
-	Phonon::MediaObject* resolver_;
-	QList<int> tuneIdsForResolve_;
 };
 
 #endif // PLAYLISTMODEL_H

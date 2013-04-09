@@ -99,7 +99,7 @@ Tune QompPluginTune::toTune() const
 	Tune t;
 	t.artist = artist;
 	t.title = title;
-	t.album == album;
+	t.album = album;
 	t.url = url;
 	t.duration = duration;
 	return t;

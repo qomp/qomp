@@ -22,7 +22,6 @@
 #include "options.h"
 #include "defines.h"
 #include "qompnetworkingfactory.h"
-#include "qompplayer.h"
 
 #include <QApplication>
 

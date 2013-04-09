@@ -18,7 +18,6 @@
  */
 
 #include "qompmainwin.h"
-#include "qompplayer.h"
 #include "playlistmodel.h"
 #include "options.h"
 #include "pluginmanager.h"
@@ -26,6 +25,7 @@
 #include "options/qompoptionsdlg.h"
 #include "defines.h"
 #include "common.h"
+#include "qompmetadataresolver.h"
 
 #include "ui_qompmainwin.h"
 
@@ -43,7 +43,8 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	ui(new Ui::QompMainWin),
 	player_(new QompPlayer(this)),
 	model_(new PlayListModel(this)),
-	trayIcon_(new QompTrayIcon(this))
+	trayIcon_(new QompTrayIcon(this)),
+	resolver_(new QompMetaDataResolver(this))
 {
 	ui->setupUi(this);
 
@@ -86,7 +87,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	connect(ui->playList, SIGNAL(clicked(QModelIndex)), SLOT(mediaClicked(QModelIndex)));
 	connect(ui->playList, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doContextMenu(QPoint)));
 
-	connect(player_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(updateIcons()));
+	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStateChanged(QompPlayer::State)));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
 	connect(player_, SIGNAL(currentPosition(qint64)), SLOT(setCurrentPosition(qint64)));
 
@@ -94,6 +95,9 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 	connect(trayIcon_, SIGNAL(trayDoubleClicked()), SLOT(trayDoubleclicked()));
 	connect(trayIcon_, SIGNAL(trayClicked(Qt::MouseButton)), SLOT(trayActivated(Qt::MouseButton)));
+
+	connect(resolver_, SIGNAL(newMetaData(Tune,QMap<QString,QString>)), model_, SLOT(newDataReady(Tune,QMap<QString,QString>)));
+	connect(resolver_, SIGNAL(newDuration(Tune,qint64)), model_, SLOT(totalTimeChanged(Tune,qint64)));
 
 	resize(Options::instance()->getOption(OPTION_GEOMETRY_WIDTH, width()).toInt(),
 		Options::instance()->getOption(OPTION_GEOMETRY_HEIGHT, height()).toInt());
@@ -121,11 +125,9 @@ QompMainWin::~QompMainWin()
 	Options::instance()->setOption(OPTION_GEOMETRY_WIDTH, width());
 
 	int curTrack = 0;
-	if(player_->state() == Phonon::PausedState || player_->state() == Phonon::PlayingState) {
-		QModelIndex ind = model_->indexForTune(model_->currentTune());
-		if(ind.isValid())
-			curTrack = ind.row();
-	}
+	QModelIndex ind = model_->indexForTune(model_->currentTune());
+	if(ind.isValid())
+		curTrack = ind.row();
 	Options::instance()->setOption(OPTION_CURRENT_TRACK, curTrack);
 
 	delete ui;
@@ -150,20 +152,20 @@ void QompMainWin::actPlayActivated()
 		model_->setCurrentTune(model_->tune(i));
 	}
 
-	if(!(player_->currentSource() == model_->device(i)))
-		player_->setSource(model_->device(i));
+	if(!(player_->currentTune() == model_->tune(i)))
+		player_->setTune(model_->tune(i));
 
-	player_->play();
+	player_->playOrPause();
 	updateTuneInfo();
 }
 
 void QompMainWin::updateIcons()
 {
-	if(player_->state() == Phonon::PausedState) {
+	if(player_->state() == QompPlayer::StatePaused) {
 		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
 		trayIcon_->setIcon(QIcon(":/icons/icons/qomp_pause.png"));
 	}
-	else if(player_->state() == Phonon::PlayingState) {
+	else if(player_->state() == QompPlayer::StatePlaing) {
 		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
 		trayIcon_->setIcon(QIcon(":/icons/icons/qomp_play.png"));
 	}
@@ -177,7 +179,7 @@ void QompMainWin::actPrevActivated()
 {
 	QModelIndex index = model_->indexForTune(model_->currentTune());
 	if(index.isValid() && index.row() > 0) {
-		bool play = (player_->state() == Phonon::PlayingState);
+		bool play = (player_->state() == QompPlayer::StatePlaing);
 		index = model_->index(index.row()-1);
 		ui->playList->setCurrentIndex(index);
 		model_->setCurrentTune(model_->tune(index));
@@ -190,7 +192,7 @@ void QompMainWin::actNextActivated()
 {
 	QModelIndex index = model_->indexForTune(model_->currentTune());
 	if(index.isValid() && index.row() < model_->rowCount()-1) {
-		bool play = (player_->state() == Phonon::PlayingState);
+		bool play = (player_->state() == QompPlayer::StatePlaing);
 		index = model_->index(index.row()+1);
 		ui->playList->setCurrentIndex(index);
 		model_->setCurrentTune(model_->tune(index));
@@ -265,7 +267,9 @@ void QompMainWin::mediaActivated(const QModelIndex &index)
 
 void QompMainWin::mediaClicked(const QModelIndex &index)
 {
-	if(player_->state() == Phonon::StoppedState) {
+	if(player_->state() == QompPlayer::StateStopped
+		|| player_->state() == QompPlayer::StateError)
+	{
 		model_->setCurrentTune(model_->tune(index));
 	}
 }
@@ -304,6 +308,13 @@ void QompMainWin::doContextMenu(const QPoint &p)
 
 }
 
+void QompMainWin::playerStateChanged(QompPlayer::State state)
+{
+	updateIcons();
+	if(state == QompPlayer::StateError)
+		playNext();
+}
+
 void QompMainWin::setCurrentPosition(qint64 ms)
 {
 	ui->lcd->display(durationMiliSecondsToString(ms));
@@ -314,6 +325,7 @@ void QompMainWin::playNext()
 	setCurrentPosition(0);
 	if(model_->indexForTune(model_->currentTune()).row() == model_->rowCount()-1) {
 		actStopActivated();
+		model_->setCurrentTune(Tune());
 	}
 	else {
 		QModelIndex index = model_->indexForTune(model_->currentTune());
@@ -395,8 +407,8 @@ void QompMainWin::trayActivated(Qt::MouseButton b)
 		open->deleteLater();
 	}
 	else if(b == Qt::MidButton) {
-		if(player_->state() == Phonon::PlayingState || player_->state() == Phonon::PausedState)
-			player_->play();
+		if(player_->state() == QompPlayer::StatePlaing || player_->state() == QompPlayer::StatePaused)
+			player_->playOrPause();
 	}
 }
 
@@ -440,7 +452,10 @@ void QompMainWin::getTunes(const QString &name)
 	TuneList list = PluginManager::instance()->getTune(name);
 	if(!list.isEmpty()) {
 		model_->addTunes(list);
-		if(player_->state() == Phonon::StoppedState) {
+		resolver_->resolve(list);
+		if(player_->state() == QompPlayer::StateStopped
+			|| player_->state() == QompPlayer::StateError)
+		{
 			QModelIndex index = model_->indexForTune(list.first());
 			ui->playList->setCurrentIndex(index);
 			model_->setCurrentTune(model_->tune(index));

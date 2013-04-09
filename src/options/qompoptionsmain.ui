@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>287</width>
-    <height>250</height>
+    <width>389</width>
+    <height>278</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,6 +31,13 @@
     <widget class="QCheckBox" name="cb_autostartPlayback">
      <property name="text">
       <string>Automatically start playback</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="cb_metaData">
+     <property name="text">
+      <string>Automatically resolve metadata on an added tracks</string>
      </property>
     </widget>
    </item>

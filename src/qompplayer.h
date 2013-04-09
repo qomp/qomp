@@ -20,11 +20,13 @@
 #ifndef QOPMPLAYER_H
 #define QOPMPLAYER_H
 
+#include "tune.h"
+
 namespace Phonon {
-	class SeekSlider;
-	class VolumeSlider;
-	class AudioOutput;
-	class MediaSource;
+class SeekSlider;
+class VolumeSlider;
+class AudioOutput;
+class MediaSource;
 }
 
 #include <Phonon/MediaObject>
@@ -34,25 +36,33 @@ class QompPlayer : public QObject
 	Q_OBJECT
 public:
 	QompPlayer(QObject *parent = 0);
+	~QompPlayer();
+
+	enum State { StateUnknown = 0, StateStopped, StatePaused, StatePlaing, StateError, StateLoading };
+
 	void setSeekSlider(Phonon::SeekSlider* slider);
 	void setVolumeSlider(Phonon::VolumeSlider* slider);
-	Phonon::State state() const;
-	void setSource(const Phonon::MediaSource& source);
-	Phonon::MediaSource currentSource() const;
-	void play();
+	State state() const;
+	void setTune(const Tune& tune);
+	Tune currentTune() const;
+	void playOrPause();
 	void stop();
 
 	void setAudioOutputDevice(int index);
 	
 signals:
 	void currentPosition(qint64 pos);
-	void stateChanged(Phonon::State newState, Phonon::State oldState);
+	void stateChanged(QompPlayer::State newState);
 	void mediaFinished();
+
+private slots:
+	void stateChanged();
 	
 private:
 	Phonon::MediaObject* mediaObject_;
 	Phonon::AudioOutput* audioOutput_;
 	Phonon::AudioOutputDevice defaultDevice_;
+	Tune currentTune_;
 };
 
 #endif // QOPMPLAYER_H

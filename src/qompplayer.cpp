@@ -33,9 +33,14 @@ QompPlayer::QompPlayer(QObject *parent) :
 	defaultDevice_ = audioOutput_->outputDevice();
 
 	mediaObject_->setTickInterval(1000);
-	connect(mediaObject_, SIGNAL(tick(qint64)), this, SIGNAL(currentPosition(qint64)));
-	connect(mediaObject_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SIGNAL(stateChanged(Phonon::State,Phonon::State)));
+	connect(mediaObject_, SIGNAL(tick(qint64)), SIGNAL(currentPosition(qint64)));
+	connect(mediaObject_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(stateChanged()));
 	connect(mediaObject_, SIGNAL(finished()), SIGNAL(mediaFinished()));
+}
+
+QompPlayer::~QompPlayer()
+{
+	stop();
 }
 
 void QompPlayer::setSeekSlider(Phonon::SeekSlider *slider)
@@ -48,24 +53,45 @@ void QompPlayer::setVolumeSlider(Phonon::VolumeSlider *slider)
 	slider->setAudioOutput(audioOutput_);
 }
 
-Phonon::State QompPlayer::state() const
+QompPlayer::State QompPlayer::state() const
 {
-	return mediaObject_->state();
+	switch (mediaObject_->state()) {
+	case Phonon::PausedState:
+		return StatePaused;
+	case Phonon::PlayingState:
+		return StatePlaing;
+	case Phonon::StoppedState:
+		return StateStopped;
+	case Phonon::ErrorState:
+		return StateError;
+	case Phonon::BufferingState:
+	case Phonon::LoadingState:
+		return StateLoading;
+	}
+	return StateUnknown;
 }
 
-void QompPlayer::setSource(const Phonon::MediaSource &source)
+void QompPlayer::setTune(const Tune &tune)
 {
-	mediaObject_->setCurrentSource(source);
+	currentTune_ = tune;
+	Phonon::MediaSource ms;
+	if(!tune.file.isEmpty()) {
+		ms = Phonon::MediaSource(tune.file);
+	}
+	else if(!tune.url.isEmpty()) {
+		ms = Phonon::MediaSource(tune.url);
+	}
+	mediaObject_->setCurrentSource(ms);
 }
 
-Phonon::MediaSource QompPlayer::currentSource() const
+Tune QompPlayer::currentTune() const
 {
-	return mediaObject_->currentSource();
+	return currentTune_;
 }
 
-void QompPlayer::play()
+void QompPlayer::playOrPause()
 {
-	if(state() == Phonon::PlayingState)
+	if(mediaObject_->state() == Phonon::PlayingState)
 		mediaObject_->pause();
 	else
 		mediaObject_->play();
@@ -90,4 +116,10 @@ void QompPlayer::setAudioOutputDevice(int index)
 			break;
 		}
 	}
+}
+
+
+void QompPlayer::stateChanged()
+{
+	emit stateChanged(state());
 }

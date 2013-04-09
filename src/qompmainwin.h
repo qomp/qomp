@@ -21,15 +21,16 @@
 #define QOMPMAINWIN_H
 
 #include <QMainWindow>
+#include "qompplayer.h"
 
 namespace Ui {
 	class QompMainWin;
 }
 
-class QompPlayer;
 class PlayListModel;
 class QModelIndex;
 class QompTrayIcon;
+class QompMetaDataResolver;
 
 class QompMainWin : public QMainWindow
 {
@@ -53,7 +54,7 @@ private slots:
 	void mediaClicked(const QModelIndex& index);
 	void doContextMenu(const QPoint& p);
 
-	void updateIcons();
+	void playerStateChanged(QompPlayer::State state);
 	void setCurrentPosition(qint64 ms);
 	void playNext();
 	void doOptions();
@@ -75,12 +76,14 @@ private:
 	void savePlaylist(const QString& fileName);
 	QMenu *buildPluginListMenu();
 	void getTunes(const QString& name);
+	void updateIcons();
 	
 private:
 	Ui::QompMainWin *ui;
 	QompPlayer* player_;
 	PlayListModel* model_;
 	QompTrayIcon* trayIcon_;
+	QompMetaDataResolver* resolver_;
 };
 
 #endif // QOMPMAINWIN_H

@@ -27,6 +27,7 @@
 
 #define OPTION_START_MINIMIZED    "main.start-minimized"
 #define OPTION_AUTOSTART_PLAYBACK "main.autostart-playback"
+#define OPTION_UPDATE_METADATA	  "main.update-metadata"
 
 #define OPTION_AUDIO_DEVICE	  "main.audio-device"
 
