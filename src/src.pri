@@ -11,7 +11,8 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/qomptrayicon.cpp \
     $$PWD/common.cpp \
     $$PWD/qompnetworkingfactory.cpp \
-    src/qompmetadataresolver.cpp
+    $$PWD/qompmetadataresolver.cpp \
+    $$PWD/aboutdlg.cpp
 
 
 HEADERS  += $$PWD/qompmainwin.h \
@@ -26,10 +27,12 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/defines.h \
     $$PWD/common.h \
     $$PWD/qompnetworkingfactory.h \
-    src/qompmetadataresolver.h
+    $$PWD/qompmetadataresolver.h \
+    $$PWD/aboutdlg.h
 
 
-FORMS    += $$PWD/qompmainwin.ui
+FORMS    += $$PWD/qompmainwin.ui \
+    $$PWD/aboutdlg.ui
 
 
 include (plugins/plugins.pri)

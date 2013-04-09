@@ -26,6 +26,7 @@
 #include "defines.h"
 #include "common.h"
 #include "qompmetadataresolver.h"
+#include "aboutdlg.h"
 
 #include "ui_qompmainwin.h"
 
@@ -329,6 +330,15 @@ void QompMainWin::doMainContextMenu()
 	acts << sep;
 	acts << new QAction(tr("Exit"), &m);
 	m.addActions(acts);
+
+	QMenu helpMenu(tr("Help"));
+	QAction* about = new QAction(tr("About qomp"), &helpMenu);
+	helpMenu.addAction(about);
+	QAction* aboutQt = new QAction(tr("About Qt"), &helpMenu);
+	helpMenu.addAction(aboutQt);
+	m.insertMenu(acts.last(), &helpMenu);
+	acts << about << aboutQt;
+
 	m.move(QCursor::pos());
 	QAction* x = m.exec();
 	int ret = acts.indexOf(x);
@@ -340,6 +350,12 @@ void QompMainWin::doMainContextMenu()
 		emit exit();
 	else if(x && x->parent() == open) {
 		getTunes(x->text());
+	}
+	else if(ret == 5) {
+		new AboutDlg(this);
+	}
+	else if(ret == 6) {
+		qApp->aboutQt();
 	}
 
 	open->deleteLater();
