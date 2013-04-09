@@ -27,6 +27,7 @@
 #include "common.h"
 #include "qompmetadataresolver.h"
 #include "aboutdlg.h"
+#include "qomptunedownloader.h"
 
 #include "ui_qompmainwin.h"
 
@@ -290,8 +291,10 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 	QList<QAction*> acts;
 	acts << new QAction(tr("Play/Pause"), &menu);
 	acts << new QAction(tr("Remove"), &menu);
-	if(!tune.url.isEmpty())
+	if(!tune.url.isEmpty()) {
 		acts << new QAction(tr("Copy URL"), &menu);
+		acts << new QAction(tr("Save file"), &menu);
+	}
 	menu.addActions(acts);
 	menu.move(QCursor::pos());
 	int x = acts.indexOf(menu.exec());
@@ -308,6 +311,16 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 	}
 	else if(x == 2) {
 		qApp->clipboard()->setText(tune.url);
+	}
+	else if(x == 3) {
+		static const QString option = "main.last-save-dir";
+		QString dir = QFileDialog::getExistingDirectory(this, tr("Select directory"),
+					Options::instance()->getOption(option, QDir::homePath()).toString());
+		if(dir.isEmpty())
+			return;
+		Options::instance()->setOption(option, dir);
+		QompTuneDownloader *td = new QompTuneDownloader(this);
+		td->download(tune, dir);
 	}
 
 }
