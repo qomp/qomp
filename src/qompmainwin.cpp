@@ -34,6 +34,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QClipboard>
+#include <QMenu>
 
 static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
 
@@ -83,9 +84,11 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 	connect(ui->actionExit, SIGNAL(triggered()), SIGNAL(exit()));
 
+	connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doMainContextMenu()));
+
 	connect(ui->playList, SIGNAL(activated(QModelIndex)), SLOT(mediaActivated(QModelIndex)));
 	connect(ui->playList, SIGNAL(clicked(QModelIndex)), SLOT(mediaClicked(QModelIndex)));
-	connect(ui->playList, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doContextMenu(QPoint)));
+	connect(ui->playList, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doTrackContextMenu(QPoint)));
 
 	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStateChanged(QompPlayer::State)));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
@@ -274,7 +277,7 @@ void QompMainWin::mediaClicked(const QModelIndex &index)
 	}
 }
 
-void QompMainWin::doContextMenu(const QPoint &p)
+void QompMainWin::doTrackContextMenu(const QPoint &p)
 {
 	QModelIndex index = ui->playList->indexAt(p);
 	if(!index.isValid())
@@ -306,6 +309,40 @@ void QompMainWin::doContextMenu(const QPoint &p)
 		qApp->clipboard()->setText(tune.url);
 	}
 
+}
+
+void QompMainWin::doMainContextMenu()
+{
+	QMenu *open = buildPluginListMenu();
+	QMenu m;
+	QList<QAction*> acts;
+	if(isHidden()) {
+		acts << new QAction(tr("Show"), &m);
+	}
+	else {
+		acts << new QAction(tr("Hide"), &m);
+	}
+	acts << open->menuAction();
+	acts << new QAction(tr("Settings"), &m);
+	QAction* sep = new QAction(&m);
+	sep->setSeparator(true);
+	acts << sep;
+	acts << new QAction(tr("Exit"), &m);
+	m.addActions(acts);
+	m.move(QCursor::pos());
+	QAction* x = m.exec();
+	int ret = acts.indexOf(x);
+	if(ret == 0)
+		trayDoubleclicked();
+	else if(ret == 2)
+		doOptions();
+	else if(ret == 4)
+		emit exit();
+	else if(x && x->parent() == open) {
+		getTunes(x->text());
+	}
+
+	open->deleteLater();
 }
 
 void QompMainWin::playerStateChanged(QompPlayer::State state)
@@ -375,36 +412,7 @@ void QompMainWin::trayDoubleclicked()
 void QompMainWin::trayActivated(Qt::MouseButton b)
 {
 	if(b == Qt::RightButton) {
-		QMenu *open = buildPluginListMenu();
-		QMenu m;
-		QList<QAction*> acts;
-		if(isHidden()) {
-			acts << new QAction(tr("Show"), &m);
-		}
-		else {
-			acts << new QAction(tr("Hide"), &m);
-		}
-		acts << open->menuAction();
-		acts << new QAction(tr("Settings"), &m);
-		QAction* sep = new QAction(&m);
-		sep->setSeparator(true);
-		acts << sep;
-		acts << new QAction(tr("Exit"), &m);
-		m.addActions(acts);
-		m.move(QCursor::pos());
-		QAction* x = m.exec();
-		int ret = acts.indexOf(x);
-		if(ret == 0)
-			trayDoubleclicked();
-		else if(ret == 2)
-			doOptions();
-		else if(ret == 4)
-			emit exit();
-		else if(x && x->parent() == open) {
-			getTunes(x->text());
-		}
-
-		open->deleteLater();
+		doMainContextMenu();
 	}
 	else if(b == Qt::MidButton) {
 		if(player_->state() == QompPlayer::StatePlaing || player_->state() == QompPlayer::StatePaused)

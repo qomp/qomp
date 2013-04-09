@@ -52,7 +52,9 @@ private slots:
 
 	void mediaActivated(const QModelIndex& index);
 	void mediaClicked(const QModelIndex& index);
-	void doContextMenu(const QPoint& p);
+	void doTrackContextMenu(const QPoint& p);
+
+	void doMainContextMenu();
 
 	void playerStateChanged(QompPlayer::State state);
 	void setCurrentPosition(qint64 ms);
