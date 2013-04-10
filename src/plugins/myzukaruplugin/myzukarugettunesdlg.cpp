@@ -100,6 +100,7 @@ void MyzukaruGettunesDlg::doSearch()
 	QNetworkReply* reply = nam_->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(searchFinished()));
 	requests_.insert(reply, 0);
+	startBusyWidget();
 }
 
 static QList<QompPluginModelItem*> parseTunes(const QString& replyStr, int songIndex)
@@ -162,6 +163,7 @@ void MyzukaruGettunesDlg::searchFinished()
 {
 	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
+	stopBusyWidget();
 	requests_.remove(reply);
 
 	if(reply->error() == QNetworkReply::NoError) {

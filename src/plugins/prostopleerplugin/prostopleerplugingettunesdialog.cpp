@@ -124,12 +124,14 @@ void ProstoPleerPluginGetTunesDialog::doSearchStepTwo()
 	QNetworkRequest nr(url);
 	QNetworkReply *reply = nam_->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(searchFinished()));
+	startBusyWidget();
 }
 
 void ProstoPleerPluginGetTunesDialog::searchFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
+	stopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
 		QRegExp re("<li duration=\"([\\d]+)\" file_id=\"([^\"]+)\" singer=\"([^\"]+)\" "
 			   "song=\"([^\"]+)\" link=\"([^\"]+)\"");

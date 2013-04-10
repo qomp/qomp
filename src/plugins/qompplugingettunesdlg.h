@@ -28,6 +28,7 @@ namespace Ui {
 class QompPluginGettunesDlg;
 }
 class QNetworkAccessManager;
+class QompBusyLabel;
 
 
 
@@ -66,6 +67,16 @@ protected slots:
 protected:
 	void keyPressEvent(QKeyEvent *e);
 
+	/**
+	 * Call this to start busy widget
+	 */
+	void startBusyWidget();
+
+	/**
+	 * Call this to stop busy widget
+	 */
+	void stopBusyWidget();
+
 protected:
 	/**
 	 * List of selected Tune's
@@ -79,6 +90,7 @@ protected:
 
 private:
 	Ui::QompPluginGettunesDlg *ui;
+	QompBusyLabel* bl_;
 };
 
 #endif // QOMPPLUGINGETTUNESDLG_H
