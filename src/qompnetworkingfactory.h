@@ -20,7 +20,8 @@
 #ifndef QOMPNETWORKINGFACTORY_H
 #define QOMPNETWORKINGFACTORY_H
 
-#include <QObject>
+#include <QPointer>
+
 class QNetworkAccessManager;
 
 class QompNetworkingFactory : public QObject
@@ -28,14 +29,16 @@ class QompNetworkingFactory : public QObject
 	Q_OBJECT
 public:
 	static QompNetworkingFactory* instance();
-	void updateProxySettings();
+	~QompNetworkingFactory();
+	void updateProxySettings() const;
 	QNetworkAccessManager* getNetworkAccessManager() const;
 	
 private:
 	QompNetworkingFactory();
+	void checkNAM() const;
 	static QompNetworkingFactory* instance_;
 
-	QNetworkAccessManager* manager_;
+	mutable QPointer<QNetworkAccessManager> manager_;
 };
 
 #endif // QOMPNETWORKINGFACTORY_H

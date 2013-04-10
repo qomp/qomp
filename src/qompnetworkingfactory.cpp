@@ -29,9 +29,16 @@ QompNetworkingFactory* QompNetworkingFactory::instance_ = 0;
 
 QompNetworkingFactory::QompNetworkingFactory() :
 	QObject(QCoreApplication::instance()),
-	manager_(new QNetworkAccessManager(this))
+	manager_(0)
 {
 	updateProxySettings();
+}
+
+void QompNetworkingFactory::checkNAM() const
+{
+	if(!manager_) {
+		manager_ = new QNetworkAccessManager();
+	}
 }
 
 
@@ -43,7 +50,13 @@ QompNetworkingFactory* QompNetworkingFactory::instance()
 	return instance_;
 }
 
-void QompNetworkingFactory::updateProxySettings()
+QompNetworkingFactory::~QompNetworkingFactory()
+{
+	if(manager_)
+		manager_->deleteLater();
+}
+
+void QompNetworkingFactory::updateProxySettings() const
 {
 	QNetworkProxy proxy;
 	if(Options::instance()->getOption(OPTION_PROXY_USE).toBool()) {
@@ -60,11 +73,13 @@ void QompNetworkingFactory::updateProxySettings()
 
 	}
 
+	checkNAM();
 	manager_->setProxy(proxy);
 	QNetworkProxy::setApplicationProxy(proxy);
 }
 
 QNetworkAccessManager *QompNetworkingFactory::getNetworkAccessManager() const
 {
+	updateProxySettings();
 	return manager_;
 }
