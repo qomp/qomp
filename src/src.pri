@@ -13,7 +13,8 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/qompnetworkingfactory.cpp \
     $$PWD/qompmetadataresolver.cpp \
     $$PWD/aboutdlg.cpp \
-    $$PWD/qomptunedownloader.cpp
+    $$PWD/qomptunedownloader.cpp \
+    $$PWD/qompplaylistdelegate.cpp
 
 
 HEADERS  += $$PWD/qompmainwin.h \
@@ -30,7 +31,8 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qompnetworkingfactory.h \
     $$PWD/qompmetadataresolver.h \
     $$PWD/aboutdlg.h \
-    $$PWD/qomptunedownloader.h
+    $$PWD/qomptunedownloader.h \
+    $$PWD/qompplaylistdelegate.h
 
 
 FORMS    += $$PWD/qompmainwin.ui \

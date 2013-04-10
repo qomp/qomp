@@ -28,6 +28,7 @@
 #include "qompmetadataresolver.h"
 #include "aboutdlg.h"
 #include "qomptunedownloader.h"
+#include "qompplaylistdelegate.h"
 
 #include "ui_qompmainwin.h"
 
@@ -55,6 +56,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	player_->setVolumeSlider(ui->volumeSlider);
 
 	ui->playList->setModel(model_);
+	ui->playList->setItemDelegate(new QompPlaylistDelegate(this));
 
 	TuneList tl = Tune::tunesFromFile(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
 	if(!tl.isEmpty()) {

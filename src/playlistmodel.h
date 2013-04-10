@@ -32,7 +32,10 @@ public:
 	enum PlayListModelRole {
 		ArtistRole = Qt::UserRole+1,
 		TitleRole = Qt::UserRole+2,
-		TrackRole = Qt::UserRole+3
+		TrackRole = Qt::UserRole+3,
+		DurationRole = Qt::UserRole+4,
+		URLRole = Qt::UserRole+5,
+		FileRole = Qt::UserRole+6
 	};
 
 	void addTunes(const TuneList& tunes);

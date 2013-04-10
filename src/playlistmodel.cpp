@@ -145,6 +145,15 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
 		return ret;
 	}
 
+	else if(role == DurationRole) {
+		return tunes_.at(index.row()).duration;
+	}
+	else if(role == FileRole) {
+		return tunes_.at(index.row()).file;
+	}
+	else if(role == URLRole) {
+		return tunes_.at(index.row()).url;
+	}
 
 	return QVariant();
 }
@@ -185,7 +194,7 @@ void PlayListModel::totalTimeChanged(const Tune &tune, qint64 msec)
 	for(; it != tunes_.end(); ++it) {
 		if((*it) == tune) {
 			emit layoutAboutToBeChanged();
-			if(msec != -1)
+			if(msec != -1 && msec != 0)
 				(*it).duration = durationMiliSecondsToString(msec);
 			emit layoutChanged();
 			break;
