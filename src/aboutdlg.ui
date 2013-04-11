@@ -96,7 +96,8 @@
       </font>
      </property>
      <property name="text">
-      <string>Listening to the music from different music hostings</string>
+      <string>Quick(Qt) Online Music Player
+Listening to the music from different music hostings</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
