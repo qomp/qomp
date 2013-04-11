@@ -270,12 +270,14 @@ void MyzukaruGettunesDlg::itemSelected(const QModelIndex &ind)
 #pragma GCC diagnostic ignored "-Wuninitialized"
 #endif
 	connect(reply, SIGNAL(finished()), slot);
+	startBusyWidget();
 }
 
 void MyzukaruGettunesDlg::tuneUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
+	stopBusyWidget();
 	void* model = requests_.value(reply);
 	requests_.remove(reply);
 	if(reply->error() == QNetworkReply::NoError) {
@@ -298,6 +300,7 @@ void MyzukaruGettunesDlg::albumUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
+	stopBusyWidget();
 	QompPluginTreeModel *model = (QompPluginTreeModel *)requests_.value(reply);
 	requests_.remove(reply);
 	if(reply->error() == QNetworkReply::NoError) {
@@ -334,6 +337,7 @@ void MyzukaruGettunesDlg::artistUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
+	stopBusyWidget();
 	void* model = requests_.value(reply);
 	requests_.remove(reply);
 	if(reply->error() == QNetworkReply::NoError) {
@@ -394,6 +398,7 @@ void MyzukaruGettunesDlg::artistUrlFinished()
 			newReply->setProperty("id", id);
 			requests_.insert(newReply, model);
 			connect(newReply, SIGNAL(finished()), SLOT(artistUrlFinished()));
+			startBusyWidget();
 		}
 	}
 }

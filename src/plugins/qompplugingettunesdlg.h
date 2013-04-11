@@ -28,8 +28,6 @@ namespace Ui {
 class QompPluginGettunesDlg;
 }
 class QNetworkAccessManager;
-class QompBusyLabel;
-
 
 
 class QompPluginGettunesDlg : public QDialog
@@ -39,12 +37,6 @@ class QompPluginGettunesDlg : public QDialog
 public:
 	explicit QompPluginGettunesDlg(QWidget *parent = 0);
 	virtual ~QompPluginGettunesDlg();
-
-	/**
-	 * You should set results widget (like QompPluginTreeView)
-	 * before use this dialog
-	 */
-	void setResultsWidget(QWidget* widget);
 
 	/**
 	 * Return list of Tune's
@@ -77,6 +69,12 @@ protected:
 	 */
 	void stopBusyWidget();
 
+	/**
+	 * You should set results widget (like QompPluginTreeView)
+	 * before use this dialog
+	 */
+	void setResultsWidget(QWidget* widget);
+
 protected:
 	/**
 	 * List of selected Tune's
@@ -90,7 +88,6 @@ protected:
 
 private:
 	Ui::QompPluginGettunesDlg *ui;
-	QompBusyLabel* bl_;
 };
 
 #endif // QOMPPLUGINGETTUNESDLG_H

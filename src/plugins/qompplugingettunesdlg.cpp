@@ -21,7 +21,6 @@
 #include "qompnetworkingfactory.h"
 #include "defines.h"
 #include "options.h"
-#include "qompbusylabel.h"
 
 #include "ui_qompplugingettunesdlg.h"
 
@@ -40,8 +39,7 @@ QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 	ui->cb_search->setInsertPolicy(QComboBox::InsertAtTop);
 	connect(ui->pb_search, SIGNAL(clicked()), SLOT(doSearch()));
 
-	bl_ = new QompBusyLabel(tr("Searching"), this);
-	bl_->setAlignment(Qt::AlignCenter | Qt::AlignHCenter);
+	ui->lb_busy->changeText(tr("Searching"));
 }
 
 QompPluginGettunesDlg::~QompPluginGettunesDlg()
@@ -81,10 +79,10 @@ void QompPluginGettunesDlg::keyPressEvent(QKeyEvent *e)
 
 void QompPluginGettunesDlg::startBusyWidget()
 {
-	bl_->start();
+	ui->lb_busy->start();
 }
 
 void QompPluginGettunesDlg::stopBusyWidget()
 {
-	bl_->stop();
+	ui->lb_busy->stop();
 }

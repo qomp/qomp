@@ -8,7 +8,7 @@ class QompBusyLabel : public QLabel
 {
 	Q_OBJECT
 public:
-	explicit QompBusyLabel(const QString& text, QWidget *parent);
+	explicit QompBusyLabel(QWidget *parent = 0);
 	~QompBusyLabel();
 	void changeText(const QString& text);
 
@@ -18,17 +18,12 @@ public slots:
 	
 protected:
 	void paintEvent(QPaintEvent *);
-	bool eventFilter(QObject *o, QEvent *e);
-
-private:
-	void updateGeometry();
 	
 private slots:
 	void timeout();
 	
 private:
 	QTimer* timer_;
-	QWidget *parent_;
 	int curPos_;
 	QString curText_;
 };
