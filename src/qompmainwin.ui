@@ -236,6 +236,13 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QompBusyLabel" name="lb_busy">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -262,6 +269,11 @@
    <class>Phonon::VolumeSlider</class>
    <extends>QWidget</extends>
    <header location="global">phonon/volumeslider.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QompBusyLabel</class>
+   <extends>QLabel</extends>
+   <header>qompbusylabel.h</header>
   </customwidget>
  </customwidgets>
  <resources>

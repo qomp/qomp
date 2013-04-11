@@ -379,8 +379,17 @@ void QompMainWin::doMainContextMenu()
 void QompMainWin::playerStateChanged(QompPlayer::State state)
 {
 	updateIcons();
+	ui->lb_busy->stop();
 	if(state == QompPlayer::StateError)
 		playNext();
+	else if(state == QompPlayer::StateBuffering) {
+		ui->lb_busy->changeText(tr("Buffering"));
+		ui->lb_busy->start();
+	}
+	else if(state == QompPlayer::StateLoading) {
+		ui->lb_busy->changeText(tr("Loading"));
+		ui->lb_busy->start();
+	}
 }
 
 void QompMainWin::setCurrentPosition(qint64 ms)

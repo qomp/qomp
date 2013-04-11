@@ -38,7 +38,11 @@ public:
 	QompPlayer(QObject *parent = 0);
 	~QompPlayer();
 
-	enum State { StateUnknown = 0, StateStopped, StatePaused, StatePlaing, StateError, StateLoading };
+	enum State { StateUnknown = 0,
+		StateStopped, StatePaused,
+		StatePlaing, StateError,
+		StateLoading, StateBuffering
+	};
 
 	void setSeekSlider(Phonon::SeekSlider* slider);
 	void setVolumeSlider(Phonon::VolumeSlider* slider);

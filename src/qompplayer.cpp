@@ -24,6 +24,12 @@
 #include <Phonon/VolumeSlider>
 #include <phonon/BackendCapabilities>
 
+//#define DEBUG_OUTPUT
+
+#ifdef DEBUG_OUTPUT
+#include <QtDebug>
+#endif
+
 QompPlayer::QompPlayer(QObject *parent) :
 	QObject(parent)
 {
@@ -57,15 +63,35 @@ QompPlayer::State QompPlayer::state() const
 {
 	switch (mediaObject_->state()) {
 	case Phonon::PausedState:
+#ifdef DEBUG_OUTPUT
+		qDebug() << "QompPlayer::state()" << "PausedState";
+#endif
 		return StatePaused;
 	case Phonon::PlayingState:
+#ifdef DEBUG_OUTPUT
+		qDebug() << "QompPlayer::state()" << "Phonon::PlayingState";
+#endif
 		return StatePlaing;
 	case Phonon::StoppedState:
+#ifdef DEBUG_OUTPUT
+		qDebug() << "QompPlayer::state()" << "Phonon::StoppedState";
+#endif
 		return StateStopped;
 	case Phonon::ErrorState:
+#ifdef DEBUG_OUTPUT
+		qDebug() << "QompPlayer::state()" << "Phonon::ErrorState"
+			    << mediaObject_->errorType() << mediaObject_->errorString();
+#endif
 		return StateError;
 	case Phonon::BufferingState:
+#ifdef DEBUG_OUTPUT
+		qDebug() << "QompPlayer::state()" << "Phonon::BufferingState";
+#endif
+		return StateBuffering;
 	case Phonon::LoadingState:
+#ifdef DEBUG_OUTPUT
+		qDebug() << "QompPlayer::state()" << "Phonon::LoadingState";
+#endif
 		return StateLoading;
 	}
 	return StateUnknown;
