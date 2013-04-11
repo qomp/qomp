@@ -48,7 +48,8 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	player_(new QompPlayer(this)),
 	model_(new PlayListModel(this)),
 	trayIcon_(new QompTrayIcon(this)),
-	resolver_(new QompMetaDataResolver(this))
+	resolver_(new QompMetaDataResolver(this)),
+	currentState_(QompPlayer::StateStopped)
 {
 	ui->setupUi(this);
 
@@ -164,6 +165,10 @@ void QompMainWin::actPlayActivated()
 
 	player_->playOrPause();
 	updateTuneInfo();
+	if(currentState_ == QompPlayer::StatePlaing)
+		currentState_ = QompPlayer::StatePaused;
+	else
+		currentState_ = QompPlayer::StatePlaing;
 }
 
 void QompMainWin::updateIcons()
@@ -213,6 +218,8 @@ void QompMainWin::actStopActivated()
 {
 	player_->stop();
 	setCurrentPosition(0);
+	ui->lb_busy->stop();
+	currentState_ = QompPlayer::StateStopped;
 	QModelIndex index = ui->playList->currentIndex();
 	if(index.isValid())
 		model_->setCurrentTune(model_->tune(index));
@@ -380,6 +387,9 @@ void QompMainWin::playerStateChanged(QompPlayer::State state)
 {
 	updateIcons();
 	ui->lb_busy->stop();
+	if(currentState_ == QompPlayer::StateStopped)
+		return;
+
 	if(state == QompPlayer::StateError)
 		playNext();
 	else if(state == QompPlayer::StateBuffering) {
@@ -400,6 +410,9 @@ void QompMainWin::setCurrentPosition(qint64 ms)
 void QompMainWin::playNext()
 {
 	setCurrentPosition(0);
+	if(currentState_ == QompPlayer::StateStopped)
+		return;
+
 	if(model_->indexForTune(model_->currentTune()).row() == model_->rowCount()-1) {
 		actStopActivated();
 		model_->setCurrentTune(Tune());

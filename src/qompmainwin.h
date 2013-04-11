@@ -86,6 +86,7 @@ private:
 	PlayListModel* model_;
 	QompTrayIcon* trayIcon_;
 	QompMetaDataResolver* resolver_;
+	QompPlayer::State currentState_;
 };
 
 #endif // QOMPMAINWIN_H
