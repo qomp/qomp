@@ -73,7 +73,8 @@ void QompOptionsMain::restoreOptions()
 
 	ui->cb_output->clear();
 	ui->cb_output->addItem(defaultDevice);
-	ui->cb_output->addItems(player_->audioOutputDevice());
+	if(player_)
+		ui->cb_output->addItems(player_->audioOutputDevice());
 	QString dev = Options::instance()->getOption(OPTION_AUDIO_DEVICE, defaultDevice).toString();
 	int index = ui->cb_output->findText(dev);
 	if(index == -1)
