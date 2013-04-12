@@ -17,36 +17,31 @@
  *
  */
 
-#ifndef QOMPMETADATARESOLVER_H
-#define QOMPMETADATARESOLVER_H
+#ifndef QOMPPHONONMETADATARESOLVER_H
+#define QOMPPHONONMETADATARESOLVER_H
 
-#include "tune.h"
+#include "qompmetadataresolver.h"
 
-#include <QObject>
-#include <QMap>
+#include <Phonon/MediaObject>
 
-class QompMetaDataResolver : public QObject
+class QompPhononMetaDataResolver : public QompMetaDataResolver
 {
 	Q_OBJECT
 public:
-	QompMetaDataResolver(QObject *parent = 0) : QObject(parent){}
-	virtual void resolve(const TuneList& tunes) = 0;
-	
-signals:
-	void newMetaData(const Tune&, const QMap<QString, QString>&);
-	void newDuration(const Tune&, qint64 msec);
-	
-protected:
-	struct ResolvedData
-	{
-		ResolvedData(const Tune& t) :
-			tune(t), duration(-1) {}
+	QompPhononMetaDataResolver(QObject *parent = 0);
+	~QompPhononMetaDataResolver();
+	virtual void resolve(const TuneList& tunes);
 
-		Tune tune;
-		QMap<QString,QString> metaData;
-		qint64 duration;
-	};
-	QList<ResolvedData> data_;
+private slots:
+	void metaDataReady();
+	void resolverStateChanged(Phonon::State newState, Phonon::State oldState);
+	void totalTimeChanged(qint64 msec);
+
+private:
+	Phonon::MediaSource objectForTune(const Tune& tune) const;
+
+private:
+	Phonon::MediaObject* resolver_;
 };
 
-#endif // QOMPMETADATARESOLVER_H
+#endif // QOMPPHONONMETADATARESOLVER_H

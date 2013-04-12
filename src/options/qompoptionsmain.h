@@ -25,6 +25,7 @@
 namespace Ui {
 class QompOptionsMain;
 }
+class QompPlayer;
 
 class QompOptionsMain : public QompOptionsPage
 {
@@ -36,12 +37,15 @@ public:
 
 	virtual QString name() const { return tr("Main"); }
 
+	void setQompPlayer(QompPlayer* player);
+
 public slots:
 	virtual void applyOptions();
 	virtual void restoreOptions();
 	
 private:
 	Ui::QompOptionsMain *ui;
+	QompPlayer* player_;
 };
 
 #endif // QOMPOPTIONSMAIN_H

@@ -27,13 +27,14 @@ class QompOptionsDlg;
 }
 class QompOptionsPage;
 class QAbstractButton;
+class QompMainWin;
 
 class QompOptionsDlg : public QDialog
 {
 	Q_OBJECT
 	
 public:
-	QompOptionsDlg(QWidget *parent = 0);
+	QompOptionsDlg(QompMainWin *parent);
 	~QompOptionsDlg();
 
 public slots:

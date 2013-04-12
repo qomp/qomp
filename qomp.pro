@@ -1,6 +1,15 @@
-QT       += core gui network phonon
+QT += core gui network
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets
+}
+
+CONFIG += phonon_backend
+
+phonon_backend {
+    QT += phonon
+    DEFINES += HAVE_PHONON
+}
 
 TARGET = qomp
 TEMPLATE = app

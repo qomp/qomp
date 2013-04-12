@@ -11,12 +11,10 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/qomptrayicon.cpp \
     $$PWD/common.cpp \
     $$PWD/qompnetworkingfactory.cpp \
-    $$PWD/qompmetadataresolver.cpp \
     $$PWD/aboutdlg.cpp \
     $$PWD/qomptunedownloader.cpp \
     $$PWD/qompplaylistdelegate.cpp \
-    src/qompbusylabel.cpp
-
+    $$PWD/qompbusylabel.cpp
 
 HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qomp.h \
@@ -34,12 +32,18 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/aboutdlg.h \
     $$PWD/qomptunedownloader.h \
     $$PWD/qompplaylistdelegate.h \
-    src/qompbusylabel.h
-
+    $$PWD/qompbusylabel.h
 
 FORMS    += $$PWD/qompmainwin.ui \
     $$PWD/aboutdlg.ui
 
+phonon_backend {
+    HEADERS += $$PWD/qompphononplayer.h \
+    $$PWD/qompphononmetadataresolver.h
+
+    SOURCES += $$PWD/qompphononplayer.cpp \
+    $$PWD/qompphononmetadataresolver.cpp
+}
 
 include (plugins/plugins.pri)
 include (options/options.pri)

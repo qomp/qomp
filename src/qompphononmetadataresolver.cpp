@@ -17,13 +17,11 @@
  *
  */
 
-#include "qompmetadataresolver.h"
-#include "options.h"
-#include "defines.h"
+#include "qompphononmetadataresolver.h"
 
 
-QompMetaDataResolver::QompMetaDataResolver(QObject *parent) :
-	QObject(parent),
+QompPhononMetaDataResolver::QompPhononMetaDataResolver(QObject *parent) :
+	QompMetaDataResolver(parent),
 	resolver_(new Phonon::MediaObject(this))
 {
 	connect(resolver_, SIGNAL(metaDataChanged()), SLOT(metaDataReady()));
@@ -31,7 +29,12 @@ QompMetaDataResolver::QompMetaDataResolver(QObject *parent) :
 	connect(resolver_, SIGNAL(totalTimeChanged(qint64)), SLOT(totalTimeChanged(qint64)));
 }
 
-void QompMetaDataResolver::resolve(const TuneList &tunes)
+QompPhononMetaDataResolver::~QompPhononMetaDataResolver()
+{
+	resolver_->deleteLater();
+}
+
+void QompPhononMetaDataResolver::resolve(const TuneList &tunes)
 {
 	bool start = data_.isEmpty();
 	foreach(const Tune& tune, tunes) {
@@ -44,18 +47,13 @@ void QompMetaDataResolver::resolve(const TuneList &tunes)
 	}
 }
 
-void QompMetaDataResolver::resolverStateChanged(Phonon::State newState, Phonon::State /*oldState*/)
+void QompPhononMetaDataResolver::resolverStateChanged(Phonon::State newState, Phonon::State /*oldState*/)
 {
 	if(newState != Phonon::PausedState)
 		return;
 
 	if(!data_.isEmpty()) {
 		ResolvedData data = data_.takeFirst();
-
-		if(Options::instance()->getOption(OPTION_UPDATE_METADATA, false).toBool())
-			emit newMetaData(data.tune, data.metaData);
-
-		//Duration we resolving in any case
 		emit newDuration(data.tune, data.duration);
 	}
 
@@ -67,7 +65,7 @@ void QompMetaDataResolver::resolverStateChanged(Phonon::State newState, Phonon::
 		resolver_->clear();
 }
 
-void QompMetaDataResolver::totalTimeChanged(qint64 msec)
+void QompPhononMetaDataResolver::totalTimeChanged(qint64 msec)
 {
 	if(!data_.isEmpty()) {
 		ResolvedData& data = data_.first();
@@ -75,7 +73,7 @@ void QompMetaDataResolver::totalTimeChanged(qint64 msec)
 	}
 }
 
-void QompMetaDataResolver::metaDataReady()
+void QompPhononMetaDataResolver::metaDataReady()
 {
 	if(!data_.isEmpty()) {
 		ResolvedData& data = data_.first();
@@ -83,7 +81,7 @@ void QompMetaDataResolver::metaDataReady()
 	}
 }
 
-Phonon::MediaSource QompMetaDataResolver::objectForTune(const Tune &tune) const
+Phonon::MediaSource QompPhononMetaDataResolver::objectForTune(const Tune &tune) const
 {
 	Phonon::MediaSource ms;
 	if(!tune.file.isEmpty()) {

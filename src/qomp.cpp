@@ -22,6 +22,7 @@
 #include "options.h"
 #include "defines.h"
 #include "qompnetworkingfactory.h"
+#include "qompphononplayer.h"
 
 #include <QApplication>
 
@@ -31,8 +32,17 @@ Qomp::Qomp(QObject *parent) :
 	mainWin_ = new QompMainWin();
 	connect(mainWin_, SIGNAL(exit()), SLOT(exit()));
 
+#ifdef HAVE_PHONON
+	mainWin_->setPlayer(new QompPhononPlayer(this));
+#endif
+
 	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
 		mainWin_->hide();
+	else
+		mainWin_->show();
+
+	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
+		mainWin_->actPlayActivated();
 
 	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateOptions()));
 }
@@ -55,5 +65,6 @@ void Qomp::exit()
 void Qomp::updateOptions()
 {
 	QompNetworkingFactory::instance()->updateProxySettings();
-	mainWin_->player()->setAudioOutputDevice(Options::instance()->getOption(OPTION_AUDIO_DEVICE, -1).toInt());
+	if(mainWin_->player())
+		mainWin_->player()->setAudioOutputDevice(Options::instance()->getOption(OPTION_AUDIO_DEVICE).toString());
 }

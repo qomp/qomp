@@ -21,21 +21,28 @@
 #include "defines.h"
 #include "options.h"
 #include "common.h"
+#include "qompplayer.h"
 #include "ui_qompoptionsmain.h"
 
-#include <phonon/BackendCapabilities>
+static const QString defaultDevice = QObject::tr("default");
 
 QompOptionsMain::QompOptionsMain(QWidget *parent) :
 	QompOptionsPage(parent),
-	ui(new Ui::QompOptionsMain)
+	ui(new Ui::QompOptionsMain),
+	player_(0)
 {
 	ui->setupUi(this);
-	restoreOptions();
 }
 
 QompOptionsMain::~QompOptionsMain()
 {
 	delete ui;
+}
+
+void QompOptionsMain::setQompPlayer(QompPlayer *player)
+{
+	player_ = player;
+	restoreOptions();
 }
 
 void QompOptionsMain::applyOptions()
@@ -48,7 +55,7 @@ void QompOptionsMain::applyOptions()
 	Options::instance()->setOption(OPTION_PROXY_USER, ui->le_user->text());
 	Options::instance()->setOption(OPTION_PROXY_USE, ui->gb_proxy->isChecked());
 	Options::instance()->setOption(OPTION_PROXY_TYPE, ui->cb_proxy_type->currentText());
-	Options::instance()->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->itemData(ui->cb_output->currentIndex()));
+	Options::instance()->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->currentText());
 	Options::instance()->setOption(OPTION_UPDATE_METADATA, ui->cb_metaData->isChecked());
 }
 
@@ -64,11 +71,13 @@ void QompOptionsMain::restoreOptions()
 	ui->cb_proxy_type->setCurrentIndex(ui->cb_proxy_type->findText(Options::instance()->getOption(OPTION_PROXY_TYPE, "HTTP").toString()));
 	ui->cb_metaData->setChecked(Options::instance()->getOption(OPTION_UPDATE_METADATA, false).toBool());
 
-	ui->cb_output->addItem(tr("default"), -1);
-	QList<Phonon::AudioOutputDevice> audioOutputDevices = Phonon::BackendCapabilities::availableAudioOutputDevices();
-	foreach(Phonon::AudioOutputDevice dev, audioOutputDevices) {
-		ui->cb_output->addItem(dev.name(), dev.index());
-	}
-	int index = Options::instance()->getOption(OPTION_AUDIO_DEVICE, -1).toInt();
-	ui->cb_output->setCurrentIndex(ui->cb_output->findData(index));
+	ui->cb_output->clear();
+	ui->cb_output->addItem(defaultDevice);
+	ui->cb_output->addItems(player_->audioOutputDevice());
+	QString dev = Options::instance()->getOption(OPTION_AUDIO_DEVICE, defaultDevice).toString();
+	int index = ui->cb_output->findText(dev);
+	if(index == -1)
+		ui->cb_output->setCurrentIndex(ui->cb_output->findText(defaultDevice));
+	else
+		ui->cb_output->setCurrentIndex(index);
 }

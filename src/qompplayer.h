@@ -21,22 +21,15 @@
 #define QOPMPLAYER_H
 
 #include "tune.h"
+#include <QObject>
 
-namespace Phonon {
-class SeekSlider;
-class VolumeSlider;
-class AudioOutput;
-class MediaSource;
-}
-
-#include <Phonon/MediaObject>
+class QompMetaDataResolver;
 
 class QompPlayer : public QObject
 {
 	Q_OBJECT
 public:
 	QompPlayer(QObject *parent = 0);
-	~QompPlayer();
 
 	enum State { StateUnknown = 0,
 		StateStopped, StatePaused,
@@ -44,28 +37,35 @@ public:
 		StateLoading, StateBuffering
 	};
 
-	void setSeekSlider(Phonon::SeekSlider* slider);
-	void setVolumeSlider(Phonon::VolumeSlider* slider);
-	State state() const;
-	void setTune(const Tune& tune);
+	virtual void setTune(const Tune& tune);
 	Tune currentTune() const;
-	void playOrPause();
-	void stop();
 
-	void setAudioOutputDevice(int index);
+	virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
+
+	virtual void setVolume(qreal vol) = 0;
+	virtual qreal volume() const = 0;
+	virtual void setMute(bool mute) = 0;
+	virtual bool isMuted() const = 0;
+	virtual void setPosition(qint64 pos) = 0;
+	virtual qint64 position() const = 0;
+
+	virtual State state() const = 0;
+	virtual void playOrPause() = 0;
+	virtual void stop() = 0;
+	virtual qint64 currentTuneTotalTime() const = 0;
+
+	virtual QStringList audioOutputDevice() const = 0;
+	virtual void setAudioOutputDevice(const QString& devName) = 0;
 	
 signals:
-	void currentPosition(qint64 pos);
+	void currentPositionChanged(qint64 pos);
+	void currentTuneTotalTimeChanged(qint64 time);
 	void stateChanged(QompPlayer::State newState);
 	void mediaFinished();
+	void volumeChanged(qreal newVolume);
+	void mutedChanged(bool muted);
 
-private slots:
-	void stateChanged();
-	
 private:
-	Phonon::MediaObject* mediaObject_;
-	Phonon::AudioOutput* audioOutput_;
-	Phonon::AudioOutputDevice defaultDevice_;
 	Tune currentTune_;
 };
 

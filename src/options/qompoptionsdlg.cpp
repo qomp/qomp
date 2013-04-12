@@ -42,18 +42,22 @@
 #include "pluginmanager.h"
 #include "qompoptionsmain.h"
 #include "options.h"
+#include "qompmainwin.h"
+
 #include "ui_qompoptionsdlg.h"
 
 #include <QAbstractButton>
 #include <QListWidgetItem>
 
-QompOptionsDlg::QompOptionsDlg(QWidget *parent) :
+QompOptionsDlg::QompOptionsDlg(QompMainWin *parent) :
 	QDialog(parent),
 	ui(new Ui::QompOptionsDlg)
 {
 	ui->setupUi(this);
 	QList<QompOptionsPage*> list;
-	list << new QompOptionsMain;
+	QompOptionsMain* om = new QompOptionsMain(this);
+	om->setQompPlayer(parent->player());
+	list << om;
 
 	foreach(QompOptionsPage* page, list) {
 		ui->sw_pages->addWidget(page);
@@ -106,6 +110,7 @@ void QompOptionsDlg::applyOptions()
 void QompOptionsDlg::itemChanged(int row)
 {
 	ui->sw_pages->setCurrentIndex(row);
+	static_cast<QompOptionsPage*>(ui->sw_pages->currentWidget())->restoreOptions();
 }
 
 void QompOptionsDlg::buttonClicked(QAbstractButton *b)

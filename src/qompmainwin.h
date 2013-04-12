@@ -30,7 +30,6 @@ namespace Ui {
 class PlayListModel;
 class QModelIndex;
 class QompTrayIcon;
-class QompMetaDataResolver;
 
 class QompMainWin : public QMainWindow
 {
@@ -41,14 +40,21 @@ public:
 	~QompMainWin();
 
 	QompPlayer* player() const;
+	void setPlayer(QompPlayer* player);
 
-private slots:
+public slots:
 	void actPlayActivated();
 	void actPrevActivated();
 	void actNextActivated();
 	void actStopActivated();
+
+private slots:
 	void actOpenActivated();
 	void actClearActivated();
+	void muteButtonActivated(bool);
+	void volumeSliderMoved(int);
+	void volumeChanged(qreal vol);
+	void seekSliderMoved(int);
 
 	void mediaActivated(const QModelIndex& index);
 	void mediaClicked(const QModelIndex& index);
@@ -58,6 +64,7 @@ private slots:
 
 	void playerStateChanged(QompPlayer::State state);
 	void setCurrentPosition(qint64 ms);
+	void currentTotalTimeChanged(qint64 ms);
 	void playNext();
 	void doOptions();
 	void updateTuneInfo();
@@ -85,7 +92,6 @@ private:
 	QompPlayer* player_;
 	PlayListModel* model_;
 	QompTrayIcon* trayIcon_;
-	QompMetaDataResolver* resolver_;
 	QompPlayer::State currentState_;
 };
 
