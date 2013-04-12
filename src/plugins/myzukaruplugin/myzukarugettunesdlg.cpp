@@ -56,6 +56,7 @@ MyzukaruGettunesDlg::MyzukaruGettunesDlg(QWidget *parent) :
 		connect(view, SIGNAL(clicked(QModelIndex)), SLOT(itemSelected(QModelIndex)));
 		connect(view, SIGNAL(expanded(QModelIndex)), SLOT(itemSelected(QModelIndex)));
 	}
+	connect(this, SIGNAL(searchTextChanged(QString)), SLOT(getSuggestions(QString)));
 }
 
 void MyzukaruGettunesDlg::accept()
@@ -273,6 +274,37 @@ void MyzukaruGettunesDlg::itemSelected(const QModelIndex &ind)
 	startBusyWidget();
 }
 
+void MyzukaruGettunesDlg::getSuggestions(const QString &text)
+{
+	QUrl url(QString("http://myzuka.ru/Search/Suggestions?term=%1")
+		 .arg(text), QUrl::StrictMode);
+	QNetworkRequest nr(url);
+	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+	QNetworkReply *reply = nam_->get(nr);
+	connect(reply, SIGNAL(finished()), SLOT(suggestionsFinished()));
+}
+
+void MyzukaruGettunesDlg::suggestionsFinished()
+{
+	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
+	reply->deleteLater();
+	if(reply->error() == QNetworkReply::NoError) {
+		QString replyStr = QString::fromUtf8(reply->readAll());
+		QRegExp sugRx("\"label\":\"([^\"]+)\"");
+		sugRx.setMinimal(true);
+		int ind = 0;
+		QStringList sugs;
+		while((ind = sugRx.indexIn(replyStr, ind)) != -1) {
+			ind += sugRx.matchedLength();
+			sugs.append(unescape(sugRx.cap(1)));
+		}
+		if(!sugs.isEmpty()) {
+			newSuggestions(sugs);
+		}
+	}
+}
+
 void MyzukaruGettunesDlg::tuneUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
@@ -283,7 +315,7 @@ void MyzukaruGettunesDlg::tuneUrlFinished()
 	if(reply->error() == QNetworkReply::NoError) {
 		QString id = reply->property("id").toString();
 		QRegExp re("\"(http://[^\"]+)\"");
-		QString text = reply->readAll();
+		QString text = QString::fromUtf8(reply->readAll());
 		if(re.indexIn(text) != -1) {
 			QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
 			QompPluginModelItem* it = model_->itemForId(id);

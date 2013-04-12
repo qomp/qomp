@@ -50,6 +50,8 @@ private slots:
 	void albumUrlFinished();
 	void artistUrlFinished();
 	void itemSelected(const QModelIndex& ind);
+	void getSuggestions(const QString& text);
+	void suggestionsFinished();
 
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;

@@ -25,10 +25,12 @@
 #include "ui_qompplugingettunesdlg.h"
 
 #include <QKeyEvent>
+#include <QMenu>
 
 QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 	QDialog(parent),
-	ui(new Ui::QompPluginGettunesDlg)
+	ui(new Ui::QompPluginGettunesDlg),
+	suggestionsMenu_(new QMenu(this))
 {
 	ui->setupUi(this);
 	nam_ = QompNetworkingFactory::instance()->getNetworkAccessManager();
@@ -38,8 +40,12 @@ QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 	ui->cb_search->addItems(searchHistory);
 	ui->cb_search->setInsertPolicy(QComboBox::InsertAtTop);
 	connect(ui->pb_search, SIGNAL(clicked()), SLOT(doSearch()));
+	connect(ui->cb_search, SIGNAL(editTextChanged(QString)), SIGNAL(searchTextChanged(QString)));
 
 	ui->lb_busy->changeText(tr("Searching"));
+
+	suggestionsMenu_->installEventFilter(this);
+	connect(suggestionsMenu_, SIGNAL(triggered(QAction*)), SLOT(suggestionActionTriggered(QAction*)));
 }
 
 QompPluginGettunesDlg::~QompPluginGettunesDlg()
@@ -55,6 +61,16 @@ QompPluginGettunesDlg::~QompPluginGettunesDlg()
 void QompPluginGettunesDlg::setResultsWidget(QWidget *widget)
 {
 	ui->mainLayout->insertWidget(1, widget);
+}
+
+void QompPluginGettunesDlg::suggestionActionTriggered(QAction *a)
+{
+	if(a) {
+		ui->cb_search->blockSignals(true);
+		ui->cb_search->addItem(a->text());
+		ui->cb_search->setCurrentIndex(ui->cb_search->findText(a->text()));
+		ui->cb_search->blockSignals(false);
+	}
 }
 
 TuneList QompPluginGettunesDlg::getTunes() const
@@ -77,6 +93,28 @@ void QompPluginGettunesDlg::keyPressEvent(QKeyEvent *e)
 	return QDialog::keyPressEvent(e);
 }
 
+bool QompPluginGettunesDlg::eventFilter(QObject *o, QEvent *e)
+{
+	if(o == suggestionsMenu_ && e->type() == QEvent::KeyPress) {
+		QKeyEvent* ke = static_cast<QKeyEvent*>(e);
+		if(ke->key() != Qt::Key_Up
+			&& ke->key() != Qt::Key_Down
+			&& ke->key() != Qt::Key_Return) {
+			ui->cb_search->setFocus();
+			qApp->postEvent(ui->cb_search, new QKeyEvent(ke->type(),
+								     ke->key(),
+								     ke->modifiers(),
+								     ke->text(),
+								     ke->isAutoRepeat(),
+								     ushort(ke->count())));
+			ke->accept();
+			suggestionsMenu_->hide();
+			return true;
+		}
+	}
+	return QDialog::eventFilter(o, e);
+}
+
 void QompPluginGettunesDlg::startBusyWidget()
 {
 	ui->lb_busy->start();
@@ -85,4 +123,16 @@ void QompPluginGettunesDlg::startBusyWidget()
 void QompPluginGettunesDlg::stopBusyWidget()
 {
 	ui->lb_busy->stop();
+}
+
+void QompPluginGettunesDlg::newSuggestions(const QStringList &list)
+{
+	suggestionsMenu_->clear();
+
+	foreach(const QString& sug, list) {
+		QAction* act = new QAction(sug, suggestionsMenu_);
+		suggestionsMenu_->addAction(act);
+	}
+	suggestionsMenu_->popup(mapToGlobal(ui->cb_search->geometry().bottomLeft()));
+	suggestionsMenu_->move(mapToGlobal(ui->cb_search->geometry().bottomLeft()));
 }

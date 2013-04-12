@@ -28,6 +28,7 @@ namespace Ui {
 class QompPluginGettunesDlg;
 }
 class QNetworkAccessManager;
+class QMenu;
 
 
 class QompPluginGettunesDlg : public QDialog
@@ -39,8 +40,7 @@ public:
 	virtual ~QompPluginGettunesDlg();
 
 	/**
-	 * Return list of Tune's
-	 *
+	 * Return list of Tunes
 	 */
 	virtual TuneList getTunes() const;
 
@@ -48,6 +48,12 @@ public:
 	 * Return current text in combo box
 	 */
 	QString currentSearchText() const;
+
+signals:
+	/**
+	 * The signal is emited when text in search combobox changed by user
+	 */
+	void searchTextChanged(const QString&);
 	
 protected slots:
 	/**
@@ -56,8 +62,14 @@ protected slots:
 	 */
 	virtual void doSearch() = 0;
 
+	/**
+	 * Call this slot when list of suggestions received
+	 */
+	void newSuggestions(const QStringList& list);
+
 protected:
 	void keyPressEvent(QKeyEvent *e);
+	bool eventFilter(QObject *o, QEvent *e);
 
 	/**
 	 * Call this to start busy widget
@@ -77,17 +89,21 @@ protected:
 
 protected:
 	/**
-	 * List of selected Tune's
+	 * List of selected Tunes
 	 */
 	TuneList tunes_;
 
 	/**
-	 * Use this Network Accesa Manager for obtaining data from music hostings
+	 * Use this Network Access Manager for obtaining data from music hostings
 	 */
 	QNetworkAccessManager* nam_;
 
+private slots:
+	void suggestionActionTriggered(QAction* a);
+
 private:
 	Ui::QompPluginGettunesDlg *ui;
+	QMenu *suggestionsMenu_;
 };
 
 #endif // QOMPPLUGINGETTUNESDLG_H

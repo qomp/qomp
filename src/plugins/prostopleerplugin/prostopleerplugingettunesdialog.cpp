@@ -71,6 +71,7 @@ ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QWidget *parent
 	connect(ui->tv_results, SIGNAL(clicked(QModelIndex)), SLOT(itemSelected(QModelIndex)));
 	connect(ui->tb_next, SIGNAL(clicked()), SLOT(actNextActivated()));
 	connect(ui->tb_prev, SIGNAL(clicked()), SLOT(actPrevActivated()));
+	connect(this, SIGNAL(searchTextChanged(QString)), SLOT(searchSuggestions(QString)));
 
 	doLogin();
 }
@@ -247,4 +248,37 @@ void ProstoPleerPluginGetTunesDialog::loginFinished()
 		}
 	}
 	ui->lb_auth->setText(tr("None"));
+}
+
+void ProstoPleerPluginGetTunesDialog::searchSuggestions(const QString &text)
+{
+	QUrl url("http://prostopleer.com");
+	url.setPath("/search_suggest");
+	QNetworkRequest nr(url);
+	nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+	nr.setRawHeader("Accept", "application/json, text/javascript");
+	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+	QByteArray ba("part=");
+	ba += text.toLatin1();
+	QNetworkReply *reply = nam_->post(nr, ba);
+	connect(reply, SIGNAL(finished()), SLOT(suggestionsFinished()));
+}
+
+void ProstoPleerPluginGetTunesDialog::suggestionsFinished()
+{
+	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
+	reply->deleteLater();
+	if(reply->error() == QNetworkReply::NoError) {
+		QString text = QString::fromUtf8(reply->readAll());
+		QRegExp re("\"([^\"]+)\"");
+		re.setMinimal(true);
+		int index = text.indexOf("[");
+		QStringList sugs;
+		while( (index = re.indexIn(text, index)) != -1 ) {
+			index += re.matchedLength();
+			sugs.append(unescape(re.cap(1)));
+		}
+		if(!sugs.isEmpty())
+			newSuggestions(sugs);
+	}
 }

@@ -53,6 +53,8 @@ private slots:
 	void urlFinished();
 	void loginFinished();
 	void itemSelected(const QModelIndex& index);
+	void searchSuggestions(const QString& text);
+	void suggestionsFinished();
 
 	void actPrevActivated();
 	void actNextActivated();
