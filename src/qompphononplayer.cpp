@@ -40,7 +40,7 @@ QompPhononPlayer::QompPhononPlayer(QObject *parent) :
 	/*Phonon::Path path = */Phonon::createPath(mediaObject_, audioOutput_);
 	defaultDevice_ = audioOutput_->outputDevice();
 
-	mediaObject_->setTickInterval(1000);
+	mediaObject_->setTickInterval(500);
 	connect(mediaObject_, SIGNAL(tick(qint64)), SIGNAL(currentPositionChanged(qint64)));
 	connect(mediaObject_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(stateChanged()));
 	connect(mediaObject_, SIGNAL(finished()), SIGNAL(mediaFinished()));

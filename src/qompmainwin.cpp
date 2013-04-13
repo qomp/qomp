@@ -83,8 +83,8 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	connect(ui->tb_load, SIGNAL(clicked()), SLOT(loadPlaylist()));
 	connect(ui->tb_save, SIGNAL(clicked()), SLOT(savePlaylist()));
 	connect(ui->tb_mute, SIGNAL(toggled(bool)), SLOT(muteButtonActivated(bool)));
-	connect(ui->seekSlider, SIGNAL(sliderMoved(int)), SLOT(seekSliderMoved(int)));
-	connect(ui->volumeSlider, SIGNAL(sliderMoved(int)), SLOT(volumeSliderMoved(int)));
+	connect(ui->seekSlider, SIGNAL(valueChanged(int)), SLOT(seekSliderMoved(int)));
+	connect(ui->volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderMoved(int)));
 
 	connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doMainContextMenu()));
 
@@ -92,7 +92,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	connect(ui->playList, SIGNAL(clicked(QModelIndex)), SLOT(mediaClicked(QModelIndex)));
 	connect(ui->playList, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doTrackContextMenu(QPoint)));
 
-	volumeChanged(1);
+	//volumeChanged(1);
 	setCurrentPosition(0);
 
 	connect(model_, SIGNAL(layoutChanged()), SLOT(updateTuneInfo()));
@@ -163,8 +163,6 @@ void QompMainWin::setPlayer(QompPlayer *player)
 
 void QompMainWin::actPlayActivated()
 {
-	setCurrentPosition(0);
-
 	if(!model_->rowCount())
 		return;
 
@@ -176,8 +174,10 @@ void QompMainWin::actPlayActivated()
 	}
 
 	Q_ASSERT(player_);
-	if(!(player_->currentTune() == model_->tune(i)))
+	if(!(player_->currentTune() == model_->tune(i))) {
 		player_->setTune(model_->tune(i));
+		setCurrentPosition(0);
+	}
 
 	player_->playOrPause();
 	updateTuneInfo();
@@ -315,7 +315,9 @@ void QompMainWin::volumeSliderMoved(int vol)
 
 void QompMainWin::volumeChanged(qreal vol)
 {
+	ui->volumeSlider->blockSignals(true);
 	ui->volumeSlider->setValue(vol*1000);
+	ui->volumeSlider->blockSignals(false);
 }
 
 void QompMainWin::seekSliderMoved(int pos)
@@ -458,7 +460,9 @@ void QompMainWin::playerStateChanged(QompPlayer::State state)
 void QompMainWin::setCurrentPosition(qint64 ms)
 {
 	ui->lcd->display(durationMiliSecondsToString(ms));
+	ui->seekSlider->blockSignals(true);
 	ui->seekSlider->setValue(ms);
+	ui->seekSlider->blockSignals(false);
 }
 
 void QompMainWin::currentTotalTimeChanged(qint64 ms)
