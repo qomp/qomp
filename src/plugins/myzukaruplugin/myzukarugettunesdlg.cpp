@@ -32,7 +32,8 @@ MyzukaruGettunesDlg::MyzukaruGettunesDlg(QWidget *parent) :
 	QompPluginGettunesDlg(parent),
 	tracksModel_(new QompPluginTreeModel(this)),
 	albumsModel_(new QompPluginTreeModel(this)),
-	artistsModel_(new MyzukaruArtistsModel(this))
+	artistsModel_(new MyzukaruArtistsModel(this)),
+	tabWidget_(new QTabWidget(this))
 {
 	setWindowTitle(MYZUKA_PLUGIN_NAME);
 
@@ -44,12 +45,11 @@ MyzukaruGettunesDlg::MyzukaruGettunesDlg(QWidget *parent) :
 	albumsView->setModel(albumsModel_);
 	artistsView->setModel(artistsModel_);
 
-	QTabWidget* tabWidget = new QTabWidget(this);
-	tabWidget->addTab(artistsView, tr("Artists"));
-	tabWidget->addTab(albumsView, tr("Albums"));
-	tabWidget->addTab(tracksView, tr("Tracks"));
+	tabWidget_->addTab(artistsView, tr("Artists"));
+	tabWidget_->addTab(albumsView, tr("Albums"));
+	tabWidget_->addTab(tracksView, tr("Tracks"));
 
-	setResultsWidget(tabWidget);
+	setResultsWidget(tabWidget_);
 
 	QList<QompPluginTreeView*> list = QList<QompPluginTreeView*> () << artistsView << albumsView << tracksView;
 	foreach(QompPluginTreeView* view, list) {
@@ -184,11 +184,11 @@ void MyzukaruGettunesDlg::searchFinished()
 
 		int artistsIndex = replyStr.indexOf("<a name=\"artists\"></a>");
 		albumsIndex = replyStr.indexOf("<a name=\"albums\"></a>");
+		QList<QompPluginModelItem*> artists;
 		if(artistsIndex != -1) {
 			QRegExp artistRx("<td>\\s+<a(\\s+Class=\"darkorange\")?\\s+href=\"([^\"]+)\">([^<]+)</a>\\s+</td>\\s+<td>\\s+(\\d+)\\s+</td>",
 					 Qt::CaseInsensitive);
 			artistRx.setMinimal(true);
-			QList<QompPluginModelItem*> artists;
 			while((artistsIndex = artistRx.indexIn(replyStr, artistsIndex)) != -1
 					&& artistsIndex < albumsIndex)
 			{
@@ -209,6 +209,15 @@ void MyzukaruGettunesDlg::searchFinished()
 				artists.append(artist);
 			}
 			artistsModel_->addTopLevelItems(artists);
+		}
+		if(!artists.isEmpty()) {
+			tabWidget_->setCurrentIndex(0);
+		}
+		else if(albums.isEmpty()) {
+			tabWidget_->setCurrentIndex(2);
+		}
+		else {
+			tabWidget_->setCurrentIndex(1);
 		}
 	}
 }

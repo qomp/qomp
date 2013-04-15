@@ -26,6 +26,7 @@
 class QompPluginTreeModel;
 class QNetworkReply;
 class QModelIndex;
+class QTabWidget;
 
 
 class MyzukaruGettunesDlg : public QompPluginGettunesDlg
@@ -59,6 +60,7 @@ private:
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;
 	QHash<QNetworkReply*, void*> requests_;
+	QTabWidget* tabWidget_;
 };
 
 #endif // MYZUKARUGETTUNESDLG_H
