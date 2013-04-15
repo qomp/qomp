@@ -161,6 +161,16 @@ void QompMainWin::setPlayer(QompPlayer *player)
 	}
 }
 
+void QompMainWin::bringToFront()
+{
+	if(isMaximized())
+		showMaximized();
+	else
+		show();
+	raise();
+	activateWindow();
+}
+
 void QompMainWin::actPlayActivated()
 {
 	if(!model_->rowCount())
@@ -522,8 +532,7 @@ void QompMainWin::trayDoubleclicked()
 {
 	bool b = isHidden();
 	if(b) {
-		show();
-		raise();
+		bringToFront();
 	}
 	else
 		hide();

@@ -42,6 +42,8 @@ public:
 	QompPlayer* player() const;
 	void setPlayer(QompPlayer* player);
 
+	void bringToFront();
+
 public slots:
 	void actPlayActivated();
 	void actPrevActivated();
