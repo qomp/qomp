@@ -34,6 +34,8 @@ public:
 	QStringList availablePlugins() const;
 	QList<Tune> getTune(const QString& pluginName);
 	QompOptionsPage* getOptions(const QString& pluginName);
+	QString getVersion(const QString& pluginName) const;
+	QString getDescription(const QString& pluginName) const;
 
 	
 private:

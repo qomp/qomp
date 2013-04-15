@@ -84,6 +84,24 @@ QompOptionsPage *PluginManager::getOptions(const QString &pluginName)
 	return 0;
 }
 
+QString PluginManager::getVersion(const QString &pluginName) const
+{
+	foreach(QompPlugin* p, plugins_) {
+		if(p->name() == pluginName)
+			return p->version();
+	}
+	return QString();
+}
+
+QString PluginManager::getDescription(const QString &pluginName) const
+{
+	foreach(QompPlugin* p, plugins_) {
+		if(p->name() == pluginName)
+			return p->description();
+	}
+	return QString();
+}
+
 Q_IMPORT_PLUGIN(myzukaruplugin)
 Q_IMPORT_PLUGIN(prostopleerplugin)
 Q_IMPORT_PLUGIN(filesystemplugin)
