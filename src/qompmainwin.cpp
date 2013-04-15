@@ -18,7 +18,7 @@
  */
 
 #include "qompmainwin.h"
-#include "playlistmodel.h"
+#include "qompplaylistmodel.h"
 #include "options.h"
 #include "pluginmanager.h"
 #include "qomptrayicon.h"
@@ -47,7 +47,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::QompMainWin),
 	player_(0),
-	model_(new PlayListModel(this)),
+	model_(new QompPlayListModel(this)),
 	trayIcon_(new QompTrayIcon(this)),
 	currentState_(QompPlayer::StateStopped)
 {
@@ -601,10 +601,10 @@ void QompMainWin::getTunes(const QString &name)
 void QompMainWin::updateTuneInfo()
 {
 	QModelIndex i = model_->indexForTune(model_->currentTune());
-	ui->lb_artist->setText(i.data(PlayListModel::ArtistRole).toString());
-	ui->lb_title->setText(i.data(PlayListModel::TitleRole).toString());
+	ui->lb_artist->setText(i.data(QompPlayListModel::ArtistRole).toString());
+	ui->lb_title->setText(i.data(QompPlayListModel::TitleRole).toString());
 
 	trayIcon_->setToolTip(tr("Now playing: %1 - %2")
-		.arg(i.data(PlayListModel::ArtistRole).toString(),
-		     i.data(PlayListModel::TitleRole).toString()));
+		.arg(i.data(QompPlayListModel::ArtistRole).toString(),
+		     i.data(QompPlayListModel::TitleRole).toString()));
 }

@@ -27,7 +27,7 @@ namespace Ui {
 	class QompMainWin;
 }
 
-class PlayListModel;
+class QompPlayListModel;
 class QModelIndex;
 class QompTrayIcon;
 
@@ -90,7 +90,7 @@ private:
 private:
 	Ui::QompMainWin *ui;
 	QompPlayer* player_;
-	PlayListModel* model_;
+	QompPlayListModel* model_;
 	QompTrayIcon* trayIcon_;
 	QompPlayer::State currentState_;
 };

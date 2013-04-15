@@ -17,19 +17,19 @@
  *
  */
 
-#ifndef PLAYLISTMODEL_H
-#define PLAYLISTMODEL_H
+#ifndef QOMPPLAYLISTMODEL_H
+#define QOMPPLAYLISTMODEL_H
 
 #include <QAbstractListModel>
 #include "tune.h"
 
-class PlayListModel : public QAbstractListModel
+class QompPlayListModel : public QAbstractListModel
 {
 	Q_OBJECT
 public:
-	PlayListModel(QObject *parent = 0);
+	QompPlayListModel(QObject *parent = 0);
 
-	enum PlayListModelRole {
+	enum QompPlayListModelRole {
 		ArtistRole = Qt::UserRole+1,
 		TitleRole = Qt::UserRole+2,
 		TrackRole = Qt::UserRole+3,

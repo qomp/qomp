@@ -3,6 +3,7 @@ INCLUDEPATH += $$PWD
 HEADERS += $$PWD/qompplugingettunesdlg.h \
     $$PWD/qompplugintreeview.h \
     $$PWD/qompplugintreemodel.h \
+    $$PWD/qompplugin.h \
     $$PWD/qompplugintypes.h
 
 SOURCES += $$PWD/qompplugingettunesdlg.cpp \

@@ -17,25 +17,25 @@
  *
  */
 
-#include "playlistmodel.h"
+#include "qompplaylistmodel.h"
 #include "common.h"
 
 #include <QFileInfo>
 #include <QStringList>
 
-PlayListModel::PlayListModel(QObject *parent) :
+QompPlayListModel::QompPlayListModel(QObject *parent) :
 	QAbstractListModel(parent)
 {
 }
 
-void PlayListModel::addTunes(const TuneList &tunes)
+void QompPlayListModel::addTunes(const TuneList &tunes)
 {
 	emit beginInsertRows(QModelIndex(), tunes_.size(), tunes_.size()+tunes.size());
 	tunes_.append(tunes);
 	emit endInsertRows();
 }
 
-Tune PlayListModel::tune(const QModelIndex &index) const
+Tune QompPlayListModel::tune(const QModelIndex &index) const
 {
 	if(!index.isValid() || index.row() >= tunes_.size())
 		return Tune();
@@ -43,17 +43,17 @@ Tune PlayListModel::tune(const QModelIndex &index) const
 	return tunes_.at(index.row());
 }
 
-Tune PlayListModel::currentTune() const
+Tune QompPlayListModel::currentTune() const
 {
 	return currentTune_;
 }
 
-void PlayListModel::setCurrentTune(const Tune &tune)
+void QompPlayListModel::setCurrentTune(const Tune &tune)
 {
 	currentTune_ = tune;
 }
 
-void PlayListModel::removeTune(const Tune &tune)
+void QompPlayListModel::removeTune(const Tune &tune)
 {
 	for(int i = 0; i < tunes_.size(); i++) {
 		if(tunes_.at(i) == tune) {
@@ -65,7 +65,7 @@ void PlayListModel::removeTune(const Tune &tune)
 	}
 }
 
-QModelIndex PlayListModel::indexForTune(const Tune &tune) const
+QModelIndex QompPlayListModel::indexForTune(const Tune &tune) const
 {
 	for(int i = 0; i < tunes_.size(); i++) {
 		if(tunes_.at(i) == tune) {
@@ -75,7 +75,7 @@ QModelIndex PlayListModel::indexForTune(const Tune &tune) const
 	return QModelIndex();
 }
 
-QVariant PlayListModel::data(const QModelIndex &index, int role) const
+QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 {
 	if(!index.isValid() || index.row() >= tunes_.size())
 		return QVariant();
@@ -158,12 +158,12 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
-int PlayListModel::rowCount(const QModelIndex &/*parent*/) const
+int QompPlayListModel::rowCount(const QModelIndex &/*parent*/) const
 {
 	return tunes_.size();
 }
 
-void PlayListModel::clear()
+void QompPlayListModel::clear()
 {
 	beginResetModel();
 	tunes_.clear();
@@ -171,7 +171,7 @@ void PlayListModel::clear()
 	endResetModel();
 }
 
-void PlayListModel::newDataReady(const Tune &tune, const QMap<QString, QString> &data)
+void QompPlayListModel::newDataReady(const Tune &tune, const QMap<QString, QString> &data)
 {
 	TuneList::iterator it = tunes_.begin();
 	for(; it != tunes_.end(); ++it) {
@@ -188,7 +188,7 @@ void PlayListModel::newDataReady(const Tune &tune, const QMap<QString, QString> 
 	}
 }
 
-void PlayListModel::totalTimeChanged(const Tune &tune, qint64 msec)
+void QompPlayListModel::totalTimeChanged(const Tune &tune, qint64 msec)
 {
 	TuneList::iterator it = tunes_.begin();
 	for(; it != tunes_.end(); ++it) {
