@@ -58,4 +58,6 @@ QompOptionsPage *ProstoPleerPlugin::options()
 	return new ProstopleerPluginSettings();
 }
 
+#ifndef HAVE_QT5
 Q_EXPORT_PLUGIN2(prostopleerplugin, ProstoPleerPlugin)
+#endif

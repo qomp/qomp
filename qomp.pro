@@ -1,10 +1,13 @@
 QT += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
+    QT += widgets multimedia
+    DEFINES += HAVE_QT5 HAVE_QTMULTIMEDIA
+    CONFIG += qtmultimedia_backend
 }
-
-CONFIG += phonon_backend
+else {
+    CONFIG += phonon_backend
+}
 
 phonon_backend {
     QT += phonon

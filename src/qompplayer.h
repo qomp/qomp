@@ -43,10 +43,16 @@ public:
 	virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
 
 	virtual void setVolume(qreal vol) = 0;
+	/**
+	 * Volume from 0 to 1
+	 **/
 	virtual qreal volume() const = 0;
 	virtual void setMute(bool mute) = 0;
 	virtual bool isMuted() const = 0;
 	virtual void setPosition(qint64 pos) = 0;
+	/**
+	 * Position in miliseconds
+	 */
 	virtual qint64 position() const = 0;
 
 	virtual State state() const = 0;

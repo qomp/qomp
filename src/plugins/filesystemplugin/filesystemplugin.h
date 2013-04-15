@@ -30,6 +30,9 @@ class FilesystemPlugin : public QObject, public QompPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QompPlugin)
+#ifdef HAVE_QT5
+	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
+#endif
 public:
 	FilesystemPlugin();
 	virtual QString name() const { return "Filesystem"; }

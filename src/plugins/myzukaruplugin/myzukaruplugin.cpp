@@ -58,4 +58,6 @@ QompOptionsPage *MyzukaruPlugin::options()
 	return 0;
 }
 
+#ifndef HAVE_QT5
 Q_EXPORT_PLUGIN2(myzukaruplugin, MyzukaruPlugin)
+#endif

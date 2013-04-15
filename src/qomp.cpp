@@ -22,7 +22,11 @@
 #include "options.h"
 #include "defines.h"
 #include "qompnetworkingfactory.h"
+#ifdef HAVE_PHONON
 #include "qompphononplayer.h"
+#elif HAVE_QTMULTIMEDIA
+#include "qompqtmultimediaplayer.h"
+#endif
 
 #include <QApplication>
 
@@ -34,6 +38,8 @@ Qomp::Qomp(QObject *parent) :
 
 #ifdef HAVE_PHONON
 	mainWin_->setPlayer(new QompPhononPlayer(this));
+#elif HAVE_QTMULTIMEDIA
+	mainWin_->setPlayer(new QompQtMultimediaPlayer(this));
 #endif
 
 	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())

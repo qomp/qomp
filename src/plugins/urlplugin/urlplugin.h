@@ -30,6 +30,9 @@ class UrlPlugin : public QObject, public QompPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QompPlugin)
+#ifdef HAVE_QT5
+	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
+#endif
 public:
 	UrlPlugin();	
 	virtual QString name() const { return "Url"; }
