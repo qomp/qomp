@@ -11,6 +11,7 @@ public:
 	explicit QompBusyLabel(QWidget *parent = 0);
 	~QompBusyLabel();
 	void changeText(const QString& text);
+	bool isActive() const;
 
 public slots:
 	void start();

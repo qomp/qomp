@@ -164,8 +164,8 @@ void MyzukaruGettunesDlg::searchFinished()
 {
 	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
-	stopBusyWidget();
 	requests_.remove(reply);
+	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
 		QString replyStr = QString::fromUtf8(reply->readAll());
@@ -305,13 +305,19 @@ void MyzukaruGettunesDlg::suggestionsFinished()
 	}
 }
 
+void MyzukaruGettunesDlg::checkAndStopBusyWidget()
+{
+	if(requests_.isEmpty())
+		stopBusyWidget();
+}
+
 void MyzukaruGettunesDlg::tuneUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
-	stopBusyWidget();
 	void* model = requests_.value(reply);
 	requests_.remove(reply);
+	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
 		QString id = reply->property("id").toString();
 		QRegExp re("\"(http://[^\"]+)\"");
@@ -332,9 +338,9 @@ void MyzukaruGettunesDlg::albumUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
-	stopBusyWidget();
 	QompPluginTreeModel *model = (QompPluginTreeModel *)requests_.value(reply);
 	requests_.remove(reply);
+	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
 		QString replyStr = QString::fromUtf8(reply->readAll());
 		QList<QompPluginModelItem*> tunes = parseTunes(replyStr, 0);
@@ -358,6 +364,7 @@ void MyzukaruGettunesDlg::albumUrlFinished()
 					requests_.insert(reply, (void*)model);
 					connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinished()));
 				}
+				startBusyWidget();
 				pa->tunesReceived = true;
 			}
 
@@ -369,9 +376,9 @@ void MyzukaruGettunesDlg::artistUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
-	stopBusyWidget();
 	void* model = requests_.value(reply);
 	requests_.remove(reply);
+	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
 		QString replyStr = QString::fromUtf8(reply->readAll());
 		QString id = reply->property("id").toString();

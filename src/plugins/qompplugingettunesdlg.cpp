@@ -117,7 +117,8 @@ bool QompPluginGettunesDlg::eventFilter(QObject *o, QEvent *e)
 
 void QompPluginGettunesDlg::startBusyWidget()
 {
-	ui->lb_busy->start();
+	if(!ui->lb_busy->isActive())
+		ui->lb_busy->start();
 }
 
 void QompPluginGettunesDlg::stopBusyWidget()

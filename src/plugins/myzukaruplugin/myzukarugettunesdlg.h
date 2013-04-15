@@ -54,6 +54,9 @@ private slots:
 	void suggestionsFinished();
 
 private:
+	void checkAndStopBusyWidget();
+
+private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;
 	QHash<QNetworkReply*, void*> requests_;
 };

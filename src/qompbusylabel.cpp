@@ -27,6 +27,11 @@ void QompBusyLabel::changeText(const QString &text)
 	curPos_ = 0;
 }
 
+bool QompBusyLabel::isActive() const
+{
+	return timer_->isActive();
+}
+
 void QompBusyLabel::start()
 {
 	curPos_ = 0;
