@@ -67,7 +67,7 @@ void QompPluginGettunesDlg::suggestionActionTriggered(QAction *a)
 {
 	if(a) {
 		ui->cb_search->blockSignals(true);
-		ui->cb_search->addItem(a->text());
+		ui->cb_search->insertItem(0, a->text());
 		ui->cb_search->setCurrentIndex(ui->cb_search->findText(a->text()));
 		ui->cb_search->blockSignals(false);
 	}
