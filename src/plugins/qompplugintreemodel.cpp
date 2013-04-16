@@ -145,7 +145,7 @@ Qt::ItemFlags QompPluginTreeModel::flags(const QModelIndex &index) const
 
 bool QompPluginTreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-	if(!index.isValid() || role != Qt::EditRole || index.column() != 0)
+	if(!index.isValid() || role != Qt::CheckStateRole || index.column() != 0)
 		return false;
 
 	layoutAboutToBeChanged();
