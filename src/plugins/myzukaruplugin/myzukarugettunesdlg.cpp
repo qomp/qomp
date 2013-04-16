@@ -213,11 +213,11 @@ void MyzukaruGettunesDlg::searchFinished()
 		if(!artists.isEmpty()) {
 			tabWidget_->setCurrentIndex(0);
 		}
-		else if(albums.isEmpty()) {
-			tabWidget_->setCurrentIndex(2);
-		}
-		else {
+		else if(!albums.isEmpty()) {
 			tabWidget_->setCurrentIndex(1);
+		}
+		else if(!tunes.isEmpty()){
+			tabWidget_->setCurrentIndex(2);
 		}
 	}
 }
