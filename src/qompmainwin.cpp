@@ -93,7 +93,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	connect(ui->tb_prev, SIGNAL(clicked()), SLOT(actPrevActivated()));
 	connect(ui->tb_load, SIGNAL(clicked()), SLOT(loadPlaylist()));
 	connect(ui->tb_save, SIGNAL(clicked()), SLOT(savePlaylist()));
-	connect(ui->tb_mute, SIGNAL(toggled(bool)), SLOT(muteButtonActivated(bool)));
+	connect(ui->tb_mute, SIGNAL(clicked(bool)), SLOT(muteButtonActivated(bool)));
 	connect(ui->seekSlider, SIGNAL(valueChanged(int)), SLOT(seekSliderMoved(int)));
 	connect(ui->volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderMoved(int)));
 
@@ -172,7 +172,7 @@ void QompMainWin::setPlayer(QompPlayer *player)
 	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStateChanged(QompPlayer::State)));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
 	connect(player_, SIGNAL(currentPositionChanged(qint64)), SLOT(setCurrentPosition(qint64)));
-	connect(player_, SIGNAL(mutedChanged(bool)), ui->tb_mute, SLOT(toggle()));
+	connect(player_, SIGNAL(mutedChanged(bool)), SLOT(updateIcons()));
 	connect(player_, SIGNAL(volumeChanged(qreal)), SLOT(volumeChanged(qreal)));
 	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)), SLOT(currentTotalTimeChanged(qint64)));
 
@@ -180,6 +180,7 @@ void QompMainWin::setPlayer(QompPlayer *player)
 		connect(player_->metaDataResolver(), SIGNAL(newMetaData(Tune,QMap<QString,QString>)), model_, SLOT(newDataReady(Tune,QMap<QString,QString>)));
 		connect(player_->metaDataResolver(), SIGNAL(newDuration(Tune,qint64)), model_, SLOT(totalTimeChanged(Tune,qint64)));
 	}
+	updateIcons();
 }
 
 void QompMainWin::bringToFront()
@@ -233,6 +234,10 @@ void QompMainWin::updateIcons()
 		trayIcon_->setIcon(QIcon(":/icons/icons/qomp_stop.png"));
 		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
 	}
+	ui->tb_mute->setChecked(player_->isMuted());
+	ui->tb_mute->setIcon(ui->tb_mute->isChecked() ?
+			style()->standardIcon(QStyle::SP_MediaVolumeMuted) :
+			style()->standardIcon(QStyle::SP_MediaVolume));
 }
 
 void QompMainWin::actPrevActivated()
@@ -327,15 +332,11 @@ void QompMainWin::actClearActivated()
 
 void QompMainWin::muteButtonActivated(bool b)
 {
-	if(b)
-		ui->tb_mute->setIcon(style()->standardIcon(QStyle::SP_MediaVolumeMuted));
-	else
-		ui->tb_mute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-
 	Q_ASSERT(player_);
-	player_->blockSignals(true);
-	player_->setMute(b);
-	player_->blockSignals(false);
+	if(player_->isMuted() !=b) {
+		player_->setMute(b);
+		updateIcons();
+	}
 }
 
 void QompMainWin::volumeSliderMoved(int vol)

@@ -77,6 +77,8 @@ private slots:
 	void trayDoubleclicked();
 	void trayActivated(Qt::MouseButton);
 
+	void updateIcons();
+
 signals:
 	void exit();
 
@@ -87,7 +89,6 @@ private:
 	void savePlaylist(const QString& fileName);
 	QMenu *buildPluginListMenu();
 	void getTunes(const QString& name);
-	void updateIcons();
 	
 private:
 	Ui::QompMainWin *ui;

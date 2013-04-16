@@ -57,7 +57,9 @@ QompPhononPlayer::~QompPhononPlayer()
 
 void QompPhononPlayer::setVolume(qreal vol)
 {
+	audioOutput_->blockSignals(true);
 	audioOutput_->setVolume(vol);
+	audioOutput_->blockSignals(false);
 }
 
 qreal QompPhononPlayer::volume() const
@@ -67,7 +69,9 @@ qreal QompPhononPlayer::volume() const
 
 void QompPhononPlayer::setMute(bool mute)
 {
+	audioOutput_->blockSignals(true);
 	audioOutput_->setMuted(mute);
+	audioOutput_->blockSignals(false);
 }
 
 bool QompPhononPlayer::isMuted() const
@@ -77,7 +81,9 @@ bool QompPhononPlayer::isMuted() const
 
 void QompPhononPlayer::setPosition(qint64 pos)
 {
+	mediaObject_->blockSignals(true);
 	mediaObject_->seek(pos);
+	mediaObject_->blockSignals(false);
 }
 
 qint64 QompPhononPlayer::position() const
