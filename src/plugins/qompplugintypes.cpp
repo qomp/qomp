@@ -79,8 +79,8 @@ QompPluginTune::QompPluginTune(QompPluginModelItem *parent) :
 QString QompPluginTune::toString() const
 {
 	QString ret = QString("%1 - %2").arg(artist, title);
-	if(!url.isNull())
-		ret += "  [OK]";
+//	if(!url.isNull())
+//		ret += "  [OK]";
 	return ret;
 }
 
@@ -91,7 +91,8 @@ Qomp::ModelItemType QompPluginTune::type() const
 
 QIcon QompPluginTune::icon() const
 {
-	return qApp->style()->standardIcon(QStyle::SP_FileIcon);
+	static const QIcon ico(":/icons/icons/tune.png");
+	return QIcon(ico.pixmap(QSize(64,64),url.isEmpty() ? QIcon::Disabled : QIcon::Normal));
 }
 
 Tune QompPluginTune::toTune() const

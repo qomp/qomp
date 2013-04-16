@@ -4,5 +4,6 @@
         <file>icons/qomp_pause.png</file>
         <file>icons/qomp_play.png</file>
         <file>icons/qomp_stop.png</file>
+        <file>icons/tune.png</file>
     </qresource>
 </RCC>
