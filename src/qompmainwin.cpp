@@ -224,14 +224,17 @@ void QompMainWin::updateIcons()
 	Q_ASSERT(player_);
 	if(player_->state() == QompPlayer::StatePaused) {
 		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-		trayIcon_->setIcon(QIcon(":/icons/icons/qomp_pause.png"));
+		static const QIcon pauseIco(":/icons/icons/qomp_pause.png");
+		trayIcon_->setIcon(pauseIco);
 	}
 	else if(player_->state() == QompPlayer::StatePlaing) {
 		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-		trayIcon_->setIcon(QIcon(":/icons/icons/qomp_play.png"));
+		static const QIcon playIcon(":/icons/icons/qomp_play.png");
+		trayIcon_->setIcon(playIcon);
 	}
 	else {
-		trayIcon_->setIcon(QIcon(":/icons/icons/qomp_stop.png"));
+		static const QIcon stopIco(":/icons/icons/qomp_stop.png");
+		trayIcon_->setIcon(stopIco);
 		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
 	}
 	ui->tb_mute->setChecked(player_->isMuted());
