@@ -118,8 +118,8 @@ static QList<QompPluginModelItem*> parseTunes(const QString& replyStr, int songI
 			if(idRx.indexIn(songRx.cap(7)) != -1) {
 				QompPluginTune* t = new QompPluginTune();
 				t->internalId = idRx.cap(1);
-				t->artist = unescape(songRx.cap(4));
-				t->title = unescape(songRx.cap(8));
+				t->artist = Qomp::unescape(songRx.cap(4));
+				t->title = Qomp::unescape(songRx.cap(8));
 				//t->album = unescape(songRx.cap(9));
 
 				tunes.append(t);
@@ -140,8 +140,8 @@ static QList<QompPluginModelItem*> parseAlbums(const QString& replyStr, int albu
 		while((albumsIndex = albumRx.indexIn(replyStr, albumsIndex)) != -1) {
 			albumsIndex += albumRx.matchedLength();
 			QompPluginAlbum* album = new QompPluginAlbum();
-			album->artist = unescape(albumRx.cap(4).trimmed());
-			album->album = unescape(albumRx.cap(7).trimmed());
+			album->artist = Qomp::unescape(albumRx.cap(4).trimmed());
+			album->album = Qomp::unescape(albumRx.cap(7).trimmed());
 			album->year = albumRx.cap(8);
 			album->internalId = albumRx.cap(6).trimmed();
 
@@ -194,7 +194,7 @@ void MyzukaruGettunesDlg::searchFinished()
 			{
 				artistsIndex += artistRx.matchedLength();
 				QompPluginArtist* artist = new QompPluginArtist();
-				artist->artist = unescape(artistRx.cap(3).trimmed());
+				artist->artist = Qomp::unescape(artistRx.cap(3).trimmed());
 				artist->internalId = artistRx.cap(2).trimmed();
 
 				//add fake empty items
@@ -306,7 +306,7 @@ void MyzukaruGettunesDlg::suggestionsFinished()
 		QStringList sugs;
 		while((ind = sugRx.indexIn(replyStr, ind)) != -1) {
 			ind += sugRx.matchedLength();
-			sugs.append(unescape(sugRx.cap(1)));
+			sugs.append(Qomp::unescape(sugRx.cap(1)));
 		}
 		if(!sugs.isEmpty()) {
 			newSuggestions(sugs);

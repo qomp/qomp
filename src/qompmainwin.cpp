@@ -34,11 +34,6 @@
 
 #include <QTime>
 #include <QCloseEvent>
-#ifdef HAVE_QT5
-#include <QStandardPaths>
-#else
-#include <QDesktopServices>
-#endif
 #include <QFileDialog>
 #include <QClipboard>
 #include <QMenu>
@@ -60,14 +55,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	ui->playList->setModel(model_);
 	ui->playList->setItemDelegate(new QompPlaylistDelegate(this));
 
-	TuneList tl;
-#ifdef HAVE_QT5
-	QStringList list = QStandardPaths::standardLocations(QStandardPaths::TempLocation);
-	if(!list.isEmpty())
-		tl = Tune::tunesFromFile(list.first() + cachedPlayListFileName);
-#else
-	tl = Tune::tunesFromFile(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
-#endif
+	TuneList tl = Tune::tunesFromFile(Qomp::cacheDir() + cachedPlayListFileName);
 	if(!tl.isEmpty()) {
 		model_->addTunes(tl);
 		QModelIndex ind = model_->index(Options::instance()->getOption(OPTION_CURRENT_TRACK, 0).toInt(),0);
@@ -120,22 +108,9 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 QompMainWin::~QompMainWin()
 {
-#ifdef HAVE_QT5
-	QStringList list = QStandardPaths::standardLocations(QStandardPaths::TempLocation);
-	if(!list.isEmpty()) {
-		QDir dir(list.first());
-		if(!dir.exists())
-			dir.mkpath(dir.path());
+	QDir dir(Qomp::cacheDir());
+	savePlaylist(dir.absoluteFilePath(cachedPlayListFileName));
 
-		savePlaylist(dir.absolutePath() + cachedPlayListFileName);
-	}
-#else
-	QDir dir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
-	if(!dir.exists())
-		dir.mkpath(dir.path());
-
-	savePlaylist(QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + cachedPlayListFileName);
-#endif
 	Options::instance()->setOption(OPTION_GEOMETRY_X, x());
 	Options::instance()->setOption(OPTION_GEOMETRY_Y, y());
 	Options::instance()->setOption(OPTION_GEOMETRY_HEIGHT, height());
@@ -495,7 +470,7 @@ void QompMainWin::playerStateChanged(QompPlayer::State state)
 
 void QompMainWin::setCurrentPosition(qint64 ms)
 {
-	ui->lcd->display(durationMiliSecondsToString(ms));
+	ui->lcd->display(Qomp::durationMiliSecondsToString(ms));
 	ui->seekSlider->blockSignals(true);
 	ui->seekSlider->setValue(ms);
 	ui->seekSlider->blockSignals(false);

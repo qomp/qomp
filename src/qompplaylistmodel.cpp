@@ -195,7 +195,7 @@ void QompPlayListModel::totalTimeChanged(const Tune &tune, qint64 msec)
 		if((*it) == tune) {
 			emit layoutAboutToBeChanged();
 			if(msec != -1 && msec != 0)
-				(*it).duration = durationMiliSecondsToString(msec);
+				(*it).duration = Qomp::durationMiliSecondsToString(msec);
 			emit layoutChanged();
 			break;
 		}

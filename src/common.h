@@ -22,6 +22,8 @@
 
 #include <QString>
 
+namespace Qomp {
+
 QString encodePassword(const QString& str, const QString &key);
 QString decodePassword(const QString& str, const QString &key);
 
@@ -29,5 +31,10 @@ QString durationSecondsToString(uint sec);
 QString durationMiliSecondsToString(qint64 ms);
 
 QString unescape(const QString& escaped);
+
+QString cacheDir();
+QString dataDir();
+
+} //namespace Qomp
 
 #endif // COMMON_H

@@ -20,10 +20,46 @@
 #include "qompnetworkingfactory.h"
 #include "defines.h"
 #include "options.h"
+#include "common.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkProxy>
 #include <QCoreApplication>
+#include <QNetworkCookieJar>
+#include <QFile>
+
+
+static const QString cookieCache = "/qomp-cookies";
+
+class QompNetworkCookieJar : public QNetworkCookieJar
+{
+	Q_OBJECT
+public:
+	QompNetworkCookieJar(QObject* p) : QNetworkCookieJar(p)
+	{
+		QFile file(Qomp::cacheDir()+ cookieCache);
+		if(file.open(QFile::ReadOnly)) {
+			QList<QNetworkCookie> list;
+			while(!file.atEnd()) {
+				QByteArray ba = file.readLine();
+				list.append(QNetworkCookie::parseCookies(ba));
+			}
+			setAllCookies(list);
+		}
+	}
+
+	~QompNetworkCookieJar()
+	{
+		QFile file(Qomp::cacheDir()+ cookieCache);
+		if(file.open(QFile::WriteOnly | QFile::Truncate)) {
+			foreach(const QNetworkCookie& cookie, allCookies()) {
+				file.write(cookie.toRawForm());
+				file.putChar('\n');
+			}
+		}
+	}
+};
+
 
 QompNetworkingFactory* QompNetworkingFactory::instance_ = 0;
 
@@ -38,6 +74,7 @@ void QompNetworkingFactory::checkNAM() const
 {
 	if(!manager_) {
 		manager_ = new QNetworkAccessManager();
+		manager_->setCookieJar(new QompNetworkCookieJar(manager_));
 	}
 }
 
@@ -53,7 +90,7 @@ QompNetworkingFactory* QompNetworkingFactory::instance()
 QompNetworkingFactory::~QompNetworkingFactory()
 {
 	if(manager_)
-		manager_->deleteLater();
+		delete manager_;
 }
 
 void QompNetworkingFactory::updateProxySettings() const
@@ -83,3 +120,6 @@ QNetworkAccessManager *QompNetworkingFactory::getNetworkAccessManager() const
 	updateProxySettings();
 	return manager_;
 }
+
+
+#include "qompnetworkingfactory.moc"

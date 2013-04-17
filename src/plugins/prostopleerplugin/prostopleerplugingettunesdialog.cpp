@@ -40,7 +40,7 @@ public:
 	QString duration;
 	QString durationToStr() const
 	{
-		return durationSecondsToString(duration.toInt());
+		return Qomp::durationSecondsToString(duration.toInt());
 	}
 
 	virtual Tune toTune() const
@@ -230,7 +230,7 @@ void ProstoPleerPluginGetTunesDialog::doLogin()
 	nr.setRawHeader("Accept", "application/json, text/javascript");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
 	QString str = QString("login=%1&password=%2").arg(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN).toString(),
-				decodePassword(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString(), PROSTOPLEER_DECODE_KEY));
+				Qomp::decodePassword(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString(), PROSTOPLEER_DECODE_KEY));
 	QNetworkReply *reply = nam_->post(nr, str.toLatin1());
 	connect(reply, SIGNAL(finished()), SLOT(loginFinished()));
 }
@@ -276,7 +276,7 @@ void ProstoPleerPluginGetTunesDialog::suggestionsFinished()
 		QStringList sugs;
 		while( (index = re.indexIn(text, index)) != -1 ) {
 			index += re.matchedLength();
-			sugs.append(unescape(re.cap(1)));
+			sugs.append(Qomp::unescape(re.cap(1)));
 		}
 		if(!sugs.isEmpty())
 			newSuggestions(sugs);

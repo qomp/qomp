@@ -20,6 +20,14 @@
 #include "common.h"
 #include <QTime>
 #include <QTextDocument>
+#ifdef HAVE_QT5
+#include <QStandardPaths>
+#else
+#include <QDesktopServices>
+#endif
+#include <QDir>
+
+namespace Qomp {
 
 QString encodePassword(const QString &pass, const QString &key)
 {
@@ -106,3 +114,39 @@ QString unescape(const QString& escaped)
 //	plain.replace("&#39;", "'");
 	return doc.toPlainText();
 }
+
+QString cacheDir()
+{
+	QString dir;
+#ifdef HAVE_QT5
+	QStringList list = QStandardPaths::standardLocations(QStandardPaths::CacheLocation);
+	if(!list.isEmpty())
+		dir = list.first();
+	else
+		dir = QDir::homePath();
+#else
+	dir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
+#endif
+	QDir d(dir);
+	if(!d.exists())
+		d.mkdir(d.path());
+
+	return dir;
+}
+
+QString dataDir()
+{
+	QString dir;
+#ifdef HAVE_QT5
+	QStringList list = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+	if(!list.isEmpty())
+		dir = list.first();
+	else
+		dir = QDir::homePath();
+#else
+	dir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#endif
+	return dir;
+}
+
+} //namespace Qomp
