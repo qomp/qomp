@@ -45,9 +45,11 @@ phonon_backend {
 }
 
 qtmultimedia_backend {
-    HEADERS += $$PWD/qompqtmultimediaplayer.h
+    HEADERS += $$PWD/qompqtmultimediaplayer.h \
+        $$PWD/qompqtmultimediametadataresolver.h
 
-    SOURCES += $$PWD/qompqtmultimediaplayer.cpp
+    SOURCES += $$PWD/qompqtmultimediaplayer.cpp \
+        $$PWD/qompqtmultimediametadataresolver.cpp
 }
 
 include (plugins/plugins.pri)

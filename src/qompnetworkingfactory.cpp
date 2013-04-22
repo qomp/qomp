@@ -26,6 +26,9 @@
 #include <QNetworkProxy>
 #include <QCoreApplication>
 #include <QNetworkCookieJar>
+#ifdef HAVE_QT5
+#include <QNetworkCookie>
+#endif
 #include <QFile>
 
 

@@ -173,6 +173,9 @@ void QompPlayListModel::clear()
 
 void QompPlayListModel::newDataReady(const Tune &tune, const QMap<QString, QString> &data)
 {
+	if(data.isEmpty())
+		return;
+
 	TuneList::iterator it = tunes_.begin();
 	for(; it != tunes_.end(); ++it) {
 		if((*it) == tune) {
@@ -190,12 +193,14 @@ void QompPlayListModel::newDataReady(const Tune &tune, const QMap<QString, QStri
 
 void QompPlayListModel::totalTimeChanged(const Tune &tune, qint64 msec)
 {
+	if(msec == -1 || msec == 0)
+		return;
+
 	TuneList::iterator it = tunes_.begin();
 	for(; it != tunes_.end(); ++it) {
 		if((*it) == tune) {
 			emit layoutAboutToBeChanged();
-			if(msec != -1 && msec != 0)
-				(*it).duration = Qomp::durationMiliSecondsToString(msec);
+			(*it).duration = Qomp::durationMiliSecondsToString(msec);
 			emit layoutChanged();
 			break;
 		}

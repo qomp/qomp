@@ -55,6 +55,7 @@ void QompPhononMetaDataResolver::resolverStateChanged(Phonon::State newState, Ph
 	if(!data_.isEmpty()) {
 		ResolvedData data = data_.takeFirst();
 		emit newDuration(data.tune, data.duration);
+		emit newMetaData(data.tune, data.metaData);
 	}
 
 	if(!data_.isEmpty()) {

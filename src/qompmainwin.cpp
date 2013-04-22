@@ -108,8 +108,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 QompMainWin::~QompMainWin()
 {
-	QDir dir(Qomp::cacheDir());
-	savePlaylist(dir.absoluteFilePath(cachedPlayListFileName));
+	savePlaylist(Qomp::cacheDir() + cachedPlayListFileName);
 
 	Options::instance()->setOption(OPTION_GEOMETRY_X, x());
 	Options::instance()->setOption(OPTION_GEOMETRY_Y, y());
@@ -122,6 +121,8 @@ QompMainWin::~QompMainWin()
 		curTrack = ind.row();
 	Options::instance()->setOption(OPTION_CURRENT_TRACK, curTrack);
 
+	delete player_;
+	player_ = 0;
 	delete ui;
 }
 
@@ -301,6 +302,7 @@ void QompMainWin::actClearActivated()
 		if(removingCurrent) {
 			player_->stop();
 			model_->setCurrentTune(model_->tune(model_->index(0,0)));
+			setCurrentPosition(0);
 		}
 		ui->playList->setCurrentIndex(model_->indexForTune(model_->currentTune()));
 
@@ -592,18 +594,19 @@ void QompMainWin::getTunes(const QString &name)
 		model_->addTunes(list);
 
 		Q_ASSERT(player_);
-		if(Options::instance()->getOption(OPTION_UPDATE_METADATA, false).toBool()
-			&& player_->metaDataResolver())
-		{
-			player_->metaDataResolver()->resolve(list);
-		}
-		if(player_->state() == QompPlayer::StateStopped
-			|| player_->state() == QompPlayer::StateError)
+		if(player_->state() != QompPlayer::StatePaused
+			&& player_->state() != QompPlayer::StatePlaing)
 		{
 			QModelIndex index = model_->indexForTune(list.first());
 			ui->playList->setCurrentIndex(index);
 			model_->setCurrentTune(model_->tune(index));
 			actPlayActivated();
+		}
+
+		if(Options::instance()->getOption(OPTION_UPDATE_METADATA, false).toBool()
+			&& player_->metaDataResolver())
+		{
+			player_->metaDataResolver()->resolve(list);
 		}
 	}
 }
