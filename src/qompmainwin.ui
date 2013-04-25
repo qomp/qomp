@@ -167,7 +167,7 @@
       <item>
        <widget class="QToolButton" name="tb_play">
         <property name="toolTip">
-         <string>Play/Pouse</string>
+         <string>Play/Pause</string>
         </property>
         <property name="text">
          <string/>
@@ -224,7 +224,7 @@
       <item>
        <widget class="QToolButton" name="tb_open">
         <property name="toolTip">
-         <string>Open</string>
+         <string>Add</string>
         </property>
         <property name="text">
          <string/>

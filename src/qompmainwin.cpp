@@ -278,7 +278,7 @@ void QompMainWin::actClearActivated()
 	Q_ASSERT(player_);
 	QMenu m;
 	QList<QAction*> acts;
-	acts << new QAction(tr("Remove all"), &m)
+	acts << new QAction(tr("Remove All"), &m)
 	     << new QAction(tr("Remove Selected"), &m);
 	m.addActions(acts);
 	m.move(QCursor::pos());
@@ -371,7 +371,7 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 	acts << new QAction(tr("Remove"), &menu);
 	if(!tune.url.isEmpty()) {
 		acts << new QAction(tr("Copy URL"), &menu);
-		acts << new QAction(tr("Save file"), &menu);
+		acts << new QAction(tr("Save File"), &menu);
 	}
 	menu.addActions(acts);
 	menu.move(QCursor::pos());
