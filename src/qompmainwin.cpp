@@ -286,6 +286,7 @@ void QompMainWin::actClearActivated()
 	if(x == 0) {
 		player_->stop();
 		model_->clear();
+		setCurrentPosition(0);
 	}
 	else if(x == 1) {
 		bool removingCurrent = false;
