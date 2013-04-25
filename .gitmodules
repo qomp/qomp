@@ -1,0 +1,3 @@
+[submodule "qomp.translations"]
+	path = qomp.translations
+	url = https://code.google.com/p/qomp.translations/
