@@ -27,7 +27,7 @@ isEmpty(PREFIX) {
 BINDIR = $$PREFIX/bin
 DATADIR = $$PREFIX/share/qomp
 
-DEFINES += DATADIR='"$$DATADIR"'
+DEFINES += QOMP_DATADIR='\\"$$DATADIR\\"'
 
 include(src/src.pri)
 

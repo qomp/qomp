@@ -28,8 +28,8 @@
 #include "defines.h"
 
 
-#ifndef DATADIR
-#define DATADIR "/usr/local/share/qomp"
+#ifndef QOMP_DATADIR
+#define QOMP_DATADIR "/usr/local/share/qomp"
 #endif
 
 Translator* Translator::instance_ = 0;
@@ -118,7 +118,7 @@ QStringList Translator::transDirs()
 #ifdef Q_OS_WIN
 		list.append(qApp->applicationDirPath()+"/translations");
 #elif defined (HAVE_X11)
-		list.append(QString(DATADIR) + "/translations");
+		list.append(QString(QOMP_DATADIR) + "/translations");
 #endif
 	}
 	return list;
