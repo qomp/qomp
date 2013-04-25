@@ -35,9 +35,14 @@ private slots:
 	void metaDataReady(/*const QString &, const QVariant &*/);
 	void resolverStateChanged(QMediaPlayer::MediaStatus newState);
 	void totalTimeChanged(qint64 msec);
+	void error(QMediaPlayer::Error error);
+	void availabilityChanged(bool a);
+	void stateChanged(QMediaPlayer::State state);
+	void metaDataAvailableChanged(bool available);
 
 private:
 	QMediaContent mediaForTune(const Tune& tune) const;
+	void resolveNextMedia();
 
 private:
 	QMediaPlayer* resolver_;
