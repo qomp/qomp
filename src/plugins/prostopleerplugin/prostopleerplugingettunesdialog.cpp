@@ -138,13 +138,13 @@ void ProstoPleerPluginGetTunesDialog::searchFinished()
 			   "song=\"([^\"]+)\" link=\"([^\"]+)\"");
 		re.setMinimal(true);
 		QList<QompPluginModelItem*> list;
-		QString result = reply->readAll();
+		QString result = QString::fromUtf8(reply->readAll());
 		int off = 0;
 		while((off = re.indexIn(result, off)) != -1) {
 			off += re.matchedLength();
 			ProstopleerTune* tune = new ProstopleerTune();
-			tune->artist = QString::fromUtf8(re.cap(3).toLatin1());
-			tune->title = QString::fromUtf8(re.cap(4).toLatin1());
+			tune->artist = re.cap(3);
+			tune->title = re.cap(4);
 			tune->internalId = re.cap(5);
 			tune->duration = re.cap(1);
 			list.append(tune);
