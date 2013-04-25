@@ -49,4 +49,6 @@
 
 #define DECODE_KEY "qompdecodekey"
 
+#define OPTION_CURRENT_TRANSLATION "main.current-translation"
+
 #endif // DEFINES_H

@@ -14,13 +14,20 @@ phonon_backend {
     DEFINES += HAVE_PHONON
 }
 
+unix:!mac:DEFINES += HAVE_X11
+
 TARGET = qomp
 TEMPLATE = app
 CONFIG += release
 #CONFIG += debug
 
-PREFIX = /usr/local
+isEmpty(PREFIX) {
+	PREFIX = /usr/local
+}
 BINDIR = $$PREFIX/bin
+DATADIR = $$PREFIX/share/qomp
+
+DEFINES += DATADIR='"$$DATADIR"'
 
 include(src/src.pri)
 
@@ -30,6 +37,10 @@ UI_DIR = .ui
 RCC_DIR = .rcc
 
 INCLUDEPATH += $$PWD/.ui
+
+
+LANG_PATH = qomp.translations/translations
+TRANSLATIONS = $$LANG_PATH/qomp_ru.ts
 
 unix {
 	target.path = $$BINDIR
@@ -48,6 +59,10 @@ unix {
 	icon4.extra = cp -f src/icons/qomp_64.png $(INSTALL_ROOT)$$icon4.path/qomp.png
 	icon5.path = $$PREFIX/share/icons/hicolor/32x32/apps
 	icon5.extra = cp -f src/icons/qomp_32.png $(INSTALL_ROOT)$$icon5.path/qomp.png
+
+	translations.path = $$DATADIR/translations
+	translations.extra = lrelease qomp.pro && cp -f $$LANG_PATH/qomp_*.qm  $(INSTALL_ROOT)$$translations.path
+	INSTALLS += translations
 
 	INSTALLS += dt icon icon1 icon2 icon3 icon4 icon5
 }

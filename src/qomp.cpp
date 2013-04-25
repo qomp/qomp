@@ -22,6 +22,7 @@
 #include "options.h"
 #include "defines.h"
 #include "qompnetworkingfactory.h"
+#include "translator.h"
 #ifdef HAVE_PHONON
 #include "qompphononplayer.h"
 #elif HAVE_QTMULTIMEDIA
@@ -33,6 +34,8 @@
 Qomp::Qomp(QObject *parent) :
 	QObject(parent)
 {
+	Translator::instance();
+
 	mainWin_ = new QompMainWin();
 	connect(mainWin_, SIGNAL(exit()), SLOT(exit()));
 

@@ -14,7 +14,8 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/aboutdlg.cpp \
     $$PWD/qomptunedownloader.cpp \
     $$PWD/qompplaylistdelegate.cpp \
-    $$PWD/qompbusylabel.cpp
+    $$PWD/qompbusylabel.cpp \
+    $$PWD/translator.cpp
 
 HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qomp.h \
@@ -31,7 +32,8 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/aboutdlg.h \
     $$PWD/qomptunedownloader.h \
     $$PWD/qompplaylistdelegate.h \
-    $$PWD/qompbusylabel.h
+    $$PWD/qompbusylabel.h \
+    $$PWD/translator.h
 
 FORMS    += $$PWD/qompmainwin.ui \
     $$PWD/aboutdlg.ui
