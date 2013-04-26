@@ -22,6 +22,7 @@
 #include <QLocale>
 #include <QDir>
 #include <QStringList>
+#include <QLibraryInfo>
 
 #include "translator.h"
 #include "options.h"
@@ -73,9 +74,16 @@ void Translator::retranslate(const QString& fileName)
 		if(load("qomp_"+fileName, dir)) {
 			qApp->installTranslator(this);
 			foundFile = true;
-			if(qtTrans_->load("qt_"+fileName, dir)) {
-				qApp->installTranslator(qtTrans_);
+
+			QStringList dirs;
+			dirs << QLibraryInfo::location(QLibraryInfo::TranslationsPath) << dir;
+			foreach(const QString& d, dirs) {
+				if(qtTrans_->load("qt_"+fileName, d)) {
+					qApp->installTranslator(qtTrans_);
+					break;
+				}
 			}
+
 			break;
 		}
 	}
