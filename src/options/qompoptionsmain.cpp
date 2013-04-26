@@ -84,6 +84,7 @@ void QompOptionsMain::restoreOptions()
 	else
 		ui->cb_output->setCurrentIndex(index);
 
+	ui->cb_lang->clear();
 	ui->cb_lang->addItems(Translator::instance()->availableTranslations());
 	QString curTr = Translator::instance()->currentTranslation();
 	index = ui->cb_lang->findText(curTr);
