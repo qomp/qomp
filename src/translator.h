@@ -34,6 +34,7 @@ public:
 	static QStringList availableTranslations();
 
 	QString currentTranslation() const;
+	void setCurrentTranslation(const QString& tr);
 
 public slots:
 	void retranslate(const QString& fileName);

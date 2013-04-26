@@ -22,6 +22,7 @@
 #include "options.h"
 #include "common.h"
 #include "qompplayer.h"
+#include "translator.h"
 #include "ui_qompoptionsmain.h"
 
 static const QString defaultDevice = QObject::tr("default");
@@ -57,6 +58,7 @@ void QompOptionsMain::applyOptions()
 	Options::instance()->setOption(OPTION_PROXY_TYPE, ui->cb_proxy_type->currentText());
 	Options::instance()->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->currentText());
 	Options::instance()->setOption(OPTION_UPDATE_METADATA, ui->cb_metaData->isChecked());
+	Translator::instance()->retranslate(ui->cb_lang->currentText());
 }
 
 void QompOptionsMain::restoreOptions()
@@ -81,4 +83,12 @@ void QompOptionsMain::restoreOptions()
 		ui->cb_output->setCurrentIndex(ui->cb_output->findText(defaultDevice));
 	else
 		ui->cb_output->setCurrentIndex(index);
+
+	ui->cb_lang->addItems(Translator::instance()->availableTranslations());
+	QString curTr = Translator::instance()->currentTranslation();
+	index = ui->cb_lang->findText(curTr);
+	if(index != -1)
+		ui->cb_lang->setCurrentIndex(index);
+	else
+		ui->cb_lang->setCurrentIndex(0);
 }

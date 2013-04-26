@@ -69,6 +69,9 @@ void Translator::reset()
 
 void Translator::retranslate(const QString& fileName)
 {
+	if(fileName == currentTranslation())
+		return;
+
 	bool foundFile = false;
 	foreach(const QString& dir, transDirs()) {
 		if(load("qomp_"+fileName, dir)) {
@@ -91,7 +94,8 @@ void Translator::retranslate(const QString& fileName)
 		qApp->removeTranslator(this);
 		qApp->removeTranslator(qtTrans_);
 	}
-	Options::instance()->setOption(OPTION_CURRENT_TRANSLATION, fileName);
+
+	setCurrentTranslation(fileName);
 }
 
 QStringList Translator::availableTranslations()
@@ -115,7 +119,12 @@ QStringList Translator::availableTranslations()
 
 QString Translator::currentTranslation() const
 {
-	return Options::instance()->getOption(OPTION_CURRENT_TRANSLATION).toString();
+	return Options::instance()->getOption(OPTION_CURRENT_TRANSLATION, "en").toString();
+}
+
+void Translator::setCurrentTranslation(const QString &tr)
+{
+	Options::instance()->setOption(OPTION_CURRENT_TRANSLATION, tr);
 }
 
 
