@@ -63,6 +63,11 @@ Qomp::~Qomp()
 
 void Qomp::init()
 {
+	QString ver = Options::instance()->getOption(OPTION_APPLICATION_VERSION).toString();
+	if(ver != APPLICATION_VERSION) {
+		//Here in the future we can do some updates
+		Options::instance()->setOption(OPTION_APPLICATION_VERSION, APPLICATION_VERSION);
+	}
 	updateOptions();
 }
 

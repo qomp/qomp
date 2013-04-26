@@ -50,5 +50,6 @@
 #define DECODE_KEY "qompdecodekey"
 
 #define OPTION_CURRENT_TRANSLATION "main.current-translation"
+#define OPTION_APPLICATION_VERSION "main.app-version"
 
 #endif // DEFINES_H

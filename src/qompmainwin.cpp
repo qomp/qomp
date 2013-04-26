@@ -29,6 +29,7 @@
 #include "aboutdlg.h"
 #include "qomptunedownloader.h"
 #include "qompplaylistdelegate.h"
+#include "updateschecker.h"
 
 #include "ui_qompmainwin.h"
 
@@ -427,8 +428,10 @@ void QompMainWin::doMainContextMenu()
 	helpMenu.addAction(about);
 	QAction* aboutQt = new QAction(tr("About Qt"), &helpMenu);
 	helpMenu.addAction(aboutQt);
+	QAction* updatesCheck = new QAction(tr("Check for updates"), &helpMenu);
+	helpMenu.addAction(updatesCheck);
 	m.insertMenu(acts.last(), &helpMenu);
-	acts << about << aboutQt;
+	acts << about << aboutQt << updatesCheck;
 
 	m.move(QCursor::pos());
 	QAction* x = m.exec();
@@ -447,6 +450,9 @@ void QompMainWin::doMainContextMenu()
 	}
 	else if(ret == 6) {
 		qApp->aboutQt();
+	}
+	else if(ret == 7) {
+		new UpdatesChecker(this);
 	}
 
 	open->deleteLater();
