@@ -21,6 +21,7 @@
 #define PLUGINMANAGER_H
 
 #include <QStringList>
+#include <QPair>
 
 class QompPlugin;
 class Tune;
@@ -36,17 +37,21 @@ public:
 	QompOptionsPage* getOptions(const QString& pluginName);
 	QString getVersion(const QString& pluginName) const;
 	QString getDescription(const QString& pluginName) const;
+	bool isPluginEnabled(const QString& pluginName) const;
+	void setPluginEnabled(const QString& pluginName, bool enabled);
+	QStringList enabledPlugins() const;
 
 	
 private:
 	PluginManager();
 	void loadStaticPlugins();
 	void loadPlugins();
+	QompPlugin* pluginForName(const QString& pluginName) const;
 
 private:
 	static PluginManager* instance_;
-	QList<QompPlugin*> plugins_;
-	
+	typedef QPair<QompPlugin*, bool> PluginPair;
+	QList<PluginPair> plugins_;
 };
 
 #endif // PLUGINMANAGER_H

@@ -19,11 +19,14 @@
 
 #include "pluginmanager.h"
 #include "qompplugin.h"
+#include "options.h"
 
 #include <QCoreApplication>
 #include <QPluginLoader>
 #include <QtPlugin>
 
+
+static const QString PLUGINS_OPTIONS_PREFIX = "plugins.is-enabled.";
 
 PluginManager::PluginManager() :
 	QObject(QCoreApplication::instance())
@@ -37,13 +40,24 @@ void PluginManager::loadStaticPlugins()
 	foreach(QObject* plugin, QPluginLoader::staticInstances()) {
 		QompPlugin* qp = qobject_cast<QompPlugin*>(plugin);
 		if(qp) {
-			plugins_.append(qp);
+			bool en = isPluginEnabled(qp->name());
+			PluginPair pp = qMakePair(qp, en);
+			plugins_.append(pp);
 		}
 	}
 }
 
 void PluginManager::loadPlugins()
 {
+}
+
+QompPlugin *PluginManager::pluginForName(const QString &pluginName) const
+{
+	foreach(const PluginPair& pp, plugins_) {
+		if(pp.first->name() == pluginName)
+			return pp.first;
+	}
+	return 0;
 }
 
 
@@ -58,8 +72,8 @@ PluginManager *PluginManager::instance()
 QStringList PluginManager::availablePlugins() const
 {
 	QStringList list;
-	foreach(QompPlugin* p, plugins_)
-		list.append(p->name());
+	foreach(const PluginPair& pp, plugins_)
+		list.append(pp.first->name());
 
 	return list;
 }
@@ -67,9 +81,9 @@ QStringList PluginManager::availablePlugins() const
 TuneList PluginManager::getTune(const QString &pluginName)
 {
 	TuneList tl;
-	foreach(QompPlugin* p, plugins_) {
-		if(p->name() == pluginName)
-			tl = p->getTunes();
+	QompPlugin *p = pluginForName(pluginName);
+	if(p) {
+		tl = p->getTunes();
 	}
 
 	return tl;
@@ -77,29 +91,56 @@ TuneList PluginManager::getTune(const QString &pluginName)
 
 QompOptionsPage *PluginManager::getOptions(const QString &pluginName)
 {
-	foreach(QompPlugin* p, plugins_) {
-		if(p->name() == pluginName)
-			return p->options();
+	QompPlugin *p = pluginForName(pluginName);
+	if(p) {
+		return p->options();
 	}
 	return 0;
 }
 
 QString PluginManager::getVersion(const QString &pluginName) const
 {
-	foreach(QompPlugin* p, plugins_) {
-		if(p->name() == pluginName)
-			return p->version();
+	QompPlugin *p = pluginForName(pluginName);
+	if(p) {
+		return p->version();
 	}
 	return QString();
 }
 
 QString PluginManager::getDescription(const QString &pluginName) const
 {
-	foreach(QompPlugin* p, plugins_) {
-		if(p->name() == pluginName)
-			return p->description();
+	QompPlugin *p = pluginForName(pluginName);
+	if(p) {
+		return p->description();
 	}
 	return QString();
+}
+
+bool PluginManager::isPluginEnabled(const QString &pluginName) const
+{
+	return Options::instance()->getOption(PLUGINS_OPTIONS_PREFIX + pluginName, true).toBool();
+}
+
+void PluginManager::setPluginEnabled(const QString &pluginName, bool enabled)
+{
+	Options::instance()->setOption(PLUGINS_OPTIONS_PREFIX + pluginName, enabled);
+	for(int i = 0; i < plugins_.size(); i++) {
+		PluginPair& pp = plugins_[i];
+		if(pp.first->name() == pluginName) {
+			pp.second = enabled;
+		}
+	}
+}
+
+QStringList PluginManager::enabledPlugins() const
+{
+	QStringList list;
+	foreach(const PluginPair& pp, plugins_) {
+		if(pp.second)
+			list.append(pp.first->name());
+	}
+
+	return list;
 }
 
 #ifdef HAVE_QT5
