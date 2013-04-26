@@ -41,7 +41,7 @@ QString ProstoPleerPlugin::version() const
 
 QString ProstoPleerPlugin::description() const
 {
-	return QString();
+	return tr("Listen to the music from ProstoPleer.com");
 }
 
 TuneList ProstoPleerPlugin::getTunes()

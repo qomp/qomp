@@ -39,7 +39,7 @@ QString MyzukaruPlugin::version() const
 
 QString MyzukaruPlugin::description() const
 {
-	return QString();
+	return tr("Listen to the music from Myzuka.ru");
 }
 
 TuneList MyzukaruPlugin::getTunes()

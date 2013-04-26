@@ -37,7 +37,7 @@ public:
 	UrlPlugin();	
 	virtual QString name() const { return "Url"; }
 	virtual QString version() const { return "0.1"; }
-	virtual QString description() const { return QString(); }
+	virtual QString description() const { return tr("Open custom URL"); }
 	virtual TuneList getTunes();
 	virtual QompOptionsPage* options();
 	
