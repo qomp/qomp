@@ -69,9 +69,6 @@ void Translator::reset()
 
 void Translator::retranslate(const QString& fileName)
 {
-	if(fileName == currentTranslation())
-		return;
-
 	bool foundFile = false;
 	foreach(const QString& dir, transDirs()) {
 		if(load("qomp_"+fileName, dir)) {
