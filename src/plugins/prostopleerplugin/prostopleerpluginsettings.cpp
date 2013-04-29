@@ -42,6 +42,11 @@ QString ProstopleerPluginSettings::name() const
 	return PROSTOPLEER_PLUGIN_NAME;
 }
 
+void ProstopleerPluginSettings::retranslate()
+{
+	ui->retranslateUi(this);
+}
+
 void ProstopleerPluginSettings::applyOptions()
 {
 	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN, ui->le_login->text());

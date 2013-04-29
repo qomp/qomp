@@ -40,6 +40,9 @@ public:
 public slots:
 	virtual void accept();
 
+protected:
+	void changeEvent(QEvent *e);
+
 private slots:
 	void applyOptions();
 	void itemChanged(int row);

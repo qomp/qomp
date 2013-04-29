@@ -35,6 +35,11 @@ QompOptionsPlugins::~QompOptionsPlugins()
 	delete ui;
 }
 
+void QompOptionsPlugins::retranslate()
+{
+	ui->retranslateUi(this);
+}
+
 void QompOptionsPlugins::applyOptions()
 {
 	for(int i = 0; i < ui->tw_plugins->topLevelItemCount(); i++) {

@@ -35,6 +35,7 @@ public:
 	~QompOptionsPlugins();
 
 	virtual QString name() const { return tr("Plugins"); }
+	virtual void retranslate();
 
 public slots:
 	virtual void applyOptions();

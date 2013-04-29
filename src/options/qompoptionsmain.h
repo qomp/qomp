@@ -36,6 +36,7 @@ public:
 	~QompOptionsMain();
 
 	virtual QString name() const { return tr("Main"); }
+	virtual void retranslate();
 
 	void setQompPlayer(QompPlayer* player);
 

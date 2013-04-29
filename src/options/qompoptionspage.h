@@ -28,6 +28,7 @@ class QompOptionsPage : public QWidget
 public:
 	QompOptionsPage(QWidget *parent = 0) : QWidget(parent) {}
 	virtual QString name() const = 0;
+	virtual void retranslate() = 0;
 
 public slots:
 	virtual void applyOptions() = 0;

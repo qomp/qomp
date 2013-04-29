@@ -20,5 +20,8 @@ debug/
 *.user.*
 qomp
 object_script.qomp*
+qomp_*.deb
+description-pak
+backup*qomp.tgz
 
 

@@ -571,6 +571,14 @@ void QompMainWin::closeEvent(QCloseEvent *e)
 	}
 }
 
+void QompMainWin::changeEvent(QEvent *e)
+{
+	if(e->type() == QEvent::LanguageChange) {
+		ui->retranslateUi(this);
+	}
+	QMainWindow::changeEvent(e);
+}
+
 void QompMainWin::savePlaylist(const QString &fileName)
 {
 	QString f(fileName);

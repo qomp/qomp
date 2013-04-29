@@ -78,6 +78,20 @@ void QompOptionsDlg::accept()
 	QDialog::accept();
 }
 
+void QompOptionsDlg::changeEvent(QEvent *e)
+{
+	if(e->type() == QEvent::LanguageChange) {
+		ui->retranslateUi(this);
+		for(int i = 0; i < ui->sw_pages->count(); i++) {
+			QompOptionsPage* p = static_cast<QompOptionsPage*>(ui->sw_pages->widget(i));
+			p->retranslate();
+			QListWidgetItem* it = ui->lw_pagesNames->item(i);
+			it->setText(p->name());
+		}
+	}
+	QDialog::changeEvent(e);
+}
+
 void QompOptionsDlg::applyOptions()
 {
 

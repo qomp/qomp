@@ -40,6 +40,11 @@ QompOptionsMain::~QompOptionsMain()
 	delete ui;
 }
 
+void QompOptionsMain::retranslate()
+{
+	ui->retranslateUi(this);
+}
+
 void QompOptionsMain::setQompPlayer(QompPlayer *player)
 {
 	player_ = player;

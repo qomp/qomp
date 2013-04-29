@@ -36,6 +36,7 @@ public:
 	~ProstopleerPluginSettings();
 
 	virtual QString name() const;
+	virtual void retranslate();
 
 public slots:
 	virtual void applyOptions();

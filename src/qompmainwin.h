@@ -84,6 +84,7 @@ signals:
 
 protected:
 	void closeEvent(QCloseEvent *e);
+	void changeEvent(QEvent *e);
 
 private:
 	void savePlaylist(const QString& fileName);
