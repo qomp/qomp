@@ -64,6 +64,7 @@ void QompOptionsMain::applyOptions()
 	Options::instance()->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->currentText());
 	Options::instance()->setOption(OPTION_UPDATE_METADATA, ui->cb_metaData->isChecked());
 	Options::instance()->setOption(OPTION_HIDE_ON_CLOSE, ui->cb_hideOnClose->isChecked());
+	Options::instance()->setOption(OPTION_DEFAULT_ENCODING, ui->le_encoding->text().toUtf8());
 	Translator::instance()->retranslate(ui->cb_lang->currentText());
 }
 
@@ -79,6 +80,7 @@ void QompOptionsMain::restoreOptions()
 	ui->cb_proxy_type->setCurrentIndex(ui->cb_proxy_type->findText(Options::instance()->getOption(OPTION_PROXY_TYPE, "HTTP").toString()));
 	ui->cb_metaData->setChecked(Options::instance()->getOption(OPTION_UPDATE_METADATA, false).toBool());
 	ui->cb_hideOnClose->setChecked(Options::instance()->getOption(OPTION_HIDE_ON_CLOSE, true).toBool());
+	ui->le_encoding->setText(Options::instance()->getOption(OPTION_DEFAULT_ENCODING, "CP1251").toByteArray());
 
 	ui->cb_output->clear();
 	ui->cb_output->addItem(defaultDevice);

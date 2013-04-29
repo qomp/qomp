@@ -52,5 +52,6 @@
 
 #define OPTION_CURRENT_TRANSLATION "main.current-translation"
 #define OPTION_APPLICATION_VERSION "main.app-version"
+#define OPTION_DEFAULT_ENCODING "main.metadata-encoding"
 
 #endif // DEFINES_H
