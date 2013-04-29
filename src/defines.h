@@ -42,6 +42,7 @@
 #define OPTION_GEOMETRY_Y "main.mainwin-y"
 #define OPTION_GEOMETRY_HEIGHT "main.mainwin-height"
 #define OPTION_GEOMETRY_WIDTH "main.mainwin-width"
+#define OPTION_HIDE_ON_CLOSE "main.hide-on-close"
 
 #define OPTION_CURRENT_TRACK "main.current-track"
 

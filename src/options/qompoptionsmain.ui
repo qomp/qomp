@@ -28,6 +28,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="cb_hideOnClose">
+     <property name="text">
+      <string>Hide qomp to system tray on closing</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QCheckBox" name="cb_autostartPlayback">
      <property name="text">
       <string>Automatically start playback</string>

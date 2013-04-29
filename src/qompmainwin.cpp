@@ -561,8 +561,14 @@ void QompMainWin::trayActivated(Qt::MouseButton b)
 
 void QompMainWin::closeEvent(QCloseEvent *e)
 {
-	hide();
-	e->ignore();
+	if(Options::instance()->getOption(OPTION_HIDE_ON_CLOSE, true).toBool()) {
+		hide();
+		e->ignore();
+	}
+	else {
+		emit exit();
+		e->accept();
+	}
 }
 
 void QompMainWin::savePlaylist(const QString &fileName)
