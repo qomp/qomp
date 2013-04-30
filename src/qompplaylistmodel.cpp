@@ -19,12 +19,9 @@
 
 #include "qompplaylistmodel.h"
 #include "common.h"
-#include "options.h"
-#include "defines.h"
 
 #include <QFileInfo>
 #include <QStringList>
-#include <QTextCodec>
 
 QompPlayListModel::QompPlayListModel(QObject *parent) :
 	QAbstractListModel(parent)
@@ -182,12 +179,10 @@ void QompPlayListModel::newDataReady(const Tune &tune, const QMap<QString, QStri
 	TuneList::iterator it = tunes_.begin();
 	for(; it != tunes_.end(); ++it) {
 		if((*it) == tune) {
-			const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING, "CP1251").toByteArray();
-			QTextCodec *tc = QTextCodec::codecForName(decoding);
 			emit layoutAboutToBeChanged();
-			(*it).artist = tc->toUnicode(data.value("ARTIST").toAscii());
-			(*it).album = tc->toUnicode(data.value("ALBUM").toAscii());
-			(*it).title = tc->toUnicode(data.value("TITLE").toAscii());
+			(*it).artist = Qomp::fixEncoding(data.value("ARTIST"));
+			(*it).album = Qomp::fixEncoding(data.value("ALBUM"));
+			(*it).title = Qomp::fixEncoding(data.value("TITLE"));
 			(*it).trackNumber = data.value("TRACK-NUMBER");
 			(*it).bitRate = data.value("BITRATE");
 			emit layoutChanged();

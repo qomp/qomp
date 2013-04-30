@@ -18,6 +18,9 @@
  */
 
 #include "common.h"
+#include "defines.h"
+#include "options.h"
+
 #include <QTime>
 #include <QTextDocument>
 #ifdef HAVE_QT5
@@ -26,6 +29,7 @@
 #include <QDesktopServices>
 #endif
 #include <QDir>
+#include <QTextCodec>
 
 namespace Qomp {
 
@@ -147,6 +151,14 @@ QString dataDir()
 	dir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
 	return dir;
+}
+
+QString fixEncoding(const QString &encoded)
+{
+	const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING, "CP1251").toByteArray();
+	QTextCodec *tc = QTextCodec::codecForName(decoding);
+	QByteArray ba = encoded.toLatin1();
+	return tc->canEncode(encoded) ? encoded : tc->toUnicode(ba);
 }
 
 } //namespace Qomp

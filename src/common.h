@@ -31,6 +31,7 @@ QString durationSecondsToString(uint sec);
 QString durationMiliSecondsToString(qint64 ms);
 
 QString unescape(const QString& escaped);
+QString fixEncoding(const QString& encoded);
 
 QString cacheDir();
 QString dataDir();
