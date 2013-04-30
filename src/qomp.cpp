@@ -63,7 +63,23 @@ Qomp::~Qomp()
 
 void Qomp::init()
 {
-	QString ver = Options::instance()->getOption(OPTION_APPLICATION_VERSION).toString();
+	QVariant vVer = Options::instance()->getOption(OPTION_APPLICATION_VERSION);
+	if(vVer == QVariant::Invalid) { //First launch
+		QHash <const char*, QVariant> hash;
+		hash.insert(OPTION_START_MINIMIZED,	false);
+		hash.insert(OPTION_AUTOSTART_PLAYBACK,	false);
+		hash.insert(OPTION_UPDATE_METADATA,	false);
+		hash.insert(OPTION_PROXY_USE,		false);
+		hash.insert(OPTION_PROXY_TYPE,		"HTTP");
+		hash.insert(OPTION_PROXY_PORT,		"3128");
+		hash.insert(OPTION_HIDE_ON_CLOSE,	true);
+		hash.insert(OPTION_DEFAULT_ENCODING,	"CP1251");
+
+		foreach(const char* key, hash.keys()) {
+			Options::instance()->setOption(key, hash.value(key));
+		}
+	}
+	QString ver = vVer.toString();
 	if(ver != APPLICATION_VERSION) {
 		//Here in the future we can do some updates
 		Options::instance()->setOption(OPTION_APPLICATION_VERSION, APPLICATION_VERSION);

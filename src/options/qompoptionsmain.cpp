@@ -75,12 +75,12 @@ void QompOptionsMain::restoreOptions()
 	ui->gb_proxy->setChecked(Options::instance()->getOption(OPTION_PROXY_USE).toBool());
 	ui->le_host->setText(Options::instance()->getOption(OPTION_PROXY_HOST).toString());
 	ui->le_pass->setText(Qomp::decodePassword(Options::instance()->getOption(OPTION_PROXY_PASS).toString(), DECODE_KEY));
-	ui->le_port->setText(Options::instance()->getOption(OPTION_PROXY_PORT,"3128").toString());
+	ui->le_port->setText(Options::instance()->getOption(OPTION_PROXY_PORT).toString());
 	ui->le_user->setText(Options::instance()->getOption(OPTION_PROXY_USER).toString());
-	ui->cb_proxy_type->setCurrentIndex(ui->cb_proxy_type->findText(Options::instance()->getOption(OPTION_PROXY_TYPE, "HTTP").toString()));
-	ui->cb_metaData->setChecked(Options::instance()->getOption(OPTION_UPDATE_METADATA, false).toBool());
-	ui->cb_hideOnClose->setChecked(Options::instance()->getOption(OPTION_HIDE_ON_CLOSE, true).toBool());
-	ui->le_encoding->setText(Options::instance()->getOption(OPTION_DEFAULT_ENCODING, "CP1251").toByteArray());
+	ui->cb_proxy_type->setCurrentIndex(ui->cb_proxy_type->findText(Options::instance()->getOption(OPTION_PROXY_TYPE).toString()));
+	ui->cb_metaData->setChecked(Options::instance()->getOption(OPTION_UPDATE_METADATA).toBool());
+	ui->cb_hideOnClose->setChecked(Options::instance()->getOption(OPTION_HIDE_ON_CLOSE).toBool());
+	ui->le_encoding->setText(Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray());
 
 	ui->cb_output->clear();
 	ui->cb_output->addItem(defaultDevice);

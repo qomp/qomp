@@ -561,7 +561,7 @@ void QompMainWin::trayActivated(Qt::MouseButton b)
 
 void QompMainWin::closeEvent(QCloseEvent *e)
 {
-	if(Options::instance()->getOption(OPTION_HIDE_ON_CLOSE, true).toBool()) {
+	if(Options::instance()->getOption(OPTION_HIDE_ON_CLOSE).toBool()) {
 		hide();
 		e->ignore();
 	}
@@ -624,7 +624,7 @@ void QompMainWin::getTunes(const QString &name)
 			actPlayActivated();
 		}
 
-		if(Options::instance()->getOption(OPTION_UPDATE_METADATA, false).toBool()
+		if(Options::instance()->getOption(OPTION_UPDATE_METADATA).toBool()
 			&& player_->metaDataResolver())
 		{
 			player_->metaDataResolver()->resolve(list);
