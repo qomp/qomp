@@ -29,6 +29,9 @@
          <property name="editable">
           <bool>true</bool>
          </property>
+         <property name="maxCount">
+          <number>10</number>
+         </property>
         </widget>
        </item>
        <item>

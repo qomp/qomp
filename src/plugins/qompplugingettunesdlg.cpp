@@ -44,6 +44,7 @@ QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 
 	ui->lb_busy->changeText(tr("Searching"));
 
+	ui->cb_search->installEventFilter(this);
 	suggestionsMenu_->installEventFilter(this);
 	connect(suggestionsMenu_, SIGNAL(triggered(QAction*)), SLOT(suggestionActionTriggered(QAction*)));
 }
@@ -69,6 +70,7 @@ void QompPluginGettunesDlg::suggestionActionTriggered(QAction *a)
 		ui->cb_search->blockSignals(true);
 		ui->cb_search->insertItem(0, a->text());
 		ui->cb_search->setCurrentIndex(ui->cb_search->findText(a->text()));
+		doSearch();
 		ui->cb_search->blockSignals(false);
 	}
 }
@@ -92,15 +94,19 @@ void QompPluginGettunesDlg::keyPressEvent(QKeyEvent *e)
 	}
 	return QDialog::keyPressEvent(e);
 }
-
+#include <QtDebug>
 bool QompPluginGettunesDlg::eventFilter(QObject *o, QEvent *e)
 {
 	if(o == suggestionsMenu_ && e->type() == QEvent::KeyPress) {
 		QKeyEvent* ke = static_cast<QKeyEvent*>(e);
-		if(ke->key() != Qt::Key_Up
+		if(ke->key() == Qt::Key_Escape) {
+			suggestionsMenu_->hide();
+			ui->cb_search->setFocus();
+			return true;
+		}
+		else if(ke->key() != Qt::Key_Up
 			&& ke->key() != Qt::Key_Down
 			&& ke->key() != Qt::Key_Return) {
-			ui->cb_search->setFocus();
 			qApp->postEvent(ui->cb_search, new QKeyEvent(ke->type(),
 								     ke->key(),
 								     ke->modifiers(),
@@ -109,6 +115,14 @@ bool QompPluginGettunesDlg::eventFilter(QObject *o, QEvent *e)
 								     ushort(ke->count())));
 			ke->accept();
 			suggestionsMenu_->hide();
+			ui->cb_search->setFocus();
+			return true;
+		}
+	}
+	//Workaround inserting combobox suggestion on menu popup
+	else if(o == ui->cb_search) {
+		if(/*e->type() == QEvent::FocusIn ||*/ e->type() == QEvent::FocusOut) {
+			e->ignore();
 			return true;
 		}
 	}
