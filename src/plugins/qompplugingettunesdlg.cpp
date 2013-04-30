@@ -94,7 +94,7 @@ void QompPluginGettunesDlg::keyPressEvent(QKeyEvent *e)
 	}
 	return QDialog::keyPressEvent(e);
 }
-#include <QtDebug>
+
 bool QompPluginGettunesDlg::eventFilter(QObject *o, QEvent *e)
 {
 	if(o == suggestionsMenu_ && e->type() == QEvent::KeyPress) {
