@@ -39,7 +39,7 @@ QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 
 	ui->cb_search->addItems(searchHistory);
 	ui->cb_search->setInsertPolicy(QComboBox::InsertAtTop);
-	connect(ui->pb_search, SIGNAL(clicked()), SLOT(doSearch()));
+	connect(ui->pb_search, SIGNAL(clicked()), SLOT(search()));
 	connect(ui->cb_search, SIGNAL(editTextChanged(QString)), SIGNAL(searchTextChanged(QString)));
 
 	ui->lb_busy->changeText(tr("Searching"));
@@ -68,11 +68,23 @@ void QompPluginGettunesDlg::suggestionActionTriggered(QAction *a)
 {
 	if(a) {
 		ui->cb_search->blockSignals(true);
-		ui->cb_search->insertItem(0, a->text());
-		ui->cb_search->setCurrentIndex(ui->cb_search->findText(a->text()));
-		doSearch();
+		const QString text = a->text();
+		if(ui->cb_search->findText(text) == -1) {
+			ui->cb_search->insertItem(0, text);
+		}
+		ui->cb_search->setCurrentIndex(ui->cb_search->findText(text));
+		search();
 		ui->cb_search->blockSignals(false);
 	}
+}
+
+void QompPluginGettunesDlg::search()
+{
+	const QString text = ui->cb_search->currentText();
+	if(ui->cb_search->findText(text) == -1)
+		ui->cb_search->insertItem(0, text);
+
+	doSearch();
 }
 
 TuneList QompPluginGettunesDlg::getTunes() const
@@ -88,7 +100,7 @@ QString QompPluginGettunesDlg::currentSearchText() const
 void QompPluginGettunesDlg::keyPressEvent(QKeyEvent *e)
 {
 	if(e->key() == Qt::Key_Return && ui->cb_search->hasFocus()) {
-		doSearch();
+		search();
 		e->accept();
 		return;
 	}

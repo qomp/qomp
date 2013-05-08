@@ -100,6 +100,7 @@ protected:
 
 private slots:
 	void suggestionActionTriggered(QAction* a);
+	void search();
 
 private:
 	Ui::QompPluginGettunesDlg *ui;
