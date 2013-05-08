@@ -21,7 +21,7 @@
 #define MYZUKARUDEFINES_H
 
 #define MYZUKA_PLUGIN_NAME "Myzuka.ru"
-#define MYZUKA_PLUGIN_VERSION "0.1"
+#define MYZUKA_PLUGIN_VERSION "0.1.1"
 
 
 #endif // MYZUKARUDEFINES_H

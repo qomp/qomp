@@ -26,6 +26,7 @@
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+//#include <QDebug>
 
 
 MyzukaruGettunesDlg::MyzukaruGettunesDlg(QWidget *parent) :
@@ -190,7 +191,7 @@ void MyzukaruGettunesDlg::searchFinished()
 					 Qt::CaseInsensitive);
 			artistRx.setMinimal(true);
 			while((artistsIndex = artistRx.indexIn(replyStr, artistsIndex)) != -1
-					&& artistsIndex < albumsIndex)
+					&& (albumsIndex == -1 || artistsIndex < albumsIndex) )
 			{
 				artistsIndex += artistRx.matchedLength();
 				QompPluginArtist* artist = new QompPluginArtist();
