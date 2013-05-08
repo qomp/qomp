@@ -143,8 +143,8 @@ void ProstoPleerPluginGetTunesDialog::searchFinished()
 		while((off = re.indexIn(result, off)) != -1) {
 			off += re.matchedLength();
 			ProstopleerTune* tune = new ProstopleerTune();
-			tune->artist = re.cap(3);
-			tune->title = re.cap(4);
+			tune->artist = Qomp::unescape(re.cap(3));
+			tune->title = Qomp::unescape(re.cap(4));
 			tune->internalId = re.cap(5);
 			tune->duration = re.cap(1);
 			list.append(tune);
