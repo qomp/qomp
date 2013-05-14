@@ -20,6 +20,9 @@
 #include "qomptrayicon.h"
 #include "defines.h"
 
+#include <QWheelEvent>
+
+
 QompTrayIcon::QompTrayIcon(QObject *parent) :
 	QObject(parent),
 	icon_(new QSystemTrayIcon( this))
@@ -28,6 +31,7 @@ QompTrayIcon::QompTrayIcon(QObject *parent) :
 	icon_->setToolTip(QString("%1 %2").arg(APPLICATION_NAME, APPLICATION_VERSION));
 	connect(icon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
 
+	icon_->installEventFilter(this);
 	icon_->show();
 }
 
@@ -63,4 +67,13 @@ void QompTrayIcon::trayActivated(QSystemTrayIcon::ActivationReason reason)
 	default:
 		break;
 	}
+}
+
+bool QompTrayIcon::eventFilter(QObject *o, QEvent *e)
+{
+	if(o == icon_ && e->type() == QEvent::Wheel) {
+		QWheelEvent *we = static_cast<QWheelEvent*>(e);
+		emit trayWheeled(we->delta());
+	}
+	return QObject::eventFilter(o, e);
 }

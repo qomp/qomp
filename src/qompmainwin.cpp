@@ -99,6 +99,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 	connect(trayIcon_, SIGNAL(trayDoubleClicked()), SLOT(trayDoubleclicked()));
 	connect(trayIcon_, SIGNAL(trayClicked(Qt::MouseButton)), SLOT(trayActivated(Qt::MouseButton)));
+	connect(trayIcon_, SIGNAL(trayWheeled(int)), SLOT(trayWheeled(int)));
 
 	resize(Options::instance()->getOption(OPTION_GEOMETRY_WIDTH, width()).toInt(),
 		Options::instance()->getOption(OPTION_GEOMETRY_HEIGHT, height()).toInt());
@@ -557,6 +558,13 @@ void QompMainWin::trayActivated(Qt::MouseButton b)
 		if(player_->state() == QompPlayer::StatePlaing || player_->state() == QompPlayer::StatePaused)
 			player_->playOrPause();
 	}
+}
+
+void QompMainWin::trayWheeled(int delta)
+{
+	qreal vol = player_->volume();
+	vol += qreal(delta)/1000;
+	player_->setVolume(vol);
 }
 
 void QompMainWin::closeEvent(QCloseEvent *e)

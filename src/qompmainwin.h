@@ -76,6 +76,7 @@ private slots:
 
 	void trayDoubleclicked();
 	void trayActivated(Qt::MouseButton);
+	void trayWheeled(int delta);
 
 	void updateIcons();
 

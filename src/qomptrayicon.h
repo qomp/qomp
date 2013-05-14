@@ -35,9 +35,13 @@ public:
 signals:
 	void trayClicked(Qt::MouseButton);
 	void trayDoubleClicked();
+	void trayWheeled(int delta);
 	
 private slots:
 	void trayActivated(QSystemTrayIcon::ActivationReason reason);
+
+protected:
+	bool eventFilter(QObject *o, QEvent *e);
 
 private:
 	QSystemTrayIcon* icon_;
