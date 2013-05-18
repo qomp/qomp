@@ -180,11 +180,27 @@ void QompPlayListModel::newDataReady(const Tune &tune, const QMap<QString, QStri
 	for(; it != tunes_.end(); ++it) {
 		if((*it) == tune) {
 			emit layoutAboutToBeChanged();
-			(*it).artist = Qomp::fixEncoding(data.value("ARTIST"));
-			(*it).album = Qomp::fixEncoding(data.value("ALBUM"));
-			(*it).title = Qomp::fixEncoding(data.value("TITLE"));
-			(*it).trackNumber = data.value("TRACK-NUMBER");
-			(*it).bitRate = data.value("BITRATE");
+
+			QString tmp = Qomp::fixEncoding(data.value("ARTIST"));
+			if(!tmp.isEmpty())
+				(*it).artist = tmp;
+
+			tmp = Qomp::fixEncoding(data.value("ALBUM"));
+			if(!tmp.isEmpty())
+				(*it).album = tmp;
+
+			tmp = Qomp::fixEncoding(data.value("TITLE"));
+			if(!tmp.isEmpty())
+				(*it).title = tmp;
+
+			tmp = data.value("TRACK-NUMBER");
+			if(!tmp.isEmpty())
+				(*it).trackNumber = tmp;
+
+			tmp = data.value("BITRATE");
+			if(!tmp.isEmpty())
+				(*it).bitRate = tmp;
+
 			emit layoutChanged();
 			break;
 		}
