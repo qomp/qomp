@@ -21,6 +21,7 @@
 #define YANDEXMUSICURLRESOLVESTRATEGY_H
 
 #include "tune.h"
+#include <QObject>
 
 class QMutex;
 class QEventLoop;
@@ -34,8 +35,6 @@ public:
 	~YandexMusicURLResolveStrategy();
 
 	virtual QUrl getUrl(const Tune *t);
-	
-signals:
 	
 private slots:
 	void tuneUrlFinishedStepOne();
