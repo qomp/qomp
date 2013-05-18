@@ -85,11 +85,6 @@ void QompPhononMetaDataResolver::metaDataReady()
 Phonon::MediaSource QompPhononMetaDataResolver::objectForTune(const Tune &tune) const
 {
 	Phonon::MediaSource ms;
-	if(!tune.file.isEmpty()) {
-		ms = Phonon::MediaSource(tune.file);
-	}
-	else if(!tune.url.isEmpty()) {
-		ms = Phonon::MediaSource(tune.url);
-	}
+	ms = Phonon::MediaSource(tune.getUrl());
 	return ms;
 }

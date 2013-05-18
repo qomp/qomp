@@ -45,8 +45,6 @@ private slots:
 	void artistsSearchFinished();
 	void albumsSearchFinished();
 	void tracksSearchFinished();
-	void tuneUrlFinishedStepOne();
-	void tuneUrlFinishedStepTwo();
 	void albumUrlFinished();
 	void artistUrlFinished();
 	void itemSelected(const QModelIndex& ind);

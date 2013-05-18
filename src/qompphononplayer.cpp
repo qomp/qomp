@@ -134,12 +134,8 @@ void QompPhononPlayer::setTune(const Tune &tune)
 	QompPlayer::setTune(tune);
 
 	Phonon::MediaSource ms;
-	if(!tune.file.isEmpty()) {
-		ms = Phonon::MediaSource(tune.file);
-	}
-	else if(!tune.url.isEmpty()) {
-		ms = Phonon::MediaSource(tune.url);
-	}
+	ms = Phonon::MediaSource(tune.getUrl());
+
 	mediaObject_->setCurrentSource(ms);
 }
 

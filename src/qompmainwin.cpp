@@ -390,7 +390,7 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 		ui->playList->setCurrentIndex(model_->indexForTune(model_->currentTune()));
 	}
 	else if(x == 2) {
-		qApp->clipboard()->setText(tune.url);
+		qApp->clipboard()->setText(tune.getUrl().toString());
 	}
 	else if(x == 3) {
 		static const QString option = "main.last-save-dir";

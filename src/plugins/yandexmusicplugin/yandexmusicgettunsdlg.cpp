@@ -22,11 +22,11 @@
 #include "qompplugintreemodel.h"
 #include "qompplugintypes.h"
 #include "common.h"
+#include "yandexmusicurlresolvestrategy.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QCryptographicHash>
-#include <QDebug>
+//#include <QDebug>
 
 
 
@@ -74,9 +74,6 @@ public:
 		t.duration = durationToString();
 		return t;
 	}
-
-	QString storageDir;
-
 };
 
 
@@ -127,7 +124,9 @@ void YandexMusicGettunsDlg::accept()
 		if(pt->url.isEmpty())
 			continue;
 
-		tunes_.append(pt->toTune());
+		Tune tune_ = pt->toTune();
+		tune_.setUrlResolveStrategy(YandexMusicURLResolveStrategy::instance());
+		tunes_.append(tune_);
 	}
 
 	QDialog::accept();
@@ -226,7 +225,7 @@ static QList<QompPluginModelItem*> parseTunes(const QString& str)
 		tune->album = Qomp::unescape(tuneRe.cap(5));
 		tune->duration = tuneRe.cap(6);
 		tune->internalId = tuneRe.cap(2);
-		tune->storageDir = tuneRe.cap(3);
+		tune->url = tuneRe.cap(3);
 		tracks.append(tune);
 	}
 	return tracks;
@@ -258,71 +257,6 @@ void YandexMusicGettunsDlg::tracksSearchFinished()
 	}
 }
 
-void YandexMusicGettunsDlg::tuneUrlFinishedStepOne()
-{
-	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
-	reply->deleteLater();
-	QompPluginTreeModel *model = (QompPluginTreeModel *)requests_.value(reply);
-	requests_.remove(reply);
-	checkAndStopBusyWidget();
-	if(reply->error() == QNetworkReply::NoError) {
-		const QString replyStr = QString::fromUtf8(reply->readAll());
-		QRegExp re("<track filename=\"([^\"]+)\"");
-		if(re.indexIn(replyStr) != -1) {
-			QString fileName = re.cap(1);
-			const QString id = reply->property("id").toString();
-			YandexMusicTune *tune = static_cast<YandexMusicTune *>(model->itemForId(id));
-			QUrl url(QString("http://storage.music.yandex.ru/download-info/%1/%2").arg(tune->storageDir, fileName));
-			QNetworkRequest nr(url);
-			nr.setRawHeader("Accept", "*/*");
-			nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-			QNetworkReply *reply = nam_->get(nr);
-			reply->setProperty("id", id);
-			requests_.insert(reply, model);
-			connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepTwo()));
-			startBusyWidget();
-		}
-	}
-}
-
-void YandexMusicGettunsDlg::tuneUrlFinishedStepTwo()
-{
-	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
-	reply->deleteLater();
-	void* model = requests_.value(reply);
-	requests_.remove(reply);
-	checkAndStopBusyWidget();
-	if(reply->error() == QNetworkReply::NoError) {
-		QString replyStr = QString::fromUtf8(reply->readAll());
-		QRegExp re("<host>([^<]+)</host><path>([^<]+)</path><ts>([^<]+)</ts><region>([^<]+)</region><s>([^<]+)</s>");
-		if(re.indexIn(replyStr) != -1) {
-			const QString host = re.cap(1);
-			const QString path = re.cap(2);
-			const QString ts = re.cap(3);
-			const QString region = re.cap(4);
-			QString s = re.cap(5);
-			const QString id = reply->property("id").toString();
-
-			QByteArray md5 = QCryptographicHash::hash("XGRlBW9FXlekgbPrRHuSiA" + (path.right(path.length() - 1) + s).toLatin1(), QCryptographicHash::Md5);
-
-			QString url = QString("http://%1/get-mp3/%2/%3%4?track-id=%5&region=%6&from=service-search")
-					.arg(host)
-					.arg(QString(md5.toHex()))
-					.arg(ts)
-					.arg(path)
-					.arg(id)
-					.arg(region);
-
-			QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
-			YandexMusicTune* tune = dynamic_cast<YandexMusicTune*>(model_->itemForId(id));
-			if(tune) {
-				tune->url = url;
-				model_->emitUpdateSignal();
-			}
-		}
-	}
-}
-
 void YandexMusicGettunsDlg::albumUrlFinished()
 {
 	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
@@ -338,19 +272,19 @@ void YandexMusicGettunsDlg::albumUrlFinished()
 			QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
 			QompPluginModelItem* it = model_->itemForId(reply->property("id").toString());
 			model_->setItems(list, it);
-			foreach(QompPluginModelItem* t, list) {
-				YandexMusicTune *mt = static_cast<YandexMusicTune*>(t);
-				//SICK!!! But we couldn't call itemSelected(QompPluginModelItem *item)
-				//because of lose pointer on model
-				QUrl url = QUrl(QString("http://storage.music.yandex.ru/get/%1/2.xml").arg(mt->storageDir), QUrl::StrictMode);
-				QNetworkRequest nr(url);
-				nr.setRawHeader("Accept", "*/*");
-				nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-				QNetworkReply *reply = nam_->get(nr);
-				reply->setProperty("id", t->internalId);
-				requests_.insert(reply, (void*)model);
-				connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepOne()));
-			}
+//			foreach(QompPluginModelItem* t, list) {
+//				YandexMusicTune *mt = static_cast<YandexMusicTune*>(t);
+//				//SICK!!! But we couldn't call itemSelected(QompPluginModelItem *item)
+//				//because of lose pointer on model
+//				QUrl url = QUrl(QString("http://storage.music.yandex.ru/get/%1/2.xml").arg(mt->storageDir), QUrl::StrictMode);
+//				QNetworkRequest nr(url);
+//				nr.setRawHeader("Accept", "*/*");
+//				nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+//				QNetworkReply *reply = nam_->get(nr);
+//				reply->setProperty("id", t->internalId);
+//				requests_.insert(reply, (void*)model);
+//				connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepOne()));
+//			}
 			QompPluginAlbum* pa = static_cast<QompPluginAlbum*>(it);
 			pa->tunesReceived = true;
 		}
@@ -388,16 +322,16 @@ void YandexMusicGettunsDlg::itemSelected(const QModelIndex &ind)
 		return;
 
 	QUrl url("http://music.yandex.ru/", QUrl::StrictMode);
-	const char* slot;
+	const char* slot = 0;
 	switch(item->type()) {
 	case Qomp::TypeTune:
 	{
-		YandexMusicTune *tune = static_cast<YandexMusicTune *>(item);
-		if(!tune->url.isEmpty())
-			return;
-		url = QUrl(QString("http://storage.music.yandex.ru/get/%1/2.xml").arg(tune->storageDir), QUrl::StrictMode);
-		slot = SLOT(tuneUrlFinishedStepOne());
-		break;
+//		YandexMusicTune *tune = static_cast<YandexMusicTune *>(item);
+//		if(!tune->url.isEmpty())
+//			return;
+//		url = QUrl(QString("http://storage.music.yandex.ru/get/%1/2.xml").arg(tune->storageDir), QUrl::StrictMode);
+//		slot = SLOT(tuneUrlFinishedStepOne());
+		return;
 	}
 	case Qomp::TypeAlbum:
 	{
@@ -427,11 +361,6 @@ void YandexMusicGettunsDlg::itemSelected(const QModelIndex &ind)
 	reply->setProperty("id", item->internalId);
 
 	requests_.insert(reply, model);
-
-	//try avoid warning
-#if ( __GNUC__ * 1000 + __GNUC_MINOR__ * 10  > 4050 )
-#pragma GCC diagnostic ignored "-Wuninitialized"
-#endif
 	connect(reply, SIGNAL(finished()), slot);
 	startBusyWidget();
 }

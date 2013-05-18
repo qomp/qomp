@@ -45,10 +45,7 @@ QompQtMultimediaPlayer::~QompQtMultimediaPlayer()
 void QompQtMultimediaPlayer::setTune(const Tune &tune)
 {
 	QompPlayer::setTune(tune);
-	if(!tune.file.isEmpty())
-		player_->setMedia(QMediaContent(tune.file));
-	else
-		player_->setMedia(QMediaContent(tune.url));
+	player_->setMedia(QMediaContent(tune.getUrl()));
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const

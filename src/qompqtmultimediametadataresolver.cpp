@@ -161,11 +161,8 @@ void QompQtMultimediaMetaDataResolver::resolveNextMedia()
 QMediaContent QompQtMultimediaMetaDataResolver::mediaForTune(const Tune &tune) const
 {
 	QMediaContent mc;
-	if(!tune.file.isEmpty()) {
-		mc = QMediaContent(tune.file);
-	}
-	else if(!tune.url.isEmpty()) {
-		QUrl url(tune.url);
+	mc = QMediaContent(tune.getUrl());
+
 //		QNetworkRequest nr(url);
 //		foreach(const QNetworkCookie& c,
 //			QompNetworkingFactory::instance()->getNetworkAccessManager()->cookieJar()->cookiesForUrl(url))
@@ -173,7 +170,6 @@ QMediaContent QompQtMultimediaMetaDataResolver::mediaForTune(const Tune &tune) c
 //			qDebug() << "cookie" << c.toRawForm();
 //			nr.setHeader(QNetworkRequest::SetCookieHeader, c.toRawForm());
 //		}
-		mc = QMediaContent(url);
-	}
+
 	return mc;
 }

@@ -17,50 +17,39 @@
  *
  */
 
-#ifndef TUNE_H
-#define TUNE_H
+#ifndef YANDEXMUSICURLRESOLVESTRATEGY_H
+#define YANDEXMUSICURLRESOLVESTRATEGY_H
 
-#include <QUrl>
+#include "tune.h"
 
-class Tune;
+class QMutex;
+class QEventLoop;
+class QTimer;
 
-class TuneURLResolveStrategy
+class YandexMusicURLResolveStrategy : public QObject, public TuneURLResolveStrategy
 {
+	Q_OBJECT
 public:
-	virtual QUrl getUrl(const Tune* t) = 0;
-};
+	static YandexMusicURLResolveStrategy* instance();
+	~YandexMusicURLResolveStrategy();
 
-class Tune
-{
-public:
-	Tune();
-	QString artist;
-	QString title;
-	QString trackNumber;
-	QString album;
-	QString duration;
-	QString url;
-	QString file;
-	QString bitRate;
-
-	QUrl getUrl() const;
-	QString toString() const;
-	bool fromString(const QString& str);
-	int id() const;
-
-	void setUrlResolveStrategy(TuneURLResolveStrategy* strategy);
-	TuneURLResolveStrategy* strategy() const;
-
-	bool operator==(const Tune& other) const;
-
-	static QList<Tune> tunesFromFile(const QString& fileName);
+	virtual QUrl getUrl(const Tune *t);
+	
+signals:
+	
+private slots:
+	void tuneUrlFinishedStepOne();
+	void tuneUrlFinishedStepTwo();
+	void timeout();
 
 private:
-	static int lastId_;
-	int id_;
-	TuneURLResolveStrategy* strategy_;
+	explicit YandexMusicURLResolveStrategy();
+	static YandexMusicURLResolveStrategy* instance_;
+	QUrl url_;
+	QEventLoop* loop_;
+	Tune *tune_;
+	mutable QMutex* mutex_;
+	QTimer* timer_;
 };
 
-typedef QList<Tune> TuneList;
-
-#endif // TUNE_H
+#endif // YANDEXMUSICURLRESOLVESTRATEGY_H

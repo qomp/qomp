@@ -24,9 +24,44 @@
 
 static const QString separator = "@qomp@";
 
-Tune::Tune()
+
+class SimpleStrategy : public TuneURLResolveStrategy
+{
+public:
+	static SimpleStrategy* instance()
+	{
+		if(!instance_)
+			instance_ = new SimpleStrategy;
+		return instance_;
+	}
+
+	QUrl getUrl(const Tune *t)
+	{
+		if(!t->file.isEmpty())
+			return QUrl::fromLocalFile(t->file);
+
+		return QUrl(t->url);
+	}
+
+private:
+	static SimpleStrategy* instance_;
+	SimpleStrategy(){}
+};
+
+SimpleStrategy* SimpleStrategy::instance_ = 0;
+
+
+
+
+Tune::Tune() : strategy_(0)
 {
 	id_ = lastId_++;
+	setUrlResolveStrategy(SimpleStrategy::instance());
+}
+
+QUrl Tune::getUrl() const
+{
+	return strategy_->getUrl(this);
 }
 
 QString Tune::toString() const
@@ -56,6 +91,16 @@ bool Tune::fromString(const QString &str)
 int Tune::id() const
 {
 	return id_;
+}
+
+void Tune::setUrlResolveStrategy(TuneURLResolveStrategy *strategy)
+{
+	strategy_ = strategy;
+}
+
+TuneURLResolveStrategy *Tune::strategy() const
+{
+	return strategy_;
 }
 
 bool Tune::operator==(const Tune& other) const

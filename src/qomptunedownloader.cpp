@@ -46,14 +46,14 @@ QompTuneDownloader::~QompTuneDownloader()
 
 void QompTuneDownloader::download(const Tune &tune, const QString &dir)
 {
-	if(tune.url.isEmpty())
+	QUrl url(tune.getUrl());
+	if(url.isEmpty())
 		return;
 
 	file_ = new QFile(QString("%1/%2-%3.mp3").arg(dir, tune.artist, tune.title));
 	if(!file_->open(QFile::WriteOnly))
 		return;
 
-	QUrl url(tune.url);
 	QNetworkRequest nr(url);
 	QNetworkReply* reply = nam_->get(nr);
 	connect(reply, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
