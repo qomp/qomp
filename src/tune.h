@@ -28,6 +28,7 @@ class TuneURLResolveStrategy
 {
 public:
 	virtual QUrl getUrl(const Tune* t) = 0;
+	virtual QString name() const = 0;
 };
 
 class Tune

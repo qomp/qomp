@@ -40,6 +40,7 @@ public:
 	virtual QString description() const { return tr("Open music from filesystem"); }
 	virtual TuneList getTunes();
 	virtual QompOptionsPage* options();
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
 };
 
 #endif // FILESYSTEMPLUGIN_H

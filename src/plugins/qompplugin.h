@@ -25,6 +25,7 @@
 #include <QObject>
 
 class QompOptionsPage;
+class TuneURLResolveStrategy;
 
 class QompPlugin
 {
@@ -34,6 +35,7 @@ public:
 	virtual QString description() const = 0;
 	virtual TuneList getTunes() = 0;
 	virtual QompOptionsPage* options() = 0;
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const = 0;
 };
 
 Q_DECLARE_INTERFACE(QompPlugin, "Qomp.QompPlugin/0.1")

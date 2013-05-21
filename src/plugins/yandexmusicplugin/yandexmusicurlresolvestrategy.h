@@ -35,6 +35,7 @@ public:
 	~YandexMusicURLResolveStrategy();
 
 	virtual QUrl getUrl(const Tune *t);
+	virtual QString name() const;
 	
 private slots:
 	void tuneUrlFinishedStepOne();

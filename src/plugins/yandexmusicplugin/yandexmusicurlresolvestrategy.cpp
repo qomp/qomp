@@ -32,7 +32,7 @@
 #include <QTimer>
 
 
-static const int TimerInterval = 1000;
+static const int TimerInterval = 5000;
 
 YandexMusicURLResolveStrategy *YandexMusicURLResolveStrategy::instance()
 {
@@ -77,6 +77,11 @@ QUrl YandexMusicURLResolveStrategy::getUrl(const Tune *t)
 	return url_;
 }
 
+QString YandexMusicURLResolveStrategy::name() const
+{
+	return "Yandex.Music";
+}
+
 void YandexMusicURLResolveStrategy::tuneUrlFinishedStepOne()
 {
 	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
@@ -93,6 +98,9 @@ void YandexMusicURLResolveStrategy::tuneUrlFinishedStepOne()
 			QNetworkReply *reply = QompNetworkingFactory::instance()->getNetworkAccessManager()->get(nr);
 			connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepTwo()));
 		}
+	}
+	else {
+		loop_->exit();
 	}
 }
 

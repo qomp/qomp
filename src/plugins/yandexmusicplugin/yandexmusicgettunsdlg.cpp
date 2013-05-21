@@ -47,7 +47,7 @@ static const QString trackReString = "<div class=\"b-track .*title=\"([^\"]+)\" 
 // cap(2) - album id
 // cap(3) - tracks count
 static const QString albumReString = "<div class=\"b-albums\" title=\"([^\"]+)\">.+"
-			"onclick=\"return \\{'id':&quot;([^&]*)&quot;, 'title':&quot;[^&]*&quot;, 'track_count':(\\d+),";
+		"onclick=\"return \\{'id':&quot;([^&]*)&quot;, 'title':&quot;[^&]*&quot;, 'track_count':([^,]+),";
 
 
 // cap(1) - artist id
@@ -321,7 +321,7 @@ void YandexMusicGettunsDlg::itemSelected(const QModelIndex &ind)
 	if(!item || item->internalId.isEmpty())
 		return;
 
-	QUrl url("http://music.yandex.ru/", QUrl::StrictMode);
+	QString path;
 	const char* slot = 0;
 	switch(item->type()) {
 	case Qomp::TypeTune:
@@ -338,7 +338,7 @@ void YandexMusicGettunsDlg::itemSelected(const QModelIndex &ind)
 		QompPluginAlbum *album = static_cast<QompPluginAlbum *>(item);
 		if(album->tunesReceived)
 			return;
-		url.setPath(QUrl::fromPercentEncoding("fragment/album/" + album->internalId.toLatin1()));
+		path = QUrl::fromPercentEncoding("fragment/album/" + album->internalId.toLatin1());
 		slot = SLOT(albumUrlFinished());
 		break;
 	}
@@ -347,13 +347,15 @@ void YandexMusicGettunsDlg::itemSelected(const QModelIndex &ind)
 		QompPluginArtist *artist = static_cast<QompPluginArtist *>(item);
 		if(artist->tunesReceived)
 			return;
-		url.setPath(QUrl::fromPercentEncoding(QString("%1/albums").arg(item->internalId).toLatin1()));
+		path = QUrl::fromPercentEncoding(QString("%1/albums").arg(item->internalId).toLatin1());
 		slot = SLOT(artistUrlFinished());
 		break;
 	}
 	default:
 		return;
 	}
+
+	QUrl url("http://music.yandex.ru/" + path, QUrl::StrictMode);
 	QNetworkRequest nr(url);
 	nr.setRawHeader("Accept", "*/*");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");

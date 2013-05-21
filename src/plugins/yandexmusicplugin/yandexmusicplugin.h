@@ -41,6 +41,7 @@ public:
 	virtual QString description() const;
 	virtual TuneList getTunes();
 	virtual QompOptionsPage* options();
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const;
 	
 signals:
 	

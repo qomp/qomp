@@ -26,6 +26,7 @@
 class QompPlugin;
 class Tune;
 class QompOptionsPage;
+class TuneURLResolveStrategy;
 
 class PluginManager : public QObject
 {
@@ -40,7 +41,7 @@ public:
 	bool isPluginEnabled(const QString& pluginName) const;
 	void setPluginEnabled(const QString& pluginName, bool enabled);
 	QStringList enabledPlugins() const;
-
+	TuneURLResolveStrategy* urlResolveStrategy(const QString& strategyName) const;
 	
 private:
 	PluginManager();

@@ -143,6 +143,16 @@ QStringList PluginManager::enabledPlugins() const
 	return list;
 }
 
+TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) const
+{
+	foreach(const PluginPair& pp, plugins_) {
+		TuneURLResolveStrategy *rs = pp.first->urlResolveStrategy();
+		if(rs && rs->name() == name)
+			return rs;
+	}
+	return 0;
+}
+
 #ifdef HAVE_QT5
 Q_IMPORT_PLUGIN(MyzukaruPlugin)
 Q_IMPORT_PLUGIN(YandexMusicPlugin)

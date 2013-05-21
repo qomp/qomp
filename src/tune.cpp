@@ -18,12 +18,14 @@
  */
 
 #include "tune.h"
+#include "pluginmanager.h"
+
 #include <QStringList>
 #include <QFile>
 #include <QTextStream>
 
 static const QString separator = "@qomp@";
-
+static const QString simpleStrategyName = "SimpleStrategy";
 
 class SimpleStrategy : public TuneURLResolveStrategy
 {
@@ -35,12 +37,17 @@ public:
 		return instance_;
 	}
 
-	QUrl getUrl(const Tune *t)
+	virtual QUrl getUrl(const Tune *t)
 	{
 		if(!t->file.isEmpty())
 			return QUrl::fromLocalFile(t->file);
 
 		return QUrl(t->url);
+	}
+
+	virtual QString name() const
+	{
+		return simpleStrategyName;
 	}
 
 private:
@@ -67,14 +74,14 @@ QUrl Tune::getUrl() const
 QString Tune::toString() const
 {
 	QStringList list;
-	list << artist << title << trackNumber << album << duration << url << file;
+	list << artist << title << trackNumber << album << duration << url << file << strategy_->name();
 	return list.join(separator);
 }
 
 bool Tune::fromString(const QString &str)
 {
 	QStringList list = str.split(separator);
-	if(list.size() != 7)
+	if(list.size() != 8)
 		return false;
 
 	artist = list.takeFirst();
@@ -84,6 +91,13 @@ bool Tune::fromString(const QString &str)
 	duration = list.takeFirst();
 	url = list.takeFirst();
 	file = list.takeFirst();
+
+	const QString strName = list.takeFirst();
+	if(strName != simpleStrategyName) {
+		TuneURLResolveStrategy *rs = PluginManager::instance()->urlResolveStrategy(strName);
+		if(rs)
+			setUrlResolveStrategy(rs);
+	}
 
 	return true;
 }

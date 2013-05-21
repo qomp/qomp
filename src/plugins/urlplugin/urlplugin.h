@@ -40,6 +40,7 @@ public:
 	virtual QString description() const { return tr("Open custom URL"); }
 	virtual TuneList getTunes();
 	virtual QompOptionsPage* options();
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
 	
 };
 
