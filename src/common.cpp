@@ -133,7 +133,7 @@ QString cacheDir()
 #endif
 	QDir d(dir);
 	if(!d.exists())
-		d.mkdir(d.path());
+		d.mkpath(dir);
 
 	return dir;
 }
@@ -150,6 +150,10 @@ QString dataDir()
 #else
 	dir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
+	QDir d(dir);
+	if(!d.exists())
+		d.mkpath(dir);
+
 	return dir;
 }
 
