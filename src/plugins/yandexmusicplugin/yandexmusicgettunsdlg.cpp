@@ -56,6 +56,14 @@ static const QString albumReString = "<div class=\"b-albums\" title=\"([^\"]+)\"
 static const QString artistReString = "<div class=\"b-artist-group \"><a href=\"([^\"]+)\" class=\"b-link\"><span class=\"b-mark\">([^<]+)</span>([^<]*)</a>";
 
 
+static const QString currentPageReString = "<b class=\"b-pager__current\">([^<]*)</b>";
+
+
+// cap(1) - serch text
+// cap(2) - page number
+static const QString pageReString = "<a class=\"b-pager__page\" href=\"#!/search\\?text=([^&]+)&[^\"]+\">(\\d*)</a>";
+
+
 
 class YandexMusicTune : public QompPluginTune
 {
@@ -152,14 +160,37 @@ void YandexMusicGettunsDlg::doSearch()
 	req.insert("albums", SLOT(albumsSearchFinished()));
 	req.insert("tracks", SLOT(tracksSearchFinished()));
 	foreach(const QString& key, req.keys()) {
-		QString url = QString("http://music.yandex.ru/fragment/search?text=%1&&type=%2").arg(txt, key);
-		QNetworkRequest nr;
-		nr.setUrl(url);
-		QNetworkReply* reply = nam_->get(nr);
-		connect(reply, SIGNAL(finished()), req.value(key));
-			requests_.insert(reply, 0);
+		search(txt, key, req.value(key));
 	}
+}
+
+void YandexMusicGettunsDlg::search(const QString& text, const QString &type, const char *slot, int page)
+{
+	static const QString urlStr = "http://music.yandex.ru/fragment/search?text=%1&&type=%2";
+	QString url = urlStr.arg(text, type);
+	if(page > 1) {
+		url += "&page=" + QString::number(page);
+	}
+	QNetworkRequest nr(url);
+	QNetworkReply* reply = nam_->get(nr);
+	connect(reply, SIGNAL(finished()), slot);
+	requests_.insert(reply, 0);
 	startBusyWidget();
+}
+
+void YandexMusicGettunsDlg::searchNextPage(const QString &reply, const QString &type, const char *slot)
+{
+	QRegExp currentPageRe(currentPageReString);
+	if(currentPageRe.indexIn(reply) != -1) {
+		int curPage = currentPageRe.cap(1).toInt();
+		QRegExp pageRe(pageReString);
+		if(pageRe.lastIndexIn(reply) != -1) {
+			int lastPage = pageRe.cap(2).toInt();
+			if(lastPage > curPage) {
+				search(pageRe.cap(1), type, slot, ++curPage);
+			}
+		}
+	}
 }
 
 void YandexMusicGettunsDlg::artistsSearchFinished()
@@ -184,6 +215,8 @@ void YandexMusicGettunsDlg::artistsSearchFinished()
 			artists.append(artist);
 		}
 		artistsModel_->addTopLevelItems(artists);
+
+		searchNextPage(replyStr, "artists", SLOT(artistsSearchFinished()));
 	}
 }
 
@@ -241,6 +274,8 @@ void YandexMusicGettunsDlg::albumsSearchFinished()
 	if(reply->error() == QNetworkReply::NoError) {
 		const QString replyStr = QString::fromUtf8(reply->readAll());
 		albumsModel_->addTopLevelItems(parseAlbums(replyStr));
+
+		searchNextPage(replyStr, "albums", SLOT(albumsSearchFinished()));
 	}
 }
 
@@ -254,6 +289,8 @@ void YandexMusicGettunsDlg::tracksSearchFinished()
 	if(reply->error() == QNetworkReply::NoError) {
 		const QString replyStr = QString::fromUtf8(reply->readAll());
 		tracksModel_->addTopLevelItems(parseTunes(replyStr));
+
+		searchNextPage(replyStr, "tracks", SLOT(tracksSearchFinished()));
 	}
 }
 
@@ -272,19 +309,7 @@ void YandexMusicGettunsDlg::albumUrlFinished()
 			QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
 			QompPluginModelItem* it = model_->itemForId(reply->property("id").toString());
 			model_->setItems(list, it);
-//			foreach(QompPluginModelItem* t, list) {
-//				YandexMusicTune *mt = static_cast<YandexMusicTune*>(t);
-//				//SICK!!! But we couldn't call itemSelected(QompPluginModelItem *item)
-//				//because of lose pointer on model
-//				QUrl url = QUrl(QString("http://storage.music.yandex.ru/get/%1/2.xml").arg(mt->storageDir), QUrl::StrictMode);
-//				QNetworkRequest nr(url);
-//				nr.setRawHeader("Accept", "*/*");
-//				nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-//				QNetworkReply *reply = nam_->get(nr);
-//				reply->setProperty("id", t->internalId);
-//				requests_.insert(reply, (void*)model);
-//				connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepOne()));
-//			}
+
 			QompPluginAlbum* pa = static_cast<QompPluginAlbum*>(it);
 			pa->tunesReceived = true;
 		}
@@ -367,12 +392,31 @@ void YandexMusicGettunsDlg::itemSelected(const QModelIndex &ind)
 	startBusyWidget();
 }
 
-void YandexMusicGettunsDlg::getSuggestions(const QString &/*text*/)
+void YandexMusicGettunsDlg::getSuggestions(const QString &text)
 {
+	static const QString urlStr = "http://suggest-music.yandex.ru/suggest-ya.cgi?v=3&part=%1";
+	QNetworkRequest nr(urlStr.arg(text));
+	QNetworkReply* reply = nam_->get(nr);
+	connect(reply, SIGNAL(finished()), SLOT(suggestionsFinished()));
 }
 
 void YandexMusicGettunsDlg::suggestionsFinished()
 {
+	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
+	reply->deleteLater();
+	if(reply->error() == QNetworkReply::NoError) {
+		QString replyStr = QString::fromUtf8(reply->readAll());
+		QRegExp sugRx("\\[([^\\]]+)\\]");
+		if(sugRx.indexIn(replyStr) != -1 ) {
+			QStringList sugs = sugRx.cap(1).split(",");
+			if(!sugs.isEmpty()) {
+				for(QStringList::Iterator it = sugs.begin(); it != sugs.end(); ++ it) {
+					*it = (*it).mid(1, (*it).size() - 2);
+				}
+				newSuggestions(sugs);
+			}
+		}
+	}
 }
 
 void YandexMusicGettunsDlg::checkAndStopBusyWidget()

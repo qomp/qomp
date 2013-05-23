@@ -53,6 +53,8 @@ private slots:
 
 private:
 	void checkAndStopBusyWidget();
+	void search(const QString& text, const QString& type, const char* slot, int page = 1);
+	void searchNextPage(const QString& reply, const QString& type, const char* slot);
 
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;
