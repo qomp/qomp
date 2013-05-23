@@ -56,7 +56,7 @@ void QompTrayIcon::trayActivated(QSystemTrayIcon::ActivationReason reason)
 		emit trayDoubleClicked();
 		break;
 	case QSystemTrayIcon::MiddleClick:
-		emit trayClicked(Qt::MiddleButton);
+		emit trayClicked(Qt::MidButton);
 		break;
 	case QSystemTrayIcon::Context:
 		emit trayClicked(Qt::RightButton);

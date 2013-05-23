@@ -23,7 +23,7 @@
 #include <Phonon/AudioOutput>
 #include <Phonon/SeekSlider>
 #include <Phonon/VolumeSlider>
-#include <phonon/BackendCapabilities>
+#include <phonon/backendcapabilities.h>
 
 //#define DEBUG_OUTPUT
 
