@@ -23,33 +23,18 @@
 #include "tune.h"
 #include <QObject>
 
-class QMutex;
-class QEventLoop;
-class QTimer;
-
 class YandexMusicURLResolveStrategy : public QObject, public TuneURLResolveStrategy
 {
 	Q_OBJECT
 public:
 	static YandexMusicURLResolveStrategy* instance();
-	~YandexMusicURLResolveStrategy();
 
 	virtual QUrl getUrl(const Tune *t);
 	virtual QString name() const;
-	
-private slots:
-	void tuneUrlFinishedStepOne();
-	void tuneUrlFinishedStepTwo();
-	void timeout();
 
 private:
 	explicit YandexMusicURLResolveStrategy();
 	static YandexMusicURLResolveStrategy* instance_;
-	QUrl url_;
-	QEventLoop* loop_;
-	Tune *tune_;
-	mutable QMutex* mutex_;
-	QTimer* timer_;
 };
 
 #endif // YANDEXMUSICURLRESOLVESTRATEGY_H
