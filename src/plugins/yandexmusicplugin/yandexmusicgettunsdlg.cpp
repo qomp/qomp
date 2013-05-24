@@ -37,7 +37,7 @@
 // cap(5) - album
 // cap(6) - song duration
 // cap(7) - cover
-static const QString trackReString = "<div class=\"b-track .*title=\"([^\"]+)\" .*onclick=\'return "
+static const QString trackReString = "<div class=\"b-track .*title=\"([^\"]+)\" .*onclick=[\'\"]return "
 		"\\{\"id\":\"([^\"]*)\", \"storage_dir\":\"([^\"]*)\", \"title\":\"[^\"]*\", \"artist\":\"([^\"]*)\", \"artist_id\":\"[^\"]*\","
 		" \"artist_var\":\"[^\"]*\", \"album\":\"([^\"]*)\", \"album_id\":\"[^\"]*\", \"duration\":\"([^\"]*)\","
 		" \"cover\":\"([^\"]*)\"\\}";
@@ -47,7 +47,7 @@ static const QString trackReString = "<div class=\"b-track .*title=\"([^\"]+)\" 
 // cap(2) - album id
 // cap(3) - tracks count
 static const QString albumReString = "<div class=\"b-albums\" title=\"([^\"]+)\">.+"
-		"onclick=\"return \\{'id':&quot;([^&]*)&quot;, 'title':&quot;[^&]*&quot;, 'track_count':([^,]+),";
+		"onclick=[\'\"]return \\{'id':\"([^&]*)\", 'title':\"[^&]*\", 'track_count':([^,]+),";
 
 
 // cap(1) - artist id
@@ -224,9 +224,11 @@ static QList<QompPluginModelItem*> parseAlbums(const QString& str)
 {
 	QRegExp albumRe(albumReString);
 	albumRe.setMinimal(true);
+	QString string = str;
+	string.replace("&quot;", "\"");
 	int off = 0;
 	QList<QompPluginModelItem*> albums;
-	while((off = albumRe.indexIn(str, off)) != -1) {
+	while((off = albumRe.indexIn(string, off)) != -1) {
 		off += albumRe.matchedLength();
 		QompPluginAlbum* album = new QompPluginAlbum;
 		album->album = albumRe.cap(1);
@@ -248,9 +250,11 @@ static QList<QompPluginModelItem*> parseTunes(const QString& str)
 {
 	QRegExp tuneRe(trackReString);
 	tuneRe.setMinimal(true);
+	QString string = str;
+	string.replace("&quot;", "\"");
 	int off = 0;
 	QList<QompPluginModelItem*> tracks;
-	while((off = tuneRe.indexIn(str, off)) != -1) {
+	while((off = tuneRe.indexIn(string, off)) != -1) {
 		off += tuneRe.matchedLength();
 		YandexMusicTune* tune = new YandexMusicTune;
 		tune->title = Qomp::unescape(tuneRe.cap(1));
@@ -323,7 +327,7 @@ void YandexMusicGettunsDlg::artistUrlFinished()
 	requests_.remove(reply);
 	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
-		QString replyStr = QString::fromUtf8(reply->readAll());
+		const QString replyStr = QString::fromUtf8(reply->readAll());
 		QList<QompPluginModelItem*> list = parseAlbums(replyStr);
 		if(!list.isEmpty()) {
 			QompPluginModelItem* it = artistsModel_->itemForId(reply->property("id").toString());
