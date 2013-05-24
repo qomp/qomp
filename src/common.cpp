@@ -161,6 +161,9 @@ QString fixEncoding(const QString &encoded)
 {
 	const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray();
 	QTextCodec *tc = QTextCodec::codecForName(decoding);
+	if(!tc)
+		return encoded;
+
 	QByteArray ba = encoded.toLatin1();
 	return tc->canEncode(encoded) ? encoded : tc->toUnicode(ba);
 }
