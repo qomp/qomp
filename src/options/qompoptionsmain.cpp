@@ -23,6 +23,7 @@
 #include "common.h"
 #include "qompplayer.h"
 #include "translator.h"
+#include "qomptrayicon.h"
 #include "ui_qompoptionsmain.h"
 
 static const QString defaultDevice = QObject::tr("default");
@@ -65,6 +66,9 @@ void QompOptionsMain::applyOptions()
 	Options::instance()->setOption(OPTION_UPDATE_METADATA, ui->cb_metaData->isChecked());
 	Options::instance()->setOption(OPTION_HIDE_ON_CLOSE, ui->cb_hideOnClose->isChecked());
 	Options::instance()->setOption(OPTION_DEFAULT_ENCODING, ui->le_encoding->text().toUtf8());
+	Options::instance()->setOption(OPTION_TRAY_DOUBLE_CLICK, ui->cb_doubleClick->currentIndex());
+	Options::instance()->setOption(OPTION_TRAY_MIDDLE_CLICK, ui->cb_middleClick->currentIndex());
+	Options::instance()->setOption(OPTION_TRAY_LEFT_CLICK, ui->cb_leftClick->currentIndex());
 	Translator::instance()->retranslate(ui->cb_lang->currentText());
 }
 
@@ -101,4 +105,15 @@ void QompOptionsMain::restoreOptions()
 		ui->cb_lang->setCurrentIndex(index);
 	else
 		ui->cb_lang->setCurrentIndex(0);
+
+	QStringList actions = QompTrayIcon::availableActions();
+	ui->cb_middleClick->addItems(actions);
+	QompTrayActionType type = Options::instance()->getOption(OPTION_TRAY_MIDDLE_CLICK).toInt();
+	ui->cb_middleClick->setCurrentIndex(type);
+	ui->cb_leftClick->addItems(actions);
+	type = Options::instance()->getOption(OPTION_TRAY_LEFT_CLICK).toInt();
+	ui->cb_leftClick->setCurrentIndex(type);
+	ui->cb_doubleClick->addItems(actions);
+	type = Options::instance()->getOption(OPTION_TRAY_DOUBLE_CLICK).toInt();
+	ui->cb_doubleClick->setCurrentIndex(type);
 }

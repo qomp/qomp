@@ -97,8 +97,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 	connect(model_, SIGNAL(layoutChanged()), SLOT(updateTuneInfo()));
 
-	connect(trayIcon_, SIGNAL(trayDoubleClicked()), SLOT(trayDoubleclicked()));
-	connect(trayIcon_, SIGNAL(trayClicked(Qt::MouseButton)), SLOT(trayActivated(Qt::MouseButton)));
+	connect(trayIcon_, SIGNAL(trayContextMenu()), SLOT(doMainContextMenu()));
 	connect(trayIcon_, SIGNAL(trayWheeled(int)), SLOT(trayWheeled(int)));
 
 	resize(Options::instance()->getOption(OPTION_GEOMETRY_WIDTH, width()).toInt(),
@@ -438,7 +437,7 @@ void QompMainWin::doMainContextMenu()
 	QAction* x = m.exec();
 	int ret = acts.indexOf(x);
 	if(ret == 0)
-		trayDoubleclicked();
+		toggleVisibility();
 	else if(ret == 2)
 		doOptions();
 	else if(ret == 4)
@@ -539,7 +538,7 @@ void QompMainWin::savePlaylist()
 	}
 }
 
-void QompMainWin::trayDoubleclicked()
+void QompMainWin::toggleVisibility()
 {
 	bool b = isHidden();
 	if(b) {

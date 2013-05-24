@@ -74,6 +74,9 @@ void Qomp::init()
 		hash.insert(OPTION_PROXY_PORT,		"3128");
 		hash.insert(OPTION_HIDE_ON_CLOSE,	true);
 		hash.insert(OPTION_DEFAULT_ENCODING,	"CP1251");
+		hash.insert(OPTION_TRAY_DOUBLE_CLICK,	1);
+		hash.insert(OPTION_TRAY_MIDDLE_CLICK,	0);
+		hash.insert(OPTION_TRAY_LEFT_CLICK,	2);
 
 		foreach(const char* key, hash.keys()) {
 			Options::instance()->setOption(key, hash.value(key));

@@ -43,6 +43,7 @@ public:
 	void setPlayer(QompPlayer* player);
 
 	void bringToFront();
+	void toggleVisibility();
 
 public slots:
 	void actPlayActivated();
@@ -74,7 +75,7 @@ private slots:
 	void loadPlaylist();
 	void savePlaylist();
 
-	void trayDoubleclicked();
+	//void trayDoubleclicked();
 	void trayActivated(Qt::MouseButton);
 	void trayWheeled(int delta);
 

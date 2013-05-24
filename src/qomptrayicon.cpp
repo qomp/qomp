@@ -19,16 +19,97 @@
 
 #include "qomptrayicon.h"
 #include "defines.h"
+#include "qompmainwin.h"
+#include "options.h"
 
 #include <QWheelEvent>
+#include <QTimer>
+#include <QApplication>
+//#include <QtDebug>
 
 
-QompTrayIcon::QompTrayIcon(QObject *parent) :
+class QompTrayAction : public QObject
+{
+	Q_OBJECT
+public:
+	virtual void exequte() = 0;
+
+protected:
+	QompTrayAction(QompMainWin* win) :
+		QObject(win),
+		win_(win)
+	{}
+
+	QompMainWin* win_;
+};
+
+class PlayPauseAction : public QompTrayAction
+{
+	Q_OBJECT
+public:
+	PlayPauseAction(QompMainWin* win) : QompTrayAction(win) {}
+
+	void exequte()
+	{
+		win_->actPlayActivated();
+		deleteLater();
+	}
+};
+
+class PlayNextAction : public QompTrayAction
+{
+	Q_OBJECT
+public:
+	PlayNextAction(QompMainWin* win) : QompTrayAction(win) {}
+
+	void exequte()
+	{
+		win_->actNextActivated();
+		deleteLater();
+	}
+};
+
+class PlayPrevAction : public QompTrayAction
+{
+	Q_OBJECT
+public:
+	PlayPrevAction(QompMainWin* win) : QompTrayAction(win) {}
+
+	void exequte()
+	{
+		win_->actPrevActivated();
+		deleteLater();
+	}
+};
+
+class ToggleVisibilityAction : public QompTrayAction
+{
+	Q_OBJECT
+public:
+	ToggleVisibilityAction(QompMainWin* win) : QompTrayAction(win) {}
+
+	void exequte()
+	{
+		win_->toggleVisibility();
+		deleteLater();
+	}
+};
+
+static const QStringList actions = QStringList() << QObject::tr("Play/Pause")
+						<< QObject::tr("Toggle Visibility")
+						<< QObject::tr("Play Next")
+						<< QObject::tr("Play Previous");
+
+
+
+QompTrayIcon::QompTrayIcon(QompMainWin *parent) :
 	QObject(parent),
-	icon_(new QSystemTrayIcon( this))
+	icon_(new QSystemTrayIcon(this)),
+	win_(parent),
+	lastClick_(QTime::currentTime())
 {
 	setIcon(QIcon(":/icons/icons/qomp_stop.png"));
-	icon_->setToolTip(QString("%1 %2").arg(APPLICATION_NAME, APPLICATION_VERSION));
+	setToolTip(QString());
 	connect(icon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
 
 	icon_->installEventFilter(this);
@@ -48,24 +129,63 @@ void QompTrayIcon::setIcon(const QIcon &ico)
 	icon_->setIcon(ico);
 }
 
+QStringList QompTrayIcon::availableActions()
+{
+	return actions;
+}
+
+QompTrayActionType QompTrayIcon::actionTimeForName(const QString &name)
+{
+	return actions.indexOf(name);
+}
+
+QompTrayAction *QompTrayIcon::actionForType(QompTrayActionType type) const
+{
+	switch(type) {
+	case 0:
+		return new PlayPauseAction(win_);
+	case 1:
+		return new ToggleVisibilityAction(win_);
+	case 2:
+		return new PlayNextAction(win_);
+	case 3:
+		return new PlayPrevAction(win_);
+	}
+
+	return 0;
+}
 
 void QompTrayIcon::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
+	QompTrayAction *action = 0;
+	lastClick_ = QTime::currentTime();
 	switch(reason) {
 	case QSystemTrayIcon::DoubleClick:
-		emit trayDoubleClicked();
+		action = actionForType(Options::instance()->getOption(OPTION_TRAY_DOUBLE_CLICK).toInt());
 		break;
 	case QSystemTrayIcon::MiddleClick:
-		emit trayClicked(Qt::MidButton);
+		action = actionForType(Options::instance()->getOption(OPTION_TRAY_MIDDLE_CLICK).toInt());
 		break;
 	case QSystemTrayIcon::Context:
-		emit trayClicked(Qt::RightButton);
-		break;
+		emit trayContextMenu();
+		return;
 	case QSystemTrayIcon::Trigger:
-		emit trayClicked(Qt::LeftButton);
-		break;
+		QTimer::singleShot(QApplication::doubleClickInterval()+1, this, SLOT(trayClicked()));
+		return;
 	default:
 		break;
+	}
+
+	if(action)
+		action->exequte();
+}
+
+void QompTrayIcon::trayClicked()
+{
+	if(lastClick_.msecsTo(QTime::currentTime()) > QApplication::doubleClickInterval()) {
+		QompTrayAction *action = actionForType(Options::instance()->getOption(OPTION_TRAY_LEFT_CLICK).toInt());
+		if(action)
+			action->exequte();
 	}
 }
 
@@ -77,3 +197,5 @@ bool QompTrayIcon::eventFilter(QObject *o, QEvent *e)
 	}
 	return QObject::eventFilter(o, e);
 }
+
+#include "qomptrayicon.moc"

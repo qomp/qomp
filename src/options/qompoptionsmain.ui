@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>389</width>
-    <height>416</height>
+    <width>287</width>
+    <height>422</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,6 +32,58 @@
      <property name="text">
       <string>Hide qomp to system tray on closing</string>
      </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gb_tray">
+     <property name="title">
+      <string>System Tray</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Mouse Left Click</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="cb_leftClick"/>
+      </item>
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>74</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Mouse Middle Click</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="cb_middleClick"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Mouse Double Click</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="cb_doubleClick"/>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
@@ -203,7 +255,7 @@
              </sizepolicy>
             </property>
             <property name="inputMask">
-             <string>99999; </string>
+             <string>99999</string>
             </property>
            </widget>
           </item>

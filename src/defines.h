@@ -54,4 +54,8 @@
 #define OPTION_APPLICATION_VERSION "main.app-version"
 #define OPTION_DEFAULT_ENCODING "main.metadata-encoding"
 
+#define OPTION_TRAY_LEFT_CLICK		"main.tray-left-click"
+#define OPTION_TRAY_MIDDLE_CLICK	"main.tray-middle-click"
+#define OPTION_TRAY_DOUBLE_CLICK	"main.tray-double-click"
+
 #endif // DEFINES_H

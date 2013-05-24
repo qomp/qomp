@@ -21,31 +21,42 @@
 #define QOMPTRAYICON_H
 
 #include <QSystemTrayIcon>
+#include <QTime>
 
 class QIcon;
+class QompMainWin;
+class QompTrayAction;
+typedef int QompTrayActionType;
 
 class QompTrayIcon : public QObject
 {
 	Q_OBJECT
 public:
-	explicit QompTrayIcon(QObject *parent = 0);
+	explicit QompTrayIcon(QompMainWin* parent);
 	void setToolTip(const QString& text);
 	void setIcon(const QIcon& ico);
+
+	static QStringList availableActions();
+	static QompTrayActionType actionTimeForName(const QString& name);
 	
 signals:
-	void trayClicked(Qt::MouseButton);
-	void trayDoubleClicked();
+	void trayContextMenu();
 	void trayWheeled(int delta);
 	
 private slots:
 	void trayActivated(QSystemTrayIcon::ActivationReason reason);
+	void trayClicked();
 
 protected:
 	bool eventFilter(QObject *o, QEvent *e);
 
 private:
+	QompTrayAction* actionForType(QompTrayActionType type) const;
+
+private:
 	QSystemTrayIcon* icon_;
-	
+	QompMainWin* win_;
+	QTime lastClick_;
 };
 
 #endif // QOMPTRAYICON_H
