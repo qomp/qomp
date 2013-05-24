@@ -183,8 +183,8 @@ void QompMainWin::actPlayActivated()
 	}
 
 	Q_ASSERT(player_);
-	if(!(player_->currentTune() == model_->tune(i))) {
-		player_->setTune(model_->tune(i));
+	if(!(player_->currentTune() == model_->currentTune())) {
+		player_->setTune(model_->currentTune());
 		setCurrentPosition(0);
 	}
 
