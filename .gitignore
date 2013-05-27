@@ -23,5 +23,6 @@ object_script.qomp*
 qomp_*.deb
 description-pak
 backup*qomp.tgz
-
+qomp.pbproj/
+qomp.app/
 

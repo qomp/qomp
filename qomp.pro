@@ -70,6 +70,6 @@ unix {
 win32:RC_FILE += qomp.rc
 
 macx {
-   ICON = src/icons/qomp.icns
-   QMAKE_INFO_PLIST = Info.plist
+   ICON = $$PWD/src/icons/qomp.icns
+   QMAKE_INFO_PLIST = $$PWD/Info.plist
 }
