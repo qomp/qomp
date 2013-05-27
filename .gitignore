@@ -25,4 +25,4 @@ description-pak
 backup*qomp.tgz
 qomp.pbproj/
 qomp.app/
-
+*.dmg

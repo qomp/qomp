@@ -124,7 +124,6 @@ void Translator::setCurrentTranslation(const QString &tr)
 	Options::instance()->setOption(OPTION_CURRENT_TRANSLATION, tr);
 }
 
-
 QStringList Translator::transDirs()
 {
 	static QStringList list;
@@ -133,6 +132,11 @@ QStringList Translator::transDirs()
 		list.append(qApp->applicationDirPath()+"/translations");
 #elif defined (HAVE_X11)
 		list.append(QString(QOMP_DATADIR) + "/translations");
+#elif defined (Q_OS_MAC)
+		QDir appDir = qApp->applicationDirPath();
+		appDir.cdUp();
+		appDir.cd("Translations");
+		list.append(appDir.absolutePath());
 #endif
 	}
 	return list;
