@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIconFile</key>
+	<string>qomp.icns</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleGetInfoString</key>
+	<string>qomp 0.1 beta</string>
+	<key>CFBundleSignature</key>
+	<string>qomp</string>
+	<key>CFBundleExecutable</key>
+	<string>qomp</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.googlecode.qomp</string>
+	<key>NOTE</key>
+	<string>http://code.google.com/p/qomp</string>
+</dict>
+</plist>
