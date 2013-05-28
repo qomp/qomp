@@ -95,11 +95,6 @@ public:
 	}
 };
 
-static const QStringList actions = QStringList() << QObject::tr("Play/Pause")
-						<< QObject::tr("Toggle Visibility")
-						<< QObject::tr("Play Next")
-						<< QObject::tr("Play Previous");
-
 
 
 QompTrayIcon::QompTrayIcon(QompMainWin *parent) :
@@ -131,12 +126,16 @@ void QompTrayIcon::setIcon(const QIcon &ico)
 
 QStringList QompTrayIcon::availableActions()
 {
+	static const QStringList actions = QStringList() << QObject::tr("Play/Pause")
+							<< QObject::tr("Toggle Visibility")
+							<< QObject::tr("Play Next")
+							<< QObject::tr("Play Previous");
 	return actions;
 }
 
 QompTrayActionType QompTrayIcon::actionTimeForName(const QString &name)
 {
-	return actions.indexOf(name);
+	return availableActions().indexOf(name);
 }
 
 QompTrayAction *QompTrayIcon::actionForType(QompTrayActionType type) const
