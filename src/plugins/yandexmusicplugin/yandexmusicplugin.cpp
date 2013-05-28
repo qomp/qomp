@@ -40,7 +40,7 @@ QString YandexMusicPlugin::version() const
 
 QString YandexMusicPlugin::description() const
 {
-	return "Listening to the music from Yandex.Music";
+	return tr("Listening to the music from Yandex.Music");
 }
 
 TuneList YandexMusicPlugin::getTunes()
