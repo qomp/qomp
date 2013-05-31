@@ -214,7 +214,9 @@ void YandexMusicGettunsDlg::artistsSearchFinished()
 			artist->setItems(QList<QompPluginModelItem*>() << new QompPluginTune()); //add fake item
 			artists.append(artist);
 		}
-		artistsModel_->addTopLevelItems(artists);
+		if(!artists.isEmpty()) {
+			artistsModel_->addTopLevelItems(artists);
+		}
 
 		searchNextPage(replyStr, "artists", SLOT(artistsSearchFinished()));
 	}
@@ -427,4 +429,15 @@ void YandexMusicGettunsDlg::checkAndStopBusyWidget()
 {
 	if(requests_.isEmpty())
 		stopBusyWidget();
+
+	//this is not the best plase for this, but....
+	if(artistsModel_->rowCount()) {
+		tabWidget_->setCurrentIndex(0);
+	}
+	else if(albumsModel_->rowCount()) {
+		tabWidget_->setCurrentIndex(1);
+	}
+	else if(tracksModel_->rowCount()) {
+		tabWidget_->setCurrentIndex(2);
+	}
 }
