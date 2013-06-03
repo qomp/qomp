@@ -43,6 +43,8 @@ LANG_PATH = qomp.translations/translations
 TRANSLATIONS = $$LANG_PATH/qomp_ru.ts
 
 unix {
+	INCLUDEPATH += /usr/include/KDE/
+	
 	target.path = $$BINDIR
 	INSTALLS += target
 	dt.path = $$PREFIX/share/applications/
