@@ -32,6 +32,8 @@
 #include <QKeyEvent>
 #include <QNetworkProxy>
 
+static const QString ProstoPleerUrl = "http://pleer.com";
+
 
 class ProstopleerTune : public QompPluginTune
 {
@@ -116,7 +118,7 @@ void ProstoPleerPluginGetTunesDialog::doSearch()
 
 void ProstoPleerPluginGetTunesDialog::doSearchStepTwo()
 {
-	QString url = QString("http://prostopleer.com/search?q=%1").arg(lastSearchStr_);
+	QString url = QString("%1/search?q=%2").arg(ProstoPleerUrl, lastSearchStr_);
 	int page = ui->lb_current->text().toInt();
 
 	if(page > 0) {
@@ -134,8 +136,8 @@ void ProstoPleerPluginGetTunesDialog::searchFinished()
 	reply->deleteLater();
 	stopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
-		QRegExp re("<li duration=\"([\\d]+)\" file_id=\"([^\"]+)\" singer=\"([^\"]+)\" "
-			   "song=\"([^\"]+)\" link=\"([^\"]+)\"");
+		QRegExp re("<li duration=\"([\\d]+)\"\\s+file_id=\"([^\"]+)\"\\s+singer=\"([^\"]+)\"\\s+"
+			   "song=\"([^\"]+)\"\\s+link=\"([^\"]+)\"");
 		re.setMinimal(true);
 		QList<QompPluginModelItem*> list;
 		QString result = QString::fromUtf8(reply->readAll());
@@ -192,7 +194,7 @@ void ProstoPleerPluginGetTunesDialog::itemSelected(const QModelIndex &index)
 	if(!pt->url.isEmpty())
 		return;
 
-	QUrl url("http://prostopleer.com");
+	QUrl url(ProstoPleerUrl);
 	url.setPath("/site_api/files/get_url");
 	QNetworkRequest nr(url);
 	nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -223,7 +225,7 @@ void ProstoPleerPluginGetTunesDialog::urlFinished()
 
 void ProstoPleerPluginGetTunesDialog::doLogin()
 {
-	QUrl url("http://prostopleer.com");
+	QUrl url(ProstoPleerUrl);
 	url.setPath("/login");
 	QNetworkRequest nr(url);
 	nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -252,7 +254,7 @@ void ProstoPleerPluginGetTunesDialog::loginFinished()
 
 void ProstoPleerPluginGetTunesDialog::searchSuggestions(const QString &text)
 {
-	QUrl url("http://prostopleer.com");
+	QUrl url(ProstoPleerUrl);
 	url.setPath("/search_suggest");
 	QNetworkRequest nr(url);
 	nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
