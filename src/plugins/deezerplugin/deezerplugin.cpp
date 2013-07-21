@@ -17,14 +17,48 @@
  *
  */
 
-#ifndef PROSTOPLEER_PLUGIN_DEFINES_H
-#define PROSTOPLEER_PLUGIN_DEFINES_H
+#include "deezerplugin.h"
+#include "deezergettunesdlg.h"
+#include "deezerplugindefines.h"
 
-#define PROSTOPLEER_PLUGIN_OPTION_LOGIN "prostopleerplugin.login"
-#define PROSTOPLEER_PLUGIN_OPTION_PASSWORD "prostopleerplugin.pass"
-#define PROSTOPLEER_PLUGIN_VERSION "0.1.2"
-#define PROSTOPLEER_PLUGIN_NAME "Pleer.com"
+#include <QtPlugin>
 
-#define PROSTOPLEER_DECODE_KEY "qompprostopleerkey"
+DeezerPlugin::DeezerPlugin() :
+	QObject()
+{
+}
 
-#endif // PROSTOPLEER_PLUGIN_DEFINES_H
+QString DeezerPlugin::name() const
+{
+	return DEEZER_PLUGIN_NAME;
+}
+
+QString DeezerPlugin::version() const
+{
+	return DEEZER_PLUGIN_VER;
+}
+
+QString DeezerPlugin::description() const
+{
+	return tr("Listen to the music from deezer.com");
+}
+
+TuneList DeezerPlugin::getTunes()
+{
+	TuneList list;
+	DeezerGettunesDlg dlg;
+	if(dlg.exec() == QDialog::Accepted) {
+		list = dlg.getTunes();
+	}
+	return list;
+}
+
+
+QompOptionsPage *DeezerPlugin::options()
+{
+	return 0;
+}
+
+#ifndef HAVE_QT5
+Q_EXPORT_PLUGIN2(deezerplugin, DeezerPlugin)
+#endif

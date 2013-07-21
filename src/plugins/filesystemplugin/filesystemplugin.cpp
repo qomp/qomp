@@ -39,7 +39,7 @@ TuneList FilesystemPlugin::getTunes()
 	}
 	TuneList list;
 	foreach(const QString& file, files) {
-		Tune tune;
+		Tune tune(false);
 		tune.file = file;
 		list.append(tune);
 	}

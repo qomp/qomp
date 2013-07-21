@@ -17,14 +17,29 @@
  *
  */
 
-#ifndef PROSTOPLEER_PLUGIN_DEFINES_H
-#define PROSTOPLEER_PLUGIN_DEFINES_H
+#ifndef DEEZERAUTH_H
+#define DEEZERAUTH_H
 
-#define PROSTOPLEER_PLUGIN_OPTION_LOGIN "prostopleerplugin.login"
-#define PROSTOPLEER_PLUGIN_OPTION_PASSWORD "prostopleerplugin.pass"
-#define PROSTOPLEER_PLUGIN_VERSION "0.1.2"
-#define PROSTOPLEER_PLUGIN_NAME "Pleer.com"
+#include <QObject>
 
-#define PROSTOPLEER_DECODE_KEY "qompprostopleerkey"
+class DeezerAuth : public QObject
+{
+	Q_OBJECT
+public:
+	explicit DeezerAuth(QObject *parent = 0);
+	~DeezerAuth();
 
-#endif // PROSTOPLEER_PLUGIN_DEFINES_H
+	void start();
+	QString token() const { return token_; }
+	bool status() const { return status_; }
+	
+private slots:
+	void authFinished();
+
+private:
+	QString token_;
+	bool status_;
+	
+};
+
+#endif // DEEZERAUTH_H

@@ -60,7 +60,9 @@ SimpleStrategy* SimpleStrategy::instance_ = 0;
 
 
 
-Tune::Tune() : strategy_(0)
+Tune::Tune(bool canSave) :
+	canSave_(canSave),
+	strategy_(0)
 {
 	id_ = lastId_++;
 	setUrlResolveStrategy(SimpleStrategy::instance());
@@ -74,14 +76,14 @@ QUrl Tune::getUrl() const
 QString Tune::toString() const
 {
 	QStringList list;
-	list << artist << title << trackNumber << album << duration << url << file << strategy_->name();
+	list << artist << title << trackNumber << album << duration << url << file << strategy_->name() << (canSave_ ? "true" : "false");
 	return list.join(separator);
 }
 
 bool Tune::fromString(const QString &str)
 {
 	QStringList list = str.split(separator);
-	if(list.size() != 8)
+	if(list.size() < 8)
 		return false;
 
 	artist = list.takeFirst();
@@ -98,6 +100,9 @@ bool Tune::fromString(const QString &str)
 		if(rs)
 			setUrlResolveStrategy(rs);
 	}
+
+	if(!list.isEmpty())
+		canSave_ = (list.takeFirst() == "true");
 
 	return true;
 }

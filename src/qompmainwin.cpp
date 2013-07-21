@@ -371,7 +371,9 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 	acts << new QAction(tr("Play/Pause"), &menu);
 	acts << new QAction(tr("Remove"), &menu);
 	if(!tune.url.isEmpty()) {
-		acts << new QAction(tr("Copy URL"), &menu);
+		acts << new QAction(tr("Copy URL"), &menu);		
+	}
+	if(tune.canSave()) {
 		acts << new QAction(tr("Save File"), &menu);
 	}
 	menu.addActions(acts);

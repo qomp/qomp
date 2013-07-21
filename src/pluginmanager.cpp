@@ -155,12 +155,14 @@ TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) c
 
 #ifdef HAVE_QT5
 Q_IMPORT_PLUGIN(MyzukaruPlugin)
+//Q_IMPORT_PLUGIN(DeezerPlugin)
 Q_IMPORT_PLUGIN(YandexMusicPlugin)
 Q_IMPORT_PLUGIN(ProstoPleerPlugin)
 Q_IMPORT_PLUGIN(FilesystemPlugin)
 Q_IMPORT_PLUGIN(UrlPlugin)
 #else
 Q_IMPORT_PLUGIN(myzukaruplugin)
+//Q_IMPORT_PLUGIN(deezerplugin)
 Q_IMPORT_PLUGIN(yandexmusicplugin)
 Q_IMPORT_PLUGIN(prostopleerplugin)
 Q_IMPORT_PLUGIN(filesystemplugin)

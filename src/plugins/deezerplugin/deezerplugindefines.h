@@ -17,14 +17,16 @@
  *
  */
 
-#ifndef PROSTOPLEER_PLUGIN_DEFINES_H
-#define PROSTOPLEER_PLUGIN_DEFINES_H
+#ifndef DEEZERPLUGINDEFINES_H
+#define DEEZERPLUGINDEFINES_H
 
-#define PROSTOPLEER_PLUGIN_OPTION_LOGIN "prostopleerplugin.login"
-#define PROSTOPLEER_PLUGIN_OPTION_PASSWORD "prostopleerplugin.pass"
-#define PROSTOPLEER_PLUGIN_VERSION "0.1.2"
-#define PROSTOPLEER_PLUGIN_NAME "Pleer.com"
+#define DEEZER_PLUGIN_NAME "Deezer.com Plugin"
+#define DEEZER_PLUGIN_VER "0.1"
 
-#define PROSTOPLEER_DECODE_KEY "qompprostopleerkey"
+#define DEEZER_URL "http://api.deezer.com/2.0/"
 
-#endif // PROSTOPLEER_PLUGIN_DEFINES_H
+#define DEEZER_TOKEN_OPTION "plugins.deezer.token"
+
+#define DEEZER_APP_ID "&app_id=122125"
+
+#endif // DEEZERPLUGINDEFINES_H

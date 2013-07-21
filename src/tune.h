@@ -34,7 +34,7 @@ public:
 class Tune
 {
 public:
-	Tune();
+	explicit Tune(bool canSave = true);
 	QString artist;
 	QString title;
 	QString trackNumber;
@@ -48,6 +48,7 @@ public:
 	QString toString() const;
 	bool fromString(const QString& str);
 	int id() const;
+	bool canSave() const { return canSave_; }
 
 	void setUrlResolveStrategy(TuneURLResolveStrategy* strategy);
 	TuneURLResolveStrategy* strategy() const;
@@ -59,6 +60,7 @@ public:
 private:
 	static int lastId_;
 	int id_;
+	bool canSave_;
 	TuneURLResolveStrategy* strategy_;
 };
 

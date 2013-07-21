@@ -17,14 +17,35 @@
  *
  */
 
-#ifndef PROSTOPLEER_PLUGIN_DEFINES_H
-#define PROSTOPLEER_PLUGIN_DEFINES_H
+#ifndef DEEZERPLUGIN_H
+#define DEEZERPLUGIN_H
 
-#define PROSTOPLEER_PLUGIN_OPTION_LOGIN "prostopleerplugin.login"
-#define PROSTOPLEER_PLUGIN_OPTION_PASSWORD "prostopleerplugin.pass"
-#define PROSTOPLEER_PLUGIN_VERSION "0.1.2"
-#define PROSTOPLEER_PLUGIN_NAME "Pleer.com"
+#include "qompplugin.h"
 
-#define PROSTOPLEER_DECODE_KEY "qompprostopleerkey"
+#ifndef QT_STATICPLUGIN
+#define QT_STATICPLUGIN
+#endif
 
-#endif // PROSTOPLEER_PLUGIN_DEFINES_H
+class DeezerPlugin : public QObject, public QompPlugin
+{
+	Q_OBJECT
+	Q_INTERFACES(QompPlugin)
+#ifdef HAVE_QT5
+	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
+#endif
+public:
+	explicit DeezerPlugin();
+	virtual QString name() const;
+	virtual QString version() const;
+	virtual QString description() const;
+	virtual TuneList getTunes();
+	virtual QompOptionsPage* options();
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
+	
+signals:
+	
+public slots:
+	
+};
+
+#endif // DEEZERPLUGIN_H
