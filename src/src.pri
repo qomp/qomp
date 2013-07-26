@@ -16,7 +16,8 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/qompplaylistdelegate.cpp \
     $$PWD/qompbusylabel.cpp \
     $$PWD/translator.cpp \
-    $$PWD/updateschecker.cpp
+    $$PWD/updateschecker.cpp \
+    $$PWD/qompplaylistview.cpp
 
 HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qomp.h \
@@ -35,7 +36,8 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qompplaylistdelegate.h \
     $$PWD/qompbusylabel.h \
     $$PWD/translator.h \
-    $$PWD/updateschecker.h
+    $$PWD/updateschecker.h \
+    $$PWD/qompplaylistview.h
 
 FORMS    += $$PWD/qompmainwin.ui \
     $$PWD/aboutdlg.ui

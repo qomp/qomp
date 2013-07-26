@@ -204,9 +204,18 @@
      </layout>
     </item>
     <item>
-     <widget class="QListView" name="playList">
+     <widget class="QompPlaylistView" name="playList">
       <property name="contextMenuPolicy">
        <enum>Qt::CustomContextMenu</enum>
+      </property>
+      <property name="dragEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="dragDropMode">
+       <enum>QAbstractItemView::InternalMove</enum>
+      </property>
+      <property name="defaultDropAction">
+       <enum>Qt::MoveAction</enum>
       </property>
       <property name="selectionMode">
        <enum>QAbstractItemView::ExtendedSelection</enum>
@@ -286,6 +295,11 @@
    <class>QompBusyLabel</class>
    <extends>QLabel</extends>
    <header>qompbusylabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QompPlaylistView</class>
+   <extends>QListView</extends>
+   <header>qompplaylistview.h</header>
   </customwidget>
  </customwidgets>
  <resources>

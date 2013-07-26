@@ -22,6 +22,7 @@
 
 #include <QFileInfo>
 #include <QStringList>
+#include <QMimeData>
 
 QompPlayListModel::QompPlayListModel(QObject *parent) :
 	QAbstractListModel(parent)
@@ -161,6 +162,89 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 int QompPlayListModel::rowCount(const QModelIndex &/*parent*/) const
 {
 	return tunes_.size();
+}
+
+Qt::DropActions QompPlayListModel::supportedDropActions() const
+{
+	return Qt::MoveAction;
+}
+
+Qt::ItemFlags QompPlayListModel::flags(const QModelIndex &index) const
+{
+	Qt::ItemFlags defaultFlags = QAbstractListModel::flags(index);
+
+	if (index.isValid())
+		return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+	else
+		return Qt::ItemIsDropEnabled | defaultFlags;
+}
+
+QStringList QompPlayListModel::mimeTypes() const
+{
+	QStringList list;
+	list.append("qomp/tune");
+	return list;
+}
+
+QMimeData *QompPlayListModel::mimeData(const QModelIndexList &indexes) const
+{
+	QMimeData *mimeData = new QMimeData();
+	QByteArray encodedData;
+
+	QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+	foreach (const QModelIndex &index, indexes) {
+		if (index.isValid()) {
+			stream << index.row();
+		}
+	}
+	mimeData->setData("qomp/tune", encodedData);
+	return mimeData;
+}
+
+bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+	if (action == Qt::IgnoreAction)
+		return true;
+
+	if (!data->hasFormat("qomp/tune"))
+		return false;
+
+	if (column > 0)
+		return false;
+
+
+	if (row == -1) {
+		if(parent.isValid()) {
+			row = parent.row();
+		}
+		else {
+			row = rowCount();
+		}
+	}
+
+	Tune t = tune(index(row));
+	QByteArray encodedData = data->data("qomp/tune");
+	QDataStream stream(&encodedData, QIODevice::ReadOnly);
+	TuneList tl;
+	while (!stream.atEnd()) {
+		int i;
+		stream >> i;
+		tl.append(tune(index(i)));
+	}
+
+	layoutAboutToBeChanged();
+	foreach(const Tune& t, tl) {
+		tunes_.removeOne(t);
+	}
+	int tuneIndex = indexForTune(t).row();
+	if(tuneIndex == -1)
+		tuneIndex = rowCount()+1;
+	foreach(const Tune& t, tl) {
+		tunes_.insert(tuneIndex++, t);
+	}
+	layoutChanged();
+	return true;
 }
 
 void QompPlayListModel::clear()
