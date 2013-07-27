@@ -20,6 +20,8 @@
 #include "pluginmanager.h"
 #include "qompplugin.h"
 #include "options.h"
+#include "qomptunepluign.h"
+#include "qompplayerstatusplugin.h"
 
 #include <QCoreApplication>
 #include <QPluginLoader>
@@ -81,7 +83,7 @@ QStringList PluginManager::availablePlugins() const
 TuneList PluginManager::getTune(const QString &pluginName)
 {
 	TuneList tl;
-	QompPlugin *p = pluginForName(pluginName);
+	QompTunePlugin *p = dynamic_cast<QompTunePlugin*>(pluginForName(pluginName));
 	if(p) {
 		tl = p->getTunes();
 	}
@@ -146,11 +148,24 @@ QStringList PluginManager::enabledPlugins() const
 TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) const
 {
 	foreach(const PluginPair& pp, plugins_) {
-		TuneURLResolveStrategy *rs = pp.first->urlResolveStrategy();
-		if(rs && rs->name() == name)
-			return rs;
+		QompTunePlugin *p = dynamic_cast<QompTunePlugin*>(pp.first);
+		if(p) {
+			TuneURLResolveStrategy *rs = p->urlResolveStrategy();
+			if(rs && rs->name() == name)
+				return rs;
+		}
 	}
 	return 0;
+}
+
+void PluginManager::qompPlayerChanged(QompPlayer *player)
+{
+	foreach(const PluginPair& pp, plugins_) {
+		QompPlayerStatusPlugin *p = dynamic_cast<QompPlayerStatusPlugin*>(pp.first);
+		if(p) {
+			p->qompPlayerChanged(player);
+		}
+	}
 }
 
 #ifdef HAVE_QT5

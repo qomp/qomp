@@ -20,12 +20,9 @@
 #ifndef QOMPPLUGIN_H
 #define QOMPPLUGIN_H
 
-#include "tune.h"
-
 #include <QObject>
 
 class QompOptionsPage;
-class TuneURLResolveStrategy;
 
 class QompPlugin
 {
@@ -33,9 +30,7 @@ public:
 	virtual QString name() const = 0;
 	virtual QString version() const = 0;
 	virtual QString description() const = 0;
-	virtual TuneList getTunes() = 0;
 	virtual QompOptionsPage* options() = 0;
-	virtual TuneURLResolveStrategy* urlResolveStrategy() const = 0;
 };
 
 Q_DECLARE_INTERFACE(QompPlugin, "Qomp.QompPlugin/0.1")

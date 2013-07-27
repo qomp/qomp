@@ -129,10 +129,8 @@ QompPlayer::State QompPhononPlayer::state() const
 	return StateUnknown;
 }
 
-void QompPhononPlayer::setTune(const Tune &tune)
+void QompPhononPlayer::doSetTune(const Tune &tune)
 {
-	QompPlayer::setTune(tune);
-
 	Phonon::MediaSource ms;
 	ms = Phonon::MediaSource(tune.getUrl());
 

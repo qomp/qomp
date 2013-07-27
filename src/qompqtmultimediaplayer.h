@@ -31,7 +31,6 @@ class QompQtMultimediaPlayer : public QompPlayer
 public:
 	explicit QompQtMultimediaPlayer(QObject *parent = 0);
 	~QompQtMultimediaPlayer();
-	virtual void setTune(const Tune& tune);
 
 	virtual QompMetaDataResolver* metaDataResolver() const;
 
@@ -54,6 +53,9 @@ private slots:
 	void volumeChanged(int);
 	void stateChanged(QMediaPlayer::State);
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
+
+protected:
+	virtual void doSetTune(const Tune &tune);
 
 private:
 	QMediaPlayer* player_;

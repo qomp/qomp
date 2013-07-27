@@ -158,6 +158,7 @@ void QompMainWin::setPlayer(QompPlayer *player)
 		connect(player_->metaDataResolver(), SIGNAL(newDuration(Tune,qint64)), model_, SLOT(totalTimeChanged(Tune,qint64)));
 	}
 	updateIcons();
+	PluginManager::instance()->qompPlayerChanged(player_);
 }
 
 void QompMainWin::bringToFront()

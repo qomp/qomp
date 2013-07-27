@@ -27,6 +27,8 @@ QompPlayer::QompPlayer(QObject *parent) :
 void QompPlayer::setTune(const Tune &tune)
 {
 	currentTune_ = tune;
+	doSetTune(tune);
+	emit tuneChanged(tune);
 }
 
 Tune QompPlayer::currentTune() const

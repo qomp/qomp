@@ -21,18 +21,19 @@
 #define YANDEXMUSICPLUGIN_H
 
 #include "qompplugin.h"
-#include <QObject>
+#include "qomptunepluign.h"
 
 #ifndef QT_STATICPLUGIN
 #define QT_STATICPLUGIN
 #endif
 
-class YandexMusicPlugin : public QObject, public QompPlugin
+class YandexMusicPlugin : public QObject, public QompPlugin, public QompTunePlugin
 {
 	Q_OBJECT
-	Q_INTERFACES(QompPlugin)
+	Q_INTERFACES(QompPlugin QompTunePlugin)
 #ifdef HAVE_QT5
 	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
+	Q_PLUGIN_METADATA(IID "Qomp.QompTunePlugin/0.1")
 #endif
 public:
 	explicit YandexMusicPlugin(QObject *parent = 0);

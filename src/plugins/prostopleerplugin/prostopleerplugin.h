@@ -21,17 +21,19 @@
 #define PROSTOPLEERPLUGIN_H
 
 #include "qompplugin.h"
+#include "qomptunepluign.h"
 
 #ifndef QT_STATICPLUGIN
 #define QT_STATICPLUGIN
 #endif
 
-class ProstoPleerPlugin : public QObject, public QompPlugin
+class ProstoPleerPlugin : public QObject, public QompPlugin, public QompTunePlugin
 {
 	Q_OBJECT
-	Q_INTERFACES(QompPlugin)
+	Q_INTERFACES(QompPlugin QompTunePlugin)
 #ifdef HAVE_QT5
 	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
+	Q_PLUGIN_METADATA(IID "Qomp.QompTunePlugin/0.1")
 #endif
 public:
 	ProstoPleerPlugin();

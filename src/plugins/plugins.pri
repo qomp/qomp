@@ -4,7 +4,9 @@ HEADERS += $$PWD/qompplugingettunesdlg.h \
     $$PWD/qompplugintreeview.h \
     $$PWD/qompplugintreemodel.h \
     $$PWD/qompplugin.h \
-    $$PWD/qompplugintypes.h
+    $$PWD/qompplugintypes.h \
+    src/plugins/qomptunepluign.h \
+    src/plugins/qompplayerstatusplugin.h
 
 SOURCES += $$PWD/qompplugingettunesdlg.cpp \
     $$PWD/qompplugintreeview.cpp \

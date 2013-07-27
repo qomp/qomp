@@ -37,7 +37,7 @@ public:
 		StateLoading, StateBuffering
 	};
 
-	virtual void setTune(const Tune& tune);
+	void setTune(const Tune& tune);
 	Tune currentTune() const;
 
 	virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
@@ -70,6 +70,10 @@ signals:
 	void mediaFinished();
 	void volumeChanged(qreal newVolume);
 	void mutedChanged(bool muted);
+	void tuneChanged(const Tune&);
+
+protected:
+	virtual void doSetTune(const Tune& tune) = 0;
 
 private:
 	Tune currentTune_;

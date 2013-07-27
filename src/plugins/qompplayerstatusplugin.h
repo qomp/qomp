@@ -17,33 +17,18 @@
  *
  */
 
-#ifndef URLPLUGIN_H
-#define URLPLUGIN_H
+#ifndef QOMPPLAYERSTATUSPLUGIN_H
+#define QOMPPLAYERSTATUSPLUGIN_H
 
-#include "qompplugin.h"
-#include "qomptunepluign.h"
+class QompPlayer;
 
-#ifndef QT_STATICPLUGIN
-#define QT_STATICPLUGIN
-#endif
-
-class UrlPlugin : public QObject, public QompPlugin, public QompTunePlugin
+class QompPlayerStatusPlugin
 {
-	Q_OBJECT
-	Q_INTERFACES(QompPlugin QompTunePlugin)
-#ifdef HAVE_QT5
-	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
-	Q_PLUGIN_METADATA(IID "Qomp.QompTunePlugin/0.1")
-#endif
 public:
-	UrlPlugin();	
-	virtual QString name() const { return "Url"; }
-	virtual QString version() const { return "0.1"; }
-	virtual QString description() const { return tr("Open custom URL"); }
-	virtual TuneList getTunes();
-	virtual QompOptionsPage* options();
-	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
-	
+	virtual void qompPlayerChanged(QompPlayer* player) = 0;
+
 };
 
-#endif // URLPLUGIN_H
+Q_DECLARE_INTERFACE(QompPlayerStatusPlugin, "Qomp.QompPlayerStatusPlugin/0.1")
+
+#endif // QOMPPLAYERSTATUSPLUGIN_H

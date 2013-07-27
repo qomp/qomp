@@ -42,9 +42,8 @@ QompQtMultimediaPlayer::~QompQtMultimediaPlayer()
 	delete resolver_;
 }
 
-void QompQtMultimediaPlayer::setTune(const Tune &tune)
+void QompQtMultimediaPlayer::doSetTune(const Tune &tune)
 {
-	QompPlayer::setTune(tune);
 	player_->setMedia(QMediaContent(tune.getUrl()));
 }
 

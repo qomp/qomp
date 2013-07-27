@@ -35,8 +35,6 @@ public:
 	explicit QompPhononPlayer(QObject *parent);
 	~QompPhononPlayer();
 
-	virtual void setTune(const Tune& tune);
-
 	virtual void setVolume(qreal vol);
 	virtual qreal volume() const;
 	virtual void setMute(bool mute);
@@ -53,6 +51,9 @@ public:
 	virtual void setAudioOutputDevice(const QString& newDev);
 
 	virtual QompMetaDataResolver* metaDataResolver() const { return resolver_; }
+
+protected:
+	virtual void doSetTune(const Tune &tune);
 
 private slots:
 	void stateChanged();
