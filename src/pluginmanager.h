@@ -29,6 +29,7 @@ class QompOptionsPage;
 class TuneURLResolveStrategy;
 class QompPlayer;
 
+
 class PluginManager : public QObject
 {
 	Q_OBJECT
@@ -41,7 +42,7 @@ public:
 	QString getDescription(const QString& pluginName) const;
 	bool isPluginEnabled(const QString& pluginName) const;
 	void setPluginEnabled(const QString& pluginName, bool enabled);
-	QStringList enabledPlugins() const;
+	QStringList tunePlugins() const;
 	TuneURLResolveStrategy* urlResolveStrategy(const QString& strategyName) const;
 	void qompPlayerChanged(QompPlayer* player);
 	

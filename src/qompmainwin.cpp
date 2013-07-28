@@ -611,8 +611,9 @@ QMenu* QompMainWin::buildPluginListMenu()
 {
 	QMenu* m = new QMenu(tr("Open"), this);
 	QList<QAction*> acts;
-	foreach(const QString& name, PluginManager::instance()->enabledPlugins()) {
-		acts.append(new QAction(name, m));
+	foreach(const QString& name, PluginManager::instance()->tunePlugins()) {
+		if(PluginManager::instance()->isPluginEnabled(name))
+			acts.append(new QAction(name, m));
 	}
 	m->addActions(acts);
 	return m;

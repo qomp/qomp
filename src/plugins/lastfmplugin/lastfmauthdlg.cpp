@@ -17,17 +17,26 @@
  *
  */
 
-#ifndef QOMPPLAYERSTATUSPLUGIN_H
-#define QOMPPLAYERSTATUSPLUGIN_H
 
-class QompPlayer;
+#include "lastfmauthdlg.h"
+#include "qompnetworkingfactory.h"
+#include "ui_lastfmauthdlg.h"
 
-class QompPlayerStatusPlugin
+LastFmAuthDlg::LastFmAuthDlg(QWidget *parent) :
+	QDialog(parent),
+	ui(new Ui::LastFmAuthDlg)
 {
-public:
-	virtual void qompPlayerChanged(QompPlayer* player) = 0;
-};
+	ui->setupUi(this);
+	ui->wb_main->page()->setNetworkAccessManager(QompNetworkingFactory::instance()->getNetworkAccessManager());
+}
 
-Q_DECLARE_INTERFACE(QompPlayerStatusPlugin, "Qomp.QompPlayerStatusPlugin/0.1")
+LastFmAuthDlg::~LastFmAuthDlg()
+{
+	delete ui;
+}
 
-#endif // QOMPPLAYERSTATUSPLUGIN_H
+int LastFmAuthDlg::openUrl(const QString &url)
+{
+	ui->wb_main->setUrl(url);
+	return exec();
+}

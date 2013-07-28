@@ -134,11 +134,12 @@ void PluginManager::setPluginEnabled(const QString &pluginName, bool enabled)
 	}
 }
 
-QStringList PluginManager::enabledPlugins() const
+QStringList PluginManager::tunePlugins() const
 {
 	QStringList list;
 	foreach(const PluginPair& pp, plugins_) {
-		if(pp.second)
+		QompTunePlugin *p = dynamic_cast<QompTunePlugin*>(pp.first);
+		if(p)
 			list.append(pp.first->name());
 	}
 
@@ -175,6 +176,7 @@ Q_IMPORT_PLUGIN(YandexMusicPlugin)
 Q_IMPORT_PLUGIN(ProstoPleerPlugin)
 Q_IMPORT_PLUGIN(FilesystemPlugin)
 Q_IMPORT_PLUGIN(UrlPlugin)
+Q_IMPORT_PLUGIN(LastFmPlugin)
 #else
 Q_IMPORT_PLUGIN(myzukaruplugin)
 //Q_IMPORT_PLUGIN(deezerplugin)
@@ -182,6 +184,7 @@ Q_IMPORT_PLUGIN(yandexmusicplugin)
 Q_IMPORT_PLUGIN(prostopleerplugin)
 Q_IMPORT_PLUGIN(filesystemplugin)
 Q_IMPORT_PLUGIN(urlplugin)
+Q_IMPORT_PLUGIN(lastfmplugin)
 #endif
 
 PluginManager* PluginManager::instance_ = 0;

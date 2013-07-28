@@ -17,17 +17,14 @@
  *
  */
 
-#ifndef QOMPPLAYERSTATUSPLUGIN_H
-#define QOMPPLAYERSTATUSPLUGIN_H
+#ifndef LASTFMDEFINES_H
+#define LASTFMDEFINES_H
 
-class QompPlayer;
+#define LASTFM_NAME		"LastFm Plugin"
+#define LASTFM_VER		"0.1"
+#define LASTFM_OPT_USER		"plugins.lastfm.user"
+#define LASTFM_OPT_ENABLED	"plugins.lastfm.enabled"
+#define LASTFM_SESS_KEY		"plugins.lastfm.data"
+#define LASTFM_KEY		"&(*y234un&^Yhb23bnjk*"
 
-class QompPlayerStatusPlugin
-{
-public:
-	virtual void qompPlayerChanged(QompPlayer* player) = 0;
-};
-
-Q_DECLARE_INTERFACE(QompPlayerStatusPlugin, "Qomp.QompPlayerStatusPlugin/0.1")
-
-#endif // QOMPPLAYERSTATUSPLUGIN_H
+#endif // LASTFMDEFINES_H

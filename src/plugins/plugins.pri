@@ -5,8 +5,8 @@ HEADERS += $$PWD/qompplugingettunesdlg.h \
     $$PWD/qompplugintreemodel.h \
     $$PWD/qompplugin.h \
     $$PWD/qompplugintypes.h \
-    src/plugins/qomptunepluign.h \
-    src/plugins/qompplayerstatusplugin.h
+    $$PWD/qomptunepluign.h \
+    $$PWD/qompplayerstatusplugin.h
 
 SOURCES += $$PWD/qompplugingettunesdlg.cpp \
     $$PWD/qompplugintreeview.cpp \
@@ -21,4 +21,5 @@ include (urlplugin/urlplugin.pri)
 include (prostopleerplugin/prostopleerplugin.pri)
 include (myzukaruplugin/myzukaruplugin.pri)
 include (yandexmusicplugin/yandexmusicplugin.pri)
+include (lastfmplugin/lastfmplugin.pri)
 #include (deezerplugin/deezerplugin.pri)

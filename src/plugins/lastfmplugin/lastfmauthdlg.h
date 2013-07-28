@@ -17,17 +17,28 @@
  *
  */
 
-#ifndef QOMPPLAYERSTATUSPLUGIN_H
-#define QOMPPLAYERSTATUSPLUGIN_H
 
-class QompPlayer;
+#ifndef LASTFMAUTHDLG_H
+#define LASTFMAUTHDLG_H
 
-class QompPlayerStatusPlugin
+#include <QDialog>
+
+namespace Ui {
+class LastFmAuthDlg;
+}
+
+class LastFmAuthDlg : public QDialog
 {
+	Q_OBJECT
+	
 public:
-	virtual void qompPlayerChanged(QompPlayer* player) = 0;
+	explicit LastFmAuthDlg(QWidget *parent = 0);
+	~LastFmAuthDlg();
+
+	int openUrl(const QString& url);
+	
+private:
+	Ui::LastFmAuthDlg *ui;
 };
 
-Q_DECLARE_INTERFACE(QompPlayerStatusPlugin, "Qomp.QompPlayerStatusPlugin/0.1")
-
-#endif // QOMPPLAYERSTATUSPLUGIN_H
+#endif // LASTFMAUTHDLG_H

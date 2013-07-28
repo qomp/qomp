@@ -17,17 +17,35 @@
  *
  */
 
-#ifndef QOMPPLAYERSTATUSPLUGIN_H
-#define QOMPPLAYERSTATUSPLUGIN_H
+#ifndef LASTFMSETTINGS_H
+#define LASTFMSETTINGS_H
 
-class QompPlayer;
+#include "qompoptionspage.h"
+#include "lastfmdefines.h"
 
-class QompPlayerStatusPlugin
+namespace Ui {
+class LastFmSettings;
+}
+
+class LastFmSettings : public QompOptionsPage
 {
+	Q_OBJECT
+	
 public:
-	virtual void qompPlayerChanged(QompPlayer* player) = 0;
+	explicit LastFmSettings(QWidget *parent = 0);
+	~LastFmSettings();
+	virtual QString name() const { return LASTFM_NAME; }
+	virtual void retranslate();
+
+public slots:
+	virtual void applyOptions();
+	virtual void restoreOptions();
+
+signals:
+	void optionsChanged();
+	
+private:
+	Ui::LastFmSettings *ui;
 };
 
-Q_DECLARE_INTERFACE(QompPlayerStatusPlugin, "Qomp.QompPlayerStatusPlugin/0.1")
-
-#endif // QOMPPLAYERSTATUSPLUGIN_H
+#endif // LASTFMSETTINGS_H
