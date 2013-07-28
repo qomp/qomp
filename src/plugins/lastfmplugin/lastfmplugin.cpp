@@ -85,9 +85,6 @@ QompOptionsPage *LastFmPlugin::options()
 
 void LastFmPlugin::qompPlayerChanged(QompPlayer *player)
 {
-	if(!Options::instance()->getOption(LASTFM_OPT_ENABLED).toBool())
-		return;
-
 	player_ = player;
 	connect(player_, SIGNAL(tuneChanged(Tune)), SLOT(tuneChanged(Tune)));
 	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStatusChanged()));

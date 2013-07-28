@@ -12,5 +12,7 @@ FORMS += $$PWD/lastfmsettings.ui \
 
 QT += xml webkit
 
-LIBS += -llastfm
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += webkitwidgets
+}
 
