@@ -427,17 +427,24 @@ void YandexMusicGettunsDlg::suggestionsFinished()
 
 void YandexMusicGettunsDlg::checkAndStopBusyWidget()
 {
-	if(requests_.isEmpty())
-		stopBusyWidget();
+	if(!requests_.isEmpty())
+		return;
+
+	stopBusyWidget();
 
 	//this is not the best plase for this, but....
+	if(static_cast<QompPluginTreeView*>(tabWidget_->currentWidget())->model()->rowCount() != 0)
+		return;
+
+	int index = tabWidget_->currentIndex();
 	if(artistsModel_->rowCount()) {
-		tabWidget_->setCurrentIndex(0);
+		index = 0;
 	}
 	else if(albumsModel_->rowCount()) {
-		tabWidget_->setCurrentIndex(1);
+		index = 1;
 	}
 	else if(tracksModel_->rowCount()) {
-		tabWidget_->setCurrentIndex(2);
+		index = 2;
 	}
+	tabWidget_->setCurrentIndex(index);
 }
