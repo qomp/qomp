@@ -27,10 +27,14 @@ class QompOptionsPage;
 class QompPlugin
 {
 public:
+	virtual ~QompPlugin() {}
+
 	virtual QString name() const = 0;
 	virtual QString version() const = 0;
 	virtual QString description() const = 0;
 	virtual QompOptionsPage* options() = 0;
+	virtual void setEnabled(bool enabled) = 0;
+	virtual void unload() = 0;
 };
 
 Q_DECLARE_INTERFACE(QompPlugin, "Qomp.QompPlugin/0.1")

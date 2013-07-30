@@ -25,6 +25,8 @@ class QompPlayer;
 class QompPlayerStatusPlugin
 {
 public:
+	virtual ~QompPlayerStatusPlugin() {}
+
 	virtual void qompPlayerChanged(QompPlayer* player) = 0;
 };
 

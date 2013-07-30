@@ -29,6 +29,8 @@ class TuneURLResolveStrategy;
 class QompTunePlugin
 {
 public:
+	virtual ~QompTunePlugin() {}
+
 	virtual TuneList getTunes() = 0;
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const = 0;
 };

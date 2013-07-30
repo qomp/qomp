@@ -35,6 +35,7 @@ class PluginManager : public QObject
 	Q_OBJECT
 public:
 	static PluginManager* instance();
+	virtual ~PluginManager();
 	QStringList availablePlugins() const;
 	QList<Tune> getTune(const QString& pluginName);
 	QompOptionsPage* getOptions(const QString& pluginName);

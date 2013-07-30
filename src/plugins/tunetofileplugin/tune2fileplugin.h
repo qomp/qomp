@@ -17,34 +17,45 @@
  *
  */
 
-#ifndef MYZUKARUPLUGIN_H
-#define MYZUKARUPLUGIN_H
+#ifndef TUNE2FILEPLUGIN_H
+#define TUNE2FILEPLUGIN_H
 
 #include "qompplugin.h"
-#include "qomptunepluign.h"
+#include "qompplayerstatusplugin.h"
+#include "qompplayer.h"
 
 #ifndef QT_STATICPLUGIN
 #define QT_STATICPLUGIN
 #endif
 
-class MyzukaruPlugin : public QObject, public QompPlugin, public QompTunePlugin
+
+class Tune2FilePlugin : public QObject, public QompPlugin, public QompPlayerStatusPlugin
 {
 	Q_OBJECT
-	Q_INTERFACES(QompPlugin QompTunePlugin)
+	Q_INTERFACES(QompPlugin QompPlayerStatusPlugin)
 #ifdef HAVE_QT5
 	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
-	Q_PLUGIN_METADATA(IID "Qomp.QompTunePlugin/0.1")
+	Q_PLUGIN_METADATA(IID "Qomp.QompPlayerStatusPlugin/0.1")
 #endif
+
 public:
-	MyzukaruPlugin();
-	virtual QString name() const;
-	virtual QString version() const;
-	virtual QString description() const;
-	virtual TuneList getTunes();
+	explicit Tune2FilePlugin();
+
+	virtual QString name() const { return tr("Tune to File Plugin"); }
+	virtual QString version() const { return "0.1"; }
+	virtual QString description() const { return tr("Store current tune into file. Usefull for publishing tune in status"); }
 	virtual QompOptionsPage* options();
-	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
+	virtual void qompPlayerChanged(QompPlayer* player);
 	virtual void setEnabled(bool /*enabled*/) {}
-	virtual void unload() {}
+	virtual void unload();
+
+private slots:
+	void playerStatusChanged( QompPlayer::State state);
+	void optionsUpdate();
+
+private:
+	QompPlayer *player_;
+	QString file_;
 };
 
-#endif // MYZUKARUPLUGIN_H
+#endif // TUNE2FILEPLUGIN_H

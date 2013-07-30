@@ -71,6 +71,13 @@ PluginManager *PluginManager::instance()
 	return instance_;
 }
 
+PluginManager::~PluginManager()
+{
+	foreach(const PluginPair& pp, plugins_) {
+		pp.first->unload();
+	}
+}
+
 QStringList PluginManager::availablePlugins() const
 {
 	QStringList list;
@@ -177,6 +184,7 @@ Q_IMPORT_PLUGIN(ProstoPleerPlugin)
 Q_IMPORT_PLUGIN(FilesystemPlugin)
 Q_IMPORT_PLUGIN(UrlPlugin)
 Q_IMPORT_PLUGIN(LastFmPlugin)
+Q_IMPORT_PLUGIN(Tune2FilePlugin)
 #else
 Q_IMPORT_PLUGIN(myzukaruplugin)
 //Q_IMPORT_PLUGIN(deezerplugin)
@@ -185,6 +193,7 @@ Q_IMPORT_PLUGIN(prostopleerplugin)
 Q_IMPORT_PLUGIN(filesystemplugin)
 Q_IMPORT_PLUGIN(urlplugin)
 Q_IMPORT_PLUGIN(lastfmplugin)
+Q_IMPORT_PLUGIN(tunetofileplugin)
 #endif
 
 PluginManager* PluginManager::instance_ = 0;
