@@ -52,7 +52,7 @@ public:
 	virtual QString description() const { return tr("LastFm scrobbling"); }
 	virtual QompOptionsPage* options();
 	virtual void qompPlayerChanged(QompPlayer* player);
-	virtual void setEnabled(bool /*enabled*/) {}
+	virtual void setEnabled(bool enabled);
 	virtual void unload() {}
 
 private slots:
@@ -73,6 +73,7 @@ private:
 	Tune currentTune_;
 	QTimer* scrobbleTimer_;
 	QTimer* nowPlayingTimer_;
+	bool enabled_;
 };
 
 #endif // LASTFMPLUGIN_H

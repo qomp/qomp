@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>691</width>
-    <height>318</height>
+    <width>613</width>
+    <height>185</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,6 +37,13 @@
        <string>Description</string>
       </property>
      </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>*Enabling/disabling plugins requires restart!</string>
+     </property>
     </widget>
    </item>
   </layout>

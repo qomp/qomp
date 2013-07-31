@@ -7,20 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>372</width>
-    <height>94</height>
+    <height>53</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QCheckBox" name="cb_enable">
-     <property name="text">
-      <string>Enable LastFM scrobbling</string>
-     </property>
-    </widget>
-   </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -75,22 +68,5 @@
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>cb_enable</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pb_authentication</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>199</x>
-     <y>19</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>200</x>
-     <y>76</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -46,7 +46,7 @@ public:
 	virtual QString description() const { return tr("Store current tune into file. Usefull for publishing tune in status"); }
 	virtual QompOptionsPage* options();
 	virtual void qompPlayerChanged(QompPlayer* player);
-	virtual void setEnabled(bool /*enabled*/) {}
+	virtual void setEnabled(bool enabled);
 	virtual void unload();
 
 private slots:
@@ -56,6 +56,7 @@ private slots:
 private:
 	QompPlayer *player_;
 	QString file_;
+	bool enabled_;
 };
 
 #endif // TUNE2FILEPLUGIN_H

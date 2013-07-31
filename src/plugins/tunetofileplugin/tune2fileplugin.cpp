@@ -79,7 +79,7 @@ private:
 	Ui::TuneToFileSettings *ui;
 };
 
-Tune2FilePlugin::Tune2FilePlugin()
+Tune2FilePlugin::Tune2FilePlugin() : enabled_(false)
 {
 	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(optionsUpdate()));
 	QTimer::singleShot(0, this, SLOT(optionsUpdate()));
@@ -96,8 +96,16 @@ void Tune2FilePlugin::qompPlayerChanged(QompPlayer *player)
 	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStatusChanged(QompPlayer::State)));
 }
 
+void Tune2FilePlugin::setEnabled(bool enabled)
+{
+	enabled_ = enabled;
+}
+
 void Tune2FilePlugin::unload()
 {
+	if(!enabled_ || file_.isEmpty())
+		return;
+
 	QFile f(file_);
 	if(f.exists() && f.open(QFile::WriteOnly | QFile::Truncate)) {
 		f.close();
@@ -106,6 +114,9 @@ void Tune2FilePlugin::unload()
 
 void Tune2FilePlugin::playerStatusChanged(QompPlayer::State state)
 {
+	if(!enabled_ || file_.isEmpty())
+		return;
+
 	QFile f(file_);
 	if(f.open(QFile::WriteOnly | QFile::Truncate)) {
 		if(state == QompPlayer::StatePlaing) {

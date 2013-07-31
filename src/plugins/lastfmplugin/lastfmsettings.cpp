@@ -30,7 +30,7 @@ LastFmSettings::LastFmSettings(QWidget *parent) :
 {
 	ui->setupUi(this);
 	restoreOptions();
-	connect(ui->pb_authentication, SIGNAL(clicked()), SIGNAL(optionsChanged()));
+	connect(ui->pb_authentication, SIGNAL(clicked()), SIGNAL(doLogin()));
 }
 
 LastFmSettings::~LastFmSettings()
@@ -45,12 +45,9 @@ void LastFmSettings::retranslate()
 
 void LastFmSettings::applyOptions()
 {
-	Options::instance()->setOption(LASTFM_OPT_ENABLED, ui->cb_enable->isChecked());
 }
 
 void LastFmSettings::restoreOptions()
 {
-	ui->cb_enable->setChecked(Options::instance()->getOption(LASTFM_OPT_ENABLED).toBool());
 	ui->lb_username->setText(Options::instance()->getOption(LASTFM_OPT_USER).toString());
-	ui->pb_authentication->setEnabled(ui->cb_enable->isChecked());
 }

@@ -45,6 +45,7 @@ void PluginManager::loadStaticPlugins()
 			bool en = isPluginEnabled(qp->name());
 			PluginPair pp = qMakePair(qp, en);
 			plugins_.append(pp);
+			qp->setEnabled(en);
 		}
 	}
 }
@@ -137,6 +138,7 @@ void PluginManager::setPluginEnabled(const QString &pluginName, bool enabled)
 		PluginPair& pp = plugins_[i];
 		if(pp.first->name() == pluginName) {
 			pp.second = enabled;
+			pp.first->setEnabled(pp.second);
 		}
 	}
 }

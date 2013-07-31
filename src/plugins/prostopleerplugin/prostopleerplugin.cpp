@@ -25,7 +25,7 @@
 #include <QtPlugin>
 
 
-ProstoPleerPlugin::ProstoPleerPlugin()
+ProstoPleerPlugin::ProstoPleerPlugin() : enabled_(false)
 {
 }
 
@@ -55,7 +55,15 @@ TuneList ProstoPleerPlugin::getTunes()
 
 QompOptionsPage *ProstoPleerPlugin::options()
 {
+	if(!enabled_)
+		return 0;
+
 	return new ProstopleerPluginSettings();
+}
+
+void ProstoPleerPlugin::setEnabled(bool enabled)
+{
+	enabled_ = enabled;
 }
 
 #ifndef HAVE_QT5

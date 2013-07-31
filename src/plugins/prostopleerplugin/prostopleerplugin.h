@@ -43,8 +43,11 @@ public:
 	virtual TuneList getTunes();
 	virtual QompOptionsPage* options();
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
-	virtual void setEnabled(bool /*enabled*/) {}
+	virtual void setEnabled(bool enabled);
 	virtual void unload() {}
+
+private:
+	bool enabled_;
 };
 
 #endif // PROSTOPLEERPLUGIN_H

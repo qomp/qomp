@@ -42,7 +42,7 @@ public slots:
 	virtual void restoreOptions();
 
 signals:
-	void optionsChanged();
+	void doLogin();
 	
 private:
 	Ui::LastFmSettings *ui;

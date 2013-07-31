@@ -60,7 +60,8 @@ static QString MD5(const QString str)
 
 LastFmPlugin::LastFmPlugin() :
 	scrobbleTimer_(new QTimer(this)),
-	nowPlayingTimer_(new QTimer(this))
+	nowPlayingTimer_(new QTimer(this)),
+	enabled_(false)
 {
 	scrobbleTimer_->setSingleShot(true);
 	connect(scrobbleTimer_, SIGNAL(timeout()), SLOT(scrobble()));
@@ -78,8 +79,11 @@ void LastFmPlugin::init()
 
 QompOptionsPage *LastFmPlugin::options()
 {
+	if(!enabled_ )
+		return 0;
+
 	settings_ = new LastFmSettings;
-	connect(settings_, SIGNAL(optionsChanged()), SLOT(login()));
+	connect(settings_, SIGNAL(doLogin()), SLOT(login()));
 	return settings_;
 }
 
@@ -90,9 +94,14 @@ void LastFmPlugin::qompPlayerChanged(QompPlayer *player)
 	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStatusChanged()));
 }
 
+void LastFmPlugin::setEnabled(bool enabled)
+{
+	enabled_ = enabled;
+}
+
 void LastFmPlugin::playerStatusChanged()
 {
-	if(!Options::instance()->getOption(LASTFM_OPT_ENABLED).toBool())
+	if(!enabled_)
 		return;
 
 	scrobbleTimer_->stop();
@@ -111,9 +120,13 @@ void LastFmPlugin::postFinished()
 
 void LastFmPlugin::updateNowPlaying()
 {
+	QString sk = Options::instance()->getOption(LASTFM_SESS_KEY).toString();
+	if(sk.isEmpty())
+		return;
+
+	sk = Qomp::decodePassword(sk, LASTFM_KEY);
 	QTime time = QTime::fromString(currentTune_.duration, "mm:ss");
-	QString dur = QString::number(time.minute()*60 + time.second());
-	const QString sk = Qomp::decodePassword(Options::instance()->getOption(LASTFM_SESS_KEY).toString(), LASTFM_KEY);
+	QString dur = QString::number(time.minute()*60 + time.second());	
 	const QString api_sig = MD5(QString("api_key%1artist%2duration%6methodtrack.updatenowplayingsk%3track%4%5")
 				 .arg(ApiKey, currentTune_.artist, sk, currentTune_.title, SharedSecret, dur));
 	QByteArray data = QString("method=track.updatenowplaying&artist=%1&track=%2&duration=%6&api_key=%3&api_sig=%4&sk=%5")
