@@ -19,6 +19,7 @@
 
 
 #include "options.h"
+#include "defines.h"
 #include <QSettings>
 #include <QApplication>
 
@@ -39,7 +40,7 @@ Options::Options()
 	, set_(0)
 {
 	set_ = new QSettings(QSettings::IniFormat, QSettings::UserScope,
-			     qApp->organizationName(), qApp->applicationName(), this);
+			     APPLICATION_NAME, APPLICATION_NAME, this);
 }
 
 Options::~Options()

@@ -41,6 +41,8 @@ public:
 		ui->setupUi(this);
 		ui->tb_open->setIcon(qApp->style()->standardIcon(QStyle::SP_DirOpenIcon));
 		connect(ui->tb_open, SIGNAL(clicked()), SLOT(getFileName()));
+
+		restoreOptions();
 	}
 
 	~T2FSettings()
