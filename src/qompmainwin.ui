@@ -201,6 +201,19 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QToolButton" name="tb_repeatAll">
+        <property name="toolTip">
+         <string>Repeat All</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>

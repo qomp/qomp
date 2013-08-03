@@ -80,6 +80,7 @@ private slots:
 	void trayWheeled(int delta);
 
 	void updateIcons();
+	void updateOptions();
 
 signals:
 	void exit();

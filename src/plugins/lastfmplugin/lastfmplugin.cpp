@@ -135,7 +135,7 @@ void LastFmPlugin::updateNowPlaying()
 	nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 	QNetworkReply* r = nam_->post(nr, data);
 	connect(r, SIGNAL(finished()), SLOT(postFinished()));
-	int t = (dur.toInt() == 0) ? 4*60 : qMin(dur.toInt()/2, 4*60);
+	int t = (dur.toInt() <= 0) ? 4*60 : qMin(dur.toInt()/2, 4*60);
 	scrobbleTimer_->setInterval(t*1000);
 	scrobbleTimer_->start();
 }

@@ -74,6 +74,10 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	ui->tb_open->setIcon(style()->standardIcon(QStyle::SP_DriveCDIcon));
 	ui->tb_mute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
 
+	ui->tb_repeatAll->setIcon((style()->standardIcon(QStyle::SP_BrowserReload)));
+	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());
+	connect(ui->tb_repeatAll, SIGNAL(clicked()), SLOT(updateOptions()));
+
 	connect(ui->tb_open, SIGNAL(clicked()), SLOT(actOpenActivated()));
 	connect(ui->tb_play, SIGNAL(clicked()), SLOT(actPlayActivated()));
 	connect(ui->tb_stop, SIGNAL(clicked()), SLOT(actStopActivated()));
@@ -219,6 +223,11 @@ void QompMainWin::updateIcons()
 	ui->tb_mute->setIcon(ui->tb_mute->isChecked() ?
 			style()->standardIcon(QStyle::SP_MediaVolumeMuted) :
 			style()->standardIcon(QStyle::SP_MediaVolume));
+}
+
+void QompMainWin::updateOptions()
+{
+	Options::instance()->setOption(OPTION_REPEAT_ALL, ui->tb_repeatAll->isChecked());
 }
 
 void QompMainWin::actPrevActivated()
@@ -502,8 +511,17 @@ void QompMainWin::playNext()
 		return;
 
 	if(model_->indexForTune(model_->currentTune()).row() == model_->rowCount()-1) {
-		actStopActivated();
-		model_->setCurrentTune(Tune());
+		if(ui->tb_repeatAll->isChecked()) {
+			const QModelIndex ind = model_->index(0);
+			model_->setCurrentTune(model_->tune(ind));
+			ui->playList->setCurrentIndex(ind);
+			actPlayActivated();
+
+		}
+		else {
+			actStopActivated();
+			model_->setCurrentTune(Tune());
+		}
 	}
 	else {
 		QModelIndex index = model_->indexForTune(model_->currentTune());
