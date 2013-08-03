@@ -52,6 +52,7 @@ public:
 private slots:
 	void playerStatusChanged( QompPlayer::State state);
 	void optionsUpdate();
+	void init();
 
 private:
 	QompPlayer *player_;

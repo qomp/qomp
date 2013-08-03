@@ -63,7 +63,7 @@ public slots:
 
 	virtual void restoreOptions()
 	{
-		ui->le_file->setText(Options::instance()->getOption(T2FOPT_FILE).toString());
+		ui->le_file->setText(QDir::toNativeSeparators(Options::instance()->getOption(T2FOPT_FILE).toString()));
 	}
 
 private slots:
@@ -72,7 +72,7 @@ private slots:
 		QString file = QFileDialog::getSaveFileName(this, tr("Store tune into file"), Options::instance()->getOption(T2FOPT_LAST_DIR, QDir::homePath()).toString());
 		if(!file.isEmpty())
 		{
-			ui->le_file->setText(file);
+			ui->le_file->setText(QDir::toNativeSeparators(file));
 			Options::instance()->setOption(T2FOPT_LAST_DIR, QFileInfo(file).filePath());
 		}
 	}
@@ -83,8 +83,7 @@ private:
 
 Tune2FilePlugin::Tune2FilePlugin() : enabled_(false)
 {
-	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(optionsUpdate()));
-	QTimer::singleShot(0, this, SLOT(optionsUpdate()));
+	QTimer::singleShot(0, this, SLOT(init()));
 }
 
 QompOptionsPage *Tune2FilePlugin::options()
@@ -133,6 +132,12 @@ void Tune2FilePlugin::playerStatusChanged(QompPlayer::State state)
 void Tune2FilePlugin::optionsUpdate()
 {
 	file_ = Options::instance()->getOption(T2FOPT_FILE).toString();
+}
+
+void Tune2FilePlugin::init()
+{
+	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(optionsUpdate()));
+	optionsUpdate();
 }
 
 #ifndef HAVE_QT5

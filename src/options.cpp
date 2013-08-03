@@ -40,7 +40,7 @@ Options::Options()
 	, set_(0)
 {
 	set_ = new QSettings(QSettings::IniFormat, QSettings::UserScope,
-			     APPLICATION_NAME, APPLICATION_NAME, this);
+			     qApp->organizationName(), qApp->applicationName(), this);
 }
 
 Options::~Options()
