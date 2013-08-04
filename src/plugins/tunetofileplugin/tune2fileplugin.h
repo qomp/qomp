@@ -41,7 +41,7 @@ class Tune2FilePlugin : public QObject, public QompPlugin, public QompPlayerStat
 public:
 	explicit Tune2FilePlugin();
 
-	virtual QString name() const { return tr("Tune to File Plugin"); }
+	virtual QString name() const { return tr("Tune to File"); }
 	virtual QString version() const { return "0.1"; }
 	virtual QString description() const { return tr("Store current tune into file. Usefull for publishing tune in status"); }
 	virtual QompOptionsPage* options();
@@ -50,7 +50,7 @@ public:
 	virtual void unload();
 
 private slots:
-	void playerStatusChanged( QompPlayer::State state);
+	void playerStatusChanged(QompPlayer::State state);
 	void optionsUpdate();
 	void init();
 

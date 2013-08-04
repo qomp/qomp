@@ -20,7 +20,7 @@
 #ifndef LASTFMDEFINES_H
 #define LASTFMDEFINES_H
 
-#define LASTFM_NAME		"LastFm Plugin"
+#define LASTFM_NAME		"LastFm"
 #define LASTFM_VER		"0.1"
 #define LASTFM_OPT_USER		"plugins.lastfm.user"
 #define LASTFM_OPT_ENABLED	"plugins.lastfm.enabled"

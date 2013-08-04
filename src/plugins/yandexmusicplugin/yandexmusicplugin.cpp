@@ -30,7 +30,7 @@ YandexMusicPlugin::YandexMusicPlugin(QObject *parent) :
 
 QString YandexMusicPlugin::name() const
 {
-	return "Yandex.Music plugin";
+	return "Yandex.Music";
 }
 
 QString YandexMusicPlugin::version() const
