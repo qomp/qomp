@@ -31,7 +31,7 @@ void QompPlayer::setTune(const Tune &tune)
 	emit tuneChanged(tune);
 }
 
-Tune QompPlayer::currentTune() const
+const Tune &QompPlayer::currentTune() const
 {
 	return currentTune_;
 }

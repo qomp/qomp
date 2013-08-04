@@ -93,13 +93,16 @@ private:
 	void savePlaylist(const QString& fileName);
 	QMenu *buildPluginListMenu();
 	void getTunes(const QString& name);
+	void stopPlayer();
 	
 private:
 	Ui::QompMainWin *ui;
 	QompPlayer* player_;
 	QompPlayListModel* model_;
 	QompTrayIcon* trayIcon_;
-	QompPlayer::State currentState_;
+
+	enum MainWinState { Stopped, Playing, Paused };
+	MainWinState currentState_;
 };
 
 #endif // QOMPMAINWIN_H

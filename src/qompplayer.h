@@ -33,12 +33,12 @@ public:
 
 	enum State { StateUnknown = 0,
 		StateStopped, StatePaused,
-		StatePlaing, StateError,
+		StatePlaying, StateError,
 		StateLoading, StateBuffering
 	};
 
 	void setTune(const Tune& tune);
-	Tune currentTune() const;
+	const Tune& currentTune() const;
 
 	virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
 
@@ -56,7 +56,8 @@ public:
 	virtual qint64 position() const = 0;
 
 	virtual State state() const = 0;
-	virtual void playOrPause() = 0;
+	virtual void play() = 0;
+	virtual void pause() = 0;
 	virtual void stop() = 0;
 	virtual qint64 currentTuneTotalTime() const = 0;
 

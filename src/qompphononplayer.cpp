@@ -103,7 +103,7 @@ QompPlayer::State QompPhononPlayer::state() const
 #ifdef DEBUG_OUTPUT
 		qDebug() << "QompPlayer::state()" << "Phonon::PlayingState";
 #endif
-		return StatePlaing;
+		return StatePlaying;
 	case Phonon::StoppedState:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "QompPlayer::state()" << "Phonon::StoppedState";
@@ -137,17 +137,20 @@ void QompPhononPlayer::doSetTune(const Tune &tune)
 	mediaObject_->setCurrentSource(ms);
 }
 
-void QompPhononPlayer::playOrPause()
+void QompPhononPlayer::play()
 {
-	if(mediaObject_->state() == Phonon::PlayingState)
-		mediaObject_->pause();
-	else
-		mediaObject_->play();
+	mediaObject_->play();
+}
+
+void QompPhononPlayer::pause()
+{
+	mediaObject_->pause();
 }
 
 void QompPhononPlayer::stop()
 {
 	mediaObject_->stop();
+	setTune(Tune::emptyTune());
 }
 
 qint64 QompPhononPlayer::currentTuneTotalTime() const

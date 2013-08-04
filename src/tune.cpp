@@ -145,3 +145,4 @@ QList<Tune> Tune::tunesFromFile(const QString &fileName)
 }
 
 int Tune::lastId_ = 0;
+const Tune* Tune::empty_ = new Tune(false);

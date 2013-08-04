@@ -94,19 +94,21 @@ QompPlayer::State QompQtMultimediaPlayer::state() const
 	case QMediaPlayer::StoppedState:
 		return QompPlayer::StateStopped;
 	case QMediaPlayer::PlayingState:
-		return QompPlayer::StatePlaing;
+		return QompPlayer::StatePlaying;
 	case QMediaPlayer::PausedState:
 		return QompPlayer::StatePaused;
 	}
 	return QompPlayer::StateUnknown;
 }
 
-void QompQtMultimediaPlayer::playOrPause()
+void QompQtMultimediaPlayer::play()
 {
-	if(state() == QompPlayer::StatePlaing)
-		player_->pause();
-	else
-		player_->play();
+	player_->play();
+}
+
+void QompQtMultimediaPlayer::pause()
+{
+	player_->pause();
 }
 
 void QompQtMultimediaPlayer::stop()

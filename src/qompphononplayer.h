@@ -43,7 +43,8 @@ public:
 	virtual qint64 position() const;
 
 	virtual State state() const;
-	virtual void playOrPause();
+	virtual void play();
+	virtual void pause();
 	virtual void stop();
 	virtual qint64 currentTuneTotalTime() const;
 

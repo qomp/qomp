@@ -106,7 +106,7 @@ void LastFmPlugin::playerStatusChanged()
 
 	scrobbleTimer_->stop();
 	nowPlayingTimer_->stop();
-	if(player_->state() == QompPlayer::StatePlaing) {
+	if(player_->state() == QompPlayer::StatePlaying) {
 		nowPlayingTimer_->start(3000);
 	}
 }

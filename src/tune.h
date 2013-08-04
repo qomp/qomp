@@ -57,11 +57,16 @@ public:
 
 	static QList<Tune> tunesFromFile(const QString& fileName);
 
+	static const Tune& emptyTune() { return *empty_; }
+
 private:
+//	Q_DISABLE_COPY(Tune)
 	static int lastId_;
 	int id_;
 	bool canSave_;
 	TuneURLResolveStrategy* strategy_;
+
+	static const Tune* empty_;
 };
 
 typedef QList<Tune> TuneList;

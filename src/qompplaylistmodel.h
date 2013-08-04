@@ -39,8 +39,8 @@ public:
 	};
 
 	void addTunes(const TuneList& tunes);
-	Tune tune(const QModelIndex& index) const;
-	Tune currentTune() const;
+	const Tune& tune(const QModelIndex& index) const;
+	const Tune& currentTune() const;
 	void setCurrentTune(const Tune& tune);
 	void removeTune(const Tune& tune);
 	QModelIndex indexForTune(const Tune& tune) const;

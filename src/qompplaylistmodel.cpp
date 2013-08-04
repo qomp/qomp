@@ -36,15 +36,15 @@ void QompPlayListModel::addTunes(const TuneList &tunes)
 	emit endInsertRows();
 }
 
-Tune QompPlayListModel::tune(const QModelIndex &index) const
+const Tune &QompPlayListModel::tune(const QModelIndex &index) const
 {
 	if(!index.isValid() || index.row() >= tunes_.size())
-		return Tune();
+		return Tune::emptyTune();
 
 	return tunes_.at(index.row());
 }
 
-Tune QompPlayListModel::currentTune() const
+const Tune &QompPlayListModel::currentTune() const
 {
 	return currentTune_;
 }
@@ -82,7 +82,7 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 	if(role == Qt::DisplayRole && index.column() == 0) {
-		Tune t = tunes_.at(index.row());
+		const Tune& t = tunes_.at(index.row());
 		QString ret;
 		if(!t.title.isEmpty()) {
 			if(!t.trackNumber.isEmpty()) {
@@ -251,7 +251,7 @@ void QompPlayListModel::clear()
 {
 	beginResetModel();
 	tunes_.clear();
-	currentTune_ = Tune();
+	currentTune_ = Tune::emptyTune();
 	endResetModel();
 }
 
