@@ -122,7 +122,10 @@ void Tune2FilePlugin::playerStatusChanged(QompPlayer::State state)
 	if(f.open(QFile::WriteOnly | QFile::Truncate)) {
 		if(state == QompPlayer::StatePlaying) {
 			const Tune& t = player_->currentTune();
-			QString str = QString("%1 %2").arg(t.artist, t.title);
+			QString str = t.artist;
+			if(!str.isEmpty())
+				str += " - ";
+			str += t.title;
 			f.write(str.toUtf8());
 		}
 		f.close();
