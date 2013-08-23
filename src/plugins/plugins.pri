@@ -24,3 +24,6 @@ include (yandexmusicplugin/yandexmusicplugin.pri)
 include (lastfmplugin/lastfmplugin.pri)
 include (tunetofileplugin/tunetofileplugin.pri)
 #include (deezerplugin/deezerplugin.pri)
+
+unix:!macx: include (mprisplugin/mprisplugin.pri)
+

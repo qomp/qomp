@@ -187,6 +187,9 @@ Q_IMPORT_PLUGIN(FilesystemPlugin)
 Q_IMPORT_PLUGIN(UrlPlugin)
 Q_IMPORT_PLUGIN(LastFmPlugin)
 Q_IMPORT_PLUGIN(Tune2FilePlugin)
+#ifdef HAVE_DBUS
+Q_IMPORT_PLUGIN(MprisPlugin)
+#endif
 #else
 Q_IMPORT_PLUGIN(myzukaruplugin)
 //Q_IMPORT_PLUGIN(deezerplugin)
@@ -196,6 +199,9 @@ Q_IMPORT_PLUGIN(filesystemplugin)
 Q_IMPORT_PLUGIN(urlplugin)
 Q_IMPORT_PLUGIN(lastfmplugin)
 Q_IMPORT_PLUGIN(tunetofileplugin)
+#ifdef HAVE_DBUS
+Q_IMPORT_PLUGIN(mprisplugin)
+#endif
 #endif
 
 PluginManager* PluginManager::instance_ = 0;

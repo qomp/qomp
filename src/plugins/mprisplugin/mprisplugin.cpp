@@ -1,82 +1,90 @@
+/*
+ * Copyright (C) 2013  Khryukin Evgeny
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
+
 #include "mprisplugin.h"
-#include <QtDBus/QDBusConnection>
-#include <QtDBus/QDBusInterface>
+#include "mpris.h"
+#include "qompplayer.h"
 
-mprisplugin::mprisplugin(QObject *parent)
+#include <QTimer>
+#include <QtPlugin>
+
+MprisPlugin::MprisPlugin() :
+	player_(0),
+	enabled_(true),
+	mpris_(0)
 {
-	QDBusConnection qompConnection = QDBusConnection::sessionBus();
-	qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
-	qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
-	statusChanged = false;
-	metadataChanged = false;
-	playerStatus = "Stopped"; //default on start
 }
 
-mprisplugin::~mprisplugin()
+void MprisPlugin::qompPlayerChanged(QompPlayer *player)
 {
-	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
+	player_ = player;
+	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStatusChanged()));
 }
 
-mprisplugin::setStatus(const QString &status)
+void MprisPlugin::setEnabled(bool enabled)
 {
-	if (!status.isEmpty() && status != playerStatus) {
-		playerStatus = status; //"Playing" or "Stopped"
-		statusChanged = true;
-	}
-	else {
-		statusChanged = false;
-	}
+	enabled_ = enabled;
+	if(enabled_)
+		connectToDbus();
+	else
+		disconnectFromDbus();
 }
 
-void mprisplugin::setMetadata(int trackNumber, const QString &title, const QString &artist, const QString &album, const QString &url)
+void MprisPlugin::unload()
 {
-	QVariantMap map;
-	if (!album.isEmpty()) {
-		map["xesam:album"] = album;
-	}
-	if (!artist.isEmpty()) {
-		map["xesam:artist"] = QStringList() << artist;
-	}
-	if (!title.isEmpty()) {
-		map["xesam:title"] = QStringList() << title;
-	}
-	map["xesam:trackNumber"] = trackNumber;
-	map["xesam:url"] = url;
-	if (!map.isEmpty() && map != metaData) {
-		metaData = map;
-		metadataChanged = true;
-	}
-	else {
-		metadataChanged = false;
-	}
-
+	disconnectFromDbus();
 }
 
-QVariantMap mprisplugin::metadata()
+void MprisPlugin::playerStatusChanged()
 {
-	return metaData;
-}
-
-QString mprisplugin::playbackStatus()
-{
-	return playerStatus;
-}
-
-void mprisplugin::sendProperties()
-{
-	QVariantMap map;
-	if (!playerStatus.isEmpty() && statusChanged) {
-		map.insert("playbackStatus", playbackStatus());
-	}
-	if (!metadata().isEmpty() && metadataChanged) {
-		map.insert("metadata", metadata());
-	}
-	if (map.isEmpty()) {
+	if(!enabled_ || !mpris_)
 		return;
+
+	const Tune& t = player_->currentTune();
+	int num = t.trackNumber.isEmpty() ? 0 : t.trackNumber.toInt();
+	switch(player_->state()) {
+	case QompPlayer::StatePlaying:
+		mpris_->setMetadata(num, t.title, t.artist, t.album, t.url);
+		mpris_->setStatus("Playing");
+		mpris_->sendProperties();
+		break;
+	case QompPlayer::StateStopped:
+		mpris_->setMetadata(num, t.title, t.artist, t.album, t.url);
+		mpris_->setStatus("Stopped");
+		mpris_->sendProperties();
+		break;
+	default:
+		break;
 	}
-	QDBusMessage msg = QDBusMessage::createSignal("/org/mpris/MediaPlayer2",
-						      "org.freedesktop.DBus.Properties", "PropertiesChanged");
-	QVariantList args = QVariantList() << "org.mpris.MediaPlayer2.Player" << map << QStringList();
-	msg.setArguments(args);
-	QDBusConnection::sessionBus().send(msg);
 }
+
+void MprisPlugin::connectToDbus()
+{
+	mpris_ = new Mpris(this);
+}
+
+void MprisPlugin::disconnectFromDbus()
+{
+	delete mpris_;
+	mpris_ = 0;
+}
+
+#ifndef HAVE_QT5
+Q_EXPORT_PLUGIN2(mprisplugin, MprisPlugin)
+#endif
