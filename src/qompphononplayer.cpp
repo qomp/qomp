@@ -131,9 +131,8 @@ QompPlayer::State QompPhononPlayer::state() const
 
 void QompPhononPlayer::doSetTune(const Tune &tune)
 {
-	Phonon::MediaSource ms;
-	ms = Phonon::MediaSource(tune.getUrl());
-
+	QUrl url = tune.getUrl();
+	Phonon::MediaSource ms = url.isEmpty() ? Phonon::MediaSource() : Phonon::MediaSource(url);
 	mediaObject_->setCurrentSource(ms);
 }
 
