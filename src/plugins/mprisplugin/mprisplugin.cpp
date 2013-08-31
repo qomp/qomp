@@ -30,9 +30,6 @@ MprisPlugin::MprisPlugin() :
 	enabled_(true),
 	mpris_(0)
 {
-    QDBusConnection qompConnection = QDBusConnection::sessionBus();
-    qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
-    qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
 }
 
 void MprisPlugin::qompPlayerChanged(QompPlayer *player)
@@ -81,11 +78,14 @@ void MprisPlugin::playerStatusChanged()
 void MprisPlugin::connectToDbus()
 {
 	mpris_ = new Mpris(this);
+	QDBusConnection qompConnection = QDBusConnection::sessionBus();
+	qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
+	qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
 }
 
 void MprisPlugin::disconnectFromDbus()
 {
-    QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
+	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
 	delete mpris_;
 	mpris_ = 0;
 }
