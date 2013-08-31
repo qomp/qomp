@@ -23,12 +23,16 @@
 
 #include <QTimer>
 #include <QtPlugin>
+#include <QtDBus/QDBusConnection>
 
 MprisPlugin::MprisPlugin() :
 	player_(0),
 	enabled_(true),
 	mpris_(0)
 {
+    QDBusConnection qompConnection = QDBusConnection::sessionBus();
+    qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
+    qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
 }
 
 void MprisPlugin::qompPlayerChanged(QompPlayer *player)
@@ -81,6 +85,7 @@ void MprisPlugin::connectToDbus()
 
 void MprisPlugin::disconnectFromDbus()
 {
+    QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
 	delete mpris_;
 	mpris_ = 0;
 }

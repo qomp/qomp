@@ -6,19 +6,11 @@
 Mpris::Mpris(QObject* p) :
 	QDBusAbstractAdaptor(p)
 {
-	QDBusConnection qompConnection = QDBusConnection::sessionBus();
-	qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
-	qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
 	statusChanged = false;
 	metadataChanged = false;
 	playerStatus = "Stopped"; //default on start
 }
 
-
-Mpris::~Mpris()
-{
-	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
-}
 
 void Mpris::setStatus(const QString &status)
 {
@@ -69,10 +61,10 @@ void Mpris::sendProperties()
 {
 	QVariantMap map;
 	if (!playerStatus.isEmpty() && statusChanged) {
-		map.insert("playbackStatus", playbackStatus());
+        map.insert("PlaybackStatus", playbackStatus());
 	}
 	if (!metadata().isEmpty() && metadataChanged) {
-		map.insert("metadata", metadata());
+        map.insert("Metadata", metadata());
 	}
 	if (map.isEmpty()) {
 		return;

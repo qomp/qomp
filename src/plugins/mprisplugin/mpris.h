@@ -4,17 +4,16 @@
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QVariantMap>
 
-class DBUSAdaptor;
+//class DBUSAdaptor;
 
 class Mpris : public QDBusAbstractAdaptor
 {
 	Q_OBJECT
 	Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2.Player")
 	Q_PROPERTY(QVariantMap Metadata READ metadata)
-	Q_PROPERTY(QString PlaybackStatus READ playbackStatus)
+    Q_PROPERTY(QString PlaybackStatus READ playbackStatus)
 public:
-	Mpris(QObject *parent = 0);
-	~Mpris();
+    Mpris(QObject *p = 0);
 public:
 	QVariantMap metadata() const;
 	QString playbackStatus() const;
