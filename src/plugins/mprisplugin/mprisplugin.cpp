@@ -18,12 +18,11 @@
  */
 
 #include "mprisplugin.h"
-#include "mpris.h"
+#include "mpriscontroller.h"
 #include "qompplayer.h"
 
 #include <QTimer>
 #include <QtPlugin>
-#include <QtDBus/QDBusConnection>
 
 MprisPlugin::MprisPlugin() :
 	player_(0),
@@ -42,14 +41,14 @@ void MprisPlugin::setEnabled(bool enabled)
 {
 	enabled_ = enabled;
 	if(enabled_)
-		connectToDbus();
+		mpris_ = new MprisController(this);
 	else
-		disconnectFromDbus();
+		disableMpris();
 }
 
 void MprisPlugin::unload()
 {
-	disconnectFromDbus();
+	disableMpris();
 }
 
 void MprisPlugin::playerStatusChanged()
@@ -61,31 +60,21 @@ void MprisPlugin::playerStatusChanged()
 	int num = t.trackNumber.isEmpty() ? 0 : t.trackNumber.toInt();
 	switch(player_->state()) {
 	case QompPlayer::StatePlaying:
-		mpris_->setMetadata(num, t.title, t.artist, t.album, t.url);
-		mpris_->setStatus("Playing");
-		mpris_->sendProperties();
+		mpris_->sendData("Playing", num ,t);
 		break;
 	case QompPlayer::StateStopped:
-		mpris_->setMetadata(num, t.title, t.artist, t.album, t.url);
-		mpris_->setStatus("Stopped");
-		mpris_->sendProperties();
+		mpris_->sendData("Stopped", num ,Tune());
+		break;
+	case QompPlayer::StatePaused:
+		mpris_->sendData("Paused", num ,Tune());
 		break;
 	default:
 		break;
 	}
 }
 
-void MprisPlugin::connectToDbus()
+void MprisPlugin::disableMpris()
 {
-	mpris_ = new Mpris(this);
-	QDBusConnection qompConnection = QDBusConnection::sessionBus();
-	qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
-	qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
-}
-
-void MprisPlugin::disconnectFromDbus()
-{
-	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
 	delete mpris_;
 	mpris_ = 0;
 }

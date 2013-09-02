@@ -16,35 +16,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
- 
-#ifndef MPRIS_H
-#define MPRIS_H
 
-#include <QtDBus/QDBusAbstractAdaptor>
-#include <QVariantMap>
+#ifndef MPRISCONTROLLER_H
+#define MPRISCONTROLLER_H
 
-//class DBUSAdaptor;
+#include "mprisadapter.h"
+#include "tune.h"
 
-class Mpris : public QDBusAbstractAdaptor
+#include <QObject>
+
+class MprisController : public QObject
 {
 	Q_OBJECT
-	Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2.Player")
-	Q_PROPERTY(QVariantMap Metadata READ metadata)
-    Q_PROPERTY(QString PlaybackStatus READ playbackStatus)
 public:
-    Mpris(QObject *p = 0);
-public:
-	QVariantMap metadata() const;
-	QString playbackStatus() const;
-	void setStatus(const QString &status);
-	void setMetadata(int trackNumber, const QString &title, const QString &artist, const QString &album, const QString &url);
-	void sendProperties();
+	explicit MprisController(QObject *parent = 0);
+	~MprisController();
+
+	void sendData(const QString &status, int trackNumber, const Tune &tune);
 
 private:
-	QVariantMap metaData;
-	QString playerStatus;
-	bool statusChanged;
-	bool metadataChanged;
+	MprisAdapter *mprisAdapter_;
 };
 
-#endif // MPRIS_H
+#endif // MPRISCONTROLLER_H

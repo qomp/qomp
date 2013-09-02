@@ -27,7 +27,7 @@
 #include "qompplugin.h"
 #include "qompplayerstatusplugin.h"
 
-class Mpris;
+class MprisController;
 
 class MprisPlugin : public QObject, public QompPlugin, public QompPlayerStatusPlugin
 {
@@ -50,15 +50,14 @@ public:
 
 private slots:
 	void playerStatusChanged();
-	void connectToDbus();
 
 private:
-	void disconnectFromDbus();
+	void disableMpris();
 
 private:
 	QompPlayer *player_;
 	bool enabled_;
-	Mpris* mpris_;
+	MprisController* mpris_;
 };
 
 #endif // MPRISPLUGIN_H
