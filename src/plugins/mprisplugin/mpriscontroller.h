@@ -21,7 +21,6 @@
 #define MPRISCONTROLLER_H
 
 #include "mprisadapter.h"
-#include "tune.h"
 
 #include <QObject>
 

@@ -20,16 +20,10 @@
 #ifndef MPRISADAPTER_H
 #define MPRISADAPTER_H
 
+#include "tune.h"
+
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QVariantMap>
-
-struct MetaData {
-	int trackNumber;
-	QString title;
-	QString artist;
-	QString album;
-	QString url;
-};
 
 class MprisAdapter : public QDBusAbstractAdaptor
 {
@@ -44,7 +38,7 @@ public:
 	QVariantMap metadata() const;
 	QString playbackStatus() const;
 	void setStatus(const QString &status);
-	void setMetadata(const MetaData &metaData);
+    void setMetadata(int trackNumber, const Tune &tune);
 	void updateProperties();
 
 private:

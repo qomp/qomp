@@ -33,18 +33,11 @@ MprisController::MprisController(QObject *parent) :
 MprisController::~MprisController()
 {
 	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
-	delete mprisAdapter_;
 }
 
 void MprisController::sendData(const QString &status, int trackNumber, const Tune &tune)
 {
 	mprisAdapter_->setStatus(status);
-	MetaData md;
-	md.album = tune.album;
-	md.artist = tune.artist;
-	md.title = tune.title;
-	md.url = tune.url;
-	md.trackNumber = trackNumber;
-	mprisAdapter_->setMetadata(md);
+    mprisAdapter_->setMetadata(trackNumber, tune);
 	mprisAdapter_->updateProperties();
 }
