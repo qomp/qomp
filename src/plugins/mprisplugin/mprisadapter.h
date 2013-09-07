@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
- 
+
 #ifndef MPRISADAPTER_H
 #define MPRISADAPTER_H
 
@@ -38,7 +38,7 @@ public:
 	QVariantMap metadata() const;
 	QString playbackStatus() const;
 	void setStatus(const QString &status);
-    void setMetadata(int trackNumber, const Tune &tune);
+	void setMetadata(int trackNumber, const Tune &tune);
 	void updateProperties();
 
 private:

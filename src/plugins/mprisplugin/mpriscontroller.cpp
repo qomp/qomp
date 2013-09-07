@@ -22,7 +22,7 @@
 #include <QtDBus/QDBusConnection>
 
 MprisController::MprisController(QObject *parent) :
-    QObject(parent)
+	QObject(parent)
 {
 	mprisAdapter_ = new MprisAdapter(this);
 	QDBusConnection qompConnection = QDBusConnection::sessionBus();
@@ -38,6 +38,6 @@ MprisController::~MprisController()
 void MprisController::sendData(const QString &status, int trackNumber, const Tune &tune)
 {
 	mprisAdapter_->setStatus(status);
-    mprisAdapter_->setMetadata(trackNumber, tune);
+	mprisAdapter_->setMetadata(trackNumber, tune);
 	mprisAdapter_->updateProperties();
 }

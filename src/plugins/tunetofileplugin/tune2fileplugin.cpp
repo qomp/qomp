@@ -88,6 +88,9 @@ Tune2FilePlugin::Tune2FilePlugin() : enabled_(false)
 
 QompOptionsPage *Tune2FilePlugin::options()
 {
+	if(!enabled_)
+		return 0;
+
 	return new T2FSettings;
 }
 
