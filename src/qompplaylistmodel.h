@@ -35,7 +35,8 @@ public:
 		TrackRole = Qt::UserRole+3,
 		DurationRole = Qt::UserRole+4,
 		URLRole = Qt::UserRole+5,
-		FileRole = Qt::UserRole+6
+		FileRole = Qt::UserRole+6,
+		IsCurrentTuneRole = Qt::UserRole+7
 	};
 
 	void addTunes(const TuneList& tunes);

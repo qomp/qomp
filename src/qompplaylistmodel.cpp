@@ -52,6 +52,7 @@ const Tune &QompPlayListModel::currentTune() const
 void QompPlayListModel::setCurrentTune(const Tune &tune)
 {
 	currentTune_ = tune;
+	emit layoutChanged();
 }
 
 void QompPlayListModel::removeTune(const Tune &tune)
@@ -154,6 +155,9 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	}
 	else if(role == URLRole) {
 		return tunes_.at(index.row()).url;
+	}
+	else if(role == IsCurrentTuneRole) {
+		return currentTune() == tune(index);
 	}
 
 	return QVariant();

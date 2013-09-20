@@ -62,12 +62,24 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 	QRect durRect(rect);
 	QString dur = index.data(QompPlayListModel::DurationRole).toString();
 	int w = fm.width(dur);
-	durRect.setLeft(rect.right() - w - 1);
-	rect.setRight(durRect.left() - 1);
+	durRect.setRight(durRect.right() - 3);
+	durRect.setLeft(durRect.right() - w - 1);
+	rect.setRight(durRect.left() - 2);
+	rect.setLeft(rect.left() + 5);
 	text = fm.elidedText(text, Qt::ElideRight,rect.width());
 
 	painter->drawText(rect, text);
 	painter->drawText(durRect, dur);
+
+	if(index.data(QompPlayListModel::IsCurrentTuneRole).toBool()) {
+		rect = o.rect;
+		rect.setRight(rect.right()-1);
+		rect.setBottom(rect.bottom()-1);
+		QPen p = painter->pen();
+		p.setStyle(Qt::DashLine);
+		painter->setPen(p);
+		painter->drawRect(rect);
+	}
 
 	painter->restore();
 }
