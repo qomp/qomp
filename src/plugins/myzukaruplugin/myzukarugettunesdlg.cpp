@@ -291,6 +291,7 @@ void MyzukaruGettunesDlg::getSuggestions(const QString &text)
 	QNetworkRequest nr(url);
 	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+	nr.setRawHeader("Referer", "http://myzuka.ru");
 	QNetworkReply *reply = nam_->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(suggestionsFinished()));
 }
