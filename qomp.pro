@@ -14,7 +14,7 @@ phonon_backend {
     DEFINES += HAVE_PHONON
 }
 
-unix:!mac:DEFINES += HAVE_X11
+unix:!mac:!android:DEFINES += HAVE_X11
 
 TARGET = qomp
 TEMPLATE = app
@@ -42,7 +42,7 @@ INCLUDEPATH += $$PWD/.ui
 LANG_PATH = qomp.translations/translations
 TRANSLATIONS = $$LANG_PATH/qomp_ru.ts
 
-unix {
+unix:!android {
 	INCLUDEPATH += /usr/include/KDE/
 	
 	target.path = $$BINDIR
@@ -61,7 +61,6 @@ unix {
 	icon4.extra = cp -f src/icons/qomp_64.png $(INSTALL_ROOT)$$icon4.path/qomp.png
 	icon5.path = $$PREFIX/share/icons/hicolor/32x32/apps
 	icon5.extra = cp -f src/icons/qomp_32.png $(INSTALL_ROOT)$$icon5.path/qomp.png
-
 	translations.path = $$DATADIR/translations
 	translations.extra = lrelease qomp.pro && cp -f $$LANG_PATH/qomp_*.qm  $(INSTALL_ROOT)$$translations.path
 	INSTALLS += translations
