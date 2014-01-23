@@ -29,6 +29,7 @@ enum ModelItemType { NoType = 0, TypeTune, TypeAlbum, TypeArtist };
 }
 class QIcon;
 class Tune;
+class QAbstractItemModel;
 
 class QompPluginModelItem
 {
@@ -89,9 +90,13 @@ public:
 	 */
 	void addItems(QList<QompPluginModelItem*> items);
 
+	QAbstractItemModel* model() const;
+	void setModel(QAbstractItemModel* model);
+
 private:
 	QompPluginModelItem* parent_;
 	QList<QompPluginModelItem*> items_;
+	QAbstractItemModel* model_;
 };
 
 class QompPluginTune : public QompPluginModelItem

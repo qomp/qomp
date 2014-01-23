@@ -27,8 +27,9 @@
 namespace Ui {
 class QompPluginGettunesDlg;
 }
-class QNetworkAccessManager;
+
 class QMenu;
+class QompPluginModelItem;
 
 
 class QompPluginGettunesDlg : public QDialog
@@ -40,28 +41,24 @@ public:
 	virtual ~QompPluginGettunesDlg();
 
 	/**
-	 * Return list of Tunes
+	 * Call this to start busy widget
 	 */
-	virtual TuneList getTunes() const;
+	void startBusyWidget();
 
 	/**
-	 * Return current text in combo box
+	 * Call this to stop busy widget
 	 */
-	QString currentSearchText() const;
+	void stopBusyWidget();
 
 signals:
 	/**
 	 * The signal is emited when text in search combobox changed by user
 	 */
 	void searchTextChanged(const QString&);
+	void doSearch(const QString&);
+	void itemSelected(QompPluginModelItem* item);
 	
-protected slots:
-	/**
-	 * This slot is called when Search button is clicked
-	 * or Enter key pressed
-	 */
-	virtual void doSearch() = 0;
-
+public slots:
 	/**
 	 * Call this slot when list of suggestions received
 	 */
@@ -72,31 +69,18 @@ protected:
 	bool eventFilter(QObject *o, QEvent *e);
 
 	/**
-	 * Call this to start busy widget
-	 */
-	void startBusyWidget();
-
-	/**
-	 * Call this to stop busy widget
-	 */
-	void stopBusyWidget();
-
-	/**
 	 * You should set results widget (like QompPluginTreeView)
 	 * before use this dialog
 	 */
 	void setResultsWidget(QWidget* widget);
 
-protected:
 	/**
-	 * List of selected Tunes
+	 * Return current text in combo box
 	 */
-	TuneList tunes_;
+	QString currentSearchText() const;
 
-	/**
-	 * Use this Network Access Manager for obtaining data from music hostings
-	 */
-	QNetworkAccessManager* nam_;
+protected slots:
+	void itemSelected(const QModelIndex& ind);
 
 private slots:
 	void suggestionActionTriggered(QAction* a);

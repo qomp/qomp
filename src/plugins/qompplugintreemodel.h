@@ -37,7 +37,7 @@ public:
 	QompPluginTreeModel(QObject *parent = 0);
 
 	/**
-	 * Destructor removes all to plevel items.
+	 * Destructor removes all top level items.
 	 * Each top level item removes it's children
 	 */
 	~QompPluginTreeModel();

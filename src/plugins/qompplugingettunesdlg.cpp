@@ -18,7 +18,7 @@
  */
 
 #include "qompplugingettunesdlg.h"
-#include "qompnetworkingfactory.h"
+#include "qompplugintreemodel.h"
 #include "defines.h"
 #include "options.h"
 
@@ -33,7 +33,6 @@ QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 	suggestionsMenu_(new QMenu(this))
 {
 	ui->setupUi(this);
-	nam_ = QompNetworkingFactory::instance()->getNetworkAccessManager();
 
 	QStringList searchHistory = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
 
@@ -84,12 +83,7 @@ void QompPluginGettunesDlg::search()
 	if(ui->cb_search->findText(text) == -1)
 		ui->cb_search->insertItem(0, text);
 
-	doSearch();
-}
-
-TuneList QompPluginGettunesDlg::getTunes() const
-{
-	return tunes_;
+	emit doSearch(text);
 }
 
 QString QompPluginGettunesDlg::currentSearchText() const
@@ -162,4 +156,18 @@ void QompPluginGettunesDlg::newSuggestions(const QStringList &list)
 	}
 	suggestionsMenu_->popup(mapToGlobal(ui->cb_search->geometry().bottomLeft()));
 	suggestionsMenu_->move(mapToGlobal(ui->cb_search->geometry().bottomLeft()));
+}
+
+void QompPluginGettunesDlg::itemSelected(const QModelIndex &ind)
+{
+	if(!ind.isValid())
+		return;
+	QAbstractItemView* view = qobject_cast<QAbstractItemView*>(sender());
+	if(!view)
+		return;
+
+	QompPluginTreeModel* model = qobject_cast<QompPluginTreeModel*>(view->model());
+	QompPluginModelItem* item = model->item(ind);
+
+	emit itemSelected(item);
 }

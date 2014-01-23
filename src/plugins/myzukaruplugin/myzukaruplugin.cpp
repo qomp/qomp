@@ -19,7 +19,7 @@
 
 #include "myzukaruplugin.h"
 #include "myzukarudefines.h"
-#include "myzukarugettunesdlg.h"
+#include "myzukarucontroller.h"
 
 #include <QtPlugin>
 
@@ -44,12 +44,8 @@ QString MyzukaruPlugin::description() const
 
 TuneList MyzukaruPlugin::getTunes()
 {
-	TuneList list;
-	MyzukaruGettunesDlg dlg;
-	if(dlg.exec() == QDialog::Accepted) {
-		list = dlg.getTunes();
-	}
-	return list;
+	MyzukaruController ctrl;
+	return ctrl.getTunes();
 }
 
 

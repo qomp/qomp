@@ -23,11 +23,11 @@
 #include "qompplugingettunesdlg.h"
 #include <QHash>
 
-class QompPluginTreeModel;
-class QNetworkReply;
-class QModelIndex;
 class QTabWidget;
+class QAbstractItemModel;
+class QompPluginTreeView;
 
+enum MyzikaruTabKind { TabArtists = 0, TabAlbums = 1, TabTracks = 2 };
 
 class MyzukaruGettunesDlg : public QompPluginGettunesDlg
 {
@@ -36,31 +36,12 @@ class MyzukaruGettunesDlg : public QompPluginGettunesDlg
 public:
 	explicit MyzukaruGettunesDlg(QWidget *parent = 0);
 
-public slots:
-	virtual void accept();
-
-protected:
-//	bool eventFilter(QObject *o, QEvent *e);
-
-protected slots:
-	virtual void doSearch();
-
-private slots:
-	void searchFinished();
-	void tuneUrlFinished();
-	void albumUrlFinished();
-	void artistUrlFinished();
-	void itemSelected(const QModelIndex& ind);
-	void getSuggestions(const QString& text);
-	void suggestionsFinished();
+	void setModel(QAbstractItemModel* model, MyzikaruTabKind kind);
+	void setCurrentTab(MyzikaruTabKind kind);
 
 private:
-	void checkAndStopBusyWidget();
-
-private:
-	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;
-	QHash<QNetworkReply*, void*> requests_;
 	QTabWidget* tabWidget_;
+	QompPluginTreeView *artistsView_, *albumsView_, *tracksView_;
 };
 
 #endif // MYZUKARUGETTUNESDLG_H

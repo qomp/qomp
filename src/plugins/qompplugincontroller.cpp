@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,34 +17,27 @@
  *
  */
 
-#ifndef YANDEXMUSICGETTUNSDLG_H
-#define YANDEXMUSICGETTUNSDLG_H
-
+#include "qompplugincontroller.h"
 #include "qompplugingettunesdlg.h"
+#include "qompnetworkingfactory.h"
 
-#include <QHash>
+#include <QNetworkAccessManager>
 
-class QTabWidget;
-class QAbstractItemModel;
-class QompPluginTreeView;
-
-enum YandexMusicTabKind { TabArtist = 0, TabAlbum = 1, TabTrack = 2 };
-
-class YandexMusicGettunsDlg : public QompPluginGettunesDlg
+QompPluginController::QompPluginController(QObject *parent) :
+	QObject(parent)
 {
-	Q_OBJECT
-public:
-	explicit YandexMusicGettunsDlg();
+	nam_ = QompNetworkingFactory::instance()->getNetworkAccessManager();
+}
 
-	void setCuuretnTab(YandexMusicTabKind kind);
-	void setModel(QAbstractItemModel* model, YandexMusicTabKind kind);
-	int currentTabRows() const;
-	
+QompPluginController::~QompPluginController()
+{
 
-private:
-	QTabWidget* tabWidget_;
-	QompPluginTreeView *artistsView_, *albumsView_, *tracksView_;
-	
-};
+}
 
-#endif // YANDEXMUSICGETTUNSDLG_H
+void QompPluginController::init()
+{
+	connect(view(), SIGNAL(itemSelected(QompPluginModelItem*)), SLOT(itemSelected(QompPluginModelItem*)));
+	connect(view(), SIGNAL(doSearch(QString)), SLOT(doSearch(QString)));
+	connect(view(), SIGNAL(searchTextChanged(QString)), SLOT(getSuggestions(QString)));
+	connect(this, SIGNAL(suggestionsReady(QStringList)), view(), SLOT(newSuggestions(QStringList)));
+}

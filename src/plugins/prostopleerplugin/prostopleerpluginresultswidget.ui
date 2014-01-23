@@ -78,7 +78,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="lb_total">
        <property name="text">
         <string>Total: </string>
        </property>

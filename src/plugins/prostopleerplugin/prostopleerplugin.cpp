@@ -18,7 +18,7 @@
  */
 
 #include "prostopleerplugin.h"
-#include "prostopleerplugingettunesdialog.h"
+#include "prostopleercontroller.h"
 #include "prostopleerplugindefines.h"
 #include "prostopleerpluginsettings.h"
 
@@ -46,11 +46,8 @@ QString ProstoPleerPlugin::description() const
 
 TuneList ProstoPleerPlugin::getTunes()
 {
-	TuneList list;
-	ProstoPleerPluginGetTunesDialog gtd;
-	if(gtd.exec() == QDialog::Accepted)
-		list = gtd.getTunes();
-	return list;
+	ProstoPleerController ctrl;
+	return ctrl.getTunes();
 }
 
 QompOptionsPage *ProstoPleerPlugin::options()

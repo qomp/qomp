@@ -28,9 +28,7 @@ namespace Ui {
 class ProstoPleerPluginResultsWidget;
 }
 
-class QompPluginModelItem;
-class QompPluginTreeModel;
-class QModelIndex;
+class QAbstractItemModel;
 
 class ProstoPleerPluginGetTunesDialog : public QompPluginGettunesDlg
 {
@@ -40,34 +38,25 @@ public:
 	explicit ProstoPleerPluginGetTunesDialog(QWidget *parent = 0);
 	~ProstoPleerPluginGetTunesDialog();
 
-	TuneList getTunes() const;
+	void setAuthStatus(const QString&);
 
-public slots:
-	virtual void accept();
+	int page() const;
+	void setPage(int p);
 
-protected slots:
-	void doSearch();
+	int totalPages() const;
+	void setTotalPages(int p);
 
-private slots:
-	void searchFinished();
-	void urlFinished();
-	void loginFinished();
-	void itemSelected(const QModelIndex& index);
-	void searchSuggestions(const QString& text);
-	void suggestionsFinished();
+	void enableNext(bool enabled);
+	void enablePrev(bool enabled);
 
-	void actPrevActivated();
-	void actNextActivated();
+	void setModel(QAbstractItemModel* model);
 
-private:
-	void doLogin();
-	void doSearchStepTwo();
+signals:
+	void next();
+	void prev();
 	
 private:
 	Ui::ProstoPleerPluginResultsWidget *ui;
-	TuneList tunes_;
-	QompPluginTreeModel* model_;
-	QString lastSearchStr_;
 };
 
 #endif // GETTUNESDIALOG_H

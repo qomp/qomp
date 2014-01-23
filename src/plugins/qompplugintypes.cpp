@@ -26,7 +26,8 @@
 //----QompPluginItem-----
 //-----------------------
 QompPluginModelItem::QompPluginModelItem(QompPluginModelItem *parent) :
-	parent_(parent)
+	parent_(parent),
+	model_(0)
 {
 }
 
@@ -60,6 +61,22 @@ void QompPluginModelItem::addItems(QList<QompPluginModelItem *> items)
 	foreach(QompPluginModelItem *it, items)
 		it->setParent(this);
 	items_.append(items);
+}
+
+QAbstractItemModel *QompPluginModelItem::model() const
+{
+	if(parent_)
+		return parent_->model();
+
+	return model_;
+}
+
+void QompPluginModelItem::setModel(QAbstractItemModel *model)
+{
+	if(parent_)
+		parent_->setModel(model);
+	else
+		model_ = model;
 }
 
 QList<QompPluginModelItem *> QompPluginModelItem::items() const

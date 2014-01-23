@@ -18,7 +18,7 @@
  */
 
 #include "yandexmusicplugin.h"
-#include "yandexmusicgettunsdlg.h"
+#include "yandexmusiccontroller.h"
 #include "yandexmusicurlresolvestrategy.h"
 
 #include <QtPlugin>
@@ -45,13 +45,8 @@ QString YandexMusicPlugin::description() const
 
 TuneList YandexMusicPlugin::getTunes()
 {
-	TuneList list;
-	YandexMusicGettunsDlg dlg;
-	dlg.show();
-	if(dlg.exec() == QDialog::Accepted) {
-		list = dlg.getTunes();
-	}
-	return list;
+	YandexMusicController ctrl;
+	return ctrl.getTunes();
 }
 
 QompOptionsPage *YandexMusicPlugin::options()
