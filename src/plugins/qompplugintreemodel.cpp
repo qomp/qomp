@@ -35,6 +35,9 @@ void QompPluginTreeModel::addTopLevelItems(const QList<QompPluginModelItem *> &i
 {
 	beginInsertRows(QModelIndex(), topLevelItems_.size(), topLevelItems_.size() + items.size());
 	topLevelItems_.append(items);
+	foreach(QompPluginModelItem* item,  items) {
+		item->setModel(this);
+	}
 	endInsertRows();
 }
 
@@ -52,9 +55,9 @@ void QompPluginTreeModel::setItems(const QList<QompPluginModelItem *> &items, Qo
 	beginInsertRows(ind, 0, items.size());
 	parent->setItems(items);
 	validateSelection(ind);
-	foreach(QompPluginModelItem* item,  items) {
-		item->setModel(this);
-	}
+//	foreach(QompPluginModelItem* item,  items) {
+//		item->setModel(this);
+//	}
 	endInsertRows();
 }
 
@@ -63,9 +66,9 @@ void QompPluginTreeModel::addItems(const QList<QompPluginModelItem *> &items, Qo
 	QModelIndex ind = index(parent);
 	beginInsertRows(ind, parent->items().size(), parent->items().size() + items.size());
 	parent->addItems(items);
-	foreach(QompPluginModelItem* item,  items) {
-		item->setModel(this);
-	}
+//	foreach(QompPluginModelItem* item,  items) {
+//		item->setModel(this);
+//	}
 	endInsertRows();
 }
 
