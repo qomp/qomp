@@ -34,6 +34,14 @@ QompPluginController::~QompPluginController()
 
 }
 
+TuneList QompPluginController::getTunes() const
+{
+	if(view()->go() == QompPluginGettunesDlg::ResultOK)
+		return prepareTunes();
+
+	return TuneList();
+}
+
 void QompPluginController::init()
 {
 	connect(view(), SIGNAL(itemSelected(QompPluginModelItem*)), SLOT(itemSelected(QompPluginModelItem*)));

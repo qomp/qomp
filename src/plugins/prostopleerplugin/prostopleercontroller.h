@@ -33,8 +33,6 @@ public:
 	explicit ProstoPleerController(QObject *parent = 0);
 	virtual ~ProstoPleerController();
 
-	TuneList getTunes() const;
-
 protected slots:
 	void doSearch(const QString& text);
 	QompPluginGettunesDlg* view() const;
@@ -42,6 +40,11 @@ protected slots:
 	void getSuggestions(const QString& text);
 	void suggestionsFinished();
 
+protected:
+	void init();
+	TuneList prepareTunes() const;
+
+private slots:
 	void actPrevActivated();
 	void actNextActivated();
 
@@ -53,13 +56,10 @@ private:
 	void doLogin();
 	void doSearchStepTwo();
 
-	void init();
-
 private:
 	QompPluginTreeModel* model_;
 	QString lastSearchStr_;
 	ProstoPleerPluginGetTunesDialog* dlg_;
-
 };
 
 #endif // PROSTOPLEERCONTROLLER_H

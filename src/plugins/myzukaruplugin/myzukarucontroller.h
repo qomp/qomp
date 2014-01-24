@@ -36,8 +36,6 @@ public:
 	explicit MyzukaruController(QObject *parent = 0);
 	virtual ~MyzukaruController();
 
-	TuneList getTunes() const;
-
 protected slots:
 	void doSearch(const QString& txt);
 	QompPluginGettunesDlg* view() const;
@@ -45,6 +43,11 @@ protected slots:
 	void getSuggestions(const QString& text);
 	void suggestionsFinished();
 
+protected:
+	void init();
+	TuneList prepareTunes() const;
+
+private slots:
 	void searchFinished();
 	void tuneUrlFinished();
 	void albumUrlFinished();
@@ -52,13 +55,11 @@ protected slots:
 
 private:
 	void checkAndStopBusyWidget();
-	void init();
 
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;
 	QHash<QNetworkReply*, void*> requests_;
 	MyzukaruGettunesDlg* dlg_;
-
 };
 
 #endif // MYZUKARUCONTROLLER_H

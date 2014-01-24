@@ -107,27 +107,25 @@ void YandexMusicController::init()
 	dlg_->setCuuretnTab(TabArtist);
 }
 
-TuneList YandexMusicController::getTunes() const
+TuneList YandexMusicController::prepareTunes() const
 {
 	TuneList tunes;
-	if(dlg_->exec() == QDialog::Accepted) {
-		QList<QompPluginModelItem*> list = QList<QompPluginModelItem*>()
-				<< artistsModel_->selectedItems()
-				<< albumsModel_->selectedItems()
-				<< tracksModel_->selectedItems();
+	QList<QompPluginModelItem*> list = QList<QompPluginModelItem*>()
+			<< artistsModel_->selectedItems()
+			<< albumsModel_->selectedItems()
+			<< tracksModel_->selectedItems();
 
-		foreach(QompPluginModelItem* tune, list) {
-			if(!tune || tune->type() != Qomp::TypeTune)
-				continue;
+	foreach(QompPluginModelItem* tune, list) {
+		if(!tune || tune->type() != Qomp::TypeTune)
+			continue;
 
-			QompPluginTune* pt = static_cast<QompPluginTune*>(tune);
-			if(pt->url.isEmpty())
-				continue;
+		QompPluginTune* pt = static_cast<QompPluginTune*>(tune);
+		if(pt->url.isEmpty())
+			continue;
 
-			Tune tune_ = pt->toTune();
-			tune_.setUrlResolveStrategy(YandexMusicURLResolveStrategy::instance());
-			tunes.append(tune_);
-		}
+		Tune tune_ = pt->toTune();
+		tune_.setUrlResolveStrategy(YandexMusicURLResolveStrategy::instance());
+		tunes.append(tune_);
 	}
 	return tunes;
 }

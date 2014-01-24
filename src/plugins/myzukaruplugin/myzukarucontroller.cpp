@@ -23,7 +23,6 @@
 #include "common.h"
 #include "myzukarumodels.h"
 
-
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
@@ -52,25 +51,23 @@ void MyzukaruController::init()
 	dlg_->setCurrentTab(TabArtists);
 }
 
-TuneList MyzukaruController::getTunes() const
+TuneList MyzukaruController::prepareTunes() const
 {
 	TuneList list;
-	if(dlg_->exec() == QDialog::Accepted) {
-		QList<QompPluginModelItem*> l = QList<QompPluginModelItem*>()
-				<< artistsModel_->selectedItems()
-				<< albumsModel_->selectedItems()
-				<< tracksModel_->selectedItems();
+	QList<QompPluginModelItem*> l = QList<QompPluginModelItem*>()
+			<< artistsModel_->selectedItems()
+			<< albumsModel_->selectedItems()
+			<< tracksModel_->selectedItems();
 
-		foreach(QompPluginModelItem* tune, l) {
-			if(!tune || tune->type() != Qomp::TypeTune)
-				continue;
+	foreach(QompPluginModelItem* tune, l) {
+		if(!tune || tune->type() != Qomp::TypeTune)
+			continue;
 
-			QompPluginTune* pt = static_cast<QompPluginTune*>(tune);
-			if(pt->url.isEmpty())
-				continue;
+		QompPluginTune* pt = static_cast<QompPluginTune*>(tune);
+		if(pt->url.isEmpty())
+			continue;
 
-			list.append(pt->toTune());
-		}
+		list.append(pt->toTune());
 	}
 	return list;
 }

@@ -40,6 +40,10 @@ public:
 	explicit QompPluginGettunesDlg(QWidget *parent = 0);
 	virtual ~QompPluginGettunesDlg();
 
+	enum Result { ResultOK, ResultCancel };
+
+	virtual Result go();
+
 	/**
 	 * Call this to start busy widget
 	 */

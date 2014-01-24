@@ -34,8 +34,6 @@ public:
 	explicit YandexMusicController(QObject *parent = 0);
 	virtual ~YandexMusicController();
 
-	TuneList getTunes() const;
-
 protected slots:
 	void doSearch(const QString& text);
 	QompPluginGettunesDlg* view() const;
@@ -43,6 +41,11 @@ protected slots:
 	void getSuggestions(const QString& text);
 	void suggestionsFinished();
 
+protected:
+	void init();
+	TuneList prepareTunes() const;
+
+private slots:
 	void artistsSearchFinished();
 	void albumsSearchFinished();
 	void tracksSearchFinished();
@@ -53,7 +56,6 @@ private:
 	void checkAndStopBusyWidget();
 	void search(const QString& text, const QString& type, const char* slot, int page = 1);
 	void searchNextPage(const QString& reply, const QString& type, const char* slot);
-	void init();
 
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;

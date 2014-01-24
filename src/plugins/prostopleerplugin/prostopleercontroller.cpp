@@ -57,7 +57,6 @@ ProstoPleerController::ProstoPleerController(QObject *parent) :
 	init();	
 }
 
-
 void ProstoPleerController::init()
 {
 	QompPluginController::init();
@@ -75,19 +74,16 @@ ProstoPleerController::~ProstoPleerController()
 	delete dlg_;
 }
 
-TuneList ProstoPleerController::getTunes() const
+TuneList ProstoPleerController::prepareTunes() const
 {
 	TuneList tunes;
-	if(dlg_->exec() == QDialog::Accepted) {
+	foreach(QompPluginModelItem* item, model_->selectedItems()) {
+		if(!item)
+			continue;
 
-		foreach(QompPluginModelItem* item, model_->selectedItems()) {
-			if(!item)
-				continue;
-
-			ProstopleerTune *pt = static_cast<ProstopleerTune*>(item);
-			if(!pt->url.isNull()) {
-				tunes.append(pt->toTune());
-			}
+		ProstopleerTune *pt = static_cast<ProstopleerTune*>(item);
+		if(!pt->url.isNull()) {
+			tunes.append(pt->toTune());
 		}
 	}
 	return tunes;

@@ -58,6 +58,14 @@ QompPluginGettunesDlg::~QompPluginGettunesDlg()
 	delete ui;
 }
 
+QompPluginGettunesDlg::Result QompPluginGettunesDlg::go()
+{
+	if(exec() == QDialog::Accepted)
+		return ResultOK;
+
+	return ResultCancel;
+}
+
 void QompPluginGettunesDlg::setResultsWidget(QWidget *widget)
 {
 	ui->mainLayout->insertWidget(1, widget);
