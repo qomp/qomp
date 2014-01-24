@@ -61,7 +61,12 @@ unix:!android {
 	icon4.extra = cp -f src/icons/qomp_64.png $(INSTALL_ROOT)$$icon4.path/qomp.png
 	icon5.path = $$PREFIX/share/icons/hicolor/32x32/apps
 	icon5.extra = cp -f src/icons/qomp_32.png $(INSTALL_ROOT)$$icon5.path/qomp.png
-	translations.path = $$DATADIR/translations
+
+        translations.path = $$DATADIR/translations
+        LRELEASE = "lrelease"
+        !exists($$LRELEASE)
+            LRELEASE = "lrelease-qt4"
+
 	translations.extra = lrelease qomp.pro && cp -f $$LANG_PATH/qomp_*.qm  $(INSTALL_ROOT)$$translations.path
 	INSTALLS += translations
 
