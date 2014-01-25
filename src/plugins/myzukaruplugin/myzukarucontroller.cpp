@@ -22,6 +22,8 @@
 #include "qompplugintypes.h"
 #include "common.h"
 #include "myzukarumodels.h"
+#include "myzukarudefines.h"
+#include "myzukaruresolvestrategy.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -131,7 +133,7 @@ static QList<QompPluginModelItem*> parseTunes(const QString& replyStr, int songI
 		while((songIndex = songRx.indexIn(replyStr, songIndex)) != -1) {
 			songIndex += songRx.matchedLength();
 			QompPluginTune* t = new QompPluginTune();
-			t->internalId = songRx.cap(5);
+			t->/*internalId*/url = songRx.cap(5);
 			t->artist = Qomp::unescape(songRx.cap(3));
 			t->title = Qomp::unescape(songRx.cap(6));
 			//t->album = unescape(songRx.cap(9));
@@ -151,7 +153,7 @@ static QList<QompPluginModelItem*> parseTunes2(const QString& replyStr, int song
 		while((songIndex = songRx.indexIn(replyStr, songIndex)) != -1) {
 			songIndex += songRx.matchedLength();
 			QompPluginTune* t = new QompPluginTune();
-			t->internalId = songRx.cap(3);
+			t->/*internalId*/url = songRx.cap(3);
 			t->artist = Qomp::unescape(songRx.cap(2));
 			t->title = Qomp::unescape(songRx.cap(4));
 			t->duration = Qomp::unescape(songRx.cap(5));
@@ -171,7 +173,7 @@ static QList<QompPluginModelItem*> parseTunes3(const QString& replyStr, int song
 		while((songIndex = songRx.indexIn(replyStr, songIndex)) != -1) {
 			songIndex += songRx.matchedLength();
 			QompPluginTune* t = new QompPluginTune();
-			t->internalId = songRx.cap(1);
+			t->/*internalId*/url = songRx.cap(1);
 			t->album = Qomp::unescape(songRx.cap(4));
 			t->title = Qomp::unescape(songRx.cap(2));
 			t->duration = Qomp::unescape(songRx.cap(5));
@@ -279,7 +281,10 @@ TuneList MyzukaruController::prepareTunes() const
 		if(pt->url.isEmpty())
 			continue;
 
-		list.append(pt->toTune());
+		Tune t = pt->toTune();
+		t.setUrlResolveStrategy(MyzukaruResolveStrategy::instance());
+
+		list.append(t);
 	}
 	return list;
 }
@@ -298,7 +303,7 @@ void MyzukaruController::doSearch(const QString &txt)
 	artistsModel_->reset();
 	tracksModel_->reset();
 
-	const QString url = QString("http://myzuka.ru/Search?searchText=%1").arg(txt);
+	const QString url = QString("%1/Search?searchText=%2").arg(MYZUKA_URL,txt);
 	QNetworkRequest nr;
 	nr.setUrl(url);
 	QNetworkReply* reply = nam()->get(nr);
@@ -378,17 +383,18 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 
 	QompPluginTreeModel* model = qobject_cast<QompPluginTreeModel*>(item->model());
 
-	QUrl url("http://myzuka.ru/");
+	QUrl url(MYZUKA_URL);
 	const char* slot = 0;
 	switch(item->type()) {
 	case Qomp::TypeTune:
 	{
-		QompPluginTune *tune = static_cast<QompPluginTune *>(item);
-		if(!tune->url.isEmpty())
-			return;
-		url.setPath(QString("/Song/GetFileUrl/%1").arg(tune->internalId));
-		slot = SLOT(tuneUrlFinished());
-		break;
+//		QompPluginTune *tune = static_cast<QompPluginTune *>(item);
+//		if(!tune->url.isEmpty())
+//			return;
+//		url.setPath(QString("/Song/GetFileUrl/%1").arg(tune->internalId));
+//		slot = SLOT(tuneUrlFinished());
+//		break;
+		return;
 	}
 	case Qomp::TypeAlbum:
 	{
@@ -425,12 +431,12 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 
 void MyzukaruController::getSuggestions(const QString &text)
 {
-	QUrl url(QString("http://myzuka.ru/Search/Suggestions?term=%1")
-		 .arg(text), QUrl::StrictMode);
+	QUrl url(QString("%1/Search/Suggestions?term=%2")
+		 .arg(MYZUKA_URL,text), QUrl::StrictMode);
 	QNetworkRequest nr(url);
 	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-	nr.setRawHeader("Referer", "http://myzuka.ru");
+	nr.setRawHeader("Referer", MYZUKA_URL);
 	QNetworkReply *reply = nam()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(suggestionsFinished()));
 }
@@ -461,28 +467,28 @@ void MyzukaruController::checkAndStopBusyWidget()
 		dlg_->stopBusyWidget();
 }
 
-void MyzukaruController::tuneUrlFinished()
-{
-	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
-	reply->deleteLater();
-	void* model = requests_.value(reply);
-	requests_.remove(reply);
-	checkAndStopBusyWidget();
-	if(reply->error() == QNetworkReply::NoError) {
-		QString id = reply->property("id").toString();
-		QRegExp re("\"(http://[^\"]+)\"");
-		QString text = QString::fromUtf8(reply->readAll());
-		if(re.indexIn(text) != -1) {
-			QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
-			QompPluginModelItem* it = model_->itemForId(id);
-			if(it && it->type() == Qomp::TypeTune) {
-				static_cast<QompPluginTune*>(it)->url = re.cap(1);
-				model_->emitUpdateSignal();
-			}
-			return;
-		}
-	}
-}
+//void MyzukaruController::tuneUrlFinished()
+//{
+//	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
+//	reply->deleteLater();
+//	void* model = requests_.value(reply);
+//	requests_.remove(reply);
+//	checkAndStopBusyWidget();
+//	if(reply->error() == QNetworkReply::NoError) {
+//		QString id = reply->property("id").toString();
+//		QRegExp re("\"(http://[^\"]+)\"");
+//		QString text = QString::fromUtf8(reply->readAll());
+//		if(re.indexIn(text) != -1) {
+//			QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
+//			QompPluginModelItem* it = model_->itemForId(id);
+//			if(it && it->type() == Qomp::TypeTune) {
+//				static_cast<QompPluginTune*>(it)->url = re.cap(1);
+//				model_->emitUpdateSignal();
+//			}
+//			return;
+//		}
+//	}
+//}
 
 void MyzukaruController::albumUrlFinished()
 {
@@ -502,17 +508,17 @@ void MyzukaruController::albumUrlFinished()
 				model->setItems(tunes, it);
 				foreach(QompPluginModelItem* t, tunes) {
 					static_cast<QompPluginTune*>(t)->album = pa->album;
-					//SICK!!! But we couldn't call itemSelected(QompPluginModelItem *item)
-					//because of lose pointer on model
-					QUrl url("http://myzuka.ru/");
-					url.setPath(QString("/Song/GetFileUrl/%1").arg(t->internalId));
-					QNetworkRequest nr(url);
-					nr.setRawHeader("Accept", "*/*");
-					nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-					QNetworkReply *reply = nam()->get(nr);
-					reply->setProperty("id", t->internalId);
-					requests_.insert(reply, (void*)model);
-					connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinished()));
+//					//SICK!!! But we couldn't call itemSelected(QompPluginModelItem *item)
+//					//because of lose pointer on model
+//					QUrl url(MYZUKA_URL);
+//					url.setPath(QString("/Song/GetFileUrl/%1").arg(t->internalId));
+//					QNetworkRequest nr(url);
+//					nr.setRawHeader("Accept", "*/*");
+//					nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+//					QNetworkReply *reply = nam()->get(nr);
+//					reply->setProperty("id", t->internalId);
+//					requests_.insert(reply, (void*)model);
+//					connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinished()));
 				}
 				dlg_->startBusyWidget();
 				pa->tunesReceived = true;
@@ -531,7 +537,6 @@ void MyzukaruController::artistUrlFinished()
 	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
 		QString replyStr = QString::fromUtf8(reply->readAll());
-							qDebug() << replyStr;
 		QString id = reply->property("id").toString();
 		QompPluginModelItem* it = artistsModel_->itemForId(id);
 
@@ -579,7 +584,7 @@ void MyzukaruController::artistUrlFinished()
 		}
 		//Take Next page
 		if(page < maxPage) {
-			QUrl url("http://myzuka.ru/");
+			QUrl url(MYZUKA_URL);
 			url.setPath(QString("%1/Page%2").arg(QUrl::fromPercentEncoding(it->internalId.toLatin1()), QString::number(++page)));
 			QNetworkRequest nr(url);
 			nr.setRawHeader("Accept", "*/*");

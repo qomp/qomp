@@ -49,7 +49,7 @@ protected:
 
 private slots:
 	void searchFinished();
-	void tuneUrlFinished();
+	//void tuneUrlFinished();
 	void albumUrlFinished();
 	void artistUrlFinished();	
 

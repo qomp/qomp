@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,34 +17,24 @@
  *
  */
 
-#ifndef MYZUKARUPLUGIN_H
-#define MYZUKARUPLUGIN_H
+#ifndef MYZUKARURESOLVESTRATEGY_H
+#define MYZUKARURESOLVESTRATEGY_H
 
-#include "qompplugin.h"
-#include "qomptunepluign.h"
+#include "tune.h"
+#include <QObject>
 
-#ifndef QT_STATICPLUGIN
-#define QT_STATICPLUGIN
-#endif
-
-class MyzukaruPlugin : public QObject, public QompPlugin, public QompTunePlugin
+class MyzukaruResolveStrategy : public QObject, public TuneURLResolveStrategy
 {
 	Q_OBJECT
-	Q_INTERFACES(QompPlugin QompTunePlugin)
-#ifdef HAVE_QT5
-	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
-	Q_PLUGIN_METADATA(IID "Qomp.QompTunePlugin/0.1")
-#endif
 public:
-	MyzukaruPlugin();
+	static MyzukaruResolveStrategy* instance();
+
+	virtual QUrl getUrl(const Tune *t);
 	virtual QString name() const;
-	virtual QString version() const;
-	virtual QString description() const;
-	virtual TuneList getTunes();
-	virtual QompOptionsPage* options();
-	virtual TuneURLResolveStrategy* urlResolveStrategy() const;
-	virtual void setEnabled(bool /*enabled*/) {}
-	virtual void unload() {}
+
+private:
+	explicit MyzukaruResolveStrategy();
+	static MyzukaruResolveStrategy* instance_;
 };
 
-#endif // MYZUKARUPLUGIN_H
+#endif // MYZUKARURESOLVESTRATEGY_H

@@ -20,6 +20,7 @@
 #include "myzukaruplugin.h"
 #include "myzukarudefines.h"
 #include "myzukarucontroller.h"
+#include "myzukaruresolvestrategy.h"
 
 #include <QtPlugin>
 
@@ -52,6 +53,11 @@ TuneList MyzukaruPlugin::getTunes()
 QompOptionsPage *MyzukaruPlugin::options()
 {
 	return 0;
+}
+
+TuneURLResolveStrategy *MyzukaruPlugin::urlResolveStrategy() const
+{
+	return MyzukaruResolveStrategy::instance();
 }
 
 #ifndef HAVE_QT5
