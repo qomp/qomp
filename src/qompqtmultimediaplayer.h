@@ -32,8 +32,6 @@ public:
 	explicit QompQtMultimediaPlayer(QObject *parent = 0);
 	~QompQtMultimediaPlayer();
 
-	virtual QompMetaDataResolver* metaDataResolver() const;
-
 	virtual void setVolume(qreal vol);
 	virtual qreal volume() const;
 	virtual void setMute(bool mute);
@@ -57,6 +55,7 @@ private slots:
 
 protected:
 	virtual void doSetTune(const Tune &tune);
+	virtual QompMetaDataResolver* metaDataResolver() const;
 
 private:
 	QMediaPlayer* player_;

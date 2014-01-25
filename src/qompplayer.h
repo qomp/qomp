@@ -40,7 +40,7 @@ public:
 	void setTune(const Tune& tune);
 	const Tune& currentTune() const;
 
-	virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
+	void resolveMetadata(const TuneList &tunes);
 
 	virtual void setVolume(qreal vol) = 0;
 	/**
@@ -73,8 +73,12 @@ signals:
 	void mutedChanged(bool muted);
 	void tuneChanged(const Tune&);
 
+	void newMetaData(const Tune&, const QMap<QString, QString>&);
+	void newDuration(const Tune&, qint64 msec);
+
 protected:
 	virtual void doSetTune(const Tune& tune) = 0;
+	virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
 
 private:
 	Tune currentTune_;

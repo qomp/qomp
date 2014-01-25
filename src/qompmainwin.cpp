@@ -25,7 +25,6 @@
 #include "options/qompoptionsdlg.h"
 #include "defines.h"
 #include "common.h"
-#include "qompmetadataresolver.h"
 #include "aboutdlg.h"
 #include "qomptunedownloader.h"
 #include "qompplaylistdelegate.h"
@@ -157,10 +156,9 @@ void QompMainWin::setPlayer(QompPlayer *player)
 	connect(player_, SIGNAL(volumeChanged(qreal)), SLOT(volumeChanged(qreal)));
 	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)), SLOT(currentTotalTimeChanged(qint64)));
 
-	if(player_->metaDataResolver()) {
-		connect(player_->metaDataResolver(), SIGNAL(newMetaData(Tune,QMap<QString,QString>)), model_, SLOT(newDataReady(Tune,QMap<QString,QString>)));
-		connect(player_->metaDataResolver(), SIGNAL(newDuration(Tune,qint64)), model_, SLOT(totalTimeChanged(Tune,qint64)));
-	}
+	connect(player_, SIGNAL(newMetaData(Tune,QMap<QString,QString>)), model_, SLOT(newDataReady(Tune,QMap<QString,QString>)));
+	connect(player_, SIGNAL(newDuration(Tune,qint64)), model_, SLOT(totalTimeChanged(Tune,qint64)));
+
 	updateIcons();
 	PluginManager::instance()->qompPlayerChanged(player_);
 }
@@ -674,10 +672,9 @@ void QompMainWin::getTunes(const QString &name)
 			actPlayActivated();
 		}
 
-		if(Options::instance()->getOption(OPTION_UPDATE_METADATA).toBool()
-			&& player_->metaDataResolver())
+		if(Options::instance()->getOption(OPTION_UPDATE_METADATA).toBool())
 		{
-			player_->metaDataResolver()->resolve(list);
+			player_->resolveMetadata(list);
 		}
 	}
 }

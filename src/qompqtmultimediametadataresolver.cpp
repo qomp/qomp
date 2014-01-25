@@ -31,7 +31,7 @@
 
 QompQtMultimediaMetaDataResolver::QompQtMultimediaMetaDataResolver(QObject *parent) :
 	QompMetaDataResolver(parent),
-	resolver_(new QMediaPlayer(this))
+	resolver_(new QMediaPlayer())
 {
 	connect(resolver_, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(resolverStateChanged(QMediaPlayer::MediaStatus)));
 	connect(resolver_, SIGNAL(metaDataChanged(/*QString,QVariant*/)), SLOT(metaDataReady(/*QString,QVariant*/)));

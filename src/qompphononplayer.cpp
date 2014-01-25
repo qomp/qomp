@@ -48,6 +48,9 @@ QompPhononPlayer::QompPhononPlayer(QObject *parent) :
 
 	connect(audioOutput_, SIGNAL(volumeChanged(qreal)), SIGNAL(volumeChanged(qreal)));
 	connect(audioOutput_, SIGNAL(mutedChanged(bool)), SIGNAL(mutedChanged(bool)));
+
+	connect(resolver_, SIGNAL(newMetaData(Tune,QMap<QString,QString>)), SIGNAL(newMetaData(Tune,QMap<QString,QString>)));
+	connect(resolver_, SIGNAL(newDuration(Tune,qint64)), SIGNAL(newDuration(Tune,qint64)));
 }
 
 QompPhononPlayer::~QompPhononPlayer()

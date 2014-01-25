@@ -23,11 +23,12 @@
 #include <QStringList>
 #include <QFile>
 #include <QTextStream>
+#include <QCoreApplication>
 
 static const QString separator = "@qomp@";
 static const QString simpleStrategyName = "SimpleStrategy";
 
-class SimpleStrategy : public TuneURLResolveStrategy
+class SimpleStrategy : public QObject, public TuneURLResolveStrategy
 {
 public:
 	static SimpleStrategy* instance()
@@ -52,7 +53,7 @@ public:
 
 private:
 	static SimpleStrategy* instance_;
-	SimpleStrategy(){}
+	SimpleStrategy() : QObject(QCoreApplication::instance()){}
 };
 
 SimpleStrategy* SimpleStrategy::instance_ = 0;

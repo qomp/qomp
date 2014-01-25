@@ -43,7 +43,7 @@ class YandexMusicURLResolveStrategyPrivate : public QObject
 	Q_OBJECT
 public:
 	YandexMusicURLResolveStrategyPrivate(const Tune* t) :
-		QObject(QCoreApplication::instance()),
+		QObject(),
 		loop_(new QEventLoop(this)),
 		timer_(new QTimer(this)),
 		tune_((Tune*)t)

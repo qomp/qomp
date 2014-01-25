@@ -520,7 +520,7 @@ void MyzukaruController::albumUrlFinished()
 //					requests_.insert(reply, (void*)model);
 //					connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinished()));
 				}
-				dlg_->startBusyWidget();
+				//dlg_->startBusyWidget();
 				pa->tunesReceived = true;
 			}
 
