@@ -31,6 +31,7 @@ class QompPluginGettunesDlg;
 class QMenu;
 class QompPluginModelItem;
 class QModelIndex;
+class QTimer;
 
 
 class QompPluginGettunesDlg : public QDialog
@@ -90,10 +91,12 @@ protected slots:
 private slots:
 	void suggestionActionTriggered(QAction* a);
 	void search();
+	void timeout();
 
 private:
 	Ui::QompPluginGettunesDlg *ui;
 	QMenu *suggestionsMenu_;
+	QTimer* sugTimer_;
 };
 
 #endif // QOMPPLUGINGETTUNESDLG_H

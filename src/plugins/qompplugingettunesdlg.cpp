@@ -26,11 +26,15 @@
 
 #include <QKeyEvent>
 #include <QMenu>
+#include <QTimer>
+
+static const int sugTimerInterval = 500;
 
 QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::QompPluginGettunesDlg),
-	suggestionsMenu_(new QMenu(this))
+	suggestionsMenu_(new QMenu(this)),
+	sugTimer_(new QTimer(this))
 {
 	ui->setupUi(this);
 
@@ -38,8 +42,13 @@ QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 
 	ui->cb_search->addItems(searchHistory);
 	ui->cb_search->setInsertPolicy(QComboBox::InsertAtTop);
+
+	sugTimer_->setSingleShot(true);
+	sugTimer_->setInterval(sugTimerInterval);
+
+	connect(sugTimer_, SIGNAL(timeout()), SLOT(timeout()));
 	connect(ui->pb_search, SIGNAL(clicked()), SLOT(search()));
-	connect(ui->cb_search, SIGNAL(editTextChanged(QString)), SIGNAL(searchTextChanged(QString)));
+	connect(ui->cb_search, SIGNAL(editTextChanged(QString)), sugTimer_, SLOT(start()));
 
 	ui->lb_busy->changeText(tr("Searching"));
 
@@ -92,6 +101,11 @@ void QompPluginGettunesDlg::search()
 		ui->cb_search->insertItem(0, text);
 
 	emit doSearch(text);
+}
+
+void QompPluginGettunesDlg::timeout()
+{
+	emit searchTextChanged(currentSearchText());
 }
 
 QString QompPluginGettunesDlg::currentSearchText() const
