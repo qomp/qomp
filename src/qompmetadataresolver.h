@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,31 +22,40 @@
 
 #include "tune.h"
 
-#include <QObject>
+#include <QThread>
 #include <QMap>
 
-class QompMetaDataResolver : public QObject
+class QMutex;
+
+class QompMetaDataResolver : public QThread
 {
 	Q_OBJECT
 public:
-	QompMetaDataResolver(QObject *parent = 0) : QObject(parent){}
-	virtual void resolve(const TuneList& tunes) = 0;
+	QompMetaDataResolver(QObject *parent = 0);
+	~QompMetaDataResolver();
+
+	void resolve(const TuneList& tunes);
 	
 signals:
 	void newMetaData(const Tune&, const QMap<QString, QString>&);
 	void newDuration(const Tune&, qint64 msec);
+	void tuneUpdated(const Tune&);
 	
 protected:
-	struct ResolvedData
-	{
-		ResolvedData(const Tune& t) :
-			tune(t), duration(-1) {}
+	Tune& get();
+	void tuneFinished();
+	bool isDataEmpty() const;
 
-		Tune tune;
-		QMap<QString,QString> metaData;
-		qint64 duration;
-	};
-	QList<ResolvedData> data_;
+protected:
+	void updateTuneMetadata(const QMap<QString, QString>& data);
+	void updateTuneDuration(qint64 msec);
+
+private:
+	void addTunes(const TuneList& tunes);
+
+private:
+	TuneList data_;
+	QMutex* mutex_;
 };
 
 #endif // QOMPMETADATARESOLVER_H

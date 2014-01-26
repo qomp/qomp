@@ -17,7 +17,8 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/qompbusylabel.cpp \
     $$PWD/translator.cpp \
     $$PWD/updateschecker.cpp \
-    $$PWD/qompplaylistview.cpp
+    $$PWD/qompplaylistview.cpp \
+    $$PWD/qompmetadataresolver.cpp
 
 HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qomp.h \

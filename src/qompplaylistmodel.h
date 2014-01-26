@@ -59,8 +59,8 @@ public:
 	void clear();
 
 public slots:
-	void newDataReady(const Tune& tune, const QMap<QString, QString>& data);
 	void totalTimeChanged(const Tune& tune, qint64 msec);
+	void tuneDataUpdated(const Tune& tune);
 
 private:
 	TuneList tunes_;

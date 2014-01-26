@@ -36,8 +36,7 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer(QObject *parent) :
 	connect(player_, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(stateChanged(QMediaPlayer::State)));
 	connect(player_, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
 
-	connect(resolver_, SIGNAL(newMetaData(Tune,QMap<QString,QString>)), SIGNAL(newMetaData(Tune,QMap<QString,QString>)));
-	connect(resolver_, SIGNAL(newDuration(Tune,qint64)), SIGNAL(newDuration(Tune,qint64)));
+	connect(resolver_, SIGNAL(tuneUpdated(Tune)), SIGNAL(tuneDataUpdated(Tune)), Qt::QueuedConnection);
 }
 
 QompQtMultimediaPlayer::~QompQtMultimediaPlayer()

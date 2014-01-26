@@ -31,8 +31,22 @@
 
 QompQtMultimediaMetaDataResolver::QompQtMultimediaMetaDataResolver(QObject *parent) :
 	QompMetaDataResolver(parent),
-	resolver_(new QMediaPlayer())
+	resolver_(0)
 {
+}
+
+QompQtMultimediaMetaDataResolver::~QompQtMultimediaMetaDataResolver()
+{
+}
+
+void QompQtMultimediaMetaDataResolver::run()
+{
+#ifdef DEBUG_OUTPUT
+	qDebug() << "Start resolving";
+#endif
+	setPriority(QThread::LowestPriority);
+	resolver_ = new QMediaPlayer();
+	resolver_->moveToThread(this);
 	connect(resolver_, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(resolverStateChanged(QMediaPlayer::MediaStatus)));
 	connect(resolver_, SIGNAL(metaDataChanged(/*QString,QVariant*/)), SLOT(metaDataReady(/*QString,QVariant*/)));
 	connect(resolver_, SIGNAL(durationChanged(qint64)), SLOT(totalTimeChanged(qint64)));
@@ -42,27 +56,10 @@ QompQtMultimediaMetaDataResolver::QompQtMultimediaMetaDataResolver(QObject *pare
 	connect(resolver_, SIGNAL(availabilityChanged(bool)), SLOT(availabilityChanged(bool)));
 	connect(resolver_, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(stateChanged(QMediaPlayer::State)));
 #endif
-}
-
-QompQtMultimediaMetaDataResolver::~QompQtMultimediaMetaDataResolver()
-{
+	resolveNextMedia();
+	exec();
 	delete resolver_;
 	resolver_ = 0;
-}
-
-void QompQtMultimediaMetaDataResolver::resolve(const TuneList &tunes)
-{
-	bool start = data_.isEmpty();
-	foreach(const Tune& tune, tunes) {
-		data_.append(ResolvedData(tune));
-	}
-
-	if(start) {
-#ifdef DEBUG_OUTPUT
-		qDebug() << "Start resolving";
-#endif
-		resolveNextMedia();
-	}
 }
 
 void QompQtMultimediaMetaDataResolver::metaDataReady()
@@ -74,12 +71,14 @@ void QompQtMultimediaMetaDataResolver::metaDataReady()
 #ifdef DEBUG_OUTPUT
 		qDebug() << "available metadata" << resolver_->availableMetaData();
 #endif
-		ResolvedData& data = data_.first();
-		data.metaData.insert("ARTIST", resolver_->metaData("AlbumArtist").toString());
-		data.metaData.insert("ALBUM", resolver_->metaData("AlbumTitle").toString());
-		data.metaData.insert("TITLE", resolver_->metaData("Title").toString());
-		data.metaData.insert("TRACK-NUMBER", resolver_->metaData("TrackNumber").toString());
-		data.metaData.insert("BITRATE", resolver_->metaData("AudioBitRate").toString());
+		QMap<QString,QString> data;
+		data.insert("ARTIST", resolver_->metaData("AlbumArtist").toString());
+		data.insert("ALBUM", resolver_->metaData("AlbumTitle").toString());
+		data.insert("TITLE", resolver_->metaData("Title").toString());
+		data.insert("TRACK-NUMBER", resolver_->metaData("TrackNumber").toString());
+		data.insert("BITRATE", resolver_->metaData("AudioBitRate").toString());
+
+		updateTuneMetadata(data);
 	}
 }
 
@@ -91,20 +90,18 @@ void QompQtMultimediaMetaDataResolver::resolverStateChanged(QMediaPlayer::MediaS
 	if(newState != QMediaPlayer::LoadedMedia && newState != QMediaPlayer::BufferedMedia)
 		return;
 
-	if(!data_.isEmpty()) {
-		ResolvedData data = data_.takeFirst();
-		emit newDuration(data.tune, data.duration);
-		emit newMetaData(data.tune, data.metaData);
-	}
+	tuneFinished();
 
-	if(!data_.isEmpty()) {
+	if(!isDataEmpty()) {
 #ifdef DEBUG_OUTPUT
 		qDebug() << "resolve next media";
 #endif
 		resolveNextMedia();
 	}
-	else
+	else {
 		resolver_->setMedia(QMediaContent());
+		exit();
+	}
 }
 
 void QompQtMultimediaMetaDataResolver::totalTimeChanged(qint64 msec)
@@ -112,10 +109,30 @@ void QompQtMultimediaMetaDataResolver::totalTimeChanged(qint64 msec)
 #ifdef DEBUG_OUTPUT
 	qDebug() << "duration" << msec;
 #endif
-	if(!data_.isEmpty()) {
-		ResolvedData& data = data_.first();
-		data.duration = msec;
-	}
+	updateTuneDuration(msec);
+}
+
+void QompQtMultimediaMetaDataResolver::resolveNextMedia()
+{
+	resolver_->setMedia(QMediaContent());
+	resolver_->setMedia(mediaForTune(get()));
+	resolver_->pause();
+}
+
+QMediaContent QompQtMultimediaMetaDataResolver::mediaForTune(const Tune &tune) const
+{
+	QMediaContent mc;
+	mc = QMediaContent(tune.getUrl());
+
+//		QNetworkRequest nr(url);
+//		foreach(const QNetworkCookie& c,
+//			QompNetworkingFactory::instance()->getNetworkAccessManager()->cookieJar()->cookiesForUrl(url))
+//		{
+//			qDebug() << "cookie" << c.toRawForm();
+//			nr.setHeader(QNetworkRequest::SetCookieHeader, c.toRawForm());
+//		}
+
+	return mc;
 }
 
 void QompQtMultimediaMetaDataResolver::error(QMediaPlayer::Error error)
@@ -148,28 +165,4 @@ void QompQtMultimediaMetaDataResolver::metaDataAvailableChanged(bool available)
 #ifdef DEBUG_OUTPUT
 	qDebug() << "metaDataAvailableChanged" << available;
 #endif
-}
-
-void QompQtMultimediaMetaDataResolver::resolveNextMedia()
-{
-	resolver_->setMedia(QMediaContent());
-	resolver_->setMedia(mediaForTune(data_.first().tune));
-	resolver_->pause();
-}
-
-
-QMediaContent QompQtMultimediaMetaDataResolver::mediaForTune(const Tune &tune) const
-{
-	QMediaContent mc;
-	mc = QMediaContent(tune.getUrl());
-
-//		QNetworkRequest nr(url);
-//		foreach(const QNetworkCookie& c,
-//			QompNetworkingFactory::instance()->getNetworkAccessManager()->cookieJar()->cookiesForUrl(url))
-//		{
-//			qDebug() << "cookie" << c.toRawForm();
-//			nr.setHeader(QNetworkRequest::SetCookieHeader, c.toRawForm());
-//		}
-
-	return mc;
 }

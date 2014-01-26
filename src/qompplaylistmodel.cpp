@@ -259,54 +259,29 @@ void QompPlayListModel::clear()
 	endResetModel();
 }
 
-void QompPlayListModel::newDataReady(const Tune &tune, const QMap<QString, QString> &data)
-{
-	if(data.isEmpty())
-		return;
-
-	TuneList::iterator it = tunes_.begin();
-	for(; it != tunes_.end(); ++it) {
-		if((*it) == tune) {
-			emit layoutAboutToBeChanged();
-
-			QString tmp = Qomp::fixEncoding(data.value("ARTIST"));
-			if(!tmp.isEmpty())
-				(*it).artist = tmp;
-
-			tmp = Qomp::fixEncoding(data.value("ALBUM"));
-			if(!tmp.isEmpty())
-				(*it).album = tmp;
-
-			tmp = Qomp::fixEncoding(data.value("TITLE"));
-			if(!tmp.isEmpty())
-				(*it).title = tmp;
-
-			tmp = data.value("TRACK-NUMBER");
-			if(!tmp.isEmpty())
-				(*it).trackNumber = tmp;
-
-			tmp = data.value("BITRATE");
-			if(!tmp.isEmpty())
-				(*it).bitRate = tmp;
-
-			emit layoutChanged();
-			break;
-		}
-	}
-}
-
 void QompPlayListModel::totalTimeChanged(const Tune &tune, qint64 msec)
 {
 	if(msec == -1 || msec == 0)
 		return;
 
-	TuneList::iterator it = tunes_.begin();
-	for(; it != tunes_.end(); ++it) {
-		if((*it) == tune) {
-			emit layoutAboutToBeChanged();
-			(*it).duration = Qomp::durationMiliSecondsToString(msec);
-			emit layoutChanged();
-			break;
-		}
-	}
+	int i = tunes_.indexOf(tune);
+	tunes_[i].duration = Qomp::durationMiliSecondsToString(msec);
+	emit dataChanged(index(i), index(i));
+
+//	TuneList::iterator it = tunes_.begin();
+//	for(; it != tunes_.end(); ++it) {
+//		if((*it) == tune) {
+//			emit layoutAboutToBeChanged();
+//			(*it).duration = Qomp::durationMiliSecondsToString(msec);
+//			emit layoutChanged();
+//			break;
+//		}
+//	}
+}
+
+void QompPlayListModel::tuneDataUpdated(const Tune &tune)
+{
+	int i = tunes_.indexOf(tune);
+	tunes_[i] = tune;
+	emit dataChanged(index(i), index(i));
 }

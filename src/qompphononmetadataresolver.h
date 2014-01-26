@@ -30,7 +30,9 @@ class QompPhononMetaDataResolver : public QompMetaDataResolver
 public:
 	QompPhononMetaDataResolver(QObject *parent = 0);
 	~QompPhononMetaDataResolver();
-	virtual void resolve(const TuneList& tunes);
+
+protected:
+	void run();
 
 private slots:
 	void metaDataReady();

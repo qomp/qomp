@@ -29,7 +29,9 @@ class QompQtMultimediaMetaDataResolver : public QompMetaDataResolver
 public:
 	explicit QompQtMultimediaMetaDataResolver(QObject *parent = 0);
 	~QompQtMultimediaMetaDataResolver();
-	virtual void resolve(const TuneList& tunes);
+
+protected:
+	void run();
 
 private slots:
 	void metaDataReady(/*const QString &, const QVariant &*/);
@@ -45,8 +47,7 @@ private:
 	void resolveNextMedia();
 
 private:
-	QMediaPlayer* resolver_;
-	
+	QMediaPlayer* resolver_;	
 };
 
 #endif // QOMPQTMULTIMEDIAMETADATARESOLVER_H

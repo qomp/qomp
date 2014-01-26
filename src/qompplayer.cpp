@@ -19,7 +19,6 @@
 
 #include "qompplayer.h"
 #include "qompmetadataresolver.h"
-//#include "QtConcurrent/QtConcurrent"
 
 QompPlayer::QompPlayer(QObject *parent) :
 	QObject(parent)
@@ -41,5 +40,4 @@ const Tune &QompPlayer::currentTune() const
 void QompPlayer::resolveMetadata(const TuneList& tunes)
 {
 	metaDataResolver()->resolve(tunes);
-	//QtConcurrent::run(metaDataResolver(), &QompMetaDataResolver::resolve, tunes);
 }

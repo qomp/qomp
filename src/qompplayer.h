@@ -73,8 +73,7 @@ signals:
 	void mutedChanged(bool muted);
 	void tuneChanged(const Tune&);
 
-	void newMetaData(const Tune&, const QMap<QString, QString>&);
-	void newDuration(const Tune&, qint64 msec);
+	void tuneDataUpdated(const Tune&);
 
 protected:
 	virtual void doSetTune(const Tune& tune) = 0;

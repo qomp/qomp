@@ -30,6 +30,7 @@ class QompPluginGettunesDlg;
 
 class QMenu;
 class QompPluginModelItem;
+class QModelIndex;
 
 
 class QompPluginGettunesDlg : public QDialog

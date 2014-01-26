@@ -22,29 +22,28 @@
 
 QompPhononMetaDataResolver::QompPhononMetaDataResolver(QObject *parent) :
 	QompMetaDataResolver(parent),
-	resolver_(new Phonon::MediaObject(this))
+	resolver_(0)
 {
-	connect(resolver_, SIGNAL(metaDataChanged()), SLOT(metaDataReady()));
-	connect(resolver_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(resolverStateChanged(Phonon::State,Phonon::State)));
-	connect(resolver_, SIGNAL(totalTimeChanged(qint64)), SLOT(totalTimeChanged(qint64)));
 }
 
 QompPhononMetaDataResolver::~QompPhononMetaDataResolver()
 {
-	resolver_->deleteLater();
 }
 
-void QompPhononMetaDataResolver::resolve(const TuneList &tunes)
+void QompPhononMetaDataResolver::run()
 {
-	bool start = data_.isEmpty();
-	foreach(const Tune& tune, tunes) {
-		data_.append(ResolvedData(tune));
-	}
-
-	if(start) {
-		resolver_->setCurrentSource(objectForTune(data_.first().tune));
-		resolver_->pause();
-	}
+	setPriority(QThread::LowestPriority);
+	resolver_ = new Phonon::MediaObject();
+	resolver_->moveToThread(this);
+	connect(resolver_, SIGNAL(metaDataChanged()), SLOT(metaDataReady()));
+	connect(resolver_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(resolverStateChanged(Phonon::State,Phonon::State)));
+	connect(resolver_, SIGNAL(totalTimeChanged(qint64)), SLOT(totalTimeChanged(qint64)));
+	resolver_->setCurrentSource(objectForTune(get()));
+	resolver_->pause();
+	exec();
+	resolver_->clear();
+	delete resolver_;
+	resolver_ = 0;
 }
 
 void QompPhononMetaDataResolver::resolverStateChanged(Phonon::State newState, Phonon::State /*oldState*/)
@@ -52,33 +51,31 @@ void QompPhononMetaDataResolver::resolverStateChanged(Phonon::State newState, Ph
 	if(newState != Phonon::PausedState)
 		return;
 
-	if(!data_.isEmpty()) {
-		ResolvedData data = data_.takeFirst();
-		emit newDuration(data.tune, data.duration);
-		emit newMetaData(data.tune, data.metaData);
+	if(!isDataEmpty()) {
+		tuneFinished();
 	}
 
-	if(!data_.isEmpty()) {
-		resolver_->setCurrentSource(objectForTune(data_.first().tune));
+	if(!isDataEmpty()) {
+		resolver_->setCurrentSource(objectForTune(get()));
 		resolver_->pause();
 	}
-	else
+	else {
 		resolver_->clear();
+		exit();
+	}
 }
 
 void QompPhononMetaDataResolver::totalTimeChanged(qint64 msec)
 {
-	if(!data_.isEmpty()) {
-		ResolvedData& data = data_.first();
-		data.duration = msec;
+	if(!isDataEmpty()) {
+		updateTuneDuration(msec);
 	}
 }
 
 void QompPhononMetaDataResolver::metaDataReady()
 {
-	if(!data_.isEmpty()) {
-		ResolvedData& data = data_.first();
-		data.metaData = resolver_->metaData();
+	if(!isDataEmpty()) {
+		updateTuneMetadata(resolver_->metaData());
 	}
 }
 

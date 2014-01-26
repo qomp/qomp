@@ -156,8 +156,7 @@ void QompMainWin::setPlayer(QompPlayer *player)
 	connect(player_, SIGNAL(volumeChanged(qreal)), SLOT(volumeChanged(qreal)));
 	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)), SLOT(currentTotalTimeChanged(qint64)));
 
-	connect(player_, SIGNAL(newMetaData(Tune,QMap<QString,QString>)), model_, SLOT(newDataReady(Tune,QMap<QString,QString>)));
-	connect(player_, SIGNAL(newDuration(Tune,qint64)), model_, SLOT(totalTimeChanged(Tune,qint64)));
+	connect(player_, SIGNAL(tuneDataUpdated(Tune)), model_, SLOT(tuneDataUpdated(Tune)));
 
 	updateIcons();
 	PluginManager::instance()->qompPlayerChanged(player_);
