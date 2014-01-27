@@ -79,9 +79,9 @@ void QompPhononMetaDataResolver::metaDataReady()
 	}
 }
 
-Phonon::MediaSource QompPhononMetaDataResolver::objectForTune(const Tune &tune) const
+Phonon::MediaSource QompPhononMetaDataResolver::objectForTune(Tune *tune) const
 {
 	Phonon::MediaSource ms;
-	ms = Phonon::MediaSource(tune.getUrl());
+	ms = Phonon::MediaSource(tune->getUrl());
 	return ms;
 }

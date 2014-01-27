@@ -43,7 +43,7 @@ private slots:
 	void metaDataAvailableChanged(bool available);
 
 private:
-	QMediaContent mediaForTune(const Tune& tune) const;
+	QMediaContent mediaForTune(Tune* tune) const;
 	void resolveNextMedia();
 
 private:

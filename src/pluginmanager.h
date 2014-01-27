@@ -23,8 +23,9 @@
 #include <QStringList>
 #include <QPair>
 
+#include "tune.h"
+
 class QompPlugin;
-class Tune;
 class QompOptionsPage;
 class TuneURLResolveStrategy;
 class QompPlayer;
@@ -37,7 +38,7 @@ public:
 	static PluginManager* instance();
 	virtual ~PluginManager();
 	QStringList availablePlugins() const;
-	QList<Tune> getTune(const QString& pluginName);
+	TuneList getTune(const QString& pluginName);
 	QompOptionsPage* getOptions(const QString& pluginName);
 	QString getVersion(const QString& pluginName) const;
 	QString getDescription(const QString& pluginName) const;

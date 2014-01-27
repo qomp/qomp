@@ -47,14 +47,14 @@ void QompMetaDataResolver::resolve(const TuneList &tunes)
 	}
 }
 
-Tune &QompMetaDataResolver::get()
+Tune* QompMetaDataResolver::get()
 {
 	return data_.first();
 }
 
 void QompMetaDataResolver::tuneFinished()
 {
-	Tune t = Tune::emptyTune();
+	Tune* t = (Tune*)Tune::emptyTune();
 
 	mutex_->lock();
 	if(!data_.isEmpty()) {
@@ -77,25 +77,25 @@ void QompMetaDataResolver::updateTuneMetadata(const QMap<QString, QString> &data
 		return;
 
 	QString tmp = Qomp::fixEncoding(data.value("ARTIST"));
-	Tune& t = data_.first();
+	Tune* t = data_.first();
 	if(!tmp.isEmpty())
-		t.artist = tmp;
+		t->artist = tmp;
 
 	tmp = Qomp::fixEncoding(data.value("ALBUM"));
 	if(!tmp.isEmpty())
-		t.album = tmp;
+		t->album = tmp;
 
 	tmp = Qomp::fixEncoding(data.value("TITLE"));
 	if(!tmp.isEmpty())
-		t.title = tmp;
+		t->title = tmp;
 
 	tmp = data.value("TRACK-NUMBER");
 	if(!tmp.isEmpty())
-		t.trackNumber = tmp;
+		t->trackNumber = tmp;
 
 	tmp = data.value("BITRATE");
 	if(!tmp.isEmpty())
-		t.bitRate = tmp;
+		t->bitRate = tmp;
 }
 
 void QompMetaDataResolver::updateTuneDuration(qint64 msec)
@@ -103,12 +103,10 @@ void QompMetaDataResolver::updateTuneDuration(qint64 msec)
 	if(msec == -1 || msec == 0)
 		return;
 
-	data_.first().duration = Qomp::durationMiliSecondsToString(msec);
+	data_.first()->duration = Qomp::durationMiliSecondsToString(msec);
 }
 
 void QompMetaDataResolver::addTunes(const TuneList &tunes)
 {
-	foreach(const Tune& tune, tunes) {
-		data_.append(tune);
-	}
+	data_.append(tunes);
 }

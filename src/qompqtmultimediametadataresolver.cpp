@@ -119,10 +119,10 @@ void QompQtMultimediaMetaDataResolver::resolveNextMedia()
 	resolver_->pause();
 }
 
-QMediaContent QompQtMultimediaMetaDataResolver::mediaForTune(const Tune &tune) const
+QMediaContent QompQtMultimediaMetaDataResolver::mediaForTune(Tune *tune) const
 {
 	QMediaContent mc;
-	mc = QMediaContent(tune.getUrl());
+	mc = QMediaContent(tune->getUrl());
 
 //		QNetworkRequest nr(url);
 //		foreach(const QNetworkCookie& c,

@@ -36,128 +36,124 @@ void QompPlayListModel::addTunes(const TuneList &tunes)
 	emit endInsertRows();
 }
 
-const Tune &QompPlayListModel::tune(const QModelIndex &index) const
+Tune *QompPlayListModel::tune(const QModelIndex &index) const
 {
 	if(!index.isValid() || index.row() >= tunes_.size())
-		return Tune::emptyTune();
+		return (Tune*)Tune::emptyTune();
 
 	return tunes_.at(index.row());
 }
 
-const Tune &QompPlayListModel::currentTune() const
+Tune *QompPlayListModel::currentTune() const
 {
 	return currentTune_;
 }
 
-void QompPlayListModel::setCurrentTune(const Tune &tune)
+void QompPlayListModel::setCurrentTune(Tune *tune)
 {
 	currentTune_ = tune;
 	emit layoutChanged();
 }
 
-void QompPlayListModel::removeTune(const Tune &tune)
+void QompPlayListModel::removeTune(Tune *tune)
 {
-	for(int i = 0; i < tunes_.size(); i++) {
-		if(tunes_.at(i) == tune) {
-			beginRemoveRows(QModelIndex(), i, i);
-			tunes_.removeAt(i);
-			endRemoveRows();
-			return;
-		}
-	}
+	int i = tunes_.indexOf(tune);
+	beginRemoveRows(QModelIndex(), i, i);
+	tunes_.removeAt(i);
+	delete tune;
+	endRemoveRows();
+	return;
 }
 
-QModelIndex QompPlayListModel::indexForTune(const Tune &tune) const
+QModelIndex QompPlayListModel::indexForTune(Tune *tune) const
 {
-	for(int i = 0; i < tunes_.size(); i++) {
-		if(tunes_.at(i) == tune) {
-			return index(i,0);
-		}
+	int i = tunes_.indexOf(tune);
+	if(i != -1) {
+		return index(i,0);
 	}
+
 	return QModelIndex();
 }
 
 QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 {
-	if(!index.isValid() || index.row() >= tunes_.size())
+	if(!index.isValid() || index.row() >= tunes_.size() || index.column() != 0)
 		return QVariant();
 
-	if(role == Qt::DisplayRole && index.column() == 0) {
-		const Tune& t = tunes_.at(index.row());
+	const Tune* t = tunes_.at(index.row());
+	if(role == Qt::DisplayRole) {
 		QString ret;
-		if(!t.title.isEmpty()) {
-			if(!t.trackNumber.isEmpty()) {
-				ret = t.trackNumber+". ";
+		if(!t->title.isEmpty()) {
+			if(!t->trackNumber.isEmpty()) {
+				ret = t->trackNumber+". ";
 			}
-			if(!t.artist.isEmpty()) {
-				ret += t.artist+" - ";
+			if(!t->artist.isEmpty()) {
+				ret += t->artist+" - ";
 			}
-			ret += t.title;
-			if(!t.duration.isEmpty()) {
-				ret += QString("    [%1]").arg(t.duration);
+			ret += t->title;
+			if(!t->duration.isEmpty()) {
+				ret += QString("    [%1]").arg(t->duration);
 			}
 			return QString("%1.%2").arg(QString::number(index.row()+1), ret);
 		}
 
 		QString fn;
-		if(t.file.isEmpty())
-			fn = t.url;
+		if(t->file.isEmpty())
+			fn = t->url;
 		else {
-			QFileInfo fi(t.file);
+			QFileInfo fi(t->file);
 			fn = fi.baseName();
 		}
-		if(!t.duration.isEmpty()) {
-			fn += QString("    [%1]").arg(t.duration);
+		if(!t->duration.isEmpty()) {
+			fn += QString("    [%1]").arg(t->duration);
 		}
 		return QString("%1.%2").arg(QString::number(index.row()+1), fn);
 	}
 	else if(role == ArtistRole) {
-		return tunes_.at(index.row()).artist;
+		return t->artist;
 	}
 	else if(role == TitleRole) {
-		Tune t = tunes_.at(index.row());
-		QString title = t.title;
+		QString title = t->title;
 		if(title.isEmpty()) {
-			if(!t.file.isEmpty()) {
-				QFileInfo fi(t.file);
+			if(!t->file.isEmpty()) {
+				QFileInfo fi(t->file);
 				title = fi.baseName();
 			}
 		}
 		return title;
 	}
 	else if(role == TrackRole) {
-		return tunes_.at(index.row()).trackNumber;
+		return t->trackNumber;
 	}
 	else if(role == Qt::ToolTipRole) {
 		QString ret;
-		Tune t = tunes_.at(index.row());
-		if(!t.artist.isEmpty()) {
-			ret += tr("Artist: %1\n").arg(t.artist);
+		if(!t->artist.isEmpty()) {
+			ret += tr("Artist: %1\n").arg(t->artist);
 		}
-		if(!t.title.isEmpty()) {
-			ret += tr("Title: %1\n").arg(t.title);
+		if(!t->title.isEmpty()) {
+			ret += tr("Title: %1\n").arg(t->title);
 		}
-		if(!t.album.isEmpty()) {
-			ret += tr("Album: %1\n").arg(t.album);
+		if(!t->album.isEmpty()) {
+			ret += tr("Album: %1\n").arg(t->album);
 		}
-		if(!t.bitRate.isEmpty()) {
-			ret += tr("Bitrate: %1\n").arg(t.bitRate);
+		if(!t->bitRate.isEmpty()) {
+			ret += tr("Bitrate: %1\n").arg(t->bitRate);
 		}
 		ret.chop(1);
 		return ret;
 	}
 
 	else if(role == DurationRole) {
-		return tunes_.at(index.row()).duration;
+		return t->duration;
 	}
 	else if(role == FileRole) {
-		return tunes_.at(index.row()).file;
+		return t->file;
 	}
 	else if(role == URLRole) {
-		return tunes_.at(index.row()).url;
+		return t->url;
 	}
 	else if(role == IsCurrentTuneRole) {
-		return currentTune() == tune(index);
+		return currentTune() == t;
 	}
 
 	return QVariant();
@@ -227,7 +223,7 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 		}
 	}
 
-	Tune t = tune(index(row));
+	Tune* t = tune(index(row));
 	QByteArray encodedData = data->data("qomp/tune");
 	QDataStream stream(&encodedData, QIODevice::ReadOnly);
 	TuneList tl;
@@ -238,13 +234,13 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 	}
 
 	layoutAboutToBeChanged();
-	foreach(const Tune& t, tl) {
+	foreach(Tune* t, tl) {
 		tunes_.removeOne(t);
 	}
 	int tuneIndex = indexForTune(t).row();
 	if(tuneIndex == -1)
 		tuneIndex = rowCount()+1;
-	foreach(const Tune& t, tl) {
+	foreach(Tune* t, tl) {
 		tunes_.insert(tuneIndex++, t);
 	}
 	layoutChanged();
@@ -254,34 +250,23 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 void QompPlayListModel::clear()
 {
 	beginResetModel();
+	qDeleteAll(tunes_);
 	tunes_.clear();
-	currentTune_ = Tune::emptyTune();
+	currentTune_ = (Tune*)Tune::emptyTune();
 	endResetModel();
 }
 
-void QompPlayListModel::totalTimeChanged(const Tune &tune, qint64 msec)
+void QompPlayListModel::totalTimeChanged(Tune *tune, qint64 msec)
 {
 	if(msec == -1 || msec == 0)
 		return;
 
 	int i = tunes_.indexOf(tune);
-	tunes_[i].duration = Qomp::durationMiliSecondsToString(msec);
 	emit dataChanged(index(i), index(i));
-
-//	TuneList::iterator it = tunes_.begin();
-//	for(; it != tunes_.end(); ++it) {
-//		if((*it) == tune) {
-//			emit layoutAboutToBeChanged();
-//			(*it).duration = Qomp::durationMiliSecondsToString(msec);
-//			emit layoutChanged();
-//			break;
-//		}
-//	}
 }
 
-void QompPlayListModel::tuneDataUpdated(const Tune &tune)
+void QompPlayListModel::tuneDataUpdated(Tune *tune)
 {
 	int i = tunes_.indexOf(tune);
-	tunes_[i] = tune;
 	emit dataChanged(index(i), index(i));
 }

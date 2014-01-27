@@ -31,6 +31,9 @@ public:
 	virtual QString name() const = 0;
 };
 
+class Tune;
+typedef QList<Tune*> TuneList;
+
 class Tune
 {
 public:
@@ -55,12 +58,12 @@ public:
 
 	bool operator==(const Tune& other) const;
 
-	static QList<Tune> tunesFromFile(const QString& fileName);
+	static TuneList tunesFromFile(const QString& fileName);
 
-	static const Tune& emptyTune() { return *empty_; }
+	static const Tune* emptyTune() { return empty_; }
 
 private:
-//	Q_DISABLE_COPY(Tune)
+	Q_DISABLE_COPY(Tune)
 	static int lastId_;
 	int id_;
 	bool canSave_;
@@ -68,7 +71,5 @@ private:
 
 	static const Tune* empty_;
 };
-
-typedef QList<Tune> TuneList;
 
 #endif // TUNE_H

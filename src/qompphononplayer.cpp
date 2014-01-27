@@ -49,7 +49,7 @@ QompPhononPlayer::QompPhononPlayer(QObject *parent) :
 	connect(audioOutput_, SIGNAL(volumeChanged(qreal)), SIGNAL(volumeChanged(qreal)));
 	connect(audioOutput_, SIGNAL(mutedChanged(bool)), SIGNAL(mutedChanged(bool)));
 
-	connect(resolver_, SIGNAL(tuneUpdated(Tune)), SIGNAL(tuneDataUpdated(Tune)), Qt::QueuedConnection);
+	connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 }
 
 QompPhononPlayer::~QompPhononPlayer()
@@ -131,9 +131,9 @@ QompPlayer::State QompPhononPlayer::state() const
 	return StateUnknown;
 }
 
-void QompPhononPlayer::doSetTune(const Tune &tune)
+void QompPhononPlayer::doSetTune(Tune *tune)
 {
-	QUrl url = tune.getUrl();
+	QUrl url = tune->getUrl();
 	Phonon::MediaSource ms = url.isEmpty() ? Phonon::MediaSource() : Phonon::MediaSource(url);
 	mediaObject_->setCurrentSource(ms);
 }
@@ -151,7 +151,7 @@ void QompPhononPlayer::pause()
 void QompPhononPlayer::stop()
 {
 	mediaObject_->stop();
-	setTune(Tune::emptyTune());
+	setTune((Tune*)Tune::emptyTune());
 }
 
 qint64 QompPhononPlayer::currentTuneTotalTime() const

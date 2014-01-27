@@ -41,10 +41,10 @@ public:
 		return Qomp::durationSecondsToString(duration.toInt());
 	}
 
-	virtual Tune toTune() const
+	virtual Tune* toTune() const
 	{
-		Tune t = QompPluginTune::toTune();
-		t.duration = durationToStr();
+		Tune* t = QompPluginTune::toTune();
+		t->duration = durationToStr();
 		return t;
 	}
 };

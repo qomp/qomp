@@ -112,14 +112,14 @@ QIcon QompPluginTune::icon() const
 	return QIcon(ico.pixmap(QSize(64,64),url.isEmpty() ? QIcon::Disabled : QIcon::Normal));
 }
 
-Tune QompPluginTune::toTune() const
+Tune *QompPluginTune::toTune() const
 {
-	Tune t;
-	t.artist = artist;
-	t.title = title;
-	t.album = album;
-	t.url = url;
-	t.duration = duration;
+	Tune* t = new Tune;
+	t->artist = artist;
+	t->title = title;
+	t->album = album;
+	t->url = url;
+	t->duration = duration;
 	return t;
 }
 

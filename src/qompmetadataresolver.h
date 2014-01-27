@@ -37,12 +37,10 @@ public:
 	void resolve(const TuneList& tunes);
 	
 signals:
-	void newMetaData(const Tune&, const QMap<QString, QString>&);
-	void newDuration(const Tune&, qint64 msec);
-	void tuneUpdated(const Tune&);
+	void tuneUpdated(Tune*);
 	
 protected:
-	Tune& get();
+	Tune *get();
 	void tuneFinished();
 	bool isDataEmpty() const;
 

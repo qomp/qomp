@@ -156,7 +156,7 @@ void QompMainWin::setPlayer(QompPlayer *player)
 	connect(player_, SIGNAL(volumeChanged(qreal)), SLOT(volumeChanged(qreal)));
 	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)), SLOT(currentTotalTimeChanged(qint64)));
 
-	connect(player_, SIGNAL(tuneDataUpdated(Tune)), model_, SLOT(tuneDataUpdated(Tune)));
+	connect(player_, SIGNAL(tuneDataUpdated(Tune*)), model_, SLOT(tuneDataUpdated(Tune*)));
 
 	updateIcons();
 	PluginManager::instance()->qompPlayerChanged(player_);
@@ -307,14 +307,14 @@ void QompMainWin::actClearActivated()
 	}
 	else if(x == 1) {
 		bool removingCurrent = false;
-		QList<Tune> list;
+		TuneList list;
 		foreach(const QModelIndex& index, ui->playList->selectionModel()->selectedIndexes()) {
-			const Tune& t = model_->tune(index);
+			Tune* t = model_->tune(index);
 			if(t == model_->currentTune())
 				removingCurrent = true;
 			list << t;
 		}
-		foreach(const Tune& tune, list)
+		foreach(Tune* tune, list)
 			model_->removeTune(tune);
 
 		if(removingCurrent) {
@@ -380,15 +380,15 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 		return;
 
 	ui->playList->setCurrentIndex(index);
-	const Tune& tune = model_->tune(index);
+	Tune* tune = model_->tune(index);
 	QMenu menu;
 	QList<QAction*> acts;
 	acts << new QAction(tr("Play/Pause"), &menu);
 	acts << new QAction(tr("Remove"), &menu);
-	if(!tune.url.isEmpty()) {
+	if(!tune->url.isEmpty()) {
 		acts << new QAction(tr("Copy URL"), &menu);		
 	}
-	if(tune.canSave()) {
+	if(tune->canSave()) {
 		acts << new QAction(tr("Save File"), &menu);
 	}
 	menu.addActions(acts);
@@ -406,7 +406,7 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 		ui->playList->setCurrentIndex(model_->indexForTune(model_->currentTune()));
 	}
 	else if(x == 2) {
-		qApp->clipboard()->setText(tune.getUrl().toString());
+		qApp->clipboard()->setText(tune->getUrl().toString());
 	}
 	else if(x == 3) {
 		static const QString option = "main.last-save-dir";
@@ -531,7 +531,7 @@ void QompMainWin::playNext()
 		}
 		else {
 			actStopActivated();
-			model_->setCurrentTune(Tune::emptyTune());
+			model_->setCurrentTune((Tune*)Tune::emptyTune());
 		}
 	}
 	else {
@@ -582,7 +582,7 @@ void QompMainWin::savePlaylist(const QString &fileName)
 			QTextStream ts(&file);
 			ts.setCodec("UTF-8");
 			for(int i = 0; i < model_->rowCount(); i++) {
-				QString str = model_->tune(model_->index(i)).toString();
+				QString str = model_->tune(model_->index(i))->toString();
 				ts << str << endl;
 			}
 		}

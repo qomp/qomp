@@ -32,8 +32,8 @@ TuneList UrlPlugin::getTunes()
 	bool ok = false;
 	QString url = QInputDialog::getText(0, tr("Input url"), "URL:",QLineEdit::Normal, "", &ok);
 	if(ok) {
-		Tune tune;
-		tune.url = url;
+		Tune *tune = new Tune;
+		tune->url = url;
 		list.append(tune);
 	}
 

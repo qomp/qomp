@@ -34,7 +34,7 @@
 Qomp::Qomp(QObject *parent) :
 	QObject(parent)
 {
-	qRegisterMetaType<Tune>("Tune");
+	qRegisterMetaType<Tune*>("Tune*");
 
 	Translator::instance();
 
@@ -61,6 +61,7 @@ Qomp::Qomp(QObject *parent) :
 Qomp::~Qomp()
 {
 	delete mainWin_;
+	delete Tune::emptyTune();
 }
 
 void Qomp::init()

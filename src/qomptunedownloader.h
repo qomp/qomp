@@ -34,7 +34,7 @@ class QompTuneDownloader : public QObject
 public:
 	explicit QompTuneDownloader(QObject *parent = 0);
 	~QompTuneDownloader();
-	void download(const Tune& tune, const QString& dir);
+	void download(Tune* tune, const QString& dir);
 	
 signals:
 	

@@ -113,7 +113,7 @@ public:
 	virtual QString toString() const;
 	virtual Qomp::ModelItemType type() const;
 	QIcon icon() const;
-	virtual Tune toTune() const;
+	virtual Tune* toTune() const;
 };
 
 class QompPluginAlbum : public QompPluginModelItem

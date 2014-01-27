@@ -38,7 +38,7 @@ void QompPlaylistView::dropEvent(QDropEvent *e)
 {
 	QListView::dropEvent(e);
 	QItemSelection sel;
-	foreach(const Tune& t, selected_) {
+	foreach(Tune* t, selected_) {
 		sel.append(QItemSelectionRange(static_cast<QompPlayListModel*>(model())->indexForTune(t)));
 	}
 	if(!sel.isEmpty()) {

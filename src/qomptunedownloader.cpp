@@ -44,13 +44,13 @@ QompTuneDownloader::~QompTuneDownloader()
 	delete file_;
 }
 
-void QompTuneDownloader::download(const Tune &tune, const QString &dir)
+void QompTuneDownloader::download(Tune *tune, const QString &dir)
 {
-	QUrl url(tune.getUrl());
+	QUrl url(tune->getUrl());
 	if(url.isEmpty())
 		return;
 
-	file_ = new QFile(QString("%1/%2-%3.mp3").arg(dir, tune.artist, tune.title));
+	file_ = new QFile(QString("%1/%2-%3.mp3").arg(dir, tune->artist, tune->title));
 	if(!file_->open(QFile::WriteOnly))
 		return;
 

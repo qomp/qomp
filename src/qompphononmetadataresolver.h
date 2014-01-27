@@ -40,7 +40,7 @@ private slots:
 	void totalTimeChanged(qint64 msec);
 
 private:
-	Phonon::MediaSource objectForTune(const Tune& tune) const;
+	Phonon::MediaSource objectForTune(Tune *tune) const;
 
 private:
 	Phonon::MediaObject* resolver_;

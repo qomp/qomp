@@ -90,7 +90,7 @@ QompOptionsPage *LastFmPlugin::options()
 void LastFmPlugin::qompPlayerChanged(QompPlayer *player)
 {
 	player_ = player;
-	connect(player_, SIGNAL(tuneChanged(Tune)), SLOT(tuneChanged(Tune)));
+	connect(player_, SIGNAL(tuneChanged(Tune*)), SLOT(tuneChanged(Tune*)));
 	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStatusChanged()));
 }
 
@@ -125,12 +125,12 @@ void LastFmPlugin::updateNowPlaying()
 		return;
 
 	sk = Qomp::decodePassword(sk, LASTFM_KEY);
-	QTime time = QTime::fromString(currentTune_.duration, "mm:ss");
+	QTime time = QTime::fromString(currentTune_->duration, "mm:ss");
 	QString dur = QString::number(time.minute()*60 + time.second());	
 	const QString api_sig = MD5(QString("api_key%1artist%2duration%6methodtrack.updatenowplayingsk%3track%4%5")
-				 .arg(ApiKey, currentTune_.artist, sk, currentTune_.title, SharedSecret, dur));
+				 .arg(ApiKey, currentTune_->artist, sk, currentTune_->title, SharedSecret, dur));
 	QByteArray data = QString("method=track.updatenowplaying&artist=%1&track=%2&duration=%6&api_key=%3&api_sig=%4&sk=%5")
-				.arg(currentTune_.artist, currentTune_.title, ApiKey, api_sig, sk, dur).toUtf8();
+				.arg(currentTune_->artist, currentTune_->title, ApiKey, api_sig, sk, dur).toUtf8();
 	QNetworkRequest nr(ApiUrl);
 	nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 	QNetworkReply* r = nam_->post(nr, data);
@@ -142,21 +142,21 @@ void LastFmPlugin::updateNowPlaying()
 
 void LastFmPlugin::scrobble()
 {
-	QTime time = QTime::fromString(currentTune_.duration, "mm:ss");
+	QTime time = QTime::fromString(currentTune_->duration, "mm:ss");
 	QString dur = QString::number(time.minute()*60 + time.second());
 	QString timestamp = QString::number(QDateTime::currentDateTimeUtc().toMSecsSinceEpoch()/1000 - scrobbleTimer_->interval()/1000);
 	const QString sk = Qomp::decodePassword(Options::instance()->getOption(LASTFM_SESS_KEY).toString(), LASTFM_KEY);
 	const QString api_sig = MD5(QString("api_key%1artist%2chosenByUser1duration%6methodtrack.scrobblesk%3timestamp%7track%4%5")
-				 .arg(ApiKey, currentTune_.artist, sk, currentTune_.title, SharedSecret, dur, timestamp));
+				 .arg(ApiKey, currentTune_->artist, sk, currentTune_->title, SharedSecret, dur, timestamp));
 	QByteArray data = QString("method=track.scrobble&chosenByUser=1&artist=%1&track=%2&duration=%6&timestamp=%7&api_key=%3&api_sig=%4&sk=%5")
-				.arg(currentTune_.artist, currentTune_.title, ApiKey, api_sig, sk, dur, timestamp).toUtf8();
+				.arg(currentTune_->artist, currentTune_->title, ApiKey, api_sig, sk, dur, timestamp).toUtf8();
 	QNetworkRequest nr(ApiUrl);
 	nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 	QNetworkReply* r = nam_->post(nr, data);
 	connect(r, SIGNAL(finished()), SLOT(postFinished()));
 }
 
-void LastFmPlugin::tuneChanged(const Tune &t)
+void LastFmPlugin::tuneChanged(Tune *t)
 {
 	currentTune_ = t;
 }

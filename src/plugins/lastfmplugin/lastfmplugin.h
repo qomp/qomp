@@ -57,7 +57,7 @@ public:
 
 private slots:
 	void playerStatusChanged();
-	void tuneChanged(const Tune& t);
+	void tuneChanged(Tune* t);
 	void login();
 	void loginStepTwo();
 	void loginStepThree();
@@ -70,7 +70,7 @@ private:
 	QompPlayer *player_;
 	QNetworkAccessManager* nam_;
 	QPointer<LastFmSettings> settings_;
-	Tune currentTune_;
+	Tune* currentTune_;
 	QTimer* scrobbleTimer_;
 	QTimer* nowPlayingTimer_;
 	bool enabled_;

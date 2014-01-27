@@ -20,8 +20,8 @@
 #ifndef QOPMPLAYER_H
 #define QOPMPLAYER_H
 
-#include "tune.h"
 #include <QObject>
+#include "tune.h"
 
 class QompMetaDataResolver;
 
@@ -37,8 +37,8 @@ public:
 		StateLoading, StateBuffering
 	};
 
-	void setTune(const Tune& tune);
-	const Tune& currentTune() const;
+	void setTune(Tune* tune);
+	Tune* currentTune() const;
 
 	void resolveMetadata(const TuneList &tunes);
 
@@ -71,16 +71,16 @@ signals:
 	void mediaFinished();
 	void volumeChanged(qreal newVolume);
 	void mutedChanged(bool muted);
-	void tuneChanged(const Tune&);
+	void tuneChanged(Tune*);
 
-	void tuneDataUpdated(const Tune&);
+	void tuneDataUpdated(Tune*);
 
 protected:
-	virtual void doSetTune(const Tune& tune) = 0;
+	virtual void doSetTune(Tune* tune) = 0;
 	virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
 
 private:
-	Tune currentTune_;
+	Tune* currentTune_;
 };
 
 #endif // QOPMPLAYER_H

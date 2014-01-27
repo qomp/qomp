@@ -128,7 +128,7 @@ bool Tune::operator==(const Tune& other) const
 	return id() == other.id();
 }
 
-QList<Tune> Tune::tunesFromFile(const QString &fileName)
+TuneList Tune::tunesFromFile(const QString &fileName)
 {
 	TuneList tunes;
 	QFile f(fileName);
@@ -136,8 +136,8 @@ QList<Tune> Tune::tunesFromFile(const QString &fileName)
 		QTextStream str(&f);
 		str.setCodec("UTF-8");
 		while(!str.atEnd()) {
-			Tune t;
-			if(t.fromString(str.readLine())) {
+			Tune* t = new Tune;
+			if(t->fromString(str.readLine())) {
 				tunes.append(t);
 			}
 		}

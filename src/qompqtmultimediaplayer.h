@@ -54,7 +54,7 @@ private slots:
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
 
 protected:
-	virtual void doSetTune(const Tune &tune);
+	virtual void doSetTune(Tune *tune);
 	virtual QompMetaDataResolver* metaDataResolver() const;
 
 private:

@@ -73,10 +73,10 @@ public:
 		return Qomp::durationMiliSecondsToString(duration.toLongLong());
 	}
 
-	virtual Tune toTune() const
+	virtual Tune* toTune() const
 	{
-		Tune t = QompPluginTune::toTune();
-		t.duration = durationToString();
+		Tune* t = QompPluginTune::toTune();
+		t->duration = durationToString();
 		return t;
 	}
 };
@@ -123,8 +123,8 @@ TuneList YandexMusicController::prepareTunes() const
 		if(pt->url.isEmpty())
 			continue;
 
-		Tune tune_ = pt->toTune();
-		tune_.setUrlResolveStrategy(YandexMusicURLResolveStrategy::instance());
+		Tune* tune_ = pt->toTune();
+		tune_->setUrlResolveStrategy(YandexMusicURLResolveStrategy::instance());
 		tunes.append(tune_);
 	}
 	return tunes;

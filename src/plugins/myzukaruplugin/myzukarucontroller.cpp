@@ -281,8 +281,8 @@ TuneList MyzukaruController::prepareTunes() const
 		if(pt->url.isEmpty())
 			continue;
 
-		Tune t = pt->toTune();
-		t.setUrlResolveStrategy(MyzukaruResolveStrategy::instance());
+		Tune* t = pt->toTune();
+		t->setUrlResolveStrategy(MyzukaruResolveStrategy::instance());
 
 		list.append(t);
 	}

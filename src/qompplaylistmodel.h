@@ -40,11 +40,11 @@ public:
 	};
 
 	void addTunes(const TuneList& tunes);
-	const Tune& tune(const QModelIndex& index) const;
-	const Tune& currentTune() const;
-	void setCurrentTune(const Tune& tune);
-	void removeTune(const Tune& tune);
-	QModelIndex indexForTune(const Tune& tune) const;
+	Tune *tune(const QModelIndex& index) const;
+	Tune* currentTune() const;
+	void setCurrentTune(Tune *tune);
+	void removeTune(Tune* tune);
+	QModelIndex indexForTune(Tune* tune) const;
 
 	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 	virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
@@ -59,12 +59,12 @@ public:
 	void clear();
 
 public slots:
-	void totalTimeChanged(const Tune& tune, qint64 msec);
-	void tuneDataUpdated(const Tune& tune);
+	void totalTimeChanged(Tune* tune, qint64 msec);
+	void tuneDataUpdated(Tune* tune);
 
 private:
 	TuneList tunes_;
-	Tune currentTune_;
+	Tune* currentTune_;
 };
 
 #endif // PLAYLISTMODEL_H

@@ -36,7 +36,7 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer(QObject *parent) :
 	connect(player_, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(stateChanged(QMediaPlayer::State)));
 	connect(player_, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
 
-	connect(resolver_, SIGNAL(tuneUpdated(Tune)), SIGNAL(tuneDataUpdated(Tune)), Qt::QueuedConnection);
+	connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 }
 
 QompQtMultimediaPlayer::~QompQtMultimediaPlayer()
@@ -44,9 +44,9 @@ QompQtMultimediaPlayer::~QompQtMultimediaPlayer()
 	delete resolver_;
 }
 
-void QompQtMultimediaPlayer::doSetTune(const Tune &tune)
+void QompQtMultimediaPlayer::doSetTune(Tune *tune)
 {
-	player_->setMedia(QMediaContent(tune.getUrl()));
+	player_->setMedia(QMediaContent(tune->getUrl()));
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const
