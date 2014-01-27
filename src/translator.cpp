@@ -101,7 +101,8 @@ QStringList Translator::availableTranslations()
 	foreach(const QString& dir, transDirs()) {
 		foreach(QString file, QDir(dir).entryList(QDir::Files)) {
 			if(file.endsWith(".qm", Qt::CaseInsensitive)) {
-				if(file.startsWith("qt_", Qt::CaseInsensitive)) {
+				if(!file.startsWith("qomp_", Qt::CaseInsensitive))
+				{
 					continue;
 				}
 				file.chop(3);
