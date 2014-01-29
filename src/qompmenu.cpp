@@ -61,20 +61,26 @@ QompMainMenu::QompMainMenu(QWidget *p) :
 
 void QompMainMenu::buildMenu()
 {
-	addAction(tr("Toggle Visibility"), this, SIGNAL(actToggleVisibility()));
+	QAction* act = addAction(tr("Toggle Visibility"), this, SIGNAL(actToggleVisibility()));
+	act->setParent(this);
 
 	QompGetTunesMenu *open = new QompGetTunesMenu(tr("Open"), this);
 	connect(open, SIGNAL(tunes(TuneList)), SIGNAL(tunes(TuneList)));
 	addMenu(open);
 
-	addAction(tr("Settings"), this, SIGNAL(actDoOptions()));
+	act = addAction(tr("Settings"), this, SIGNAL(actDoOptions()));
+	act->setParent(this);
 	addSeparator();
 
 	QMenu* helpMenu = new QMenu(tr("Help"), this);
-	helpMenu->addAction(tr("About qomp"), this, SIGNAL(actAbout()));
-	helpMenu->addAction(tr("About Qt"), qApp, SLOT(aboutQt()));
-	helpMenu->addAction(tr("Check for updates"), this, SIGNAL(actCheckUpdates()));
+	act = helpMenu->addAction(tr("About qomp"), this, SIGNAL(actAbout()));
+	act->setParent(helpMenu);
+	act = helpMenu->addAction(tr("About Qt"), qApp, SLOT(aboutQt()));
+	act->setParent(helpMenu);
+	act = helpMenu->addAction(tr("Check for updates"), this, SIGNAL(actCheckUpdates()));
+	act->setParent(helpMenu);
 	addMenu(helpMenu);
 
-	addAction(tr("Exit"), this, SIGNAL(actExit()));
+	act = addAction(tr("Exit"), this, SIGNAL(actExit()));
+	act->setParent(this);
 }
