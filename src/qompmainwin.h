@@ -82,6 +82,7 @@ private slots:
 	void updateIcons();
 	void updateOptions();
 
+	void tunes(const TuneList &list);
 signals:
 	void exit();
 
@@ -91,8 +92,6 @@ protected:
 
 private:
 	void savePlaylist(const QString& fileName);
-	QMenu *buildPluginListMenu();
-	void getTunes(const QString& name);
 	void stopPlayer();
 	
 private:

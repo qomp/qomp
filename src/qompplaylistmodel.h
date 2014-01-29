@@ -59,7 +59,6 @@ public:
 	void clear();
 
 public slots:
-	void totalTimeChanged(Tune* tune, qint64 msec);
 	void tuneDataUpdated(Tune* tune);
 
 private:

@@ -256,15 +256,6 @@ void QompPlayListModel::clear()
 	endResetModel();
 }
 
-void QompPlayListModel::totalTimeChanged(Tune *tune, qint64 msec)
-{
-	if(msec == -1 || msec == 0)
-		return;
-
-	int i = tunes_.indexOf(tune);
-	emit dataChanged(index(i), index(i));
-}
-
 void QompPlayListModel::tuneDataUpdated(Tune *tune)
 {
 	int i = tunes_.indexOf(tune);

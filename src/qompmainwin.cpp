@@ -29,6 +29,7 @@
 #include "qomptunedownloader.h"
 #include "qompplaylistdelegate.h"
 #include "updateschecker.h"
+#include "qompmenu.h"
 
 #include "ui_qompmainwin.h"
 
@@ -282,13 +283,10 @@ void QompMainWin::actStopActivated()
 
 void QompMainWin::actOpenActivated()
 {
-	QMenu* m = buildPluginListMenu();
-	m->move(QCursor::pos());
-	QAction* x = m->exec();
-	if(x)
-		getTunes(x->text());
-
-	m->deleteLater();
+	QompGetTunesMenu m;
+	connect(&m, SIGNAL(tunes(TuneList)), SLOT(tunes(TuneList)));
+	m.move(QCursor::pos());
+	m.exec();
 }
 
 void QompMainWin::actClearActivated()
@@ -423,7 +421,8 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 
 void QompMainWin::doMainContextMenu()
 {
-	QMenu *open = buildPluginListMenu();
+	QompGetTunesMenu *open = new QompGetTunesMenu(tr("Open"));
+	connect(open, SIGNAL(tunes(TuneList)), SLOT(tunes(TuneList)));
 	QMenu m;
 	QList<QAction*> acts;
 	if(isHidden()) {
@@ -459,9 +458,6 @@ void QompMainWin::doMainContextMenu()
 		doOptions();
 	else if(ret == 4)
 		emit exit();
-	else if(x && x->parent() == open) {
-		getTunes(x->text());
-	}
 	else if(ret == 5) {
 		new AboutDlg(this);
 	}
@@ -510,8 +506,12 @@ void QompMainWin::setCurrentPosition(qint64 ms)
 void QompMainWin::currentTotalTimeChanged(qint64 ms)
 {
 	Q_ASSERT(player_);
-	model_->totalTimeChanged(player_->currentTune(), ms);
 	ui->seekSlider->setMaximum(ms);
+
+	if(ms == -1 || ms == 0)
+		return;
+	player_->currentTune()->duration = Qomp::durationMiliSecondsToString(ms);
+	model_->tuneDataUpdated(player_->currentTune());
 }
 
 void QompMainWin::playNext()
@@ -643,21 +643,8 @@ void QompMainWin::changeEvent(QEvent *e)
 	QMainWindow::changeEvent(e);
 }
 
-QMenu* QompMainWin::buildPluginListMenu()
+void QompMainWin::tunes(const TuneList &list)
 {
-	QMenu* m = new QMenu(tr("Open"), this);
-	QList<QAction*> acts;
-	foreach(const QString& name, PluginManager::instance()->tunePlugins()) {
-		if(PluginManager::instance()->isPluginEnabled(name))
-			acts.append(new QAction(name, m));
-	}
-	m->addActions(acts);
-	return m;
-}
-
-void QompMainWin::getTunes(const QString &name)
-{
-	TuneList list = PluginManager::instance()->getTune(name);
 	if(!list.isEmpty()) {
 		model_->addTunes(list);
 
