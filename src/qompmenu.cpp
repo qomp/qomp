@@ -20,6 +20,8 @@
 #include "qompmenu.h"
 #include "pluginmanager.h"
 
+#include <QApplication>
+
 QompGetTunesMenu::QompGetTunesMenu(QWidget *parent) :
 	QMenu(parent)
 {
@@ -48,4 +50,31 @@ void QompGetTunesMenu::buildMenu()
 			act->setParent(this);
 		}
 	}
+}
+
+
+QompMainMenu::QompMainMenu(QWidget *p) :
+	QMenu(p)
+{
+	buildMenu();
+}
+
+void QompMainMenu::buildMenu()
+{
+	addAction(tr("Toggle Visibility"), this, SIGNAL(actToggleVisibility()));
+
+	QompGetTunesMenu *open = new QompGetTunesMenu(tr("Open"), this);
+	connect(open, SIGNAL(tunes(TuneList)), SIGNAL(tunes(TuneList)));
+	addMenu(open);
+
+	addAction(tr("Settings"), this, SIGNAL(actDoOptions()));
+	addSeparator();
+
+	QMenu* helpMenu = new QMenu(tr("Help"), this);
+	helpMenu->addAction(tr("About qomp"), this, SIGNAL(actAbout()));
+	helpMenu->addAction(tr("About Qt"), qApp, SLOT(aboutQt()));
+	helpMenu->addAction(tr("Check for updates"), this, SIGNAL(actCheckUpdates()));
+	addMenu(helpMenu);
+
+	addAction(tr("Exit"), this, SIGNAL(actExit()));
 }

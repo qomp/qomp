@@ -421,54 +421,16 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 
 void QompMainWin::doMainContextMenu()
 {
-	QompGetTunesMenu *open = new QompGetTunesMenu(tr("Open"));
-	connect(open, SIGNAL(tunes(TuneList)), SLOT(tunes(TuneList)));
-	QMenu m;
-	QList<QAction*> acts;
-	if(isHidden()) {
-		acts << new QAction(tr("Show"), &m);
-	}
-	else {
-		acts << new QAction(tr("Hide"), &m);
-	}
-	acts << open->menuAction();
-	acts << new QAction(tr("Settings"), &m);
-	QAction* sep = new QAction(&m);
-	sep->setSeparator(true);
-	acts << sep;
-	acts << new QAction(tr("Exit"), &m);
-	m.addActions(acts);
-
-	QMenu helpMenu(tr("Help"));
-	QAction* about = new QAction(tr("About qomp"), &helpMenu);
-	helpMenu.addAction(about);
-	QAction* aboutQt = new QAction(tr("About Qt"), &helpMenu);
-	helpMenu.addAction(aboutQt);
-	QAction* updatesCheck = new QAction(tr("Check for updates"), &helpMenu);
-	helpMenu.addAction(updatesCheck);
-	m.insertMenu(acts.last(), &helpMenu);
-	acts << about << aboutQt << updatesCheck;
-
+	QompMainMenu m;
 	m.move(QCursor::pos());
-	QAction* x = m.exec();
-	int ret = acts.indexOf(x);
-	if(ret == 0)
-		toggleVisibility();
-	else if(ret == 2)
-		doOptions();
-	else if(ret == 4)
-		emit exit();
-	else if(ret == 5) {
-		new AboutDlg(this);
-	}
-	else if(ret == 6) {
-		qApp->aboutQt();
-	}
-	else if(ret == 7) {
-		new UpdatesChecker(this);
-	}
+	connect(&m, SIGNAL(actToggleVisibility()), SLOT(toggleVisibility()));
+	connect(&m, SIGNAL(actCheckUpdates()), SLOT(checkForUpdates()));
+	connect(&m, SIGNAL(actAbout()), SLOT(aboutQomp()));
+	connect(&m, SIGNAL(actDoOptions()), SLOT(doOptions()));
+	connect(&m, SIGNAL(tunes(TuneList)), SLOT(tunes(TuneList)));
+	connect(&m, SIGNAL(actExit()), SIGNAL(exit()));
 
-	open->deleteLater();
+	m.exec();
 }
 
 void QompMainWin::playerStateChanged(QompPlayer::State state)
@@ -597,6 +559,16 @@ void QompMainWin::toggleVisibility()
 	}
 	else
 		hide();
+}
+
+void QompMainWin::checkForUpdates()
+{
+	new UpdatesChecker(this);
+}
+
+void QompMainWin::aboutQomp()
+{
+	new AboutDlg(this);
 }
 
 void QompMainWin::trayActivated(Qt::MouseButton b)

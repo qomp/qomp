@@ -41,4 +41,22 @@ private:
 	void buildMenu();
 };
 
+class QompMainMenu : public QMenu
+{
+	Q_OBJECT
+public:
+	explicit QompMainMenu(QWidget* p = 0);
+
+signals:
+	void actToggleVisibility();
+	void actCheckUpdates();
+	void actDoOptions();
+	void actExit();
+	void actAbout();
+	void tunes(const TuneList&);
+
+private:
+	void buildMenu();
+};
+
 #endif // QOMPMENU_H

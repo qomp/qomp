@@ -43,13 +43,16 @@ public:
 	void setPlayer(QompPlayer* player);
 
 	void bringToFront();
-	void toggleVisibility();
 
 public slots:
 	void actPlayActivated();
 	void actPrevActivated();
 	void actNextActivated();
 	void actStopActivated();
+
+	void toggleVisibility();
+	void checkForUpdates();
+	void aboutQomp();
 
 private slots:
 	void actOpenActivated();
