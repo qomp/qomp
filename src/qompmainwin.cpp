@@ -40,8 +40,6 @@
 #include <QMenu>
 #include <QTextStream>
 
-static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
-
 
 QompMainWin::QompMainWin(QWidget *parent) :
 	QMainWindow(parent),
@@ -56,13 +54,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	ui->playList->setModel(model_);
 	ui->playList->setItemDelegate(new QompPlaylistDelegate(this));
 
-	TuneList tl = Tune::tunesFromFile(Qomp::cacheDir() + cachedPlayListFileName);
-	if(!tl.isEmpty()) {
-		model_->addTunes(tl);
-		QModelIndex ind = model_->index(Options::instance()->getOption(OPTION_CURRENT_TRACK, 0).toInt(),0);
-		model_->setCurrentTune(model_->tune(ind));
-		ui->playList->setCurrentIndex(ind);
-	}
+	model_->restoreState();
 
 	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
 	ui->tb_prev->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
@@ -113,18 +105,12 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 QompMainWin::~QompMainWin()
 {
-	savePlaylist(Qomp::cacheDir() + cachedPlayListFileName);
-
 	Options::instance()->setOption(OPTION_GEOMETRY_X, x());
 	Options::instance()->setOption(OPTION_GEOMETRY_Y, y());
 	Options::instance()->setOption(OPTION_GEOMETRY_HEIGHT, height());
 	Options::instance()->setOption(OPTION_GEOMETRY_WIDTH, width());
 
-	int curTrack = 0;
-	QModelIndex ind = model_->indexForTune(model_->currentTune());
-	if(ind.isValid())
-		curTrack = ind.row();
-	Options::instance()->setOption(OPTION_CURRENT_TRACK, curTrack);
+	model_->saveState();
 
 	delete player_;
 	player_ = 0;
@@ -518,8 +504,7 @@ void QompMainWin::loadPlaylist()
 			Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*.qomp");
 	if(!file.isEmpty()) {
 		Options::instance()->setOption(LAST_DIR, file);
-		TuneList tl = Tune::tunesFromFile(file);
-		model_->addTunes(tl);
+		model_->loadTunes(file);
 	}
 }
 
@@ -529,25 +514,7 @@ void QompMainWin::savePlaylist()
 			Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*.qomp");
 	if(!file.isEmpty()) {
 		Options::instance()->setOption(LAST_DIR, file);
-		savePlaylist(file);
-	}
-}
-
-void QompMainWin::savePlaylist(const QString &fileName)
-{
-	QString f(fileName);
-	if(!f.endsWith(".qomp"))
-		f += ".qomp";
-	QFile file(f);
-	if(file.open(QFile::ReadWrite | QFile::Truncate)) {
-		if(model_->rowCount() > 0) {
-			QTextStream ts(&file);
-			ts.setCodec("UTF-8");
-			for(int i = 0; i < model_->rowCount(); i++) {
-				QString str = model_->tune(model_->index(i))->toString();
-				ts << str << endl;
-			}
-		}
+		model_->saveTunes(file);
 	}
 }
 

@@ -19,7 +19,7 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/updateschecker.cpp \
     $$PWD/qompplaylistview.cpp \
     $$PWD/qompmetadataresolver.cpp \
-    src/qompmenu.cpp
+    $$PWD/qompmenu.cpp
 
 HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qomp.h \
@@ -40,7 +40,7 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/translator.h \
     $$PWD/updateschecker.h \
     $$PWD/qompplaylistview.h \
-    src/qompmenu.h
+    $$PWD/qompmenu.h
 
 FORMS    += $$PWD/qompmainwin.ui \
     $$PWD/aboutdlg.ui

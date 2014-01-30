@@ -56,8 +56,8 @@ void MprisPlugin::playerStatusChanged()
 	if(!enabled_ || !mpris_)
 		return;
 
-	const Tune& t = player_->currentTune();
-	int num = t.trackNumber.isEmpty() ? 0 : t.trackNumber.toInt();
+	Tune* t = player_->currentTune();
+	int num = t->trackNumber.isEmpty() ? 0 : t->trackNumber.toInt();
 	switch(player_->state()) {
 	case QompPlayer::StatePlaying:
 		mpris_->sendData("Playing", num ,t);

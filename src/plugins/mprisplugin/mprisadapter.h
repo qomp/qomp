@@ -38,7 +38,7 @@ public:
 	QVariantMap metadata() const;
 	QString playbackStatus() const;
 	void setStatus(const QString &status);
-	void setMetadata(int trackNumber, const Tune &tune);
+	void setMetadata(int trackNumber, Tune *tune);
 	void updateProperties();
 
 private:

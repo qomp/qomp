@@ -94,7 +94,6 @@ protected:
 	void changeEvent(QEvent *e);
 
 private:
-	void savePlaylist(const QString& fileName);
 	void stopPlayer();
 	
 private:

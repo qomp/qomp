@@ -37,6 +37,9 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 	QFontMetrics fm = o.fontMetrics;
 	QRect rect = o.rect;
 	QPalette palette = o.palette;
+	if(index.data(QompPlayListModel::IsCurrentTuneRole).toBool()) {
+		palette.setColor(QPalette::Text, Qt::darkGreen);
+	}
 	QString text;
 	QString title = index.data(QompPlayListModel::TitleRole).toString();
 	if(!title.isEmpty()) {
@@ -71,15 +74,15 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 	painter->drawText(rect, text);
 	painter->drawText(durRect, dur);
 
-	if(index.data(QompPlayListModel::IsCurrentTuneRole).toBool()) {
-		rect = o.rect;
-		rect.setRight(rect.right()-1);
-		rect.setBottom(rect.bottom()-1);
-		QPen p = painter->pen();
-		p.setStyle(Qt::DashLine);
-		painter->setPen(p);
-		painter->drawRect(rect);
-	}
+//	if(index.data(QompPlayListModel::IsCurrentTuneRole).toBool()) {
+//		rect = o.rect;
+//		rect.setRight(rect.right()-1);
+//		rect.setBottom(rect.bottom()-1);
+//		QPen p = painter->pen();
+//		p.setStyle(Qt::DashLine);
+//		painter->setPen(p);
+//		painter->drawRect(rect);
+//	}
 
 	painter->restore();
 }

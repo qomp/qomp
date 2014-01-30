@@ -57,6 +57,11 @@ public:
 	     Qt::DropAction action, int row, int column, const QModelIndex &parent);
 
 	void clear();
+	void saveState();
+	void restoreState();
+
+	void saveTunes(const QString& fileName);
+	void loadTunes(const QString& fileName);
 
 public slots:
 	void tuneDataUpdated(Tune* tune);

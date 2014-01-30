@@ -19,10 +19,17 @@
 
 #include "qompplaylistmodel.h"
 #include "common.h"
+#include "options.h"
+#include "defines.h"
 
 #include <QFileInfo>
 #include <QStringList>
 #include <QMimeData>
+#include <QTextStream>
+
+static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
+
+
 
 QompPlayListModel::QompPlayListModel(QObject *parent) :
 	QAbstractListModel(parent)
@@ -254,6 +261,52 @@ void QompPlayListModel::clear()
 	tunes_.clear();
 	currentTune_ = (Tune*)Tune::emptyTune();
 	endResetModel();
+}
+
+void QompPlayListModel::saveState()
+{
+	int curTrack = 0;
+	QModelIndex ind = indexForTune(currentTune());
+	if(ind.isValid())
+		curTrack = ind.row();
+	Options::instance()->setOption(OPTION_CURRENT_TRACK, curTrack);
+	saveTunes(Qomp::cacheDir() + cachedPlayListFileName);
+}
+
+void QompPlayListModel::restoreState()
+{
+	TuneList tl = Tune::tunesFromFile(Qomp::cacheDir() + cachedPlayListFileName);
+	if(!tl.isEmpty()) {
+		addTunes(tl);
+		QModelIndex ind = index(Options::instance()->getOption(OPTION_CURRENT_TRACK, 0).toInt(),0);
+		setCurrentTune(tune(ind));
+		//ui->playList->setCurrentIndex(ind);
+	}
+}
+
+void QompPlayListModel::saveTunes(const QString &fileName)
+{
+	if(tunes_.size() == 0)
+		return;
+
+	QString f(fileName);
+	if(!f.endsWith(".qomp"))
+		f += ".qomp";
+
+	QFile file(f);
+	if(file.open(QFile::ReadWrite | QFile::Truncate)) {
+		QTextStream ts(&file);
+		ts.setCodec("UTF-8");
+		foreach(Tune* t, tunes_) {
+			ts << t->toString() << endl;
+		}
+	}
+}
+
+void QompPlayListModel::loadTunes(const QString &fileName)
+{
+	TuneList tl = Tune::tunesFromFile(fileName);
+	addTunes(tl);
 }
 
 void QompPlayListModel::tuneDataUpdated(Tune *tune)
