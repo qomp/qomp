@@ -21,6 +21,7 @@
 #include "pluginmanager.h"
 
 #include <QApplication>
+#include <QClipboard>
 
 QompGetTunesMenu::QompGetTunesMenu(QWidget *parent) :
 	QMenu(parent)
@@ -83,4 +84,50 @@ void QompMainMenu::buildMenu()
 
 	act = addAction(tr("Exit"), this, SIGNAL(actExit()));
 	act->setParent(this);
+}
+
+
+QompTrackMenu::QompTrackMenu(Tune *tune, QWidget *p) :
+	QMenu(p),
+	tune_(tune)
+{
+	buildMenu();
+}
+
+void QompTrackMenu::actRemoveActivated()
+{
+	emit removeTune(tune_);
+}
+
+void QompTrackMenu::actCopyUrlActivated()
+{
+	qApp->clipboard()->setText(tune_->getUrl().toString());
+}
+
+void QompTrackMenu::actSaveActivated()
+{
+	emit saveTune(tune_);
+}
+
+void QompTrackMenu::actToggleActivated()
+{
+	emit togglePlayState(tune_);
+}
+
+void QompTrackMenu::buildMenu()
+{
+	QAction* act = addAction(tr("Play/Pause"), this, SLOT(actToggleActivated()));
+	act->setParent(this);
+
+	act = addAction(tr("Remove"), this, SLOT(actRemoveActivated()));
+	act->setParent(this);
+
+	if(!tune_->url.isEmpty()) {
+		act = addAction(tr("Copy URL"), this, SLOT(actCopyUrlActivated()));
+		act->setParent(this);
+	}
+	if(tune_->canSave()) {
+		act = addAction(tr("Save File"), this, SLOT(actSaveActivated()));
+		act->setParent(this);
+	}
 }

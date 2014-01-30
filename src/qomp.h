@@ -21,8 +21,12 @@
 #define QOMP_H
 
 #include <QObject>
+#include <QModelIndex>
 
 class QompMainWin;
+class QompPlayListModel;
+class QompPlayer;
+class Tune;
 
 
 class Qomp : public QObject
@@ -38,11 +42,41 @@ private slots:
 	void exit();
 	void updateOptions();
 
+	void actPlayNext();
+	void actPlayPrev();
+	void actPlay();
+	void actPause();
+	void actStop();
+	void actMuteToggle();
+	void actSeek(qint64 ms);
+	void actSetVolume(qreal vol);
+	void actSavePlaylist();
+	void actLoadPlaylist();
+	void actGetTunes();
+
+	void actClearPlaylist();
+	void actRemoveSelected(const QModelIndexList& list);
+
+	void actDoSettings();
+	void actCheckForUpdates();
+	void actAboutQomp();
+
+	void actDownloadTune(Tune* tune);
+	void actToggleTune(Tune* tune);
+	void actRemoveTune(Tune* tune);
+
 //protected:
 //	bool eventFilter(QObject *obj, QEvent *e);
 
 private:
-	QompMainWin* mainWin_;	
+	void setupMainWin();
+	void setupPlayer();
+	void setupModel();
+
+private:
+	QompMainWin* mainWin_;
+	QompPlayListModel* model_;
+	QompPlayer* player_;
 };
 
 #endif // QOMP_H

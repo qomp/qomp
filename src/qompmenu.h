@@ -59,4 +59,28 @@ private:
 	void buildMenu();
 };
 
+class QompTrackMenu : public QMenu
+{
+	Q_OBJECT
+public:
+	QompTrackMenu(Tune* tune, QWidget* p = 0);
+
+signals:
+	void togglePlayState(Tune*);
+	void removeTune(Tune*);
+	void saveTune(Tune*);
+
+private slots:
+	void actRemoveActivated();
+	void actCopyUrlActivated();
+	void actSaveActivated();
+	void actToggleActivated();
+
+private:
+	void buildMenu();
+
+private:
+	Tune* tune_;
+};
+
 #endif // QOMPMENU_H

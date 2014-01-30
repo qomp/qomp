@@ -28,7 +28,8 @@
 
 QompTuneDownloader::QompTuneDownloader(QObject *parent) :
 	QObject(parent),
-	file_(0)
+	file_(0),
+	reply_(0)
 {
 	nam_ = QompNetworkingFactory::instance()->getNetworkAccessManager();
 	dialog_ = new QProgressDialog();
@@ -55,10 +56,10 @@ void QompTuneDownloader::download(Tune *tune, const QString &dir)
 		return;
 
 	QNetworkRequest nr(url);
-	QNetworkReply* reply = nam_->get(nr);
-	connect(reply, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
-	connect(reply, SIGNAL(readyRead()), SLOT(readyRead()));
-	connect(reply, SIGNAL(finished()), SLOT(finished()));
+	reply_ = nam_->get(nr);
+	connect(reply_, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
+	connect(reply_, SIGNAL(readyRead()), SLOT(readyRead()));
+	connect(reply_, SIGNAL(finished()), SLOT(finished()));
 	dialog_->show();
 }
 
@@ -71,22 +72,22 @@ void QompTuneDownloader::downloadProgress(qint64 received, qint64 total)
 
 void QompTuneDownloader::finished()
 {
-	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
 	file_->close();
-	reply->deleteLater();
+	reply_->deleteLater();
 	deleteLater();
 }
 
 void QompTuneDownloader::readyRead()
 {
-	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
-	qint64 bytes =  reply->bytesAvailable();
-	QByteArray ba = reply->read(bytes);
+	qint64 bytes =  reply_->bytesAvailable();
+	QByteArray ba = reply_->read(bytes);
 	file_->write(ba);
 }
 
 void QompTuneDownloader::abort()
 {
+	reply_->abort();
+	reply_->deleteLater();
 	file_->remove();
 	deleteLater();
 }

@@ -24,6 +24,7 @@
 #include <QObject>
 
 class QNetworkAccessManager;
+class QNetworkReply;
 class Tune;
 class QProgressDialog;
 class QFile;
@@ -49,6 +50,7 @@ private:
 	QNetworkAccessManager* nam_;
 	QProgressDialog* dialog_;
 	QFile* file_;
+	QNetworkReply* reply_;
 };
 
 #endif // QOMPTUNEDOWNLOADER_H

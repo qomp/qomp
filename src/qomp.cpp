@@ -28,24 +28,30 @@
 #elif HAVE_QTMULTIMEDIA
 #include "qompqtmultimediaplayer.h"
 #endif
+#include "updateschecker.h"
+#include "aboutdlg.h"
+#include "qomptunedownloader.h"
+#include "qompplaylistmodel.h"
+#include "qompoptionsdlg.h"
 
 #include <QApplication>
+#include <QFileDialog>
 
 Qomp::Qomp(QObject *parent) :
-	QObject(parent)
+	QObject(parent),
+	mainWin_(0),
+	model_(0),
+	player_(0)
 {
 	qRegisterMetaType<Tune*>("Tune*");
 
 	Translator::instance();
 
-	mainWin_ = new QompMainWin();
-	connect(mainWin_, SIGNAL(exit()), SLOT(exit()));
+	setupModel();
+	setupPlayer();
+	setupMainWin();
 
-#ifdef HAVE_PHONON
-	mainWin_->setPlayer(new QompPhononPlayer(this));
-#elif HAVE_QTMULTIMEDIA
-	mainWin_->setPlayer(new QompQtMultimediaPlayer(this));
-#endif
+	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateOptions()));
 
 	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
 		mainWin_->hide();
@@ -54,12 +60,12 @@ Qomp::Qomp(QObject *parent) :
 
 	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
 		mainWin_->actPlayActivated();
-
-	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateOptions()));
 }
 
 Qomp::~Qomp()
 {
+	model_->saveState();
+
 	delete mainWin_;
 	delete Tune::emptyTune();
 }
@@ -106,4 +112,149 @@ void Qomp::updateOptions()
 	QompNetworkingFactory::instance()->updateProxySettings();
 	if(mainWin_->player())
 		mainWin_->player()->setAudioOutputDevice(Options::instance()->getOption(OPTION_AUDIO_DEVICE).toString());
+}
+
+void Qomp::actPlayNext()
+{
+
+}
+
+void Qomp::actPlayPrev()
+{
+
+}
+
+void Qomp::actPlay()
+{
+
+}
+
+void Qomp::actPause()
+{
+
+}
+
+void Qomp::actStop()
+{
+
+}
+
+void Qomp::actMuteToggle()
+{
+
+}
+
+void Qomp::actSeek(qint64 ms)
+{
+
+}
+
+void Qomp::actSetVolume(qreal vol)
+{
+
+}
+
+void Qomp::actSavePlaylist()
+{
+	QString file = QFileDialog::getSaveFileName(mainWin_, tr("Save Playlist"),
+			Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*.qomp");
+	if(!file.isEmpty()) {
+		Options::instance()->setOption(LAST_DIR, file);
+		model_->saveTunes(file);
+	}
+}
+
+void Qomp::actLoadPlaylist()
+{
+	QString file = QFileDialog::getOpenFileName(mainWin_, tr("Select Playlist"),
+			Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*.qomp");
+	if(!file.isEmpty()) {
+		Options::instance()->setOption(LAST_DIR, file);
+		model_->loadTunes(file);
+	}
+}
+
+void Qomp::actGetTunes()
+{
+
+}
+
+void Qomp::actClearPlaylist()
+{
+
+}
+
+void Qomp::actRemoveSelected(const QModelIndexList &list)
+{
+
+}
+
+void Qomp::actDoSettings()
+{
+	QompOptionsDlg dlg(mainWin_);
+	dlg.exec();
+}
+
+void Qomp::actCheckForUpdates()
+{
+	new UpdatesChecker(this);
+}
+
+void Qomp::actAboutQomp()
+{
+	new AboutDlg(mainWin_);
+}
+
+void Qomp::actDownloadTune(Tune *tune)
+{
+	static const QString option = "main.last-save-dir";
+	QString dir = QFileDialog::getExistingDirectory(mainWin_, tr("Select directory"),
+				Options::instance()->getOption(option, QDir::homePath()).toString());
+	if(dir.isEmpty())
+		return;
+
+	Options::instance()->setOption(option, dir);
+	QompTuneDownloader *td = new QompTuneDownloader(this);
+	td->download(tune, dir);
+}
+
+void Qomp::actToggleTune(Tune *tune)
+{
+
+}
+
+void Qomp::actRemoveTune(Tune *tune)
+{
+
+}
+
+void Qomp::setupMainWin()
+{
+	mainWin_ = new QompMainWin();
+	mainWin_->setModel(model_);
+	mainWin_->setPlayer(player_);
+
+	connect(mainWin_, SIGNAL(exit()), SLOT(exit()));
+	connect(mainWin_, SIGNAL(loadPlaylist()), SLOT(actLoadPlaylist()));
+	connect(mainWin_, SIGNAL(savePlaylist()), SLOT(actSavePlaylist()));
+	connect(mainWin_, SIGNAL(aboutQomp()), SLOT(actAboutQomp()));
+	connect(mainWin_, SIGNAL(checkForUpdates()), SLOT(actCheckForUpdates()));
+	connect(mainWin_, SIGNAL(doOptions()), SLOT(actDoSettings()));
+	connect(mainWin_, SIGNAL(downloadTune(Tune*)), SLOT(actDownloadTune(Tune*)));
+}
+
+void Qomp::setupPlayer()
+{
+#ifdef HAVE_PHONON
+	player_ = new QompPhononPlayer(this);
+#elif HAVE_QTMULTIMEDIA
+	player_ = new QompQtMultimediaPlayer(this);
+#endif
+
+}
+
+void Qomp::setupModel()
+{
+	model_ = new QompPlayListModel(this);
+	model_->restoreState();
 }

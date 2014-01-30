@@ -45,72 +45,35 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::QompMainWin),
 	player_(0),
-	model_(new QompPlayListModel(this)),
+	model_(0),
 	trayIcon_(new QompTrayIcon(this)),
 	currentState_(Stopped)
 {
 	ui->setupUi(this);
 
-	ui->playList->setModel(model_);
-	ui->playList->setItemDelegate(new QompPlaylistDelegate(this));
+	connectActions();
+	setIcons();
+	setupPlaylist();
 
-	model_->restoreState();
+	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());	
 
-	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
-	ui->tb_prev->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
-	ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-	ui->tb_stop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
-	ui->tb_clear->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton));
-	ui->tb_load->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
-	ui->tb_save->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
-	ui->tb_open->setIcon(style()->standardIcon(QStyle::SP_DriveCDIcon));
-	ui->tb_mute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-
-	ui->tb_repeatAll->setIcon((style()->standardIcon(QStyle::SP_BrowserReload)));
-	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());
-	connect(ui->tb_repeatAll, SIGNAL(clicked()), SLOT(updateOptions()));
-
-	connect(ui->tb_open, SIGNAL(clicked()), SLOT(actOpenActivated()));
-	connect(ui->tb_play, SIGNAL(clicked()), SLOT(actPlayActivated()));
-	connect(ui->tb_stop, SIGNAL(clicked()), SLOT(actStopActivated()));
-	connect(ui->tb_clear, SIGNAL(clicked()), SLOT(actClearActivated()));
-	connect(ui->tb_next, SIGNAL(clicked()), SLOT(actNextActivated()));
-	connect(ui->tb_prev, SIGNAL(clicked()), SLOT(actPrevActivated()));
-	connect(ui->tb_load, SIGNAL(clicked()), SLOT(loadPlaylist()));
-	connect(ui->tb_save, SIGNAL(clicked()), SLOT(savePlaylist()));
-	connect(ui->tb_mute, SIGNAL(clicked(bool)), SLOT(muteButtonActivated(bool)));
 	connect(ui->seekSlider, SIGNAL(valueChanged(int)), SLOT(seekSliderMoved(int)));
 	connect(ui->volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderMoved(int)));
 
 	connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doMainContextMenu()));
 
-	connect(ui->playList, SIGNAL(activated(QModelIndex)), SLOT(mediaActivated(QModelIndex)));
-	connect(ui->playList, SIGNAL(clicked(QModelIndex)), SLOT(mediaClicked(QModelIndex)));
-	connect(ui->playList, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doTrackContextMenu(QPoint)));
-
 	//volumeChanged(1);
 	setCurrentPosition(0);
-
-	connect(model_, SIGNAL(layoutChanged()), SLOT(updateTuneInfo()));
 
 	connect(trayIcon_, SIGNAL(trayContextMenu()), SLOT(doMainContextMenu()));
 	connect(trayIcon_, SIGNAL(trayWheeled(int)), SLOT(trayWheeled(int)));
 
-	resize(Options::instance()->getOption(OPTION_GEOMETRY_WIDTH, width()).toInt(),
-		Options::instance()->getOption(OPTION_GEOMETRY_HEIGHT, height()).toInt());
-
-	move(Options::instance()->getOption(OPTION_GEOMETRY_X, 10).toInt(),
-		Options::instance()->getOption(OPTION_GEOMETRY_Y, 50).toInt());
+	restoreWindowState();
 }
 
 QompMainWin::~QompMainWin()
 {
-	Options::instance()->setOption(OPTION_GEOMETRY_X, x());
-	Options::instance()->setOption(OPTION_GEOMETRY_Y, y());
-	Options::instance()->setOption(OPTION_GEOMETRY_HEIGHT, height());
-	Options::instance()->setOption(OPTION_GEOMETRY_WIDTH, width());
-
-	model_->saveState();
+	saveWindowState();
 
 	delete player_;
 	player_ = 0;
@@ -147,6 +110,13 @@ void QompMainWin::setPlayer(QompPlayer *player)
 
 	updateIcons();
 	PluginManager::instance()->qompPlayerChanged(player_);
+}
+
+void QompMainWin::setModel(QompPlayListModel *model)
+{
+	model_ = model;
+	ui->playList->setModel(model_);
+	connect(model_, SIGNAL(layoutChanged()), SLOT(updateTuneInfo()));
 }
 
 void QompMainWin::bringToFront()
@@ -357,6 +327,21 @@ void QompMainWin::mediaClicked(const QModelIndex &index)
 	}
 }
 
+void QompMainWin::toggleTune(Tune* tune)
+{
+	model_->setCurrentTune(tune);
+	actPlayActivated();
+}
+
+void QompMainWin::removeTune(Tune* tune)
+{
+	model_->removeTune(tune);
+	if(model_->currentTune() == tune) {
+		model_->setCurrentTune(model_->tune(model_->index(0,0)));
+	}
+	ui->playList->setCurrentIndex(model_->indexForTune(model_->currentTune()));
+}
+
 void QompMainWin::doTrackContextMenu(const QPoint &p)
 {
 	QModelIndex index = ui->playList->indexAt(p);
@@ -365,44 +350,13 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 
 	ui->playList->setCurrentIndex(index);
 	Tune* tune = model_->tune(index);
-	QMenu menu;
-	QList<QAction*> acts;
-	acts << new QAction(tr("Play/Pause"), &menu);
-	acts << new QAction(tr("Remove"), &menu);
-	if(!tune->url.isEmpty()) {
-		acts << new QAction(tr("Copy URL"), &menu);		
-	}
-	if(tune->canSave()) {
-		acts << new QAction(tr("Save File"), &menu);
-	}
-	menu.addActions(acts);
-	menu.move(QCursor::pos());
-	int x = acts.indexOf(menu.exec());
-	if(x == 0) {
-		model_->setCurrentTune(tune);
-		actPlayActivated();
-	}
-	else if(x == 1) {
-		model_->removeTune(tune);
-		if(model_->currentTune() == tune) {
-			model_->setCurrentTune(model_->tune(model_->index(0,0)));
-		}
-		ui->playList->setCurrentIndex(model_->indexForTune(model_->currentTune()));
-	}
-	else if(x == 2) {
-		qApp->clipboard()->setText(tune->getUrl().toString());
-	}
-	else if(x == 3) {
-		static const QString option = "main.last-save-dir";
-		QString dir = QFileDialog::getExistingDirectory(this, tr("Select directory"),
-					Options::instance()->getOption(option, QDir::homePath()).toString());
-		if(dir.isEmpty())
-			return;
-		Options::instance()->setOption(option, dir);
-		QompTuneDownloader *td = new QompTuneDownloader(this);
-		td->download(tune, dir);
-	}
+	QompTrackMenu menu(tune, this);
+	connect(&menu, SIGNAL(togglePlayState(Tune*)), SLOT(toggleTune(Tune*)));
+	connect(&menu, SIGNAL(saveTune(Tune*)), SIGNAL(downloadTune(Tune*)));
+	connect(&menu, SIGNAL(removeTune(Tune*)), SLOT(removeTune(Tune*)));
 
+	menu.move(QCursor::pos());
+	menu.exec();
 }
 
 void QompMainWin::doMainContextMenu()
@@ -410,9 +364,9 @@ void QompMainWin::doMainContextMenu()
 	QompMainMenu m;
 	m.move(QCursor::pos());
 	connect(&m, SIGNAL(actToggleVisibility()), SLOT(toggleVisibility()));
-	connect(&m, SIGNAL(actCheckUpdates()), SLOT(checkForUpdates()));
-	connect(&m, SIGNAL(actAbout()), SLOT(aboutQomp()));
-	connect(&m, SIGNAL(actDoOptions()), SLOT(doOptions()));
+	connect(&m, SIGNAL(actCheckUpdates()), SIGNAL(checkForUpdates()));
+	connect(&m, SIGNAL(actAbout()), SIGNAL(aboutQomp()));
+	connect(&m, SIGNAL(actDoOptions()), SIGNAL(doOptions()));
 	connect(&m, SIGNAL(tunes(TuneList)), SLOT(tunes(TuneList)));
 	connect(&m, SIGNAL(actExit()), SIGNAL(exit()));
 
@@ -492,32 +446,6 @@ void QompMainWin::playNext()
 	}
 }
 
-void QompMainWin::doOptions()
-{
-	QompOptionsDlg dlg(this);
-	dlg.exec();
-}
-
-void QompMainWin::loadPlaylist()
-{
-	QString file = QFileDialog::getOpenFileName(this, tr("Select Playlist"),
-			Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*.qomp");
-	if(!file.isEmpty()) {
-		Options::instance()->setOption(LAST_DIR, file);
-		model_->loadTunes(file);
-	}
-}
-
-void QompMainWin::savePlaylist()
-{
-	QString file = QFileDialog::getSaveFileName(this, tr("Save Playlist"),
-			Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*.qomp");
-	if(!file.isEmpty()) {
-		Options::instance()->setOption(LAST_DIR, file);
-		model_->saveTunes(file);
-	}
-}
-
 void QompMainWin::toggleVisibility()
 {
 	bool b = isHidden();
@@ -526,16 +454,6 @@ void QompMainWin::toggleVisibility()
 	}
 	else
 		hide();
-}
-
-void QompMainWin::checkForUpdates()
-{
-	new UpdatesChecker(this);
-}
-
-void QompMainWin::aboutQomp()
-{
-	new AboutDlg(this);
 }
 
 void QompMainWin::trayActivated(Qt::MouseButton b)
@@ -609,6 +527,60 @@ void QompMainWin::stopPlayer()
 	player_->stop();
 	setCurrentPosition(0);
 	currentState_ = Stopped;
+}
+
+void QompMainWin::connectActions()
+{
+	connect(ui->tb_repeatAll, SIGNAL(clicked()), SLOT(updateOptions()));
+	connect(ui->tb_open, SIGNAL(clicked()), SLOT(actOpenActivated()));
+	connect(ui->tb_play, SIGNAL(clicked()), SLOT(actPlayActivated()));
+	connect(ui->tb_stop, SIGNAL(clicked()), SLOT(actStopActivated()));
+	connect(ui->tb_clear, SIGNAL(clicked()), SLOT(actClearActivated()));
+	connect(ui->tb_next, SIGNAL(clicked()), SLOT(actNextActivated()));
+	connect(ui->tb_prev, SIGNAL(clicked()), SLOT(actPrevActivated()));
+	connect(ui->tb_load, SIGNAL(clicked()), SIGNAL(loadPlaylist()));
+	connect(ui->tb_save, SIGNAL(clicked()), SIGNAL(savePlaylist()));
+	connect(ui->tb_mute, SIGNAL(clicked(bool)), SLOT(muteButtonActivated(bool)));
+}
+
+void QompMainWin::setIcons()
+{
+	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
+	ui->tb_prev->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
+	ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+	ui->tb_stop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
+	ui->tb_clear->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton));
+	ui->tb_load->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
+	ui->tb_save->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+	ui->tb_open->setIcon(style()->standardIcon(QStyle::SP_DriveCDIcon));
+	ui->tb_mute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
+	ui->tb_repeatAll->setIcon((style()->standardIcon(QStyle::SP_BrowserReload)));
+}
+
+void QompMainWin::setupPlaylist()
+{
+	ui->playList->setItemDelegate(new QompPlaylistDelegate(this));
+
+	connect(ui->playList, SIGNAL(activated(QModelIndex)), SLOT(mediaActivated(QModelIndex)));
+	connect(ui->playList, SIGNAL(clicked(QModelIndex)), SLOT(mediaClicked(QModelIndex)));
+	connect(ui->playList, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doTrackContextMenu(QPoint)));
+}
+
+void QompMainWin::saveWindowState()
+{
+	Options::instance()->setOption(OPTION_GEOMETRY_X, x());
+	Options::instance()->setOption(OPTION_GEOMETRY_Y, y());
+	Options::instance()->setOption(OPTION_GEOMETRY_HEIGHT, height());
+	Options::instance()->setOption(OPTION_GEOMETRY_WIDTH, width());
+}
+
+void QompMainWin::restoreWindowState()
+{
+	resize(Options::instance()->getOption(OPTION_GEOMETRY_WIDTH, width()).toInt(),
+		Options::instance()->getOption(OPTION_GEOMETRY_HEIGHT, height()).toInt());
+
+	move(Options::instance()->getOption(OPTION_GEOMETRY_X, 10).toInt(),
+		Options::instance()->getOption(OPTION_GEOMETRY_Y, 50).toInt());
 }
 
 void QompMainWin::updateTuneInfo()

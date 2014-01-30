@@ -41,8 +41,10 @@ public:
 
 	QompPlayer* player() const;
 	void setPlayer(QompPlayer* player);
+	void setModel(QompPlayListModel* model);
 
 	void bringToFront();
+
 
 public slots:
 	void actPlayActivated();
@@ -51,8 +53,8 @@ public slots:
 	void actStopActivated();
 
 	void toggleVisibility();
-	void checkForUpdates();
-	void aboutQomp();
+
+
 
 private slots:
 	void actOpenActivated();
@@ -72,11 +74,8 @@ private slots:
 	void setCurrentPosition(qint64 ms);
 	void currentTotalTimeChanged(qint64 ms);
 	void playNext();
-	void doOptions();
-	void updateTuneInfo();
 
-	void loadPlaylist();
-	void savePlaylist();
+	void updateTuneInfo();	
 
 	//void trayDoubleclicked();
 	void trayActivated(Qt::MouseButton);
@@ -86,8 +85,18 @@ private slots:
 	void updateOptions();
 
 	void tunes(const TuneList &list);
+
+	void toggleTune(Tune* tune);
+	void removeTune(Tune* tune);
+
 signals:
 	void exit();
+	void downloadTune(Tune* tune);
+	void loadPlaylist();
+	void savePlaylist();
+	void doOptions();
+	void aboutQomp();
+	void checkForUpdates();
 
 protected:
 	void closeEvent(QCloseEvent *e);
@@ -95,6 +104,13 @@ protected:
 
 private:
 	void stopPlayer();
+
+	void connectActions();
+	void setIcons();
+	void setupPlaylist();
+
+	void saveWindowState();
+	void restoreWindowState();
 	
 private:
 	Ui::QompMainWin *ui;
