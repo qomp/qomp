@@ -21,6 +21,8 @@
 #define QOMPMAINWIN_H
 
 #include <QMainWindow>
+#include <QModelIndex>
+
 #include "qompplayer.h"
 
 namespace Ui {
@@ -28,7 +30,6 @@ namespace Ui {
 }
 
 class QompPlayListModel;
-class QModelIndex;
 class QompTrayIcon;
 
 class QompMainWin : public QMainWindow
@@ -45,7 +46,6 @@ public:
 
 	void bringToFront();
 
-
 public slots:
 	void actPlayActivated();
 	void actPrevActivated();
@@ -54,15 +54,19 @@ public slots:
 
 	void toggleVisibility();
 
+	void setMuteState(bool mute);
+	void volumeChanged(qreal vol);
+	void setCurrentPosition(qint64 ms);
+	void currentTotalTimeChanged(qint64 ms);
 
+	void playerStateChanged(QompPlayer::State state);
 
 private slots:
 	void actOpenActivated();
 	void actClearActivated();
-	void muteButtonActivated(bool);
+
 	void volumeSliderMoved(int);
-	void volumeChanged(qreal vol);
-	void seekSliderMoved(int);
+
 
 	void mediaActivated(const QModelIndex& index);
 	void mediaClicked(const QModelIndex& index);
@@ -70,24 +74,22 @@ private slots:
 
 	void doMainContextMenu();
 
-	void playerStateChanged(QompPlayer::State state);
-	void setCurrentPosition(qint64 ms);
-	void currentTotalTimeChanged(qint64 ms);
 	void playNext();
 
-	void updateTuneInfo();	
+	void updateTuneInfo(Tune *tune);
 
 	//void trayDoubleclicked();
 	void trayActivated(Qt::MouseButton);
 	void trayWheeled(int delta);
 
-	void updateIcons();
+	void updateIcons(QompPlayer::State state);
 	void updateOptions();
 
 	void tunes(const TuneList &list);
 
 	void toggleTune(Tune* tune);
 	void removeTune(Tune* tune);
+	void removeSelectedIndexes();
 
 signals:
 	void exit();
@@ -97,6 +99,12 @@ signals:
 	void doOptions();
 	void aboutQomp();
 	void checkForUpdates();
+	void actMuteActivated(bool);
+	void volumeSliderMoved(qreal);
+	void seekSliderMoved(int);
+
+	void clearPlaylist();
+	void removeSelected(const QModelIndexList&);
 
 protected:
 	void closeEvent(QCloseEvent *e);

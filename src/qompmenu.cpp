@@ -23,15 +23,34 @@
 #include <QApplication>
 #include <QClipboard>
 
-QompGetTunesMenu::QompGetTunesMenu(QWidget *parent) :
+QompMenu::QompMenu(QWidget *parent) :
 	QMenu(parent)
+{
+	connect(this, SIGNAL(aboutToShow()), SLOT(menuAboutToShow()));
+}
+
+QompMenu::QompMenu(const QString &name, QWidget *parent) :
+	QMenu(name, parent)
+{
+	connect(this, SIGNAL(aboutToShow()), SLOT(menuAboutToShow()));
+}
+
+void QompMenu::menuAboutToShow()
 {
 	buildMenu();
 }
-QompGetTunesMenu::QompGetTunesMenu(const QString &name, QWidget *parent) :
-	QMenu(name, parent)
+
+
+
+
+QompGetTunesMenu::QompGetTunesMenu(QWidget *parent) :
+	QompMenu(parent)
 {
-	buildMenu();
+}
+
+QompGetTunesMenu::QompGetTunesMenu(const QString &name, QWidget *parent) :
+	QompMenu(name, parent)
+{
 }
 
 void QompGetTunesMenu::actionActivated()
@@ -54,10 +73,11 @@ void QompGetTunesMenu::buildMenu()
 }
 
 
+
+
 QompMainMenu::QompMainMenu(QWidget *p) :
-	QMenu(p)
+	QompMenu(p)
 {
-	buildMenu();
 }
 
 void QompMainMenu::buildMenu()
@@ -88,10 +108,9 @@ void QompMainMenu::buildMenu()
 
 
 QompTrackMenu::QompTrackMenu(Tune *tune, QWidget *p) :
-	QMenu(p),
+	QompMenu(p),
 	tune_(tune)
 {
-	buildMenu();
 }
 
 void QompTrackMenu::actRemoveActivated()
@@ -130,4 +149,18 @@ void QompTrackMenu::buildMenu()
 		act = addAction(tr("Save File"), this, SLOT(actSaveActivated()));
 		act->setParent(this);
 	}
+}
+
+
+QompRemoveTunesMenu::QompRemoveTunesMenu(QWidget *p) :
+	QompMenu(p)
+{
+}
+
+void QompRemoveTunesMenu::buildMenu()
+{
+	QAction *act = addAction(tr("Remove All"), this, SIGNAL(removeAll()));
+	act->setParent(this);
+	act = addAction(tr("Remove Selected"), this, SIGNAL(removeSelected()));
+	act->setParent(this);
 }

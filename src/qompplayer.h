@@ -37,7 +37,6 @@ public:
 		StateLoading, StateBuffering
 	};
 
-	void setTune(Tune* tune);
 	Tune* currentTune() const;
 
 	void resolveMetadata(const TuneList &tunes);
@@ -63,6 +62,9 @@ public:
 
 	virtual QStringList audioOutputDevice() const = 0;
 	virtual void setAudioOutputDevice(const QString& devName) = 0;
+
+public slots:
+	void setTune(Tune* tune);
 	
 signals:
 	void currentPositionChanged(qint64 pos);

@@ -39,5 +39,6 @@ Tune *QompPlayer::currentTune() const
 
 void QompPlayer::resolveMetadata(const TuneList& tunes)
 {
-	metaDataResolver()->resolve(tunes);
+	if(metaDataResolver())
+		metaDataResolver()->resolve(tunes);
 }

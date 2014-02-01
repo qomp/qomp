@@ -42,6 +42,7 @@ public:
 	void addTunes(const TuneList& tunes);
 	Tune *tune(const QModelIndex& index) const;
 	Tune* currentTune() const;
+	QModelIndex currentIndex() const;
 	void setCurrentTune(Tune *tune);
 	void removeTune(Tune* tune);
 	QModelIndex indexForTune(Tune* tune) const;
@@ -62,6 +63,9 @@ public:
 
 	void saveTunes(const QString& fileName);
 	void loadTunes(const QString& fileName);
+
+signals:
+	void currentTuneChanged(Tune*);
 
 public slots:
 	void tuneDataUpdated(Tune* tune);

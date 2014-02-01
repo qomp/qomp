@@ -56,20 +56,29 @@ Tune *QompPlayListModel::currentTune() const
 	return currentTune_;
 }
 
+QModelIndex QompPlayListModel::currentIndex() const
+{
+	return indexForTune(currentTune());
+}
+
 void QompPlayListModel::setCurrentTune(Tune *tune)
 {
-	currentTune_ = tune;
-	emit layoutChanged();
+	if(currentTune_ != tune) {
+		currentTune_ = tune;
+		emit currentTuneChanged(tune);
+		emit layoutChanged();
+	}
 }
 
 void QompPlayListModel::removeTune(Tune *tune)
 {
 	int i = tunes_.indexOf(tune);
-	beginRemoveRows(QModelIndex(), i, i);
-	tunes_.removeAt(i);
-	delete tune;
-	endRemoveRows();
-	return;
+	if(i != -1) {
+		beginRemoveRows(QModelIndex(), i, i);
+		tunes_.removeAt(i);
+		delete tune;
+		endRemoveRows();
+	}
 }
 
 QModelIndex QompPlayListModel::indexForTune(Tune *tune) const
@@ -266,7 +275,7 @@ void QompPlayListModel::clear()
 void QompPlayListModel::saveState()
 {
 	int curTrack = 0;
-	QModelIndex ind = indexForTune(currentTune());
+	QModelIndex ind = currentIndex();
 	if(ind.isValid())
 		curTrack = ind.row();
 	Options::instance()->setOption(OPTION_CURRENT_TRACK, curTrack);
@@ -286,9 +295,6 @@ void QompPlayListModel::restoreState()
 
 void QompPlayListModel::saveTunes(const QString &fileName)
 {
-	if(tunes_.size() == 0)
-		return;
-
 	QString f(fileName);
 	if(!f.endsWith(".qomp"))
 		f += ".qomp";

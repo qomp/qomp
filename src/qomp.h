@@ -47,8 +47,8 @@ private slots:
 	void actPlay();
 	void actPause();
 	void actStop();
-	void actMuteToggle();
-	void actSeek(qint64 ms);
+	void actMuteToggle(bool mute);
+	void actSeek(int ms);
 	void actSetVolume(qreal vol);
 	void actSavePlaylist();
 	void actLoadPlaylist();
@@ -72,6 +72,8 @@ private:
 	void setupMainWin();
 	void setupPlayer();
 	void setupModel();
+
+	void stopPlayer();
 
 private:
 	QompMainWin* mainWin_;

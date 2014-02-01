@@ -24,7 +24,21 @@
 
 #include "tune.h"
 
-class QompGetTunesMenu : public QMenu
+
+class QompMenu : public QMenu
+{
+	Q_OBJECT
+protected:
+	explicit QompMenu(QWidget *parent = 0);
+	QompMenu(const QString& name, QWidget *parent = 0);
+
+	virtual void buildMenu() {}
+
+private slots:
+	void menuAboutToShow();
+};
+
+class QompGetTunesMenu : public QompMenu
 {
 	Q_OBJECT
 public:
@@ -41,7 +55,7 @@ private:
 	void buildMenu();
 };
 
-class QompMainMenu : public QMenu
+class QompMainMenu : public QompMenu
 {
 	Q_OBJECT
 public:
@@ -59,7 +73,7 @@ private:
 	void buildMenu();
 };
 
-class QompTrackMenu : public QMenu
+class QompTrackMenu : public QompMenu
 {
 	Q_OBJECT
 public:
@@ -81,6 +95,20 @@ private:
 
 private:
 	Tune* tune_;
+};
+
+class QompRemoveTunesMenu : public QompMenu
+{
+	Q_OBJECT
+public:
+	QompRemoveTunesMenu(QWidget* p = 0);
+
+signals:
+	void removeAll();
+	void removeSelected();
+
+private:
+	void buildMenu();
 };
 
 #endif // QOMPMENU_H

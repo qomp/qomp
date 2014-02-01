@@ -33,6 +33,7 @@
 #include "qomptunedownloader.h"
 #include "qompplaylistmodel.h"
 #include "qompoptionsdlg.h"
+#include "pluginmanager.h"
 
 #include <QApplication>
 #include <QFileDialog>
@@ -139,19 +140,22 @@ void Qomp::actStop()
 
 }
 
-void Qomp::actMuteToggle()
+void Qomp::actMuteToggle(bool mute)
 {
-
+	if(player_->isMuted() != mute) {
+		player_->setMute(mute);
+		mainWin_->setMuteState(player_->isMuted());
+	}
 }
 
-void Qomp::actSeek(qint64 ms)
+void Qomp::actSeek(int ms)
 {
-
+	player_->setPosition(qint64(ms));
 }
 
 void Qomp::actSetVolume(qreal vol)
 {
-
+	player_->setVolume(vol);
 }
 
 void Qomp::actSavePlaylist()
@@ -181,12 +185,28 @@ void Qomp::actGetTunes()
 
 void Qomp::actClearPlaylist()
 {
-
+	stopPlayer();
+	model_->clear();
 }
 
 void Qomp::actRemoveSelected(const QModelIndexList &list)
 {
+	bool removingCurrent = false;
+	TuneList tl;
+	foreach(const QModelIndex& index, list) {
+		Tune* t = model_->tune(index);
+		if(t == model_->currentTune())
+			removingCurrent = true;
+		tl << t;
+	}
+	foreach(Tune* tune, tl)
+		model_->removeTune(tune);
 
+	if(removingCurrent) {
+		stopPlayer();
+		model_->setCurrentTune(model_->tune(model_->index(0,0)));
+	}
+	//ui->playList->setCurrentIndex(model_->indexForTune(model_->currentTune()));
 }
 
 void Qomp::actDoSettings()
@@ -232,7 +252,17 @@ void Qomp::setupMainWin()
 {
 	mainWin_ = new QompMainWin();
 	mainWin_->setModel(model_);
+
 	mainWin_->setPlayer(player_);
+	mainWin_->setMuteState(player_->isMuted());
+	mainWin_->volumeChanged(player_->volume());
+	mainWin_->setCurrentPosition(player_->position());
+
+	connect(player_, SIGNAL(currentPositionChanged(qint64)),	mainWin_, SLOT(setCurrentPosition(qint64)));
+	connect(player_, SIGNAL(mutedChanged(bool)),			mainWin_, SLOT(setMuteState(bool)));
+	connect(player_, SIGNAL(volumeChanged(qreal)),			mainWin_, SLOT(volumeChanged(qreal)));
+	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)),	mainWin_, SLOT(currentTotalTimeChanged(qint64)));
+	connect(player_, SIGNAL(stateChanged(QompPlayer::State)),	mainWin_, SLOT(playerStateChanged(QompPlayer::State)));
 
 	connect(mainWin_, SIGNAL(exit()), SLOT(exit()));
 	connect(mainWin_, SIGNAL(loadPlaylist()), SLOT(actLoadPlaylist()));
@@ -241,6 +271,11 @@ void Qomp::setupMainWin()
 	connect(mainWin_, SIGNAL(checkForUpdates()), SLOT(actCheckForUpdates()));
 	connect(mainWin_, SIGNAL(doOptions()), SLOT(actDoSettings()));
 	connect(mainWin_, SIGNAL(downloadTune(Tune*)), SLOT(actDownloadTune(Tune*)));
+	connect(mainWin_, SIGNAL(actMuteActivated(bool)), SLOT(actMuteToggle(bool)));
+	connect(mainWin_, SIGNAL(volumeSliderMoved(qreal)), SLOT(actSetVolume(qreal)));
+	connect(mainWin_, SIGNAL(seekSliderMoved(int)), SLOT(actSeek(int)));
+	connect(mainWin_, SIGNAL(removeSelected(QModelIndexList)), SLOT(actRemoveSelected(QModelIndexList)));
+	connect(mainWin_, SIGNAL(clearPlaylist()), SLOT(actClearPlaylist()));
 }
 
 void Qomp::setupPlayer()
@@ -250,11 +285,20 @@ void Qomp::setupPlayer()
 #elif HAVE_QTMULTIMEDIA
 	player_ = new QompQtMultimediaPlayer(this);
 #endif
+	PluginManager::instance()->qompPlayerChanged(player_);
 
+	connect(player_, SIGNAL(tuneDataUpdated(Tune*)), model_, SLOT(tuneDataUpdated(Tune*)));
 }
 
 void Qomp::setupModel()
 {
 	model_ = new QompPlayListModel(this);
 	model_->restoreState();
+}
+
+void Qomp::stopPlayer()
+{
+	player_->stop();
+	mainWin_->setCurrentPosition(0);
+	mainWin_->playerStateChanged(QompPlayer::StateStopped);
 }
