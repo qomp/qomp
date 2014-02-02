@@ -20,8 +20,9 @@
 #ifndef MYZUKARURESOLVESTRATEGY_H
 #define MYZUKARURESOLVESTRATEGY_H
 
-#include "tune.h"
 #include <QObject>
+
+#include "tune.h"
 
 class MyzukaruResolveStrategy : public QObject, public TuneURLResolveStrategy
 {

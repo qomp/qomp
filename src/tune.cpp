@@ -128,9 +128,9 @@ bool Tune::operator==(const Tune& other) const
 	return id() == other.id();
 }
 
-TuneList Tune::tunesFromFile(const QString &fileName)
+QList<Tune*> Tune::tunesFromFile(const QString &fileName)
 {
-	TuneList tunes;
+	QList<Tune*> tunes;
 	QFile f(fileName);
 	if(f.exists() && f.open(QFile::ReadOnly)) {
 		QTextStream str(&f);

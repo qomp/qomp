@@ -43,7 +43,7 @@ QString MyzukaruPlugin::description() const
 	return tr("Listen to the music from Myzuka.ru");
 }
 
-TuneList MyzukaruPlugin::getTunes()
+QList<Tune*> MyzukaruPlugin::getTunes()
 {
 	MyzukaruController ctrl;
 	return ctrl.getTunes();

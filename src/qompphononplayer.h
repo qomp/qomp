@@ -32,7 +32,7 @@ class QompPhononPlayer : public QompPlayer
 {
 	Q_OBJECT
 public:
-	explicit QompPhononPlayer(QObject *parent);
+	QompPhononPlayer();
 	~QompPhononPlayer();
 
 	virtual void setVolume(qreal vol);
@@ -42,7 +42,7 @@ public:
 	virtual void setPosition(qint64 pos);
 	virtual qint64 position() const;
 
-	virtual State state() const;
+	virtual Qomp::State state() const;
 	virtual void play();
 	virtual void pause();
 	virtual void stop();

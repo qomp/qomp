@@ -38,8 +38,6 @@ public:
 	virtual QString name() const { return tr("Main"); }
 	virtual void retranslate();
 
-	void setQompPlayer(QompPlayer* player);
-
 public slots:
 	virtual void applyOptions();
 	virtual void restoreOptions();

@@ -19,6 +19,7 @@
 
 #include "qompplaylistview.h"
 #include "qompplaylistmodel.h"
+#include "tune.h"
 
 QompPlaylistView::QompPlaylistView(QWidget *parent) :
 	QListView(parent)

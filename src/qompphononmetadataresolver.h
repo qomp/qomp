@@ -21,6 +21,7 @@
 #define QOMPPHONONMETADATARESOLVER_H
 
 #include "qompmetadataresolver.h"
+#include "common.h"
 
 #include <Phonon/MediaObject>
 

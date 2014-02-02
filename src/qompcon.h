@@ -23,18 +23,20 @@
 #include <QObject>
 #include <QModelIndex>
 
+#include "common.h"
+
 class QompMainWin;
 class QompPlayListModel;
 class QompPlayer;
 class Tune;
 
 
-class Qomp : public QObject
+class QompCon : public QObject
 {
 	Q_OBJECT
 public:
-	Qomp(QObject *parent = 0);
-	~Qomp();
+	QompCon(QObject *parent = 0);
+	~QompCon();
 
 	void init();
 
@@ -47,12 +49,16 @@ private slots:
 	void actPlay();
 	void actPause();
 	void actStop();
+
+	void actMediaActivated(const QModelIndex& index);
+	void actMediaClicked(const QModelIndex& index);
+
 	void actMuteToggle(bool mute);
 	void actSeek(int ms);
 	void actSetVolume(qreal vol);
 	void actSavePlaylist();
 	void actLoadPlaylist();
-	void actGetTunes();
+	void setTunes(const QList<Tune*>& tunes);
 
 	void actClearPlaylist();
 	void actRemoveSelected(const QModelIndexList& list);
@@ -62,8 +68,10 @@ private slots:
 	void actAboutQomp();
 
 	void actDownloadTune(Tune* tune);
-	void actToggleTune(Tune* tune);
+	void actToggleTuneState(Tune* tune);
 	void actRemoveTune(Tune* tune);
+
+	void playNext();
 
 //protected:
 //	bool eventFilter(QObject *obj, QEvent *e);

@@ -34,7 +34,7 @@ MprisPlugin::MprisPlugin() :
 void MprisPlugin::qompPlayerChanged(QompPlayer *player)
 {
 	player_ = player;
-	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStatusChanged()));
+	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
 }
 
 void MprisPlugin::setEnabled(bool enabled)

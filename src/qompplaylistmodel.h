@@ -21,7 +21,8 @@
 #define QOMPPLAYLISTMODEL_H
 
 #include <QAbstractListModel>
-#include "tune.h"
+
+class Tune;
 
 class QompPlayListModel : public QAbstractListModel
 {
@@ -39,7 +40,7 @@ public:
 		IsCurrentTuneRole = Qt::UserRole+7
 	};
 
-	void addTunes(const TuneList& tunes);
+	void addTunes(const QList<Tune*>& tunes);
 	Tune *tune(const QModelIndex& index) const;
 	Tune* currentTune() const;
 	QModelIndex currentIndex() const;
@@ -71,7 +72,7 @@ public slots:
 	void tuneDataUpdated(Tune* tune);
 
 private:
-	TuneList tunes_;
+	QList<Tune*> tunes_;
 	Tune* currentTune_;
 };
 

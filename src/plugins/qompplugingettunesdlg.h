@@ -20,7 +20,7 @@
 #ifndef QOMPPLUGINGETTUNESDLG_H
 #define QOMPPLUGINGETTUNESDLG_H
 
-#include "tune.h"
+#include "common.h"
 
 #include <QDialog>
 

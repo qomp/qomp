@@ -37,7 +37,6 @@ QompOptionsDlg::QompOptionsDlg(QompMainWin *parent) :
 	ui->setupUi(this);
 	QList<QompOptionsPage*> list;
 	QompOptionsMain* om = new QompOptionsMain(this);
-	om->setQompPlayer(parent->player());
 	QompOptionsPlugins* op = new QompOptionsPlugins(this);
 	list << om << op;
 

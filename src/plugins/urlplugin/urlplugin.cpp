@@ -18,6 +18,7 @@
  */
 
 #include "urlplugin.h"
+#include "tune.h"
 
 #include <QInputDialog>
 #include <QtPlugin>
@@ -26,9 +27,9 @@ UrlPlugin::UrlPlugin()
 {
 }
 
-TuneList UrlPlugin::getTunes()
+QList<Tune*> UrlPlugin::getTunes()
 {
-	TuneList list;
+	QList<Tune*> list;
 	bool ok = false;
 	QString url = QInputDialog::getText(0, tr("Input url"), "URL:",QLineEdit::Normal, "", &ok);
 	if(ok) {

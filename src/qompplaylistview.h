@@ -22,7 +22,7 @@
 
 #include <QListView>
 
-#include "tune.h"
+class Tune;
 
 class QompPlaylistView : public QListView
 {
@@ -35,7 +35,7 @@ protected:
 	virtual void dropEvent(QDropEvent *e);
 
 private:
-	TuneList selected_;
+	QList<Tune*> selected_;
 	
 };
 

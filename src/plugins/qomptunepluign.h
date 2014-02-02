@@ -20,9 +20,9 @@
 #ifndef QOMPTUNEPLUIGN_H
 #define QOMPTUNEPLUIGN_H
 
-#include "tune.h"
-
 #include <QObject>
+
+class Tune;
 
 class TuneURLResolveStrategy;
 
@@ -31,7 +31,7 @@ class QompTunePlugin
 public:
 	virtual ~QompTunePlugin() {}
 
-	virtual TuneList getTunes() = 0;
+	virtual QList<Tune*> getTunes() = 0;
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const = 0;
 };
 

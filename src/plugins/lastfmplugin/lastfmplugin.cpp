@@ -24,6 +24,7 @@
 #include "common.h"
 #include "qompnetworkingfactory.h"
 #include "lastfmauthdlg.h"
+#include "tune.h"
 
 #include <QtPlugin>
 #include <QCryptographicHash>
@@ -91,7 +92,7 @@ void LastFmPlugin::qompPlayerChanged(QompPlayer *player)
 {
 	player_ = player;
 	connect(player_, SIGNAL(tuneChanged(Tune*)), SLOT(tuneChanged(Tune*)));
-	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStatusChanged()));
+	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
 }
 
 void LastFmPlugin::setEnabled(bool enabled)
@@ -106,7 +107,7 @@ void LastFmPlugin::playerStatusChanged()
 
 	scrobbleTimer_->stop();
 	nowPlayingTimer_->stop();
-	if(player_->state() == QompPlayer::StatePlaying) {
+	if(player_->state() == Qomp::StatePlaying) {
 		nowPlayingTimer_->start(3000);
 	}
 }

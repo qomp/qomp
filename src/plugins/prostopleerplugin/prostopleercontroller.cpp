@@ -24,6 +24,7 @@
 #include "qompplugintreemodel.h"
 #include "options.h"
 #include "prostopleerplugindefines.h"
+#include "tune.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -74,9 +75,9 @@ ProstoPleerController::~ProstoPleerController()
 	delete dlg_;
 }
 
-TuneList ProstoPleerController::prepareTunes() const
+QList<Tune*> ProstoPleerController::prepareTunes() const
 {
-	TuneList tunes;
+	QList<Tune*> tunes;
 	foreach(QompPluginModelItem* item, model_->selectedItems()) {
 		if(!item)
 			continue;

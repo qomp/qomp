@@ -19,6 +19,7 @@
 
 #include "qompmenu.h"
 #include "pluginmanager.h"
+#include "tune.h"
 
 #include <QApplication>
 #include <QClipboard>
@@ -56,7 +57,7 @@ QompGetTunesMenu::QompGetTunesMenu(const QString &name, QWidget *parent) :
 void QompGetTunesMenu::actionActivated()
 {
 	QAction* act = static_cast<QAction*>(sender());
-	TuneList t = PluginManager::instance()->getTune(act->text());
+	QList<Tune*> t = PluginManager::instance()->getTune(act->text());
 	if(!t.isEmpty())
 		emit tunes(t);
 
@@ -86,7 +87,7 @@ void QompMainMenu::buildMenu()
 	act->setParent(this);
 
 	QompGetTunesMenu *open = new QompGetTunesMenu(tr("Open"), this);
-	connect(open, SIGNAL(tunes(TuneList)), SIGNAL(tunes(TuneList)));
+	connect(open, SIGNAL(tunes(QList<Tune*>)), SIGNAL(tunes(QList<Tune*>)));
 	addMenu(open);
 
 	act = addAction(tr("Settings"), this, SIGNAL(actDoOptions()));

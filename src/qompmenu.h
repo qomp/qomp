@@ -22,8 +22,7 @@
 
 #include <QMenu>
 
-#include "tune.h"
-
+class Tune;
 
 class QompMenu : public QMenu
 {
@@ -46,7 +45,7 @@ public:
 	QompGetTunesMenu(const QString& name, QWidget *parent = 0);
 
 signals:
-	void tunes(const TuneList&);
+	void tunes(const QList<Tune*>&);
 
 private slots:
 	void actionActivated();
@@ -67,7 +66,7 @@ signals:
 	void actDoOptions();
 	void actExit();
 	void actAbout();
-	void tunes(const TuneList&);
+	void tunes(const QList<Tune*>&);
 
 private:
 	void buildMenu();

@@ -23,7 +23,6 @@
 #include "qompplugin.h"
 #include "qompplayerstatusplugin.h"
 #include "lastfmdefines.h"
-#include "tune.h"
 
 #include <QPointer>
 

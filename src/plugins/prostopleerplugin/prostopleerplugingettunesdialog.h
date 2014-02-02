@@ -22,8 +22,6 @@
 
 #include "qompplugingettunesdlg.h"
 
-#include "tune.h"
-
 namespace Ui {
 class ProstoPleerPluginResultsWidget;
 }

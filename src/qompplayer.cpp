@@ -19,9 +19,21 @@
 
 #include "qompplayer.h"
 #include "qompmetadataresolver.h"
+#include "tune.h"
 
-QompPlayer::QompPlayer(QObject *parent) :
-	QObject(parent)
+#ifdef HAVE_PHONON
+#include "qompphononplayer.h"
+#elif HAVE_QTMULTIMEDIA
+#include "qompqtmultimediaplayer.h"
+#endif
+
+#include <QCoreApplication>
+
+QompPlayer* QompPlayer::instance_ = 0;
+
+
+QompPlayer::QompPlayer() :
+	QObject(QCoreApplication::instance())
 {
 }
 
@@ -32,12 +44,25 @@ void QompPlayer::setTune(Tune *tune)
 	emit tuneChanged(tune);
 }
 
+QompPlayer *QompPlayer::instance()
+{
+	if(instance_ == 0) {
+#ifdef HAVE_PHONON
+		instance_ = new QompPhononPlayer;
+#elif HAVE_QTMULTIMEDIA
+		instance_ = new QompQtMultimediaPlayer;
+#endif
+	}
+
+	return instance_;
+}
+
 Tune *QompPlayer::currentTune() const
 {
 	return currentTune_;
 }
 
-void QompPlayer::resolveMetadata(const TuneList& tunes)
+void QompPlayer::resolveMetadata(const QList<Tune*>& tunes)
 {
 	if(metaDataResolver())
 		metaDataResolver()->resolve(tunes);

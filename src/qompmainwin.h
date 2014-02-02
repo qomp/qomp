@@ -23,7 +23,7 @@
 #include <QMainWindow>
 #include <QModelIndex>
 
-#include "qompplayer.h"
+#include "common.h"
 
 namespace Ui {
 	class QompMainWin;
@@ -31,6 +31,7 @@ namespace Ui {
 
 class QompPlayListModel;
 class QompTrayIcon;
+class Tune;
 
 class QompMainWin : public QMainWindow
 {
@@ -40,18 +41,11 @@ public:
 	QompMainWin(QWidget *parent = 0);
 	~QompMainWin();
 
-	QompPlayer* player() const;
-	void setPlayer(QompPlayer* player);
 	void setModel(QompPlayListModel* model);
 
 	void bringToFront();
 
 public slots:
-	void actPlayActivated();
-	void actPrevActivated();
-	void actNextActivated();
-	void actStopActivated();
-
 	void toggleVisibility();
 
 	void setMuteState(bool mute);
@@ -59,7 +53,8 @@ public slots:
 	void setCurrentPosition(qint64 ms);
 	void currentTotalTimeChanged(qint64 ms);
 
-	void playerStateChanged(QompPlayer::State state);
+	void playerStateChanged(Qomp::State state);
+	void updateIcons(Qomp::State state);
 
 private slots:
 	void actOpenActivated();
@@ -67,14 +62,11 @@ private slots:
 
 	void volumeSliderMoved(int);
 
-
-	void mediaActivated(const QModelIndex& index);
-	void mediaClicked(const QModelIndex& index);
 	void doTrackContextMenu(const QPoint& p);
 
 	void doMainContextMenu();
 
-	void playNext();
+//	void playNext();
 
 	void updateTuneInfo(Tune *tune);
 
@@ -82,13 +74,8 @@ private slots:
 	void trayActivated(Qt::MouseButton);
 	void trayWheeled(int delta);
 
-	void updateIcons(QompPlayer::State state);
 	void updateOptions();
 
-	void tunes(const TuneList &list);
-
-	void toggleTune(Tune* tune);
-	void removeTune(Tune* tune);
 	void removeSelectedIndexes();
 
 signals:
@@ -105,14 +92,22 @@ signals:
 
 	void clearPlaylist();
 	void removeSelected(const QModelIndexList&);
+	void toggleTuneState(Tune* tune);
+	void removeTune(Tune* tune);
+	void tunes(const QList<Tune*> &list);
+
+	void actPlayActivated();
+	void actPrevActivated();
+	void actNextActivated();
+	void actStopActivated();
+	void mediaActivated(const QModelIndex& index);
+	void mediaClicked(const QModelIndex& index);
 
 protected:
 	void closeEvent(QCloseEvent *e);
 	void changeEvent(QEvent *e);
 
 private:
-	void stopPlayer();
-
 	void connectActions();
 	void setIcons();
 	void setupPlaylist();
@@ -122,7 +117,6 @@ private:
 	
 private:
 	Ui::QompMainWin *ui;
-	QompPlayer* player_;
 	QompPlayListModel* model_;
 	QompTrayIcon* trayIcon_;
 

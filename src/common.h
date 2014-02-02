@@ -36,6 +36,13 @@ QString fixEncoding(const QString& encoded);
 QString cacheDir();
 QString dataDir();
 
+enum State { StateUnknown = 0,
+	StateStopped, StatePaused,
+	StatePlaying, StateError,
+	StateLoading, StateBuffering
+};
+
 } //namespace Qomp
+
 
 #endif // COMMON_H

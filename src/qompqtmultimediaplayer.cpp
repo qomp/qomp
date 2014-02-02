@@ -19,13 +19,14 @@
 
 #include "qompqtmultimediaplayer.h"
 #include "qompqtmultimediametadataresolver.h"
+#include "tune.h"
 
 #include <QMediaPlayer>
 #include <QMediaContent>
 #include <QAudioDeviceInfo>
 
-QompQtMultimediaPlayer::QompQtMultimediaPlayer(QObject *parent) :
-	QompPlayer(parent),
+QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
+	QompPlayer(),
 	player_(new QMediaPlayer(this)),
 	resolver_(new QompQtMultimediaMetaDataResolver())
 {
@@ -90,17 +91,17 @@ qint64 QompQtMultimediaPlayer::position() const
 	return player_->position();
 }
 
-QompPlayer::State QompQtMultimediaPlayer::state() const
+Qomp::State QompQtMultimediaPlayer::state() const
 {
 	switch(player_->state()) {
 	case QMediaPlayer::StoppedState:
-		return QompPlayer::StateStopped;
+		return Qomp::StateStopped;
 	case QMediaPlayer::PlayingState:
-		return QompPlayer::StatePlaying;
+		return Qomp::StatePlaying;
 	case QMediaPlayer::PausedState:
-		return QompPlayer::StatePaused;
+		return Qomp::StatePaused;
 	}
-	return QompPlayer::StateUnknown;
+	return Qomp::StateUnknown;
 }
 
 void QompQtMultimediaPlayer::play()
@@ -157,10 +158,10 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 {
 	switch(status) {
 	case QMediaPlayer::LoadingMedia:
-		emit QompPlayer::stateChanged(QompPlayer::StateLoading);
+		emit QompPlayer::stateChanged(Qomp::StateLoading);
 		break;
 	case QMediaPlayer::BufferingMedia:
-		emit QompPlayer::stateChanged(QompPlayer::StateBuffering);
+		emit QompPlayer::stateChanged(Qomp::StateBuffering);
 		break;
 	default:
 		stateChanged(player_->state());

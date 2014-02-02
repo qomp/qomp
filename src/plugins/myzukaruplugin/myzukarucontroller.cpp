@@ -265,16 +265,16 @@ void MyzukaruController::init()
 	dlg_->setCurrentTab(TabArtists);
 }
 
-TuneList MyzukaruController::prepareTunes() const
+QList<Tune*> MyzukaruController::prepareTunes() const
 {
-	TuneList list;
+	QList<Tune*> list;
 	QList<QompPluginModelItem*> l = QList<QompPluginModelItem*>()
 			<< artistsModel_->selectedItems()
 			<< albumsModel_->selectedItems()
 			<< tracksModel_->selectedItems();
 
 	foreach(QompPluginModelItem* tune, l) {
-		if(!tune || tune->type() != Qomp::TypeTune)
+		if(!tune || tune->type() != QompCon::TypeTune)
 			continue;
 
 		QompPluginTune* pt = static_cast<QompPluginTune*>(tune);
@@ -386,7 +386,7 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 	QUrl url(MYZUKA_URL);
 	const char* slot = 0;
 	switch(item->type()) {
-	case Qomp::TypeTune:
+	case QompCon::TypeTune:
 	{
 //		QompPluginTune *tune = static_cast<QompPluginTune *>(item);
 //		if(!tune->url.isEmpty())
@@ -396,7 +396,7 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 //		break;
 		return;
 	}
-	case Qomp::TypeAlbum:
+	case QompCon::TypeAlbum:
 	{
 		QompPluginAlbum *album = static_cast<QompPluginAlbum *>(item);
 		if(album->tunesReceived)
@@ -405,7 +405,7 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 		slot = SLOT(albumUrlFinished());
 		break;
 	}
-	case Qomp::TypeArtist:
+	case QompCon::TypeArtist:
 	{
 		QompPluginArtist *artist = static_cast<QompPluginArtist *>(item);
 		if(artist->tunesReceived)
@@ -503,7 +503,7 @@ void MyzukaruController::albumUrlFinished()
 		if(!tunes.isEmpty()) {
 			QString id = reply->property("id").toString();
 			QompPluginModelItem* it = model->itemForId(id);
-			if(it && it->type() == Qomp::TypeAlbum) {
+			if(it && it->type() == QompCon::TypeAlbum) {
 				QompPluginAlbum* pa = static_cast<QompPluginAlbum*>(it);
 				model->setItems(tunes, it);
 				foreach(QompPluginModelItem* t, tunes) {
@@ -554,7 +554,7 @@ void MyzukaruController::artistUrlFinished()
 
 		QList<QompPluginModelItem*> albums = parseAlbums2(replyStr, 0);
 		if(!albums.isEmpty()) {
-			if(it && it->type() == Qomp::TypeArtist) {
+			if(it && it->type() == QompCon::TypeArtist) {
 				QompPluginArtist* pa = static_cast<QompPluginArtist*>(it);
 				foreach(QompPluginModelItem* t, albums) {
 					static_cast<QompPluginAlbum*>(t)->artist = pa->artist;
@@ -566,7 +566,7 @@ void MyzukaruController::artistUrlFinished()
 
 		QList<QompPluginModelItem*> tunes = parseTunes3(replyStr, 0);
 		if(!tunes.isEmpty()) {
-			if(it && it->type() == Qomp::TypeArtist) {
+			if(it && it->type() == QompCon::TypeArtist) {
 				QompPluginArtist* pa = static_cast<QompPluginArtist*>(it);
 				foreach(QompPluginModelItem* t, tunes) {
 					static_cast<QompPluginTune*>(t)->artist = pa->artist;

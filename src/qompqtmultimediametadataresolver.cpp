@@ -18,6 +18,7 @@
  */
 
 #include "qompqtmultimediametadataresolver.h"
+#include "tune.h"
 //#include "qompnetworkingfactory.h"
 //#include <QNetworkAccessManager>
 //#include <QNetworkCookieJar>

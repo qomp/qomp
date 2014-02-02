@@ -43,7 +43,7 @@ QString YandexMusicPlugin::description() const
 	return tr("Listening to the music from Yandex.Music");
 }
 
-TuneList YandexMusicPlugin::getTunes()
+QList<Tune*> YandexMusicPlugin::getTunes()
 {
 	YandexMusicController ctrl;
 	return ctrl.getTunes();

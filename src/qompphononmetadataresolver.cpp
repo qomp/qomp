@@ -18,6 +18,7 @@
  */
 
 #include "qompphononmetadataresolver.h"
+#include "tune.h"
 
 
 QompPhononMetaDataResolver::QompPhononMetaDataResolver(QObject *parent) :

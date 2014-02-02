@@ -2,7 +2,7 @@ INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 SOURCES += $$PWD/main.cpp\
     $$PWD/qompmainwin.cpp \
-    $$PWD/qomp.cpp \
+    $$PWD/qompcon.cpp \
     $$PWD/options.cpp \
     $$PWD/qompplayer.cpp \
     $$PWD/qompplaylistmodel.cpp \
@@ -22,7 +22,7 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/qompmenu.cpp
 
 HEADERS  += $$PWD/qompmainwin.h \
-    $$PWD/qomp.h \
+    $$PWD/qompcon.h \
     $$PWD/options.h \
     $$PWD/qompplayer.h \
     $$PWD/qompplaylistmodel.h \

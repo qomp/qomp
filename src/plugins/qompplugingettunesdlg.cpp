@@ -21,6 +21,7 @@
 #include "qompplugintreemodel.h"
 #include "defines.h"
 #include "options.h"
+#include "tune.h"
 
 #include "ui_qompplugingettunesdlg.h"
 

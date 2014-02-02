@@ -23,7 +23,7 @@
 #include <QList>
 #include <QString>
 
-namespace Qomp {
+namespace QompCon {
 enum DataSelection { DataUnselect = 0, DataSelect = 1, DataToggle = 2 };
 enum ModelItemType { NoType = 0, TypeTune, TypeAlbum, TypeArtist };
 }
@@ -65,7 +65,7 @@ public:
 	/**
 	 * Type of this item (tune, album, artist)
 	 */
-	virtual Qomp::ModelItemType type() const = 0;
+	virtual QompCon::ModelItemType type() const = 0;
 
 	/**
 	 * Icon for this item (folder icon or file icon etc.)
@@ -111,7 +111,7 @@ public:
 	QString url;
 
 	virtual QString toString() const;
-	virtual Qomp::ModelItemType type() const;
+	virtual QompCon::ModelItemType type() const;
 	QIcon icon() const;
 	virtual Tune* toTune() const;
 };
@@ -127,7 +127,7 @@ public:
 	bool tunesReceived;
 
 	virtual QString toString() const;
-	virtual Qomp::ModelItemType type() const;
+	virtual QompCon::ModelItemType type() const;
 	QIcon icon() const;
 };
 
@@ -140,7 +140,7 @@ public:
 	bool tunesReceived;
 
 	virtual QString toString() const;
-	virtual Qomp::ModelItemType type() const;
+	virtual QompCon::ModelItemType type() const;
 	QIcon icon() const;
 };
 

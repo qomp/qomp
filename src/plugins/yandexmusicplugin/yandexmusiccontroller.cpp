@@ -107,16 +107,16 @@ void YandexMusicController::init()
 	dlg_->setCuuretnTab(TabArtist);
 }
 
-TuneList YandexMusicController::prepareTunes() const
+QList<Tune*> YandexMusicController::prepareTunes() const
 {
-	TuneList tunes;
+	QList<Tune*> tunes;
 	QList<QompPluginModelItem*> list = QList<QompPluginModelItem*>()
 			<< artistsModel_->selectedItems()
 			<< albumsModel_->selectedItems()
 			<< tracksModel_->selectedItems();
 
 	foreach(QompPluginModelItem* tune, list) {
-		if(!tune || tune->type() != Qomp::TypeTune)
+		if(!tune || tune->type() != QompCon::TypeTune)
 			continue;
 
 		QompPluginTune* pt = static_cast<QompPluginTune*>(tune);
@@ -344,7 +344,7 @@ void YandexMusicController::itemSelected(QompPluginModelItem *item)
 	QString path;
 	const char* slot = 0;
 	switch(item->type()) {
-	case Qomp::TypeTune:
+	case QompCon::TypeTune:
 	{
 //		YandexMusicTune *tune = static_cast<YandexMusicTune *>(item);
 //		if(!tune->url.isEmpty())
@@ -353,7 +353,7 @@ void YandexMusicController::itemSelected(QompPluginModelItem *item)
 //		slot = SLOT(tuneUrlFinishedStepOne());
 		return;
 	}
-	case Qomp::TypeAlbum:
+	case QompCon::TypeAlbum:
 	{
 		QompPluginAlbum *album = static_cast<QompPluginAlbum *>(item);
 		if(album->tunesReceived)
@@ -362,7 +362,7 @@ void YandexMusicController::itemSelected(QompPluginModelItem *item)
 		slot = SLOT(albumUrlFinished());
 		break;
 	}
-	case Qomp::TypeArtist:
+	case QompCon::TypeArtist:
 	{
 		QompPluginArtist *artist = static_cast<QompPluginArtist *>(item);
 		if(artist->tunesReceived)

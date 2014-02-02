@@ -31,9 +31,6 @@ public:
 	virtual QString name() const = 0;
 };
 
-class Tune;
-typedef QList<Tune*> TuneList;
-
 class Tune
 {
 public:
@@ -58,7 +55,7 @@ public:
 
 	bool operator==(const Tune& other) const;
 
-	static TuneList tunesFromFile(const QString& fileName);
+	static QList<Tune*> tunesFromFile(const QString& fileName);
 
 	static const Tune* emptyTune() { return empty_; }
 

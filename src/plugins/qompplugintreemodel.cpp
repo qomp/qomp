@@ -160,15 +160,15 @@ bool QompPluginTreeModel::setData(const QModelIndex &index, const QVariant &valu
 	layoutAboutToBeChanged();
 
 	switch(value.toInt()) {
-	case(Qomp::DataUnselect):
+	case(QompCon::DataUnselect):
 		if(selected_.contains(index))
 			selected_.remove(index);
 		break;
-	case(Qomp::DataSelect):
+	case(QompCon::DataSelect):
 		if(!selected_.contains(index))
 			selected_ << index;
 		break;
-	case(Qomp::DataToggle):
+	case(QompCon::DataToggle):
 		if(selected_.contains(index))
 			selected_.remove(index);
 		else

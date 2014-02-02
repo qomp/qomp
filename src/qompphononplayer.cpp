@@ -19,6 +19,7 @@
 
 #include "qompphononplayer.h"
 #include "qompphononmetadataresolver.h"
+#include "tune.h"
 
 #include <Phonon/AudioOutput>
 #include <Phonon/SeekSlider>
@@ -31,8 +32,8 @@
 #include <QtDebug>
 #endif
 
-QompPhononPlayer::QompPhononPlayer(QObject *parent) :
-	QompPlayer(parent),
+QompPhononPlayer::QompPhononPlayer() :
+	QompPlayer(),
 	resolver_(new QompPhononMetaDataResolver(this))
 {
 	mediaObject_ = new Phonon::MediaObject(this);
@@ -93,42 +94,42 @@ qint64 QompPhononPlayer::position() const
 	return mediaObject_->currentTime();
 }
 
-QompPlayer::State QompPhononPlayer::state() const
+Qomp::State QompPhononPlayer::state() const
 {
 	switch (mediaObject_->state()) {
 	case Phonon::PausedState:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "QompPlayer::state()" << "PausedState";
 #endif
-		return StatePaused;
+		return Qomp::StatePaused;
 	case Phonon::PlayingState:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "QompPlayer::state()" << "Phonon::PlayingState";
 #endif
-		return StatePlaying;
+		return Qomp::StatePlaying;
 	case Phonon::StoppedState:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "QompPlayer::state()" << "Phonon::StoppedState";
 #endif
-		return StateStopped;
+		return Qomp::StateStopped;
 	case Phonon::ErrorState:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "QompPlayer::state()" << "Phonon::ErrorState"
 			    << mediaObject_->errorType() << mediaObject_->errorString();
 #endif
-		return StateError;
+		return Qomp::StateError;
 	case Phonon::BufferingState:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "QompPlayer::state()" << "Phonon::BufferingState";
 #endif
-		return StateBuffering;
+		return Qomp::StateBuffering;
 	case Phonon::LoadingState:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "QompPlayer::state()" << "Phonon::LoadingState";
 #endif
-		return StateLoading;
+		return Qomp::StateLoading;
 	}
-	return StateUnknown;
+	return Qomp::StateUnknown;
 }
 
 void QompPhononPlayer::doSetTune(Tune *tune)

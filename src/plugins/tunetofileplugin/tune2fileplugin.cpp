@@ -21,6 +21,7 @@
 #include "ui_tunetofilesettings.h"
 #include "qompoptionspage.h"
 #include "options.h"
+#include "tune.h"
 
 #include <QFileDialog>
 #include <QTimer>
@@ -97,7 +98,7 @@ QompOptionsPage *Tune2FilePlugin::options()
 void Tune2FilePlugin::qompPlayerChanged(QompPlayer *player)
 {
 	player_ = player;
-	connect(player_, SIGNAL(stateChanged(QompPlayer::State)), SLOT(playerStatusChanged(QompPlayer::State)));
+	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged(Qomp::State)));
 }
 
 void Tune2FilePlugin::setEnabled(bool enabled)
@@ -116,14 +117,14 @@ void Tune2FilePlugin::unload()
 	}
 }
 
-void Tune2FilePlugin::playerStatusChanged(QompPlayer::State state)
+void Tune2FilePlugin::playerStatusChanged(Qomp::State state)
 {
 	if(!enabled_ || file_.isEmpty())
 		return;
 
 	QFile f(file_);
 	if(f.open(QFile::WriteOnly | QFile::Truncate)) {
-		if(state == QompPlayer::StatePlaying) {
+		if(state == Qomp::StatePlaying) {
 			Tune* t = player_->currentTune();
 			QString str = t->artist;
 			if(!str.isEmpty())

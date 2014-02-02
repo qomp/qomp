@@ -18,6 +18,7 @@
  */
 
 #include "mprisadapter.h"
+#include "tune.h"
 
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>

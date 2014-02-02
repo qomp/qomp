@@ -18,9 +18,10 @@
  */
 
 #include "qompplaylistmodel.h"
-#include "common.h"
+#include "tune.h"
 #include "options.h"
 #include "defines.h"
+#include "common.h"
 
 #include <QFileInfo>
 #include <QStringList>
@@ -36,7 +37,7 @@ QompPlayListModel::QompPlayListModel(QObject *parent) :
 {
 }
 
-void QompPlayListModel::addTunes(const TuneList &tunes)
+void QompPlayListModel::addTunes(const QList<Tune*> &tunes)
 {
 	emit beginInsertRows(QModelIndex(), tunes_.size(), tunes_.size()+tunes.size());
 	tunes_.append(tunes);
@@ -242,7 +243,7 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 	Tune* t = tune(index(row));
 	QByteArray encodedData = data->data("qomp/tune");
 	QDataStream stream(&encodedData, QIODevice::ReadOnly);
-	TuneList tl;
+	QList<Tune*> tl;
 	while (!stream.atEnd()) {
 		int i;
 		stream >> i;
@@ -284,7 +285,7 @@ void QompPlayListModel::saveState()
 
 void QompPlayListModel::restoreState()
 {
-	TuneList tl = Tune::tunesFromFile(Qomp::cacheDir() + cachedPlayListFileName);
+	QList<Tune*> tl = Tune::tunesFromFile(Qomp::cacheDir() + cachedPlayListFileName);
 	if(!tl.isEmpty()) {
 		addTunes(tl);
 		QModelIndex ind = index(Options::instance()->getOption(OPTION_CURRENT_TRACK, 0).toInt(),0);
@@ -311,7 +312,7 @@ void QompPlayListModel::saveTunes(const QString &fileName)
 
 void QompPlayListModel::loadTunes(const QString &fileName)
 {
-	TuneList tl = Tune::tunesFromFile(fileName);
+	QList<Tune*> tl = Tune::tunesFromFile(fileName);
 	addTunes(tl);
 }
 

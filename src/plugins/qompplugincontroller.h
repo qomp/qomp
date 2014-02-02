@@ -22,8 +22,7 @@
 
 #include <QObject>
 
-#include "tune.h"
-
+class Tune;
 class QNetworkAccessManager;
 class QompPluginModelItem;
 class QompPluginGettunesDlg;
@@ -38,7 +37,7 @@ public:
 	/**
 	 * Return list of Tunes
 	 */
-	TuneList getTunes() const;
+	QList<Tune*> getTunes() const;
 
 signals:
 	void suggestionsReady(const QStringList&);
@@ -59,7 +58,7 @@ protected slots:
 protected:
 	QNetworkAccessManager* nam() const { return nam_; }
 	virtual void init();
-	virtual TuneList prepareTunes() const = 0;
+	virtual QList<Tune*> prepareTunes() const = 0;
 
 private:
 	QNetworkAccessManager* nam_;

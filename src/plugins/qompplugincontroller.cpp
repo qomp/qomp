@@ -20,6 +20,7 @@
 #include "qompplugincontroller.h"
 #include "qompplugingettunesdlg.h"
 #include "qompnetworkingfactory.h"
+#include "tune.h"
 
 #include <QNetworkAccessManager>
 
@@ -34,12 +35,12 @@ QompPluginController::~QompPluginController()
 
 }
 
-TuneList QompPluginController::getTunes() const
+QList<Tune*> QompPluginController::getTunes() const
 {
 	if(view()->go() == QompPluginGettunesDlg::ResultOK)
 		return prepareTunes();
 
-	return TuneList();
+	return QList<Tune*>();
 }
 
 void QompPluginController::init()

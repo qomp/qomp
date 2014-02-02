@@ -18,6 +18,7 @@
  */
 
 #include "qompmetadataresolver.h"
+#include "tune.h"
 #include "common.h"
 
 #include <QMutexLocker>
@@ -37,7 +38,7 @@ QompMetaDataResolver::~QompMetaDataResolver()
 	delete mutex_;
 }
 
-void QompMetaDataResolver::resolve(const TuneList &tunes)
+void QompMetaDataResolver::resolve(const QList<Tune*> &tunes)
 {
 	QMutexLocker locker(mutex_);
 	bool s = data_.isEmpty();
@@ -106,7 +107,7 @@ void QompMetaDataResolver::updateTuneDuration(qint64 msec)
 	data_.first()->duration = Qomp::durationMiliSecondsToString(msec);
 }
 
-void QompMetaDataResolver::addTunes(const TuneList &tunes)
+void QompMetaDataResolver::addTunes(const QList<Tune*> &tunes)
 {
 	data_.append(tunes);
 }

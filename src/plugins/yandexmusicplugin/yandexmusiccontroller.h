@@ -43,7 +43,7 @@ protected slots:
 
 protected:
 	void init();
-	TuneList prepareTunes() const;
+	QList<Tune*> prepareTunes() const;
 
 private slots:
 	void artistsSearchFinished();

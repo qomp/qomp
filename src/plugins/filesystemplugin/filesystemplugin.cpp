@@ -19,6 +19,7 @@
 
 #include "filesystemplugin.h"
 #include "options.h"
+#include "tune.h"
 
 #include <QFileDialog>
 #include <QtPlugin>
@@ -27,7 +28,7 @@ FilesystemPlugin::FilesystemPlugin()
 {
 }
 
-TuneList FilesystemPlugin::getTunes()
+QList<Tune*> FilesystemPlugin::getTunes()
 {
 	QStringList files = QFileDialog::getOpenFileNames(0, tr("Select file(s)"),
 					Options::instance()->getOption("filesystemplugin.lastdir", QDir::homePath()).toString(),
@@ -37,7 +38,7 @@ TuneList FilesystemPlugin::getTunes()
 		QFileInfo fi (files.first());
 		Options::instance()->setOption("filesystemplugin.lastdir", fi.dir().path());
 	}
-	TuneList list;
+	QList<Tune*> list;
 	foreach(const QString& file, files) {
 		Tune* tune = new Tune(false);
 		tune->file = file;

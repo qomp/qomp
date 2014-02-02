@@ -18,7 +18,7 @@
  */
 
 #include <QApplication>
-#include "qomp.h"
+#include "qompcon.h"
 #include "defines.h"
 
 int main(int argc, char *argv[])
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	a.setApplicationVersion(APPLICATION_VERSION);
 	a.setOrganizationName(APPLICATION_NAME);
 	a.setQuitOnLastWindowClosed(false);
-	Qomp qomp;
+	QompCon qomp;
 	qomp.init();
 	return a.exec();
 }

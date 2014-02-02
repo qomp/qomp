@@ -20,12 +20,11 @@
 #ifndef QOMPMETADATARESOLVER_H
 #define QOMPMETADATARESOLVER_H
 
-#include "tune.h"
-
 #include <QThread>
 #include <QMap>
 
 class QMutex;
+class Tune;
 
 class QompMetaDataResolver : public QThread
 {
@@ -34,7 +33,7 @@ public:
 	QompMetaDataResolver(QObject *parent = 0);
 	~QompMetaDataResolver();
 
-	void resolve(const TuneList& tunes);
+	void resolve(const QList<Tune*>& tunes);
 	
 signals:
 	void tuneUpdated(Tune*);
@@ -49,10 +48,10 @@ protected:
 	void updateTuneDuration(qint64 msec);
 
 private:
-	void addTunes(const TuneList& tunes);
+	void addTunes(const QList<Tune*>& tunes);
 
 private:
-	TuneList data_;
+	QList<Tune*> data_;
 	QMutex* mutex_;
 };
 

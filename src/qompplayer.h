@@ -21,25 +21,21 @@
 #define QOPMPLAYER_H
 
 #include <QObject>
-#include "tune.h"
+
+#include "common.h"
 
 class QompMetaDataResolver;
+class Tune;
 
 class QompPlayer : public QObject
 {
 	Q_OBJECT
 public:
-	QompPlayer(QObject *parent = 0);
-
-	enum State { StateUnknown = 0,
-		StateStopped, StatePaused,
-		StatePlaying, StateError,
-		StateLoading, StateBuffering
-	};
+	static QompPlayer* instance();
 
 	Tune* currentTune() const;
 
-	void resolveMetadata(const TuneList &tunes);
+	void resolveMetadata(const QList<Tune*> &tunes);
 
 	virtual void setVolume(qreal vol) = 0;
 	/**
@@ -54,7 +50,7 @@ public:
 	 */
 	virtual qint64 position() const = 0;
 
-	virtual State state() const = 0;
+	virtual Qomp::State state() const = 0;
 	virtual void play() = 0;
 	virtual void pause() = 0;
 	virtual void stop() = 0;
@@ -69,7 +65,7 @@ public slots:
 signals:
 	void currentPositionChanged(qint64 pos);
 	void currentTuneTotalTimeChanged(qint64 time);
-	void stateChanged(QompPlayer::State newState);
+	void stateChanged(Qomp::State newState);
 	void mediaFinished();
 	void volumeChanged(qreal newVolume);
 	void mutedChanged(bool muted);
@@ -78,10 +74,13 @@ signals:
 	void tuneDataUpdated(Tune*);
 
 protected:
+	QompPlayer();
+
 	virtual void doSetTune(Tune* tune) = 0;
 	virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
 
 private:
+	static QompPlayer* instance_;
 	Tune* currentTune_;
 };
 

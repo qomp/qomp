@@ -50,7 +50,7 @@ public:
 	virtual void unload();
 
 private slots:
-	void playerStatusChanged(QompPlayer::State state);
+	void playerStatusChanged(Qomp::State state);
 	void optionsUpdate();
 	void init();
 

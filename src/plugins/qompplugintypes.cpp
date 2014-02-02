@@ -101,9 +101,9 @@ QString QompPluginTune::toString() const
 	return ret;
 }
 
-Qomp::ModelItemType QompPluginTune::type() const
+QompCon::ModelItemType QompPluginTune::type() const
 {
-	return Qomp::TypeTune;
+	return QompCon::TypeTune;
 }
 
 QIcon QompPluginTune::icon() const
@@ -141,9 +141,9 @@ QString QompPluginAlbum::toString() const
 			QString::number(items().size()) + "]";
 }
 
-Qomp::ModelItemType QompPluginAlbum::type() const
+QompCon::ModelItemType QompPluginAlbum::type() const
 {
-	return Qomp::TypeAlbum;
+	return QompCon::TypeAlbum;
 }
 
 QIcon QompPluginAlbum::icon() const
@@ -167,9 +167,9 @@ QString QompPluginArtist::toString() const
 	return	artist + "  [" + QString::number(items().size()) + "]";
 }
 
-Qomp::ModelItemType QompPluginArtist::type() const
+QompCon::ModelItemType QompPluginArtist::type() const
 {
-	return Qomp::TypeArtist;
+	return QompCon::TypeArtist;
 }
 
 QIcon QompPluginArtist::icon() const

@@ -22,7 +22,7 @@
 #include "options.h"
 #include "qomptunepluign.h"
 #include "qompplayerstatusplugin.h"
-
+#include "tune.h"
 #include <QCoreApplication>
 #include <QPluginLoader>
 #include <QtPlugin>
@@ -88,9 +88,9 @@ QStringList PluginManager::availablePlugins() const
 	return list;
 }
 
-TuneList PluginManager::getTune(const QString &pluginName)
+QList<Tune*> PluginManager::getTune(const QString &pluginName)
 {
-	TuneList tl;
+	QList<Tune*> tl;
 	QompTunePlugin *p = dynamic_cast<QompTunePlugin*>(pluginForName(pluginName));
 	if(p) {
 		tl = p->getTunes();

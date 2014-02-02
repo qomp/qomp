@@ -56,6 +56,6 @@ void QompPluginTreeView::itemActivated()
 {
 	QModelIndex i = currentIndex();
 	if(i.isValid()) {
-		model()->setData(i, Qomp::DataToggle, Qt::CheckStateRole);
+		model()->setData(i, QompCon::DataToggle, Qt::CheckStateRole);
 	}
 }

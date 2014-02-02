@@ -44,7 +44,7 @@ QString ProstoPleerPlugin::description() const
 	return tr("Listen to the music from Pleer.com");
 }
 
-TuneList ProstoPleerPlugin::getTunes()
+QList<Tune*> ProstoPleerPlugin::getTunes()
 {
 	ProstoPleerController ctrl;
 	return ctrl.getTunes();

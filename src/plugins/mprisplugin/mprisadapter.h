@@ -20,10 +20,10 @@
 #ifndef MPRISADAPTER_H
 #define MPRISADAPTER_H
 
-#include "tune.h"
-
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QVariantMap>
+
+class Tune;
 
 class MprisAdapter : public QDBusAbstractAdaptor
 {
