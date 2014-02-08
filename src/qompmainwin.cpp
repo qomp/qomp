@@ -181,11 +181,9 @@ void QompMainWin::doMainContextMenu()
 
 	m.exec(QCursor::pos());
 }
-#include <QtDebug>
+
 void QompMainWin::playerStateChanged(Qomp::State state)
 {
-	qDebug() << state;
-
 	if(currentState_ == state)
 		return;
 

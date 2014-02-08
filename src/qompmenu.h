@@ -33,6 +33,8 @@ protected:
 
 	virtual void buildMenu() {}
 
+	void leaveEvent(QEvent *e);
+
 private slots:
 	void menuAboutToShow();
 };

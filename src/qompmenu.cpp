@@ -36,8 +36,19 @@ QompMenu::QompMenu(const QString &name, QWidget *parent) :
 	connect(this, SIGNAL(aboutToShow()), SLOT(menuAboutToShow()));
 }
 
+void QompMenu::leaveEvent(QEvent *e)
+{
+	QMenu::leaveEvent(e);
+
+	hide();
+	deleteLater();
+}
+
 void QompMenu::menuAboutToShow()
 {
+	qDeleteAll(actions());
+	actions().clear();
+
 	buildMenu();
 }
 
