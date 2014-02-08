@@ -28,10 +28,7 @@
 
 #include "ui_qompmainwin.h"
 
-#include <QTime>
 #include <QCloseEvent>
-#include <QFileDialog>
-#include <QMenu>
 
 
 QompMainWin::QompMainWin(QWidget *parent) :
@@ -39,7 +36,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	ui(new Ui::QompMainWin),
 	model_(0),
 	trayIcon_(new QompTrayIcon(this)),
-	currentState_(Stopped)
+	currentState_(Qomp::StateUnknown)
 {
 	ui->setupUi(this);
 
@@ -51,12 +48,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 	connect(ui->seekSlider, SIGNAL(valueChanged(int)), SIGNAL(seekSliderMoved(int)));
 	connect(ui->volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderMoved(int)));
-
 	connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doMainContextMenu()));
-
-	//volumeChanged(1);
-	setCurrentPosition(0);
-
 	connect(trayIcon_, SIGNAL(trayContextMenu()), SLOT(doMainContextMenu()));
 	connect(trayIcon_, SIGNAL(trayWheeled(int)), SLOT(trayWheeled(int)));
 
@@ -86,35 +78,6 @@ void QompMainWin::bringToFront()
 	raise();
 	activateWindow();
 }
-
-//void QompMainWin::actPlayActivated()
-//{
-//	if(currentState_ == Playing) {
-//		player_->pause();
-//		currentState_ = Paused;
-//		return;
-//	}
-
-//	if(!model_->rowCount())
-//		return;
-
-//	QModelIndex i = model_->indexForTune(model_->currentTune());
-//	if(!i.isValid()) {
-//		i = model_->index(0);
-//		ui->playList->setCurrentIndex(i);
-//		model_->setCurrentTune(model_->tune(i));
-//	}
-
-//	Q_ASSERT(player_);
-//	if(!(player_->currentTune() == model_->currentTune())) {
-//		player_->setTune(model_->currentTune());
-//		setCurrentPosition(0);
-//	}
-
-//	player_->play();
-//	currentState_ = Playing;
-//	updateTuneInfo(model_->currentTune());
-//}
 
 void QompMainWin::setMuteState(bool mute)
 {
@@ -153,50 +116,6 @@ void QompMainWin::updateOptions()
 	Options::instance()->setOption(OPTION_REPEAT_ALL, ui->tb_repeatAll->isChecked());
 }
 
-//void QompMainWin::actPrevActivated()
-//{
-//	QModelIndex index = model_->indexForTune(model_->currentTune());
-//	if(index.isValid() && index.row() > 0) {
-//		bool play = (player_->state() == QompPlayer::StatePlaying);
-//		index = model_->index(index.row()-1);
-//		ui->playList->setCurrentIndex(index);
-//		model_->setCurrentTune(model_->tune(index));
-//		if(play) {
-//			stopPlayer();
-//			actPlayActivated();
-//		}
-//	}
-//}
-
-//void QompMainWin::actNextActivated()
-//{
-//	QModelIndex index = model_->indexForTune(model_->currentTune());
-//	if(index.isValid() && index.row() < model_->rowCount()-1) {
-//		Q_ASSERT(player_);
-//		bool play = (player_->state() == QompPlayer::StatePlaying);
-//		index = model_->index(index.row()+1);
-//		ui->playList->setCurrentIndex(index);
-//		model_->setCurrentTune(model_->tune(index));
-//		if(play) {
-//			stopPlayer();
-//			actPlayActivated();
-//		}
-//	}
-//}
-
-//void QompMainWin::actStopActivated()
-//{
-//	Q_ASSERT(player_);
-//	stopPlayer();
-//	ui->lb_busy->stop();
-//	QModelIndex index = ui->playList->currentIndex();
-//	if(index.isValid())
-//		model_->setCurrentTune(model_->tune(index));
-//	ui->lb_artist->setText("");
-//	ui->lb_title->setText("");
-//	trayIcon_->setToolTip("");
-//}
-
 void QompMainWin::actOpenActivated()
 {
 	QompGetTunesMenu m;
@@ -234,24 +153,6 @@ void QompMainWin::volumeChanged(qreal vol)
 	ui->volumeSlider->blockSignals(false);
 }
 
-//void QompMainWin::mediaActivated(const QModelIndex &index)
-//{
-//	model_->setCurrentTune(model_->tune(index));
-//	stopPlayer();
-//	actPlayActivated();
-//}
-
-//void QompMainWin::mediaClicked(const QModelIndex &index)
-//{
-//	Q_ASSERT(player_);
-
-//	if(currentState_ == Stopped)
-//	{
-//		model_->setCurrentTune(model_->tune(index));
-//	}
-//}
-
-
 void QompMainWin::doTrackContextMenu(const QPoint &p)
 {
 	QModelIndex index = ui->playList->indexAt(p);
@@ -280,13 +181,17 @@ void QompMainWin::doMainContextMenu()
 
 	m.exec(QCursor::pos());
 }
-
+#include <QtDebug>
 void QompMainWin::playerStateChanged(Qomp::State state)
 {
+	qDebug() << state;
+
+	if(currentState_ == state)
+		return;
+
 	updateIcons(state);
 	ui->lb_busy->stop();
-	if(currentState_ == Stopped)
-		return;
+	currentState_ = state;
 
 	switch(state) {
 	case Qomp::StateError:
@@ -303,6 +208,7 @@ void QompMainWin::playerStateChanged(Qomp::State state)
 	default:
 		break;
 	}
+	updateTuneInfo(model_->currentTune());
 }
 
 void QompMainWin::setCurrentPosition(qint64 ms)
@@ -322,36 +228,6 @@ void QompMainWin::currentTotalTimeChanged(qint64 ms)
 	model_->currentTune()->duration = Qomp::durationMiliSecondsToString(ms);
 	model_->tuneDataUpdated(model_->currentTune());
 }
-
-//void QompMainWin::playNext()
-//{
-//	setCurrentPosition(0);
-//	if(currentState_ == Stopped)
-//		return;
-
-//	if(model_->indexForTune(model_->currentTune()).row() == model_->rowCount()-1) {
-//		if(ui->tb_repeatAll->isChecked()) {
-//			const QModelIndex ind = model_->index(0);
-//			model_->setCurrentTune(model_->tune(ind));
-//			ui->playList->setCurrentIndex(ind);
-//			stopPlayer();
-//			actPlayActivated();
-
-//		}
-//		else {
-//			actStopActivated();
-//			model_->setCurrentTune((Tune*)Tune::emptyTune());
-//		}
-//	}
-//	else {
-//		QModelIndex index = model_->indexForTune(model_->currentTune());
-//		index = model_->index(index.row()+1);
-//		ui->playList->setCurrentIndex(index);
-//		model_->setCurrentTune(model_->tune(index));
-//		stopPlayer();
-//		actPlayActivated();
-//	}
-//}
 
 void QompMainWin::toggleVisibility()
 {
@@ -407,13 +283,6 @@ void QompMainWin::changeEvent(QEvent *e)
 	}
 	QMainWindow::changeEvent(e);
 }
-
-//void QompMainWin::stopPlayer()
-//{
-//	player_->stop();
-//	setCurrentPosition(0);
-//	currentState_ = Stopped;
-//}
 
 void QompMainWin::connectActions()
 {
@@ -472,7 +341,7 @@ void QompMainWin::restoreWindowState()
 void QompMainWin::updateTuneInfo(Tune* tune)
 {
 	QModelIndex i = model_->indexForTune(tune);
-	if(i.isValid()) {
+	if(i.isValid() && (currentState_ == Qomp::StatePaused || currentState_ == Qomp::StatePlaying)) {
 		ui->lb_artist->setText(i.data(QompPlayListModel::ArtistRole).toString());
 		ui->lb_title->setText(i.data(QompPlayListModel::TitleRole).toString());
 

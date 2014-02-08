@@ -42,40 +42,31 @@ public:
 	~QompMainWin();
 
 	void setModel(QompPlayListModel* model);
-
 	void bringToFront();
 
 public slots:
 	void toggleVisibility();
-
 	void setMuteState(bool mute);
 	void volumeChanged(qreal vol);
 	void setCurrentPosition(qint64 ms);
 	void currentTotalTimeChanged(qint64 ms);
-
 	void playerStateChanged(Qomp::State state);
-	void updateIcons(Qomp::State state);
 
 private slots:
 	void actOpenActivated();
 	void actClearActivated();
-
 	void volumeSliderMoved(int);
-
 	void doTrackContextMenu(const QPoint& p);
-
 	void doMainContextMenu();
 
-//	void playNext();
-
 	void updateTuneInfo(Tune *tune);
+	void updateIcons(Qomp::State state);
 
 	//void trayDoubleclicked();
 	void trayActivated(Qt::MouseButton);
 	void trayWheeled(int delta);
 
 	void updateOptions();
-
 	void removeSelectedIndexes();
 
 signals:
@@ -120,8 +111,7 @@ private:
 	QompPlayListModel* model_;
 	QompTrayIcon* trayIcon_;
 
-	enum MainWinState { Stopped, Playing, Paused };
-	MainWinState currentState_;
+	Qomp::State currentState_;
 };
 
 #endif // QOMPMAINWIN_H

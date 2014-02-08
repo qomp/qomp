@@ -67,6 +67,7 @@ void QompPlayListModel::setCurrentTune(Tune *tune)
 	if(currentTune_ != tune) {
 		currentTune_ = tune;
 		emit currentTuneChanged(tune);
+		emit layoutAboutToBeChanged();
 		emit layoutChanged();
 	}
 }
@@ -250,7 +251,7 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 		tl.append(tune(index(i)));
 	}
 
-	layoutAboutToBeChanged();
+	emit layoutAboutToBeChanged();
 	foreach(Tune* t, tl) {
 		tunes_.removeOne(t);
 	}
@@ -260,7 +261,7 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 	foreach(Tune* t, tl) {
 		tunes_.insert(tuneIndex++, t);
 	}
-	layoutChanged();
+	emit layoutChanged();
 	return true;
 }
 

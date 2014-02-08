@@ -152,7 +152,9 @@ void QompPhononPlayer::pause()
 void QompPhononPlayer::stop()
 {
 	mediaObject_->stop();
-	setTune((Tune*)Tune::emptyTune());
+
+	//TODO Refactor this
+	//setTune((Tune*)Tune::emptyTune());
 }
 
 qint64 QompPhononPlayer::currentTuneTotalTime() const

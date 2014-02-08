@@ -42,6 +42,7 @@ QompCon::QompCon(QObject *parent) :
 	player_(0)
 {
 	qRegisterMetaType<Tune*>("Tune*");
+	qRegisterMetaType<Qomp::State>("State");
 
 	Translator::instance();
 
@@ -117,7 +118,6 @@ void QompCon::actPlayNext()
 	if(index.isValid() && index.row() < model_->rowCount()-1) {
 		bool play = (player_->state() == Qomp::StatePlaying);
 		index = model_->index(index.row()+1);
-		//ui->playList->setCurrentIndex(index);
 		model_->setCurrentTune(model_->tune(index));
 		if(play) {
 			stopPlayer();
@@ -132,7 +132,6 @@ void QompCon::actPlayPrev()
 	if(index.isValid() && index.row() > 0) {
 		bool play = (player_->state() == Qomp::StatePlaying);
 		index = model_->index(index.row()-1);
-		//ui->playList->setCurrentIndex(index);
 		model_->setCurrentTune(model_->tune(index));
 		if(play) {
 			stopPlayer();
@@ -145,7 +144,6 @@ void QompCon::actPlay()
 {
 	if(player_->state() == Qomp::StatePlaying) {
 		player_->pause();
-		//currentState_ = Paused;
 		return;
 	}
 
@@ -155,18 +153,10 @@ void QompCon::actPlay()
 	QModelIndex i = model_->currentIndex();
 	if(!i.isValid()) {
 		i = model_->index(0);
-		//ui->playList->setCurrentIndex(i);
 		model_->setCurrentTune(model_->tune(i));
 	}
 
-	if(player_->currentTune() != model_->currentTune()) {
-		player_->setTune(model_->currentTune());
-		mainWin_->setCurrentPosition(0);
-	}
-
 	player_->play();
-	//currentState_ = Playing;
-	//updateTuneInfo(model_->currentTune());
 }
 
 void QompCon::actPause()
@@ -177,13 +167,6 @@ void QompCon::actPause()
 void QompCon::actStop()
 {
 	stopPlayer();
-//	ui->lb_busy->stop();
-//	QModelIndex index = ui->playList->currentIndex();
-//	if(index.isValid())
-//		model_->setCurrentTune(model_->tune(index));
-//	ui->lb_artist->setText("");
-//	ui->lb_title->setText("");
-	//	trayIcon_->setToolTip("");
 }
 
 void QompCon::actMediaActivated(const QModelIndex &index)
@@ -247,7 +230,6 @@ void QompCon::setTunes(const QList<Tune*> &tunes)
 			&& player_->state() != Qomp::StatePlaying)
 		{
 			QModelIndex index = model_->indexForTune(tunes.first());
-			//ui->playList->setCurrentIndex(index);
 			model_->setCurrentTune(model_->tune(index));
 			actPlay();
 		}
@@ -282,7 +264,6 @@ void QompCon::actRemoveSelected(const QModelIndexList &list)
 		stopPlayer();
 		model_->setCurrentTune(model_->tune(model_->index(0,0)));
 	}
-	//ui->playList->setCurrentIndex(model_->indexForTune(model_->currentTune()));
 }
 
 void QompCon::actDoSettings()
@@ -326,7 +307,6 @@ void QompCon::actRemoveTune(Tune *tune)
 		model_->setCurrentTune(model_->tune(model_->index(0,0)));
 	}
 	model_->removeTune(tune);
-	//ui->playList->setCurrentIndex(model_->indexForTune(model_->currentTune()));
 }
 
 void QompCon::setupMainWin()
@@ -337,35 +317,35 @@ void QompCon::setupMainWin()
 	mainWin_->setMuteState(player_->isMuted());
 	mainWin_->volumeChanged(player_->volume());
 	mainWin_->setCurrentPosition(player_->position());
-	mainWin_->updateIcons(player_->state());
+	mainWin_->playerStateChanged(player_->state());
 
 	connect(player_, SIGNAL(currentPositionChanged(qint64)),	mainWin_, SLOT(setCurrentPosition(qint64)));
 	connect(player_, SIGNAL(mutedChanged(bool)),			mainWin_, SLOT(setMuteState(bool)));
 	connect(player_, SIGNAL(volumeChanged(qreal)),			mainWin_, SLOT(volumeChanged(qreal)));
 	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)),	mainWin_, SLOT(currentTotalTimeChanged(qint64)));
-	connect(player_, SIGNAL(stateChanged(Qomp::State)),	mainWin_, SLOT(playerStateChanged(Qomp::State)));
+	connect(player_, SIGNAL(stateChanged(Qomp::State)),		mainWin_, SLOT(playerStateChanged(Qomp::State)));
 
-	connect(mainWin_, SIGNAL(exit()), SLOT(exit()));
-	connect(mainWin_, SIGNAL(loadPlaylist()), SLOT(actLoadPlaylist()));
-	connect(mainWin_, SIGNAL(savePlaylist()), SLOT(actSavePlaylist()));
-	connect(mainWin_, SIGNAL(aboutQomp()), SLOT(actAboutQomp()));
-	connect(mainWin_, SIGNAL(checkForUpdates()), SLOT(actCheckForUpdates()));
-	connect(mainWin_, SIGNAL(doOptions()), SLOT(actDoSettings()));
-	connect(mainWin_, SIGNAL(downloadTune(Tune*)), SLOT(actDownloadTune(Tune*)));
-	connect(mainWin_, SIGNAL(actMuteActivated(bool)), SLOT(actMuteToggle(bool)));
-	connect(mainWin_, SIGNAL(volumeSliderMoved(qreal)), SLOT(actSetVolume(qreal)));
-	connect(mainWin_, SIGNAL(seekSliderMoved(int)), SLOT(actSeek(int)));
-	connect(mainWin_, SIGNAL(removeSelected(QModelIndexList)), SLOT(actRemoveSelected(QModelIndexList)));
-	connect(mainWin_, SIGNAL(clearPlaylist()), SLOT(actClearPlaylist()));
-	connect(mainWin_, SIGNAL(actPlayActivated()), SLOT(actPlay()));
-	connect(mainWin_, SIGNAL(actNextActivated()), SLOT(actPlayNext()));
-	connect(mainWin_, SIGNAL(actPrevActivated()), SLOT(actPlayPrev()));
-	connect(mainWin_, SIGNAL(actStopActivated()), SLOT(actStop()));
-	connect(mainWin_, SIGNAL(tunes(QList<Tune*>)), SLOT(setTunes(QList<Tune*>)));
-	connect(mainWin_, SIGNAL(toggleTuneState(Tune*)), SLOT(actToggleTuneState(Tune*)));
-	connect(mainWin_, SIGNAL(removeTune(Tune*)), SLOT(actRemoveTune(Tune*)));
-	connect(mainWin_, SIGNAL(mediaActivated(QModelIndex)), SLOT(actMediaActivated(QModelIndex)));
-	connect(mainWin_, SIGNAL(mediaClicked(QModelIndex)), SLOT(actMediaClicked(QModelIndex)));
+	connect(mainWin_, SIGNAL(exit()),				SLOT(exit()));
+	connect(mainWin_, SIGNAL(loadPlaylist()),			SLOT(actLoadPlaylist()));
+	connect(mainWin_, SIGNAL(savePlaylist()),			SLOT(actSavePlaylist()));
+	connect(mainWin_, SIGNAL(aboutQomp()),				SLOT(actAboutQomp()));
+	connect(mainWin_, SIGNAL(checkForUpdates()),			SLOT(actCheckForUpdates()));
+	connect(mainWin_, SIGNAL(doOptions()),				SLOT(actDoSettings()));
+	connect(mainWin_, SIGNAL(downloadTune(Tune*)),			SLOT(actDownloadTune(Tune*)));
+	connect(mainWin_, SIGNAL(actMuteActivated(bool)),		SLOT(actMuteToggle(bool)));
+	connect(mainWin_, SIGNAL(volumeSliderMoved(qreal)),		SLOT(actSetVolume(qreal)));
+	connect(mainWin_, SIGNAL(seekSliderMoved(int)),			SLOT(actSeek(int)));
+	connect(mainWin_, SIGNAL(removeSelected(QModelIndexList)),	SLOT(actRemoveSelected(QModelIndexList)));
+	connect(mainWin_, SIGNAL(clearPlaylist()),			SLOT(actClearPlaylist()));
+	connect(mainWin_, SIGNAL(actPlayActivated()),			SLOT(actPlay()));
+	connect(mainWin_, SIGNAL(actNextActivated()),			SLOT(actPlayNext()));
+	connect(mainWin_, SIGNAL(actPrevActivated()),			SLOT(actPlayPrev()));
+	connect(mainWin_, SIGNAL(actStopActivated()),			SLOT(actStop()));
+	connect(mainWin_, SIGNAL(tunes(QList<Tune*>)),			SLOT(setTunes(QList<Tune*>)));
+	connect(mainWin_, SIGNAL(toggleTuneState(Tune*)),		SLOT(actToggleTuneState(Tune*)));
+	connect(mainWin_, SIGNAL(removeTune(Tune*)),			SLOT(actRemoveTune(Tune*)));
+	connect(mainWin_, SIGNAL(mediaActivated(QModelIndex)),		SLOT(actMediaActivated(QModelIndex)));
+	connect(mainWin_, SIGNAL(mediaClicked(QModelIndex)),		SLOT(actMediaClicked(QModelIndex)));
 }
 
 void QompCon::setupPlayer()
@@ -375,6 +355,7 @@ void QompCon::setupPlayer()
 
 	connect(player_, SIGNAL(tuneDataUpdated(Tune*)), model_, SLOT(tuneDataUpdated(Tune*)));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
+	connect(model_,  SIGNAL(currentTuneChanged(Tune*)), player_, SLOT(setTune(Tune*)));
 }
 
 void QompCon::setupModel()
@@ -401,7 +382,6 @@ void QompCon::playNext()
 		if(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool()) {
 			const QModelIndex ind = model_->index(0);
 			model_->setCurrentTune(model_->tune(ind));
-			//ui->playList->setCurrentIndex(ind);
 			stopPlayer();
 			actPlay();
 
@@ -413,7 +393,6 @@ void QompCon::playNext()
 	}
 	else {
 		index = model_->index(index.row()+1);
-		//ui->playList->setCurrentIndex(index);
 		model_->setCurrentTune(model_->tune(index));
 		stopPlayer();
 		actPlay();
