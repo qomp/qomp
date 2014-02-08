@@ -34,6 +34,11 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QThread>
+
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
 
 QompCon::QompCon(QObject *parent) :
 	QObject(parent),
@@ -50,6 +55,8 @@ QompCon::QompCon(QObject *parent) :
 	setupPlayer();
 	setupMainWin();
 
+	model_->restoreState();
+
 	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateOptions()));
 
 	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
@@ -64,6 +71,8 @@ QompCon::QompCon(QObject *parent) :
 QompCon::~QompCon()
 {
 	model_->saveState();
+
+	Options::instance()->setOption(OPTION_VOLUME, player_->volume());
 
 	delete mainWin_;
 	delete Tune::emptyTune();
@@ -143,7 +152,7 @@ void QompCon::actPlayPrev()
 void QompCon::actPlay()
 {
 	if(player_->state() == Qomp::StatePlaying) {
-		player_->pause();
+		actPause();
 		return;
 	}
 
@@ -161,7 +170,7 @@ void QompCon::actPlay()
 
 void QompCon::actPause()
 {
-
+	player_->pause();
 }
 
 void QompCon::actStop()
@@ -171,16 +180,15 @@ void QompCon::actStop()
 
 void QompCon::actMediaActivated(const QModelIndex &index)
 {
-	model_->setCurrentTune(model_->tune(index));
-	stopPlayer();
-	actPlay();
+	playIndex(index);
 }
 
 void QompCon::actMediaClicked(const QModelIndex &index)
 {
-	if(player_->state() == Qomp::StateStopped) {
-		model_->setCurrentTune(model_->tune(index));
-	}
+	Q_UNUSED(index)
+//	if(player_->state() == Qomp::StateStopped) {
+//		model_->setCurrentTune(model_->tune(index));
+//	}
 }
 
 void QompCon::actMuteToggle(bool mute)
@@ -325,7 +333,6 @@ void QompCon::setupMainWin()
 	connect(player_, SIGNAL(mutedChanged(bool)),			mainWin_, SLOT(setMuteState(bool)));
 	connect(player_, SIGNAL(volumeChanged(qreal)),			mainWin_, SLOT(volumeChanged(qreal)));
 	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)),	mainWin_, SLOT(currentTotalTimeChanged(qint64)));
-	connect(player_, SIGNAL(stateChanged(Qomp::State)),		mainWin_, SLOT(playerStateChanged(Qomp::State)));
 
 	connect(mainWin_, SIGNAL(exit()),				SLOT(exit()));
 	connect(mainWin_, SIGNAL(loadPlaylist()),			SLOT(actLoadPlaylist()));
@@ -356,28 +363,44 @@ void QompCon::setupPlayer()
 	PluginManager::instance()->qompPlayerChanged(player_);
 
 	connect(player_, SIGNAL(tuneDataUpdated(Tune*)), model_, SLOT(tuneDataUpdated(Tune*)));
-	connect(player_, SIGNAL(mediaFinished()), SLOT(playNext()));
+	connect(player_, SIGNAL(mediaFinished()), SLOT(mediaFinished()));
+	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStateChanged(Qomp::State)));
 	connect(model_,  SIGNAL(currentTuneChanged(Tune*)), player_, SLOT(setTune(Tune*)));
+
+	player_->setVolume(Options::instance()->getOption(OPTION_VOLUME, 1).toReal());
 }
 
 void QompCon::setupModel()
 {
 	model_ = new QompPlayListModel(this);
-	model_->restoreState();
 }
 
 void QompCon::stopPlayer()
 {
+	player_->blockSignals(true);
 	player_->stop();
 	mainWin_->setCurrentPosition(0);
-	mainWin_->playerStateChanged(Qomp::StateStopped);
+	playerStateChanged(Qomp::StateStopped);
+	while (player_->state() != Qomp::StateStopped) {
+		QThread::sleep(1);
+		qApp->processEvents();
+	}
+	player_->blockSignals(false);
 }
 
-void QompCon::playNext()
+void QompCon::playIndex(const QModelIndex &index)
 {
+	stopPlayer();
+	model_->setCurrentTune(model_->tune(index));
+	actPlay();
+}
+
+void QompCon::mediaFinished()
+{
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompCon::mediaFinished()";
+#endif
 	mainWin_->setCurrentPosition(0);
-//	if(currentState_ == Stopped)
-//		return;
 
 	QModelIndex index = model_->currentIndex();
 	if(index.row() == model_->rowCount()-1) {
@@ -395,8 +418,16 @@ void QompCon::playNext()
 	}
 	else {
 		index = model_->index(index.row()+1);
-		model_->setCurrentTune(model_->tune(index));
-		stopPlayer();
-		actPlay();
+		playIndex(index);
 	}
+}
+
+void QompCon::playerStateChanged(Qomp::State state)
+{
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompCon::playerStateChanged()  " << state;
+#endif
+	mainWin_->playerStateChanged(state);
+	if (state == Qomp::StateError)
+		mediaFinished();
 }

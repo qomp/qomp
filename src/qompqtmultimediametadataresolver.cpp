@@ -19,12 +19,6 @@
 
 #include "qompqtmultimediametadataresolver.h"
 #include "tune.h"
-//#include "qompnetworkingfactory.h"
-//#include <QNetworkAccessManager>
-//#include <QNetworkCookieJar>
-//#include <QNetworkCookie>
-
-//#define DEBUG_OUTPUT
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
@@ -43,7 +37,7 @@ QompQtMultimediaMetaDataResolver::~QompQtMultimediaMetaDataResolver()
 void QompQtMultimediaMetaDataResolver::run()
 {
 #ifdef DEBUG_OUTPUT
-	qDebug() << "Start resolving";
+	qDebug() << "QompQtMultimediaMetaDataResolver::run()";
 #endif
 	setPriority(QThread::LowestPriority);
 	resolver_ = new QMediaPlayer();
@@ -66,11 +60,11 @@ void QompQtMultimediaMetaDataResolver::run()
 void QompQtMultimediaMetaDataResolver::metaDataReady()
 {
 #ifdef DEBUG_OUTPUT
-		qDebug() << "metaDataReady";
+		qDebug() << "QompQtMultimediaMetaDataResolver::metaDataReady()";
 #endif
 	if(resolver_->isMetaDataAvailable()) {
 #ifdef DEBUG_OUTPUT
-		qDebug() << "available metadata" << resolver_->availableMetaData();
+		qDebug() << "QompQtMultimediaMetaDataResolver::metaDataReady() available metadata " << resolver_->availableMetaData();
 #endif
 		QMap<QString,QString> data;
 		data.insert("ARTIST", resolver_->metaData("AlbumArtist").toString());
@@ -86,7 +80,7 @@ void QompQtMultimediaMetaDataResolver::metaDataReady()
 void QompQtMultimediaMetaDataResolver::resolverStateChanged(QMediaPlayer::MediaStatus newState)
 {
 #ifdef DEBUG_OUTPUT
-	qDebug() << "new state" << newState;
+	qDebug() << "QompQtMultimediaMetaDataResolver::resolverStateChanged() " << newState;
 #endif
 	if(newState != QMediaPlayer::LoadedMedia && newState != QMediaPlayer::BufferedMedia)
 		return;
@@ -95,7 +89,7 @@ void QompQtMultimediaMetaDataResolver::resolverStateChanged(QMediaPlayer::MediaS
 
 	if(!isDataEmpty()) {
 #ifdef DEBUG_OUTPUT
-		qDebug() << "resolve next media";
+		qDebug() << "QompQtMultimediaMetaDataResolver::resolverStateChanged()  resolve next media";
 #endif
 		resolveNextMedia();
 	}
@@ -108,7 +102,7 @@ void QompQtMultimediaMetaDataResolver::resolverStateChanged(QMediaPlayer::MediaS
 void QompQtMultimediaMetaDataResolver::totalTimeChanged(qint64 msec)
 {
 #ifdef DEBUG_OUTPUT
-	qDebug() << "duration" << msec;
+	qDebug() << "QompQtMultimediaMetaDataResolver::totalTimeChanged  " << msec;
 #endif
 	updateTuneDuration(msec);
 }
@@ -140,7 +134,7 @@ void QompQtMultimediaMetaDataResolver::error(QMediaPlayer::Error error)
 {
 	Q_UNUSED(error)
 #ifdef DEBUG_OUTPUT
-	qDebug() << "error" << error;
+	qDebug() << "QompQtMultimediaMetaDataResolver::error  " << error;
 #endif
 }
 
@@ -148,7 +142,7 @@ void QompQtMultimediaMetaDataResolver::availabilityChanged(bool a)
 {
 	Q_UNUSED(a)
 #ifdef DEBUG_OUTPUT
-	qDebug() << "availabilityChanged" << a;
+	qDebug() << "QompQtMultimediaMetaDataResolver::availabilityChanged  " << a;
 #endif
 }
 
@@ -156,7 +150,7 @@ void QompQtMultimediaMetaDataResolver::stateChanged(QMediaPlayer::State state)
 {
 	Q_UNUSED(state)
 #ifdef DEBUG_OUTPUT
-	qDebug() << "state changed" << state;
+	qDebug() << "QompQtMultimediaMetaDataResolver::stateChanged  " << state;
 #endif
 }
 
@@ -164,6 +158,6 @@ void QompQtMultimediaMetaDataResolver::metaDataAvailableChanged(bool available)
 {
 	Q_UNUSED(available)
 #ifdef DEBUG_OUTPUT
-	qDebug() << "metaDataAvailableChanged" << available;
+	qDebug() << "QompQtMultimediaMetaDataResolver::metaDataAvailableChanged  " << available;
 #endif
 }

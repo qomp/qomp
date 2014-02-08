@@ -169,3 +169,34 @@ QString fixEncoding(const QString &encoded)
 }
 
 } //namespace Qomp
+
+#ifdef DEBUG_OUTPUT
+QDebug operator<<(QDebug dbg, Qomp::State value)
+{
+	switch(value) {
+	case Qomp::StateUnknown:
+		dbg.nospace() << "Qomp::StateUnknown";
+		break;
+	case Qomp::StateStopped:
+		dbg.nospace() << "Qomp::StateStopped";
+		break;
+	case Qomp::StatePaused:
+		dbg.nospace() << "Qomp::StatePaused";
+		break;
+	case Qomp::StatePlaying:
+		dbg.nospace() << "Qomp::StatePlaying";
+		break;
+	case Qomp::StateError:
+		dbg.nospace() << "Qomp::StateError";
+		break;
+	case Qomp::StateLoading:
+		dbg.nospace() << "Qomp::StateLoading";
+		break;
+	case Qomp::StateBuffering:
+		dbg.nospace() << "Qomp::StateBuffering";
+		break;
+	}
+
+	return dbg.space();
+}
+#endif

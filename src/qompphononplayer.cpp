@@ -26,7 +26,6 @@
 #include <Phonon/VolumeSlider>
 #include <phonon/backendcapabilities.h>
 
-//#define DEBUG_OUTPUT
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
@@ -132,9 +131,9 @@ Qomp::State QompPhononPlayer::state() const
 	return Qomp::StateUnknown;
 }
 
-void QompPhononPlayer::doSetTune(Tune *tune)
+void QompPhononPlayer::doSetTune()
 {
-	QUrl url = tune->getUrl();
+	QUrl url = currentTune()->getUrl();
 	Phonon::MediaSource ms = url.isEmpty() ? Phonon::MediaSource() : Phonon::MediaSource(url);
 	mediaObject_->setCurrentSource(ms);
 }

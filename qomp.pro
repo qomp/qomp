@@ -19,7 +19,11 @@ unix:!mac:!android:DEFINES += HAVE_X11
 TARGET = qomp
 TEMPLATE = app
 CONFIG += release
-#CONFIG += debug
+CONFIG -= debug
+
+debug {
+    DEFINES += DEBUG_OUTPUT
+}
 
 isEmpty(PREFIX) {
 	PREFIX = /usr/local

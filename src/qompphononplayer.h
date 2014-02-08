@@ -52,8 +52,10 @@ public:
 	virtual void setAudioOutputDevice(const QString& newDev);
 
 protected:
-	virtual void doSetTune(Tune *tune);
 	virtual QompMetaDataResolver* metaDataResolver() const { return resolver_; }
+
+protected slots:
+	virtual void doSetTune();
 
 private slots:
 	void stateChanged();

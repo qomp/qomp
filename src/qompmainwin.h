@@ -62,8 +62,6 @@ private slots:
 	void updateTuneInfo(Tune *tune);
 	void updateIcons(Qomp::State state);
 
-	//void trayDoubleclicked();
-	void trayActivated(Qt::MouseButton);
 	void trayWheeled(int delta);
 
 	void updateOptions();

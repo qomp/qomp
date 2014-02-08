@@ -71,7 +71,8 @@ private slots:
 	void actToggleTuneState(Tune* tune);
 	void actRemoveTune(Tune* tune);
 
-	void playNext();
+	void mediaFinished();
+	void playerStateChanged(Qomp::State state);
 
 //protected:
 //	bool eventFilter(QObject *obj, QEvent *e);
@@ -82,6 +83,7 @@ private:
 	void setupModel();
 
 	void stopPlayer();
+	void playIndex(const QModelIndex& index);
 
 private:
 	QompMainWin* mainWin_;

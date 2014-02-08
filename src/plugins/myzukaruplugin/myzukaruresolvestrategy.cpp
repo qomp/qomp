@@ -30,7 +30,6 @@
 #include <QCoreApplication>
 #include <QTimer>
 
-//#define DEBUG_OUTPUT
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
@@ -61,14 +60,14 @@ public:
 		if(loop_->isRunning())
 			loop_->quit();
 #ifdef DEBUG_OUTPUT
-		qDebug() << "deleted";
+		qDebug() << "~MyzukaruResolveStrategyPrivate()";
 #endif
 	}
 
 	QUrl getUrl()
 	{
 #ifdef DEBUG_OUTPUT
-		qDebug() << "getUrl(...)";
+		qDebug() << "MyzukaruResolveStrategyPrivate::getUrl()";
 #endif
 		QUrl url(MYZUKA_URL);
 		url.setPath(QString("/Song/GetFileUrl/%1").arg(tune_->url));
@@ -82,7 +81,7 @@ public:
 		if(timer_->isActive())
 			timer_->stop();
 #ifdef DEBUG_OUTPUT
-		qDebug() << "finished";
+		qDebug() << "MyzukaruResolveStrategyPrivate::getUrl()  finished";
 #endif
 		deleteLater();
 		return url_;
@@ -92,7 +91,7 @@ private slots:
 	void tuneUrlFinished()
 	{
 #ifdef DEBUG_OUTPUT
-		qDebug() << "tune Url finished";
+		qDebug() << "MyzukaruResolveStrategyPrivate::tuneUrlFinished()";
 #endif
 		QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 		reply->deleteLater();

@@ -25,6 +25,11 @@
 #include <QMediaContent>
 #include <QAudioDeviceInfo>
 
+
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
+
 QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	QompPlayer(),
 	player_(new QMediaPlayer(this)),
@@ -34,7 +39,7 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	connect(player_, SIGNAL(volumeChanged(int)), SLOT(volumeChanged(int)));
 	connect(player_, SIGNAL(mutedChanged(bool)), SIGNAL(mutedChanged(bool)));
 	connect(player_, SIGNAL(durationChanged(qint64)), SIGNAL(currentTuneTotalTimeChanged(qint64)));
-	connect(player_, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(stateChanged(QMediaPlayer::State)));
+	connect(player_, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(playerStateChanged(QMediaPlayer::State)));
 	connect(player_, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
 
 	connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
@@ -45,9 +50,14 @@ QompQtMultimediaPlayer::~QompQtMultimediaPlayer()
 	delete resolver_;
 }
 
-void QompQtMultimediaPlayer::doSetTune(Tune *tune)
+void QompQtMultimediaPlayer::doSetTune()
 {
-	player_->setMedia(QMediaContent(tune->getUrl()));
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompQtMultimediaPlayer::doSetTune()";
+#endif
+	//player_->blockSignals(true);
+	player_->setMedia(QMediaContent(currentTune()->getUrl()));
+	//player_->blockSignals(false);
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const
@@ -91,9 +101,9 @@ qint64 QompQtMultimediaPlayer::position() const
 	return player_->position();
 }
 
-Qomp::State QompQtMultimediaPlayer::state() const
+static Qomp::State convertState(QMediaPlayer::State s)
 {
-	switch(player_->state()) {
+	switch(s) {
 	case QMediaPlayer::StoppedState:
 		return Qomp::StateStopped;
 	case QMediaPlayer::PlayingState:
@@ -104,8 +114,16 @@ Qomp::State QompQtMultimediaPlayer::state() const
 	return Qomp::StateUnknown;
 }
 
+Qomp::State QompQtMultimediaPlayer::state() const
+{
+	return convertState(player_->state());
+}
+
 void QompQtMultimediaPlayer::play()
 {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompQtMultimediaPlayer::play()";
+#endif
 	player_->play();
 }
 
@@ -116,6 +134,9 @@ void QompQtMultimediaPlayer::pause()
 
 void QompQtMultimediaPlayer::stop()
 {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompQtMultimediaPlayer::stop()";
+#endif
 	player_->stop();
 }
 
@@ -146,25 +167,37 @@ void QompQtMultimediaPlayer::volumeChanged(int vol)
 	emit volumeChanged(qreal(vol)/100);
 }
 
-void QompQtMultimediaPlayer::stateChanged(QMediaPlayer::State state)
+void QompQtMultimediaPlayer::playerStateChanged(QMediaPlayer::State _state)
 {
-	if(state == QMediaPlayer::StoppedState && position() == currentTuneTotalTime())
-		emit mediaFinished();
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompQtMultimediaPlayer::stateChanged()  " << _state;
+#endif
+//	if(state == QMediaPlayer::StoppedState && position() == currentTuneTotalTime())
+//		emit mediaFinished();
 
-	emit QompPlayer::stateChanged(this->state());
+	emit stateChanged(convertState(_state));
 }
 
 void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status)
 {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompQtMultimediaPlayer::mediaStatusChanged()  " << status;
+#endif
 	switch(status) {
 	case QMediaPlayer::LoadingMedia:
-		emit QompPlayer::stateChanged(Qomp::StateLoading);
+		emit stateChanged(Qomp::StateLoading);
 		break;
 	case QMediaPlayer::BufferingMedia:
-		emit QompPlayer::stateChanged(Qomp::StateBuffering);
+		emit stateChanged(Qomp::StateBuffering);
 		break;
+	case QMediaPlayer::InvalidMedia:
+		emit stateChanged(Qomp::StateError);
+		break;
+	case QMediaPlayer::EndOfMedia:
+		emit mediaFinished();
+		//break; we wont emit next  signal
 	default:
-		stateChanged(player_->state());
+		emit QompPlayer::stateChanged(state());
 		break;
 	}
 }

@@ -29,7 +29,6 @@
 #include <QCoreApplication>
 #include <QTimer>
 
-//#define DEBUG_OUTPUT
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
@@ -60,14 +59,14 @@ public:
 		if(loop_->isRunning())
 			loop_->quit();
 #ifdef DEBUG_OUTPUT
-		qDebug() << "deleted";
+		qDebug() << "~YandexMusicURLResolveStrategyPrivate()";
 #endif
 	}
 
 	QUrl getUrl()
 	{
 #ifdef DEBUG_OUTPUT
-		qDebug() << "getUrl(...)";
+		qDebug() << "YandexMusicURLResolveStrategyPrivate::getUrl()";
 #endif
 		QUrl url = QUrl(QString("http://storage.music.yandex.ru/get/%1/2.xml").arg(tune_->url), QUrl::StrictMode);
 		QNetworkRequest nr(url);
@@ -80,7 +79,7 @@ public:
 		if(timer_->isActive())
 			timer_->stop();
 #ifdef DEBUG_OUTPUT
-		qDebug() << "finished";
+		qDebug() << "YandexMusicURLResolveStrategyPrivate::getUrl()  finished";
 #endif
 		deleteLater();
 		return url_;
@@ -90,7 +89,7 @@ private slots:
 	void tuneUrlFinishedStepOne()
 	{
 #ifdef DEBUG_OUTPUT
-		qDebug() << "step one finished";
+		qDebug() << "YandexMusicURLResolveStrategyPrivate::tuneUrlFinishedStepOne()";
 #endif
 		QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
 		reply->deleteLater();
@@ -115,7 +114,7 @@ private slots:
 	void tuneUrlFinishedStepTwo()
 	{
 #ifdef DEBUG_OUTPUT
-		qDebug() << "step two finished";
+		qDebug() << "YandexMusicURLResolveStrategyPrivate::tuneUrlFinishedStepTwo()";
 #endif
 		QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
 		reply->deleteLater();

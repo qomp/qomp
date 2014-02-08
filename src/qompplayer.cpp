@@ -28,6 +28,7 @@
 #endif
 
 #include <QCoreApplication>
+#include <QTimer>
 
 QompPlayer* QompPlayer::instance_ = 0;
 
@@ -40,7 +41,7 @@ QompPlayer::QompPlayer() :
 void QompPlayer::setTune(Tune *tune)
 {
 	currentTune_ = tune;
-	doSetTune(tune);
+	doSetTune();
 	emit tuneChanged(tune);
 }
 

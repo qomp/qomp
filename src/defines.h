@@ -45,7 +45,8 @@
 #define OPTION_HIDE_ON_CLOSE "main.hide-on-close"
 
 #define OPTION_CURRENT_TRACK "main.current-track"
-#define OPTION_REPEAT_ALL "mail.repeat-all"
+#define OPTION_REPEAT_ALL "main.repeat-all"
+#define OPTION_VOLUME	"main.player-volume"
 
 #define OPTION_SEARCH_HISTORY "plugins.search-history"
 

@@ -188,13 +188,9 @@ void QompMainWin::playerStateChanged(Qomp::State state)
 		return;
 
 	updateIcons(state);
-	ui->lb_busy->stop();
 	currentState_ = state;
 
 	switch(state) {
-	case Qomp::StateError:
-		emit actNextActivated();
-		break;
 	case Qomp::StateBuffering:
 		ui->lb_busy->changeText(tr("Buffering"));
 		ui->lb_busy->start();
@@ -204,6 +200,7 @@ void QompMainWin::playerStateChanged(Qomp::State state)
 		ui->lb_busy->start();
 		break;
 	default:
+		ui->lb_busy->stop();
 		break;
 	}
 	updateTuneInfo(model_->currentTune());
@@ -235,24 +232,6 @@ void QompMainWin::toggleVisibility()
 	}
 	else
 		hide();
-}
-
-void QompMainWin::trayActivated(Qt::MouseButton b)
-{
-	if(b == Qt::RightButton) {
-		doMainContextMenu();
-	}
-	else if(b == Qt::MidButton) {
-		emit actPlayActivated();
-//		if(player_->state() == QompPlayer::StatePlaying) {
-//			player_->pause();
-//			currentState_ = Paused;
-//		}
-//		else if(player_->state() == QompPlayer::StatePaused) {
-//			player_->play();
-//			currentState_ = Playing;
-//		}
-	}
 }
 
 void QompMainWin::trayWheeled(int delta)

@@ -48,13 +48,15 @@ public:
 	virtual QStringList audioOutputDevice() const;
 	virtual void setAudioOutputDevice(const QString& devName);
 
+protected slots:
+	virtual void doSetTune();
+
 private slots:
 	void volumeChanged(int);
-	void stateChanged(QMediaPlayer::State);
+	void playerStateChanged(QMediaPlayer::State);
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
 
 protected:
-	virtual void doSetTune(Tune *tune);
 	virtual QompMetaDataResolver* metaDataResolver() const;
 
 private:

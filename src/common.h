@@ -22,6 +22,7 @@
 
 #include <QString>
 
+
 namespace Qomp {
 
 QString encodePassword(const QString& str, const QString &key);
@@ -36,13 +37,18 @@ QString fixEncoding(const QString& encoded);
 QString cacheDir();
 QString dataDir();
 
-enum State { StateUnknown = 0,
-	StateStopped, StatePaused,
-	StatePlaying, StateError,
-	StateLoading, StateBuffering
+enum State {	StateUnknown,	StateStopped,	StatePaused,
+		StatePlaying,	StateError,	StateLoading,
+		StateBuffering
 };
 
 } //namespace Qomp
 
+
+#ifdef DEBUG_OUTPUT
+#include <QtDebug>
+
+QDebug operator<<(QDebug dbg, Qomp::State value);
+#endif
 
 #endif // COMMON_H

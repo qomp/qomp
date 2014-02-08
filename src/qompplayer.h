@@ -61,6 +61,9 @@ public:
 
 public slots:
 	void setTune(Tune* tune);
+
+protected slots:
+	virtual void doSetTune() = 0;
 	
 signals:
 	void currentPositionChanged(qint64 pos);
@@ -76,7 +79,6 @@ signals:
 protected:
 	QompPlayer();
 
-	virtual void doSetTune(Tune* tune) = 0;
 	virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
 
 private:
