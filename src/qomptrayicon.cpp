@@ -122,6 +122,11 @@ void QompTrayIcon::setIcon(const QIcon &ico)
 	icon_->setIcon(ico);
 }
 
+void QompTrayIcon::setContextMenu(QMenu *m)
+{
+	icon_->setContextMenu(m);
+}
+
 QStringList QompTrayIcon::availableActions()
 {
 	static const QStringList actions = QStringList() << QObject::tr("Play/Pause")
@@ -164,7 +169,7 @@ void QompTrayIcon::trayActivated(QSystemTrayIcon::ActivationReason reason)
 		action = actionForType(Options::instance()->getOption(OPTION_TRAY_MIDDLE_CLICK).toInt());
 		break;
 	case QSystemTrayIcon::Context:
-		emit trayContextMenu();
+		//emit trayContextMenu();
 		return;
 	case QSystemTrayIcon::Trigger:
 		QTimer::singleShot(QApplication::doubleClickInterval()+1, this, SLOT(trayClicked()));

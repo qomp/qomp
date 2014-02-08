@@ -32,6 +32,7 @@ namespace Ui {
 class QompPlayListModel;
 class QompTrayIcon;
 class Tune;
+class QompMainMenu;
 
 class QompMainWin : public QMainWindow
 {
@@ -98,6 +99,7 @@ protected:
 
 private:
 	void connectActions();
+	void connectMainMenu();
 	void setIcons();
 	void setupPlaylist();
 
@@ -108,6 +110,7 @@ private:
 	Ui::QompMainWin *ui;
 	QompPlayListModel* model_;
 	QompTrayIcon* trayIcon_;
+	QompMainMenu *mainMenu_;
 
 	Qomp::State currentState_;
 };

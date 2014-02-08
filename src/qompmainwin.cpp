@@ -31,25 +31,39 @@
 #include <QCloseEvent>
 
 
+void QompMainWin::connectMainMenu()
+{
+	connect(mainMenu_, SIGNAL(actToggleVisibility()), SLOT(toggleVisibility()));
+	connect(mainMenu_, SIGNAL(actCheckUpdates()), SIGNAL(checkForUpdates()));
+	connect(mainMenu_, SIGNAL(actAbout()), SIGNAL(aboutQomp()));
+	connect(mainMenu_, SIGNAL(actDoOptions()), SIGNAL(doOptions()));
+	connect(mainMenu_, SIGNAL(tunes(QList<Tune*>)), SIGNAL(tunes(QList<Tune*>)));
+	connect(mainMenu_, SIGNAL(actExit()), SIGNAL(exit()));
+}
+
 QompMainWin::QompMainWin(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::QompMainWin),
 	model_(0),
 	trayIcon_(new QompTrayIcon(this)),
+	mainMenu_(new QompMainMenu(this)),
 	currentState_(Qomp::StateUnknown)
 {
 	ui->setupUi(this);
 
 	connectActions();
+	connectMainMenu();
 	setIcons();
 	setupPlaylist();
 
-	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());	
+	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());
+
+	trayIcon_->setContextMenu(mainMenu_);
 
 	connect(ui->seekSlider, SIGNAL(valueChanged(int)), SIGNAL(seekSliderMoved(int)));
 	connect(ui->volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderMoved(int)));
 	connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doMainContextMenu()));
-	connect(trayIcon_, SIGNAL(trayContextMenu()), SLOT(doMainContextMenu()));
+	//connect(trayIcon_, SIGNAL(trayContextMenu()), SLOT(doMainContextMenu()));
 	connect(trayIcon_, SIGNAL(trayWheeled(int)), SLOT(trayWheeled(int)));
 
 	restoreWindowState();
@@ -171,15 +185,7 @@ void QompMainWin::doTrackContextMenu(const QPoint &p)
 
 void QompMainWin::doMainContextMenu()
 {
-	QompMainMenu m;
-	connect(&m, SIGNAL(actToggleVisibility()), SLOT(toggleVisibility()));
-	connect(&m, SIGNAL(actCheckUpdates()), SIGNAL(checkForUpdates()));
-	connect(&m, SIGNAL(actAbout()), SIGNAL(aboutQomp()));
-	connect(&m, SIGNAL(actDoOptions()), SIGNAL(doOptions()));
-	connect(&m, SIGNAL(tunes(QList<Tune*>)), SIGNAL(tunes(QList<Tune*>)));
-	connect(&m, SIGNAL(actExit()), SIGNAL(exit()));
-
-	m.exec(QCursor::pos());
+	mainMenu_->exec(QCursor::pos());
 }
 
 void QompMainWin::playerStateChanged(Qomp::State state)
