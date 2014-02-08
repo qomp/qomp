@@ -403,12 +403,15 @@ void QompCon::mediaFinished()
 	mainWin_->setCurrentPosition(0);
 
 	QModelIndex index = model_->currentIndex();
+
+	//If current tune is empty tune, we probably reachs the end of playlist
+	if(!index.isValid())
+		return;
+
 	if(index.row() == model_->rowCount()-1) {
 		if(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool()) {
 			const QModelIndex ind = model_->index(0);
-			model_->setCurrentTune(model_->tune(ind));
-			stopPlayer();
-			actPlay();
+			playIndex(ind);
 
 		}
 		else {
