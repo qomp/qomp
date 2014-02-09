@@ -142,18 +142,18 @@ void QompTrackMenu::actToggleActivated()
 
 void QompTrackMenu::buildMenu()
 {
-	QAction* act = addAction(tr("Play/Pause"), this, SLOT(actToggleActivated()));
+	QAction* act = addAction(QIcon(":/icons/play"), tr("Play/Pause"), this, SLOT(actToggleActivated()));
 	act->setParent(this);
 
-	act = addAction(tr("Remove"), this, SLOT(actRemoveActivated()));
+	act = addAction(QIcon(":/icons/delete"), tr("Remove"), this, SLOT(actRemoveActivated()));
 	act->setParent(this);
 
 	if(!tune_->url.isEmpty()) {
-		act = addAction(tr("Copy URL"), this, SLOT(actCopyUrlActivated()));
+		act = addAction(QIcon(":/icons/ok"), tr("Copy URL"), this, SLOT(actCopyUrlActivated()));
 		act->setParent(this);
 	}
 	if(tune_->canSave()) {
-		act = addAction(tr("Save File"), this, SLOT(actSaveActivated()));
+		act = addAction(QIcon(":/icons/save"), tr("Save File"), this, SLOT(actSaveActivated()));
 		act->setParent(this);
 	}
 }

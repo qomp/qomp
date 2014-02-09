@@ -53,7 +53,6 @@ QompMainWin::QompMainWin(QWidget *parent) :
 
 	connectActions();
 	connectMainMenu();
-	setIcons();
 	setupPlaylist();
 
 	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());
@@ -279,20 +278,6 @@ void QompMainWin::connectActions()
 	connect(ui->tb_load, SIGNAL(clicked()), SIGNAL(loadPlaylist()));
 	connect(ui->tb_save, SIGNAL(clicked()), SIGNAL(savePlaylist()));
 	connect(ui->tb_mute, SIGNAL(clicked(bool)), SIGNAL(actMuteActivated(bool)));
-}
-
-void QompMainWin::setIcons()
-{
-	ui->tb_next->setIcon(QIcon(":/icons/next"));
-	ui->tb_prev->setIcon(QIcon(":/icons/prev"));
-	ui->tb_play->setIcon(QIcon(":/icons/play"));
-	ui->tb_stop->setIcon(QIcon(":/icons/stop"));
-	ui->tb_clear->setIcon(QIcon(":/icons/delete"));
-	ui->tb_load->setIcon(QIcon(":/icons/load"));
-	ui->tb_save->setIcon(QIcon(":/icons/save"));
-	ui->tb_open->setIcon(QIcon(":/icons/add"));
-	ui->tb_mute->setIcon(QIcon(":/icons/volume"));
-	ui->tb_repeatAll->setIcon(QIcon(":/icons/repeat"));
 }
 
 void QompMainWin::setupPlaylist()

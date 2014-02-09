@@ -100,7 +100,6 @@ protected:
 private:
 	void connectActions();
 	void connectMainMenu();
-	void setIcons();
 	void setupPlaylist();
 
 	void saveWindowState();
