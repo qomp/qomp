@@ -28,3 +28,4 @@ include (tunetofileplugin/tunetofileplugin.pri)
 #include (deezerplugin/deezerplugin.pri)
 
 unix:!macx:!android: include (mprisplugin/mprisplugin.pri)
+

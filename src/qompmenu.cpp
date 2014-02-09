@@ -50,11 +50,13 @@ void QompMenu::menuAboutToShow()
 QompGetTunesMenu::QompGetTunesMenu(QWidget *parent) :
 	QompMenu(parent)
 {
+	setIcon(QIcon(":/icons/add"));
 }
 
 QompGetTunesMenu::QompGetTunesMenu(const QString &name, QWidget *parent) :
 	QompMenu(name, parent)
 {
+	setIcon(QIcon(":/icons/add"));
 }
 
 void QompGetTunesMenu::actionActivated()
@@ -86,27 +88,28 @@ QompMainMenu::QompMainMenu(QWidget *p) :
 
 void QompMainMenu::buildMenu()
 {
-	QAction* act = addAction(tr("Toggle Visibility"), this, SIGNAL(actToggleVisibility()));
+	QAction* act = addAction(QIcon(":/icons/toggle"), tr("Toggle Visibility"), this, SIGNAL(actToggleVisibility()));
 	act->setParent(this);
 
 	QompGetTunesMenu *open = new QompGetTunesMenu(tr("Open"), this);
 	connect(open, SIGNAL(tunes(QList<Tune*>)), SIGNAL(tunes(QList<Tune*>)));
 	addMenu(open);
 
-	act = addAction(tr("Settings"), this, SIGNAL(actDoOptions()));
+	act = addAction(QIcon(":/icons/options"), tr("Settings"), this, SIGNAL(actDoOptions()));
 	act->setParent(this);
 	addSeparator();
 
 	QMenu* helpMenu = new QMenu(tr("Help"), this);
-	act = helpMenu->addAction(tr("About qomp"), this, SIGNAL(actAbout()));
+	helpMenu->setIcon(QIcon(":/icons/help"));
+	act = helpMenu->addAction(QIcon(":/icons/home"), tr("About qomp"), this, SIGNAL(actAbout()));
 	act->setParent(helpMenu);
-	act = helpMenu->addAction(tr("About Qt"), qApp, SLOT(aboutQt()));
+	act = helpMenu->addAction(QIcon(":/icons/info"), tr("About Qt"), qApp, SLOT(aboutQt()));
 	act->setParent(helpMenu);
-	act = helpMenu->addAction(tr("Check for updates"), this, SIGNAL(actCheckUpdates()));
+	act = helpMenu->addAction(QIcon(":/icons/updates"), tr("Check for updates"), this, SIGNAL(actCheckUpdates()));
 	act->setParent(helpMenu);
 	addMenu(helpMenu);
 
-	act = addAction(tr("Exit"), this, SIGNAL(actExit()));
+	act = addAction(QIcon(":/icons/close"), tr("Exit"), this, SIGNAL(actExit()));
 	act->setParent(this);
 }
 

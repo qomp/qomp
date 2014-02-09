@@ -97,21 +97,21 @@ void QompMainWin::setMuteState(bool mute)
 {
 	ui->tb_mute->setChecked(mute);
 	ui->tb_mute->setIcon(ui->tb_mute->isChecked() ?
-				     style()->standardIcon(QStyle::SP_MediaVolumeMuted) :
-				     style()->standardIcon(QStyle::SP_MediaVolume));
+				     QIcon(":/icons/mute") :
+				     QIcon(":/icons/volume"));
 }
 
 void QompMainWin::updateIcons(Qomp::State state)
 {
 	switch (state) {
 	case Qomp::StatePaused: {
-		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+		ui->tb_play->setIcon(QIcon(":/icons/play"));
 		static const QIcon pauseIco(":/icons/icons/qomp_pause.png");
 		trayIcon_->setIcon(pauseIco);
 		break;
 	}
 	case Qomp::StatePlaying: {
-		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+		ui->tb_play->setIcon(QIcon(":/icons/pause"));
 		static const QIcon playIcon(":/icons/icons/qomp_play.png");
 		trayIcon_->setIcon(playIcon);
 		break;
@@ -119,7 +119,7 @@ void QompMainWin::updateIcons(Qomp::State state)
 	default: {
 		static const QIcon stopIco(":/icons/icons/qomp_stop.png");
 		trayIcon_->setIcon(stopIco);
-		ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+		ui->tb_play->setIcon(QIcon(":/icons/play"));
 		break;
 	}
 	}
@@ -283,16 +283,16 @@ void QompMainWin::connectActions()
 
 void QompMainWin::setIcons()
 {
-	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
-	ui->tb_prev->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
-	ui->tb_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-	ui->tb_stop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
-	ui->tb_clear->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton));
-	ui->tb_load->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
-	ui->tb_save->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
-	ui->tb_open->setIcon(style()->standardIcon(QStyle::SP_DriveCDIcon));
-	ui->tb_mute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-	ui->tb_repeatAll->setIcon((style()->standardIcon(QStyle::SP_BrowserReload)));
+	ui->tb_next->setIcon(QIcon(":/icons/next"));
+	ui->tb_prev->setIcon(QIcon(":/icons/prev"));
+	ui->tb_play->setIcon(QIcon(":/icons/play"));
+	ui->tb_stop->setIcon(QIcon(":/icons/stop"));
+	ui->tb_clear->setIcon(QIcon(":/icons/delete"));
+	ui->tb_load->setIcon(QIcon(":/icons/load"));
+	ui->tb_save->setIcon(QIcon(":/icons/save"));
+	ui->tb_open->setIcon(QIcon(":/icons/add"));
+	ui->tb_mute->setIcon(QIcon(":/icons/volume"));
+	ui->tb_repeatAll->setIcon(QIcon(":/icons/repeat"));
 }
 
 void QompMainWin::setupPlaylist()

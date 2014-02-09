@@ -39,6 +39,10 @@
          <property name="text">
           <string>Search</string>
          </property>
+         <property name="icon">
+          <iconset resource="../qomp.qrc">
+           <normaloff>:/icons/search</normaloff>:/icons/search</iconset>
+         </property>
         </widget>
        </item>
       </layout>
@@ -88,7 +92,9 @@
    <header>qompbusylabel.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../qomp.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

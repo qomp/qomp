@@ -5,5 +5,27 @@
         <file>icons/qomp_play.png</file>
         <file>icons/qomp_stop.png</file>
         <file>icons/tune.png</file>
+        <file alias="add">icons/buttons/Add.png</file>
+        <file alias="cancel">icons/buttons/Cancel.png</file>
+        <file alias="delete">icons/buttons/Delete.png</file>
+        <file alias="next">icons/buttons/Fast_Forward.png</file>
+        <file alias="help">icons/buttons/Help.png</file>
+        <file alias="info">icons/buttons/Info.png</file>
+        <file alias="mute">icons/buttons/Mute.png</file>
+        <file alias="pause">icons/buttons/Pause.png</file>
+        <file alias="play">icons/buttons/Play.png</file>
+        <file alias="repeat">icons/buttons/Reload.png</file>
+        <file alias="prev">icons/buttons/Rewind.png</file>
+        <file alias="stop">icons/buttons/Stop.png</file>
+        <file alias="volume">icons/buttons/Volume.png</file>
+        <file alias="load">icons/buttons/Load.png</file>
+        <file alias="save">icons/buttons/Save.png</file>
+        <file alias="search">icons/buttons/Search.png</file>
+        <file alias="options">icons/buttons/Options.png</file>
+        <file alias="home">icons/buttons/Home.png</file>
+        <file alias="updates">icons/buttons/Updates.png</file>
+        <file alias="close">icons/buttons/Close.png</file>
+        <file alias="toggle">icons/buttons/Toggle.png</file>
+        <file alias="ok">icons/buttons/Ok.png</file>
     </qresource>
 </RCC>
