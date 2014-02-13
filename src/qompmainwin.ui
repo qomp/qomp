@@ -36,7 +36,7 @@ QompPlaylistView {
 QToolButton { 
      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f0f0f0, stop: 0.4 #ebebeb, stop: 0.7 #dedede, stop: 1.0 #d9d9d9); 
      border: 2px solid #799fd8; 
-     border-bottom-color: #799fd8; 
+     border-color: #799fd8; 
      border-top-left-radius: 5px; 
      border-bottom-left-radius: 5px; 
      border-bottom-right-radius: 5px; 
@@ -56,7 +56,7 @@ QToolButton:hover {
 QToolButton:pressed { 
      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #8faed5, stop: 0.4 #6dadfa, stop: 0.7 #368ef9, stop: 1.0 #358bf3); 
      border: 2px solid #698ebf; 
-     border-bottom-color: #698ebf; 
+     border-color: #698ebf; 
      border-top-left-radius: 5px; 
      border-bottom-left-radius: 5px; 
      border-bottom-right-radius: 5px; 
@@ -64,9 +64,9 @@ QToolButton:pressed {
 }
 
 QToolButton:checked { 
-     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #aaaaaa, stop: 0.4 #d5d5d5, stop: 0.7 #d5d5d5, stop: 1.0 #c6c6c6); 
+	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0.191, y2:1, stop:0 rgba(223, 225, 245, 255), stop:0.39196 rgba(207, 209, 245, 255), stop:0.859296 rgba(109, 160, 219, 255), stop:1 rgba(62, 85, 221, 255));
      border: 2px solid #698ebf; 
-     border-bottom-color: #698ebf; 
+     border-color: #698ebf; 
      border-top-left-radius: 5px; 
      border-bottom-left-radius: 5px; 
      border-bottom-right-radius: 5px; 

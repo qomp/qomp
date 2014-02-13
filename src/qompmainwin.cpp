@@ -131,7 +131,7 @@ void QompMainWin::updateOptions()
 
 void QompMainWin::actOpenActivated()
 {
-	QompGetTunesMenu m;
+	QompGetTunesMenu m(this);
 	connect(&m, SIGNAL(tunes(QList<Tune*>)), SIGNAL(tunes(QList<Tune*>)));
 
 	m.exec(QCursor::pos());

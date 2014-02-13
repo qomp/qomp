@@ -27,5 +27,7 @@
         <file alias="close">icons/buttons/Close.png</file>
         <file alias="toggle">icons/buttons/Toggle.png</file>
         <file alias="ok">icons/buttons/Ok.png</file>
+        <file alias="arrow-down">icons/buttons/arrow-down.png</file>
+        <file alias="arrow-up">icons/buttons/arrow-up.png</file>
     </qresource>
 </RCC>
