@@ -278,7 +278,7 @@ void QompCon::actRemoveSelected(const QModelIndexList &list)
 
 void QompCon::actDoSettings()
 {
-	QompOptionsDlg dlg(mainWin_);
+	QompOptionsDlg dlg(0);
 	dlg.exec();
 }
 
@@ -289,7 +289,7 @@ void QompCon::actCheckForUpdates()
 
 void QompCon::actAboutQomp()
 {
-	new AboutDlg(mainWin_);
+	new AboutDlg(0);
 }
 
 void QompCon::actDownloadTune(Tune *tune)
@@ -395,7 +395,7 @@ void QompCon::playIndex(const QModelIndex &index)
 	actPlay();
 }
 
-void QompCon::mediaFinished()
+void QompCon::mediaFinished(bool afterError)
 {
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompCon::mediaFinished()";
@@ -409,7 +409,7 @@ void QompCon::mediaFinished()
 		return;
 
 	if(index.row() == model_->rowCount()-1) {
-		if(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool()) {
+		if(!afterError && Options::instance()->getOption(OPTION_REPEAT_ALL).toBool()) {
 			const QModelIndex ind = model_->index(0);
 			playIndex(ind);
 
@@ -431,6 +431,6 @@ void QompCon::playerStateChanged(Qomp::State state)
 	qDebug() << "QompCon::playerStateChanged()  " << state;
 #endif
 	mainWin_->playerStateChanged(state);
-	if (state == Qomp::StateError)
-		mediaFinished();
+	if (state == Qomp::StateError && QompNetworkingFactory::instance()->isNetworkAvailable())
+		mediaFinished(true);
 }

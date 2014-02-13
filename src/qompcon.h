@@ -71,7 +71,7 @@ private slots:
 	void actToggleTuneState(Tune* tune);
 	void actRemoveTune(Tune* tune);
 
-	void mediaFinished();
+	void mediaFinished(bool afterError = false);
 	void playerStateChanged(Qomp::State state);
 
 //protected:

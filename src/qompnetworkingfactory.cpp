@@ -124,5 +124,10 @@ QNetworkAccessManager *QompNetworkingFactory::getNetworkAccessManager() const
 	return manager_;
 }
 
+bool QompNetworkingFactory::isNetworkAvailable() const
+{
+	return manager_->networkAccessible() == QNetworkAccessManager::Accessible;
+}
+
 
 #include "qompnetworkingfactory.moc"

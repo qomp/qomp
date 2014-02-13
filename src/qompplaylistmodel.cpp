@@ -291,7 +291,6 @@ void QompPlayListModel::restoreState()
 		addTunes(tl);
 		QModelIndex ind = index(Options::instance()->getOption(OPTION_CURRENT_TRACK, 0).toInt(),0);
 		setCurrentTune(tune(ind));
-		//ui->playList->setCurrentIndex(ind);
 	}
 }
 

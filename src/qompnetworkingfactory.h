@@ -32,6 +32,8 @@ public:
 	~QompNetworkingFactory();
 	void updateProxySettings() const;
 	QNetworkAccessManager* getNetworkAccessManager() const;
+
+	bool isNetworkAvailable() const;
 	
 private:
 	QompNetworkingFactory();
