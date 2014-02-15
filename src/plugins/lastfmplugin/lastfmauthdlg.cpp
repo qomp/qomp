@@ -19,24 +19,37 @@
 
 
 #include "lastfmauthdlg.h"
-#include "qompnetworkingfactory.h"
 #include "ui_lastfmauthdlg.h"
+
+#include <QDesktopServices>
+#include <QUrl>
 
 LastFmAuthDlg::LastFmAuthDlg(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::LastFmAuthDlg)
 {
 	ui->setupUi(this);
-	ui->wb_main->page()->setNetworkAccessManager(QompNetworkingFactory::instance()->getNetworkAccessManager());
+	ui->stackedWidget->setCurrentIndex(0);
+	ui->busyLabel->changeText(tr("Waiting..."));
+
+	connect(ui->buttonBox1, SIGNAL(accepted()), SLOT(openUrl()));
 }
 
 LastFmAuthDlg::~LastFmAuthDlg()
 {
+	ui->busyLabel->stop();
 	delete ui;
 }
 
 int LastFmAuthDlg::openUrl(const QString &url)
 {
-	ui->wb_main->setUrl(url);
+	url_ = url;
 	return exec();
+}
+
+void LastFmAuthDlg::openUrl()
+{
+	ui->stackedWidget->setCurrentIndex(1);
+	QDesktopServices::openUrl(QUrl(url_));
+	ui->busyLabel->start();
 }

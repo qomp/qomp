@@ -10,9 +10,6 @@ SOURCES += $$PWD/lastfmplugin.cpp \
 FORMS += $$PWD/lastfmsettings.ui \
     $$PWD/lastfmauthdlg.ui
 
-QT += xml webkit
+QT += xml
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += webkitwidgets
-}
 

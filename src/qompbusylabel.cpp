@@ -7,7 +7,8 @@
 
 QompBusyLabel::QompBusyLabel(QWidget *parent) :
 	QLabel(parent),
-	curPos_(0)
+	curPos_(0),
+	curText_(" ")
 {
 	setTextFormat(Qt::RichText);
 

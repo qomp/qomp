@@ -36,9 +36,13 @@ public:
 	~LastFmAuthDlg();
 
 	int openUrl(const QString& url);
+
+private slots:
+	void openUrl();
 	
 private:
 	Ui::LastFmAuthDlg *ui;
+	QString url_;
 };
 
 #endif // LASTFMAUTHDLG_H
