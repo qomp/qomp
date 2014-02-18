@@ -33,7 +33,7 @@
 #include "qompnetworkingfactory.h"
 
 static const QString url = "http://code.google.com/p/qomp/source/browse/src/defines.h";
-static const QString downloadUrl = "http://code.google.com/p/qomp/downloads/list";
+static const QString downloadUrl = "http://sourceforge.net/projects/qomp/files/";
 
 
 UpdatesChecker::UpdatesChecker(QObject *parent)
