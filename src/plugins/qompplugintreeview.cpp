@@ -28,6 +28,7 @@ QompPluginTreeView::QompPluginTreeView(QWidget *parent) :
 {
 	setHeaderHidden(true);
 	setItemsExpandable(true);
+	setUniformRowHeights(true);
 }
 
 void QompPluginTreeView::keyPressEvent(QKeyEvent *ke)

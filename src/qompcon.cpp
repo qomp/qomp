@@ -34,7 +34,9 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#ifdef HAVE_QT5
 #include <QThread>
+#endif
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -382,7 +384,9 @@ void QompCon::stopPlayer()
 	mainWin_->setCurrentPosition(0);
 	playerStateChanged(Qomp::StateStopped);
 	while (player_->state() != Qomp::StateStopped) {
+#ifdef HAVE_QT5
 		QThread::sleep(1);
+#endif
 		qApp->processEvents();
 	}
 	player_->blockSignals(false);

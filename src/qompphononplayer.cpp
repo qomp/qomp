@@ -42,7 +42,7 @@ QompPhononPlayer::QompPhononPlayer() :
 
 	mediaObject_->setTickInterval(500);
 	connect(mediaObject_, SIGNAL(tick(qint64)), SIGNAL(currentPositionChanged(qint64)));
-	connect(mediaObject_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(stateChanged()));
+	connect(mediaObject_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(playerStateChanged(Phonon::State,Phonon::State)));
 	connect(mediaObject_, SIGNAL(finished()), SIGNAL(mediaFinished()));
 	connect(mediaObject_, SIGNAL(totalTimeChanged(qint64)), SIGNAL(currentTuneTotalTimeChanged(qint64)));
 
@@ -93,42 +93,28 @@ qint64 QompPhononPlayer::position() const
 	return mediaObject_->currentTime();
 }
 
-Qomp::State QompPhononPlayer::state() const
+static Qomp::State PhononState2QompState(Phonon::State _state)
 {
-	switch (mediaObject_->state()) {
+	switch (_state) {
 	case Phonon::PausedState:
-#ifdef DEBUG_OUTPUT
-		qDebug() << "QompPlayer::state()" << "PausedState";
-#endif
 		return Qomp::StatePaused;
 	case Phonon::PlayingState:
-#ifdef DEBUG_OUTPUT
-		qDebug() << "QompPlayer::state()" << "Phonon::PlayingState";
-#endif
 		return Qomp::StatePlaying;
 	case Phonon::StoppedState:
-#ifdef DEBUG_OUTPUT
-		qDebug() << "QompPlayer::state()" << "Phonon::StoppedState";
-#endif
 		return Qomp::StateStopped;
 	case Phonon::ErrorState:
-#ifdef DEBUG_OUTPUT
-		qDebug() << "QompPlayer::state()" << "Phonon::ErrorState"
-			    << mediaObject_->errorType() << mediaObject_->errorString();
-#endif
 		return Qomp::StateError;
 	case Phonon::BufferingState:
-#ifdef DEBUG_OUTPUT
-		qDebug() << "QompPlayer::state()" << "Phonon::BufferingState";
-#endif
 		return Qomp::StateBuffering;
 	case Phonon::LoadingState:
-#ifdef DEBUG_OUTPUT
-		qDebug() << "QompPlayer::state()" << "Phonon::LoadingState";
-#endif
 		return Qomp::StateLoading;
 	}
 	return Qomp::StateUnknown;
+}
+
+Qomp::State QompPhononPlayer::state() const
+{
+	return PhononState2QompState(mediaObject_->state());
 }
 
 void QompPhononPlayer::doSetTune()
@@ -136,6 +122,16 @@ void QompPhononPlayer::doSetTune()
 	QUrl url = currentTune()->getUrl();
 	Phonon::MediaSource ms = url.isEmpty() ? Phonon::MediaSource() : Phonon::MediaSource(url);
 	mediaObject_->setCurrentSource(ms);
+}
+
+void QompPhononPlayer::playerStateChanged(Phonon::State newState, Phonon::State oldState)
+{
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompPhononPlayer::stateChanged"
+		 << "oldState: " << PhononState2QompState(oldState)
+		 << "  newState: " << PhononState2QompState(newState);
+#endif
+	emit stateChanged(PhononState2QompState(newState));
 }
 
 void QompPhononPlayer::play()
@@ -151,9 +147,6 @@ void QompPhononPlayer::pause()
 void QompPhononPlayer::stop()
 {
 	mediaObject_->stop();
-
-	//TODO Refactor this
-	//setTune((Tune*)Tune::emptyTune());
 }
 
 qint64 QompPhononPlayer::currentTuneTotalTime() const
@@ -187,7 +180,3 @@ void QompPhononPlayer::setAudioOutputDevice(const QString &newDev)
 	}
 }
 
-void QompPhononPlayer::stateChanged()
-{
-	emit QompPlayer::stateChanged(state());
-}

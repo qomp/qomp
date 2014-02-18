@@ -29,8 +29,7 @@
 
 QompPlaylistView { 
      background-color: #DFE1F5;
-	border-radius: 5px;
-	border: 2px solid #799fd8;
+	 border-radius: 5px;
 }
 
 QToolButton { 
@@ -108,7 +107,48 @@ QToolTip {
  	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f0f0f0, stop: 0.4 	#ebebeb, stop: 0.7 #dedede, stop: 1.0 #d9d9d9);
 	border-radius: 5px; 
 	border: 2px solid #698ebf;
-}</string>
+	padding: 2px;
+}
+
+ QScrollBar:vertical {
+     border: 2px solid #799fd8;
+     background: #DFE1F5;
+     width: 18px;
+	 margin: 25px 0px;
+ }
+ QScrollBar::handle:vertical {
+     min-height: 20px;
+	 border-radius: 5px;
+	 border: 2px solid #799fd8;
+	 background: rgba(62, 85, 221, 255);
+ }
+ QScrollBar::add-line:vertical {
+     border: 2px solid #799fd8;
+     background: rgba(62, 85, 221, 255);
+     height: 20px;
+	 border-bottom-left-radius: 5px;
+     border-bottom-right-radius: 5px;
+     subcontrol-position: bottom;
+     subcontrol-origin: margin;
+	 image: url(:/icons/arrow-down);
+	 margin-bottom: 5px;
+ }
+
+ QScrollBar::sub-line:vertical {
+     border: 2px solid #799fd8;
+	 border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+     background: rgba(62, 85, 221, 255);
+     height: 20px;
+	 subcontrol-position: top;
+     subcontrol-origin: margin;
+	 image: url(:/icons/arrow-up);
+	 margin-top: 5px;   
+ }
+
+ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+     background: none;
+ }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -370,6 +410,9 @@ QToolTip {
      <widget class="QompPlaylistView" name="playList">
       <property name="contextMenuPolicy">
        <enum>Qt::CustomContextMenu</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
       </property>
       <property name="dragEnabled">
        <bool>true</bool>

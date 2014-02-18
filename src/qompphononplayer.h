@@ -58,7 +58,7 @@ protected slots:
 	virtual void doSetTune();
 
 private slots:
-	void stateChanged();
+	void playerStateChanged(Phonon::State newState,Phonon::State oldState);
 
 private:
 	Phonon::MediaObject* mediaObject_;

@@ -98,8 +98,12 @@ void QompPluginGettunesDlg::suggestionActionTriggered(QAction *a)
 void QompPluginGettunesDlg::search()
 {
 	const QString text = ui->cb_search->currentText();
-	if(ui->cb_search->findText(text) == -1)
-		ui->cb_search->insertItem(0, text);
+	int index = ui->cb_search->findText(text);
+	if(index != -1) {
+		ui->cb_search->removeItem(index);
+	}
+	ui->cb_search->insertItem(0, text);
+	ui->cb_search->setCurrentIndex(0);
 
 	emit doSearch(text);
 }
