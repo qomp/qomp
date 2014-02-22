@@ -20,6 +20,7 @@
 #include "mprisplugin.h"
 #include "mpriscontroller.h"
 #include "qompplayer.h"
+#include "tune.h"
 
 #include <QTimer>
 #include <QtPlugin>
@@ -59,14 +60,14 @@ void MprisPlugin::playerStatusChanged()
 	Tune* t = player_->currentTune();
 	int num = t->trackNumber.isEmpty() ? 0 : t->trackNumber.toInt();
 	switch(player_->state()) {
-	case QompPlayer::StatePlaying:
+    case Qomp::StatePlaying:
 		mpris_->sendData("Playing", num ,t);
 		break;
-	case QompPlayer::StateStopped:
-		mpris_->sendData("Stopped", num ,Tune());
+    case Qomp::StateStopped:
+        mpris_->sendData("Stopped", num ,(Tune*)Tune::emptyTune());
 		break;
-	case QompPlayer::StatePaused:
-		mpris_->sendData("Paused", num ,Tune());
+    case Qomp::StatePaused:
+        mpris_->sendData("Paused", num ,(Tune*)Tune::emptyTune());
 		break;
 	default:
 		break;
