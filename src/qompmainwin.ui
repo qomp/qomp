@@ -578,6 +578,13 @@ QToolTip {
        </spacer>
       </item>
       <item>
+       <widget class="QompBusyLabel" name="lb_busy">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="tbOptions">
         <property name="toolTip">
          <string>Settings</string>
@@ -588,13 +595,6 @@ QToolTip {
         <property name="icon">
          <iconset resource="qomp.qrc">
           <normaloff>:/icons/options</normaloff>:/icons/options</iconset>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QompBusyLabel" name="lb_busy">
-        <property name="text">
-         <string/>
         </property>
        </widget>
       </item>
