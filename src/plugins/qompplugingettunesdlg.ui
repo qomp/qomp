@@ -23,7 +23,7 @@
 QTreeView, QListView, QListWidget { 
     background-color: #DFE1F5;
 	border-radius: 5px;
-	font: 12px;
+	font: 14px;
 }
 
 QToolButton { 

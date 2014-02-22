@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>387</width>
-    <height>612</height>
+    <height>603</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -80,6 +80,42 @@ QSlider::handle {
 
 QLabel { 
     color: #3244C9; 
+}
+
+QLabel#lb_artist_title {
+	background-color: #DFE1F5;
+	border-top-left-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-top:  1px solid #698ebf;
+	border-bottom:  1px solid #698ebf;
+	border-left:  1px solid #698ebf;
+}
+
+QLabel#lb_track_title {
+	background-color: #DFE1F5;
+	border-top-left-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-top: 1px solid #698ebf;
+	border-bottom:  1px solid #698ebf;
+	border-left:  1px solid #698ebf;
+}
+
+QLabel#lb_artist {
+	background-color: #DFE1F5;
+	border-top-right-radius: 2px;
+	border-bottom-right-radius: 2px;
+	border-top:  1px solid #698ebf;
+	border-bottom: 1px solid #698ebf;
+	border-right: 1px solid #698ebf;
+}
+
+QLabel#lb_title {
+	background-color: #DFE1F5;
+	border-top-right-radius: 2px;
+	border-bottom-right-radius: 2px;
+	border-top: 1px solid #698ebf;
+	border-bottom: 1px solid #698ebf;
+	border-right: 1px solid #698ebf;
 }
 
 QMenu {
@@ -165,17 +201,23 @@ QToolTip {
        </widget>
       </item>
       <item>
-       <layout class="QFormLayout" name="formLayout">
-        <property name="fieldGrowthPolicy">
-         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+       <layout class="QGridLayout" name="gridLayout">
+        <property name="horizontalSpacing">
+         <number>0</number>
         </property>
         <item row="0" column="0">
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="lb_artist_title">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
           </property>
           <property name="text">
            <string>Artist:</string>
@@ -196,15 +238,24 @@ QToolTip {
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="lb_track_title">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>Title:</string>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -525,6 +576,20 @@ QToolTip {
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbOptions">
+        <property name="toolTip">
+         <string>Settings</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="qomp.qrc">
+          <normaloff>:/icons/options</normaloff>:/icons/options</iconset>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QompBusyLabel" name="lb_busy">

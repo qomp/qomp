@@ -278,6 +278,7 @@ void QompMainWin::connectActions()
 	connect(ui->tb_load, SIGNAL(clicked()), SIGNAL(loadPlaylist()));
 	connect(ui->tb_save, SIGNAL(clicked()), SIGNAL(savePlaylist()));
 	connect(ui->tb_mute, SIGNAL(clicked(bool)), SIGNAL(actMuteActivated(bool)));
+	connect(ui->tbOptions, SIGNAL(clicked()), SIGNAL(doOptions()));
 }
 
 void QompMainWin::setupPlaylist()
