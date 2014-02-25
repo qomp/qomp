@@ -72,10 +72,11 @@ QToolButton:checked {
      border-top-right-radius: 4px; 
 }
 
-QSlider::handle {
+QSlider::handle:horizontal {
  background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #aaaaaa, stop: 0.4 #d5d5d5, stop: 0.7 #d5d5d5, stop: 1.0 #c6c6c6); 
-     border: 2px solid #698ebf; 
+    border: 2px solid #698ebf; 
 	border-radius: 5px;
+	width: 10px;
 }
 
 QLabel { 
