@@ -37,7 +37,11 @@ QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 	suggestionsMenu_(new QMenu(this)),
 	sugTimer_(new QTimer(this))
 {
+#if defined HAVE_QT5 && defined Q_OS_ANDROID
+	setWindowState(Qt::WindowMaximized);
+#endif
 	ui->setupUi(this);
+
 
 	QStringList searchHistory = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
 
@@ -125,7 +129,11 @@ void QompPluginGettunesDlg::keyPressEvent(QKeyEvent *e)
 		e->accept();
 		return;
 	}
-	return QDialog::keyPressEvent(e);
+#if defined HAVE_QT5 && defined Q_OS_ANDROID
+	if(e->key() == Qt::Key_Back)
+		reject();
+#endif
+	QDialog::keyPressEvent(e);
 }
 
 bool QompPluginGettunesDlg::eventFilter(QObject *o, QEvent *e)

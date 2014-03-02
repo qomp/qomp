@@ -42,6 +42,7 @@ public slots:
 
 protected:
 	void changeEvent(QEvent *e);
+	void keyReleaseEvent(QKeyEvent* ke);
 
 private slots:
 	void applyOptions();

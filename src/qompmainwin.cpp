@@ -29,17 +29,10 @@
 #include "ui_qompmainwin.h"
 
 #include <QCloseEvent>
+#if defined HAVE_QT5 && defined Q_OS_ANDROID
+#include <QGestureEvent>
+#endif
 
-
-void QompMainWin::connectMainMenu()
-{
-	connect(mainMenu_, SIGNAL(actToggleVisibility()), SLOT(toggleVisibility()));
-	connect(mainMenu_, SIGNAL(actCheckUpdates()), SIGNAL(checkForUpdates()));
-	connect(mainMenu_, SIGNAL(actAbout()), SIGNAL(aboutQomp()));
-	connect(mainMenu_, SIGNAL(actDoOptions()), SIGNAL(doOptions()));
-	connect(mainMenu_, SIGNAL(tunes(QList<Tune*>)), SIGNAL(tunes(QList<Tune*>)));
-	connect(mainMenu_, SIGNAL(actExit()), SIGNAL(exit()));
-}
 
 QompMainWin::QompMainWin(QWidget *parent) :
 	QMainWindow(parent),
@@ -73,6 +66,16 @@ QompMainWin::~QompMainWin()
 	saveWindowState();
 
 	delete ui;
+}
+
+void QompMainWin::connectMainMenu()
+{
+	connect(mainMenu_, SIGNAL(actToggleVisibility()), SLOT(toggleVisibility()));
+	connect(mainMenu_, SIGNAL(actCheckUpdates()), SIGNAL(checkForUpdates()));
+	connect(mainMenu_, SIGNAL(actAbout()), SIGNAL(aboutQomp()));
+	connect(mainMenu_, SIGNAL(actDoOptions()), SIGNAL(doOptions()));
+	connect(mainMenu_, SIGNAL(tunes(QList<Tune*>)), SIGNAL(tunes(QList<Tune*>)));
+	connect(mainMenu_, SIGNAL(actExit()), SIGNAL(exit()));
 }
 
 void QompMainWin::setModel(QompPlayListModel *model)
@@ -264,6 +267,36 @@ void QompMainWin::changeEvent(QEvent *e)
 		ui->retranslateUi(this);
 	}
 	QMainWindow::changeEvent(e);
+}
+
+void QompMainWin::keyPressEvent(QKeyEvent *e)
+{
+	QMainWindow::keyPressEvent(e);
+
+#if defined HAVE_QT5 && defined Q_OS_ANDROID
+	if(e->key() == Qt::Key_Back) {
+		emit exit();
+	}
+//	else if(e->key() == Qt::Key_Menu) {
+//		doMainContextMenu();
+//	}
+#endif
+}
+
+bool QompMainWin::event(QEvent *e)
+{
+#if defined HAVE_QT5 && defined Q_OS_ANDROID
+//	if(e->type() == QEvent::Gesture) {
+//		QGestureEvent* ge = static_cast<QGestureEvent*>(e);
+//		foreach(QGesture* g, ge->gestures()) {
+//			if(g->gestureType() == Qt::TapAndHoldGesture) {
+//				doMainContextMenu();
+//				e->accept();
+//			}
+//		}
+//	}
+#endif
+	return QMainWindow::event(e);
 }
 
 void QompMainWin::connectActions()

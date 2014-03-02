@@ -29,11 +29,15 @@
 
 #include <QAbstractButton>
 #include <QListWidgetItem>
+#include <QKeyEvent>
 
 QompOptionsDlg::QompOptionsDlg(QompMainWin *parent) :
 	QDialog(parent),
 	ui(new Ui::QompOptionsDlg)
 {
+#if defined HAVE_QT5 && defined Q_OS_ANDROID
+	setWindowState(Qt::WindowMaximized);
+#endif
 	ui->setupUi(this);
 	QList<QompOptionsPage*> list;
 	QompOptionsMain* om = new QompOptionsMain(this);
@@ -89,6 +93,16 @@ void QompOptionsDlg::changeEvent(QEvent *e)
 		}
 	}
 	QDialog::changeEvent(e);
+}
+
+void QompOptionsDlg::keyReleaseEvent(QKeyEvent *ke)
+{
+	QDialog::keyReleaseEvent(ke);
+#if defined HAVE_QT5 && defined Q_OS_ANDROID
+	if(ke->key() == Qt::Key_Back) {
+		reject();
+	}
+#endif
 }
 
 void QompOptionsDlg::applyOptions()

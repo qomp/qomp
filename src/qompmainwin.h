@@ -96,6 +96,8 @@ signals:
 protected:
 	void closeEvent(QCloseEvent *e);
 	void changeEvent(QEvent *e);
+	void keyPressEvent(QKeyEvent* e);
+	bool event(QEvent *event);
 
 private:
 	void connectActions();

@@ -23,7 +23,7 @@ include (urlplugin/urlplugin.pri)
 include (prostopleerplugin/prostopleerplugin.pri)
 include (myzukaruplugin/myzukaruplugin.pri)
 include (yandexmusicplugin/yandexmusicplugin.pri)
-!android:include (lastfmplugin/lastfmplugin.pri)
+include (lastfmplugin/lastfmplugin.pri)
 include (tunetofileplugin/tunetofileplugin.pri)
 #include (deezerplugin/deezerplugin.pri)
 

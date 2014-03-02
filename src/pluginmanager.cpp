@@ -185,9 +185,7 @@ Q_IMPORT_PLUGIN(YandexMusicPlugin)
 Q_IMPORT_PLUGIN(ProstoPleerPlugin)
 Q_IMPORT_PLUGIN(FilesystemPlugin)
 Q_IMPORT_PLUGIN(UrlPlugin)
-#ifndef Q_OS_ANDROID
 Q_IMPORT_PLUGIN(LastFmPlugin)
-#endif
 Q_IMPORT_PLUGIN(Tune2FilePlugin)
 #ifdef HAVE_DBUS
 Q_IMPORT_PLUGIN(MprisPlugin)

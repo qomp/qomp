@@ -213,21 +213,38 @@ void QompCon::actSetVolume(qreal vol)
 
 void QompCon::actSavePlaylist()
 {
-	QString file = QFileDialog::getSaveFileName(mainWin_, tr("Save Playlist"),
-			Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*.qomp");
-	if(!file.isEmpty()) {
-		Options::instance()->setOption(LAST_DIR, file);
-		model_->saveTunes(file);
+	QFileDialog f(mainWin_,tr("Select Playlist"),
+		      Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), tr("qomp playlist (*.qomp)"));
+	f.setViewMode(QFileDialog::List);
+	f.setAcceptMode(QFileDialog::AcceptSave);
+#if defined HAVE_QT5 && defined Q_OS_ANDROID
+	f.setWindowState(Qt::WindowMaximized);
+#endif
+	if (f.exec() == QFileDialog::Accepted) {
+		QStringList files = f.selectedFiles();
+		if(!files.isEmpty()) {
+			Options::instance()->setOption(LAST_DIR, files.first());
+			model_->saveTunes(files.first());
+		}
 	}
 }
 
 void QompCon::actLoadPlaylist()
 {
-	QString file = QFileDialog::getOpenFileName(mainWin_, tr("Select Playlist"),
-			Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), "*.qomp");
-	if(!file.isEmpty()) {
-		Options::instance()->setOption(LAST_DIR, file);
-		model_->loadTunes(file);
+	QFileDialog f(mainWin_,tr("Select Playlist"),
+		      Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), tr("qomp playlist (*.qomp)"));
+	f.setFileMode(QFileDialog::ExistingFile);
+	f.setViewMode(QFileDialog::List);
+	f.setAcceptMode(QFileDialog::AcceptOpen);
+#if defined HAVE_QT5 && defined Q_OS_ANDROID
+	f.setWindowState(Qt::WindowMaximized);
+#endif
+	if (f.exec() == QFileDialog::Accepted) {
+		QStringList files = f.selectedFiles();
+		if(!files.isEmpty()) {
+			Options::instance()->setOption(LAST_DIR, files.first());
+			model_->loadTunes(files.first());
+		}
 	}
 }
 
