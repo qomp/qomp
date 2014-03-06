@@ -62,7 +62,7 @@ static const QString albumsRegExp = QString(
 		);
 
 static const QString albumsRegExp2 = QString(
-			"<div albumtype=.+>\\s+"
+			"<div itemtype=.+>\\s+"
 			"<div>\\s+"
 			"<a.+href=\"(/Album/[^\"]+)\">\\s+"					//cap(1) - internalId
 			"([^<]+)"								//cap(2) - album
@@ -388,12 +388,6 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 	switch(item->type()) {
 	case QompCon::TypeTune:
 	{
-//		QompPluginTune *tune = static_cast<QompPluginTune *>(item);
-//		if(!tune->url.isEmpty())
-//			return;
-//		url.setPath(QString("/Song/GetFileUrl/%1").arg(tune->internalId));
-//		slot = SLOT(tuneUrlFinished());
-//		break;
 		return;
 	}
 	case QompCon::TypeAlbum:
@@ -467,29 +461,6 @@ void MyzukaruController::checkAndStopBusyWidget()
 		dlg_->stopBusyWidget();
 }
 
-//void MyzukaruController::tuneUrlFinished()
-//{
-//	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
-//	reply->deleteLater();
-//	void* model = requests_.value(reply);
-//	requests_.remove(reply);
-//	checkAndStopBusyWidget();
-//	if(reply->error() == QNetworkReply::NoError) {
-//		QString id = reply->property("id").toString();
-//		QRegExp re("\"(http://[^\"]+)\"");
-//		QString text = QString::fromUtf8(reply->readAll());
-//		if(re.indexIn(text) != -1) {
-//			QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
-//			QompPluginModelItem* it = model_->itemForId(id);
-//			if(it && it->type() == Qomp::TypeTune) {
-//				static_cast<QompPluginTune*>(it)->url = re.cap(1);
-//				model_->emitUpdateSignal();
-//			}
-//			return;
-//		}
-//	}
-//}
-
 void MyzukaruController::albumUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
@@ -508,19 +479,7 @@ void MyzukaruController::albumUrlFinished()
 				model->setItems(tunes, it);
 				foreach(QompPluginModelItem* t, tunes) {
 					static_cast<QompPluginTune*>(t)->album = pa->album;
-//					//SICK!!! But we couldn't call itemSelected(QompPluginModelItem *item)
-//					//because of lose pointer on model
-//					QUrl url(MYZUKA_URL);
-//					url.setPath(QString("/Song/GetFileUrl/%1").arg(t->internalId));
-//					QNetworkRequest nr(url);
-//					nr.setRawHeader("Accept", "*/*");
-//					nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-//					QNetworkReply *reply = nam()->get(nr);
-//					reply->setProperty("id", t->internalId);
-//					requests_.insert(reply, (void*)model);
-//					connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinished()));
 				}
-				//dlg_->startBusyWidget();
 				pa->tunesReceived = true;
 			}
 
