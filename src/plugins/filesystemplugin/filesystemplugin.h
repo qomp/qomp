@@ -38,7 +38,7 @@ class FilesystemPlugin : public QObject, public QompPlugin, public QompTunePlugi
 public:
 	FilesystemPlugin();
 	virtual QString name() const { return "Filesystem"; }
-	virtual QString version() const { return "0.1"; }
+	virtual QString version() const { return "0.1.1"; }
 	virtual QString description() const { return tr("Open music from filesystem"); }
 	virtual QList<Tune*> getTunes();
 	virtual QompOptionsPage* options();

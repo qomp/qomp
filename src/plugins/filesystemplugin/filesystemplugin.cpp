@@ -30,19 +30,30 @@ FilesystemPlugin::FilesystemPlugin()
 
 QList<Tune*> FilesystemPlugin::getTunes()
 {
-	QStringList files = QFileDialog::getOpenFileNames(0, tr("Select file(s)"),
-					Options::instance()->getOption("filesystemplugin.lastdir", QDir::homePath()).toString(),
-					"*mp3 *ogg *wav *flac");
-
-	if(!files.isEmpty()) {
-		QFileInfo fi (files.first());
-		Options::instance()->setOption("filesystemplugin.lastdir", fi.dir().path());
-	}
+	QFileDialog f(0, tr("Select file(s)"),
+		      Options::instance()->getOption("filesystemplugin.lastdir", QDir::homePath()).toString(),
+		      tr("Audio files(*.mp3 *.ogg *.wav *.flac);;All files(*)"));
+	f.setFileMode(QFileDialog::ExistingFile);
+	f.setViewMode(QFileDialog::List);
+	f.setAcceptMode(QFileDialog::AcceptOpen);
+#if defined HAVE_QT5 && defined Q_OS_ANDROID
+	setWindowState(Qt::WindowMaximized);
+#endif
 	QList<Tune*> list;
-	foreach(const QString& file, files) {
-		Tune* tune = new Tune(false);
-		tune->file = file;
-		list.append(tune);
+
+	if(f.exec() == QFileDialog::Accepted) {
+		QStringList files = f.selectedFiles();
+
+		if(!files.isEmpty()) {
+			QFileInfo fi (files.first());
+			Options::instance()->setOption("filesystemplugin.lastdir", fi.dir().path());
+		}
+		QList<Tune*> list;
+		foreach(const QString& file, files) {
+			Tune* tune = new Tune(false);
+			tune->file = file;
+			list.append(tune);
+		}
 	}
 	return list;
 }
