@@ -17,42 +17,25 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#ifndef QOMPTUNEPLUIGN_H
+#define QOMPTUNEPLUIGN_H
 
-#include <QDialog>
+#include <QObject>
+#include "libqomp_global.h"
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
-class QompPlayer;
+class Tune;
 
-class QompOptionsDlg : public QDialog
+class TuneURLResolveStrategy;
+
+class LIBQOMPSHARED_EXPORT QompTunePlugin
 {
-	Q_OBJECT
-	
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
+	virtual ~QompTunePlugin() {}
 
-public slots:
-	virtual void accept();
-
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
-
-private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
-	
-private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
+	virtual QList<Tune*> getTunes() = 0;
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const = 0;
 };
 
-#endif // QOMPOPTIONSDLG_H
+Q_DECLARE_INTERFACE(QompTunePlugin, "Qomp.QompTunePlugin/0.1")
+
+#endif // QOMPTUNEPLUIGN_H

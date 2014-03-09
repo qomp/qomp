@@ -17,42 +17,26 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#ifndef QOMPOPTIONSPAGE_H
+#define QOMPOPTIONSPAGE_H
 
-#include <QDialog>
+#include <QWidget>
+#include "libqomp_global.h"
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
 class QompPlayer;
 
-class QompOptionsDlg : public QDialog
+class LIBQOMPSHARED_EXPORT QompOptionsPage : public QWidget
 {
 	Q_OBJECT
-	
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
+	QompOptionsPage(QWidget *parent = 0) : QWidget(parent) {}
+	virtual QString name() const = 0;
+	virtual void retranslate() = 0;
+	virtual void init(QompPlayer* player) { Q_UNUSED(player) }
 
 public slots:
-	virtual void accept();
-
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
-
-private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
-	
-private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
+	virtual void applyOptions() = 0;
+	virtual void restoreOptions() = 0;
 };
 
-#endif // QOMPOPTIONSDLG_H
+#endif // QOMPOPTIONSPAGE_H

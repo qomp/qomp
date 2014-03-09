@@ -17,42 +17,36 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#ifndef YANDEXMUSICPLUGIN_H
+#define YANDEXMUSICPLUGIN_H
 
-#include <QDialog>
+#include "qompplugin.h"
+#include "qomptunepluign.h"
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
-class QompPlayer;
-
-class QompOptionsDlg : public QDialog
+class YandexMusicPlugin : public QObject, public QompPlugin, public QompTunePlugin
 {
 	Q_OBJECT
-	
+	Q_INTERFACES(QompPlugin QompTunePlugin)
+#ifdef HAVE_QT5
+	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
+	Q_PLUGIN_METADATA(IID "Qomp.QompTunePlugin/0.1")
+#endif
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
-
-public slots:
-	virtual void accept();
-
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
-
-private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
+	explicit YandexMusicPlugin(QObject *parent = 0);
+	virtual QString name() const ;
+	virtual QString version() const;
+	virtual QString description() const;
+	virtual QList<Tune*> getTunes();
+	virtual QompOptionsPage* options();
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const;
+	virtual void setEnabled(bool /*enabled*/) {}
+	virtual void unload() {}
 	
-private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
+signals:
+	
+public slots:
+	
 };
 
-#endif // QOMPOPTIONSDLG_H
+
+#endif // YANDEXMUSICPLUGIN_H

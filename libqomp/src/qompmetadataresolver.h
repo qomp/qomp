@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,42 +17,43 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#ifndef QOMPMETADATARESOLVER_H
+#define QOMPMETADATARESOLVER_H
 
-#include <QDialog>
+#include <QThread>
+#include <QMap>
+#include "libqomp_global.h"
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
-class QompPlayer;
+class QMutex;
+class Tune;
 
-class QompOptionsDlg : public QDialog
+class LIBQOMPSHARED_EXPORT QompMetaDataResolver : public QThread
 {
 	Q_OBJECT
-	
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
+	QompMetaDataResolver(QObject *parent = 0);
+	~QompMetaDataResolver();
 
-public slots:
-	virtual void accept();
+	void resolve(const QList<Tune*>& tunes);
+	
+signals:
+	void tuneUpdated(Tune*);
+	
+protected:
+	Tune *get();
+	void tuneFinished();
+	bool isDataEmpty() const;
 
 protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
+	void updateTuneMetadata(const QMap<QString, QString>& data);
+	void updateTuneDuration(qint64 msec);
 
-private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
-	
 private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
+	void addTunes(const QList<Tune*>& tunes);
+
+private:
+	QList<Tune*> data_;
+	QMutex* mutex_;
 };
 
-#endif // QOMPOPTIONSDLG_H
+#endif // QOMPMETADATARESOLVER_H

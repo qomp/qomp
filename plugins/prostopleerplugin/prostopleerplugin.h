@@ -17,42 +17,33 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#ifndef PROSTOPLEERPLUGIN_H
+#define PROSTOPLEERPLUGIN_H
 
-#include <QDialog>
+#include "qompplugin.h"
+#include "qomptunepluign.h"
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
-class QompPlayer;
-
-class QompOptionsDlg : public QDialog
+class ProstoPleerPlugin : public QObject, public QompPlugin, public QompTunePlugin
 {
 	Q_OBJECT
-	
+	Q_INTERFACES(QompPlugin QompTunePlugin)
+#ifdef HAVE_QT5
+	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
+	Q_PLUGIN_METADATA(IID "Qomp.QompTunePlugin/0.1")
+#endif
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
+	ProstoPleerPlugin();
+	virtual QString name() const;
+	virtual QString version() const;
+	virtual QString description() const;
+	virtual QList<Tune*> getTunes();
+	virtual QompOptionsPage* options();
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
+	virtual void setEnabled(bool enabled);
+	virtual void unload() {}
 
-public slots:
-	virtual void accept();
-
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
-
-private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
-	
 private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
+	bool enabled_;
 };
 
-#endif // QOMPOPTIONSDLG_H
+#endif // PROSTOPLEERPLUGIN_H

@@ -5,7 +5,6 @@ SOURCES += $$PWD/qompoptionsdlg.cpp \
     $$PWD/qompoptionsplugins.cpp
 
 HEADERS += $$PWD/qompoptionsdlg.h \
-    $$PWD/qompoptionspage.h \
     $$PWD/qompoptionsmain.h \
     $$PWD/qompoptionsplugins.h
 

@@ -38,6 +38,12 @@
 #include <QThread>
 #endif
 
+#ifdef HAVE_PHONON
+#include "qompphononplayer.h"
+#elif HAVE_QTMULTIMEDIA
+#include "qompqtmultimediaplayer.h"
+#endif
+
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
 #endif
@@ -297,7 +303,7 @@ void QompCon::actRemoveSelected(const QModelIndexList &list)
 
 void QompCon::actDoSettings()
 {
-	QompOptionsDlg dlg(0);
+	QompOptionsDlg dlg(player_);
 	dlg.exec();
 }
 
@@ -378,7 +384,7 @@ void QompCon::setupMainWin()
 
 void QompCon::setupPlayer()
 {
-	player_ = QompPlayer::instance();
+	player_ = createPlayer();
 	PluginManager::instance()->qompPlayerChanged(player_);
 
 	connect(player_, SIGNAL(tuneDataUpdated(Tune*)), model_, SLOT(tuneDataUpdated(Tune*)));
@@ -414,6 +420,15 @@ void QompCon::playIndex(const QModelIndex &index)
 	stopPlayer();
 	model_->setCurrentTune(model_->tune(index));
 	actPlay();
+}
+
+QompPlayer *QompCon::createPlayer()
+{
+#ifdef HAVE_PHONON
+	return new QompPhononPlayer;
+#elif HAVE_QTMULTIMEDIA
+	return new QompQtMultimediaPlayer;
+#endif
 }
 
 void QompCon::mediaFinished(bool afterError)

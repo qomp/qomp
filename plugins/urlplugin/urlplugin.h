@@ -17,42 +17,31 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#ifndef URLPLUGIN_H
+#define URLPLUGIN_H
 
-#include <QDialog>
+#include "qompplugin.h"
+#include "qomptunepluign.h"
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
-class QompPlayer;
-
-class QompOptionsDlg : public QDialog
+class UrlPlugin : public QObject, public QompPlugin, public QompTunePlugin
 {
 	Q_OBJECT
-	
+	Q_INTERFACES(QompPlugin QompTunePlugin)
+#ifdef HAVE_QT5
+	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
+	Q_PLUGIN_METADATA(IID "Qomp.QompTunePlugin/0.1")
+#endif
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
-
-public slots:
-	virtual void accept();
-
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
-
-private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
+	UrlPlugin();	
+	virtual QString name() const { return "Url"; }
+	virtual QString version() const { return "0.1"; }
+	virtual QString description() const { return tr("Open custom URL"); }
+	virtual QList<Tune*> getTunes();
+	virtual QompOptionsPage* options();
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
+	virtual void setEnabled(bool /*enabled*/) {}
+	virtual void unload(){}
 	
-private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
 };
 
-#endif // QOMPOPTIONSDLG_H
+#endif // URLPLUGIN_H

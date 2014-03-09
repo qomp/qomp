@@ -17,42 +17,33 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#ifndef PROSTOPLEERPLUGINSETTINGS_H
+#define PROSTOPLEERPLUGINSETTINGS_H
 
-#include <QDialog>
+#include <QWidget>
+#include "qompoptionspage.h"
 
 namespace Ui {
-class QompOptionsDlg;
+class ProstopleerPluginSettings;
 }
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
-class QompPlayer;
 
-class QompOptionsDlg : public QDialog
+class ProstopleerPluginSettings : public QompOptionsPage
 {
 	Q_OBJECT
 	
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
+	explicit ProstopleerPluginSettings(QWidget *parent = 0);
+	~ProstopleerPluginSettings();
+
+	virtual QString name() const;
+	virtual void retranslate();
 
 public slots:
-	virtual void accept();
-
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
-
-private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
+	virtual void applyOptions();
+	virtual void restoreOptions();
 	
 private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
+	Ui::ProstopleerPluginSettings *ui;
 };
 
-#endif // QOMPOPTIONSDLG_H
+#endif // PROSTOPLEERPLUGINSETTINGS_H

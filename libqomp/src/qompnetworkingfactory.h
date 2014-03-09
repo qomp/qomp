@@ -17,42 +17,31 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#ifndef QOMPNETWORKINGFACTORY_H
+#define QOMPNETWORKINGFACTORY_H
 
-#include <QDialog>
+#include <QPointer>
+#include "libqomp_global.h"
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
-class QompPlayer;
+class QNetworkAccessManager;
 
-class QompOptionsDlg : public QDialog
+class LIBQOMPSHARED_EXPORT QompNetworkingFactory : public QObject
 {
 	Q_OBJECT
-	
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
+	static QompNetworkingFactory* instance();
+	~QompNetworkingFactory();
+	void updateProxySettings() const;
+	QNetworkAccessManager* getNetworkAccessManager() const;
 
-public slots:
-	virtual void accept();
-
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
-
-private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
+	bool isNetworkAvailable() const;
 	
 private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
+	QompNetworkingFactory();
+	void checkNAM() const;
+	static QompNetworkingFactory* instance_;
+
+	mutable QPointer<QNetworkAccessManager> manager_;
 };
 
-#endif // QOMPOPTIONSDLG_H
+#endif // QOMPNETWORKINGFACTORY_H

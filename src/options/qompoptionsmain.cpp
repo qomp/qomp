@@ -31,7 +31,7 @@ static const QString defaultDevice = QObject::tr("default");
 QompOptionsMain::QompOptionsMain(QWidget *parent) :
 	QompOptionsPage(parent),
 	ui(new Ui::QompOptionsMain),
-	player_(QompPlayer::instance())
+	player_(0)
 {
 	ui->setupUi(this);
 	restoreOptions();
@@ -50,6 +50,11 @@ QompOptionsMain::~QompOptionsMain()
 void QompOptionsMain::retranslate()
 {
 	ui->retranslateUi(this);
+}
+
+void QompOptionsMain::init(QompPlayer *player)
+{
+	player_ = player;
 }
 
 void QompOptionsMain::applyOptions()

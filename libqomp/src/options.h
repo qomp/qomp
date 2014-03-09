@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2011-2013  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,42 +17,35 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#ifndef OPTIONS_H
+#define OPTIONS_H
 
-#include <QDialog>
+#include <QVariant>
+#include "libqomp_global.h"
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
-class QompPlayer;
+class QSettings;
 
-class QompOptionsDlg : public QDialog
+class LIBQOMPSHARED_EXPORT Options : public QObject
 {
 	Q_OBJECT
-	
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
+	static Options* instance();
+	static void reset();
+	~Options();
 
-public slots:
-	virtual void accept();
+	QVariant getOption(const QString& name, const QVariant& defValue = QVariant::Invalid);
+	void setOption(const QString& name, const QVariant& value);
 
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
-
-private slots:
 	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
-	
+
+signals:
+	void updateOptions();
+
 private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
+	Options();
+	static Options* instance_;
+
+	QSettings *set_;
 };
 
-#endif // QOMPOPTIONSDLG_H
+#endif // OPTIONS_H

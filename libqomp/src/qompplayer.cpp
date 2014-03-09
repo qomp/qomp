@@ -17,42 +17,35 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#include "qompplayer.h"
+#include "qompmetadataresolver.h"
+#include "tune.h"
 
-#include <QDialog>
+#include <QCoreApplication>
+#include <QTimer>
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
-class QompPlayer;
+QompPlayer* QompPlayer::instance_ = 0;
 
-class QompOptionsDlg : public QDialog
+
+QompPlayer::QompPlayer() :
+	QObject(QCoreApplication::instance())
 {
-	Q_OBJECT
-	
-public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
+}
 
-public slots:
-	virtual void accept();
+void QompPlayer::setTune(Tune *tune)
+{
+	currentTune_ = tune;
+	doSetTune();
+	emit tuneChanged(tune);
+}
 
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
+Tune *QompPlayer::currentTune() const
+{
+	return currentTune_;
+}
 
-private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
-	
-private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
-};
-
-#endif // QOMPOPTIONSDLG_H
+void QompPlayer::resolveMetadata(const QList<Tune*>& tunes)
+{
+	if(metaDataResolver())
+		metaDataResolver()->resolve(tunes);
+}

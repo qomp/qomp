@@ -31,7 +31,7 @@
 #include <QListWidgetItem>
 #include <QKeyEvent>
 
-QompOptionsDlg::QompOptionsDlg(QompMainWin *parent) :
+QompOptionsDlg::QompOptionsDlg(QompPlayer *player, QompMainWin *parent) :
 	QDialog(parent),
 	ui(new Ui::QompOptionsDlg)
 {
@@ -45,6 +45,7 @@ QompOptionsDlg::QompOptionsDlg(QompMainWin *parent) :
 	list << om << op;
 
 	foreach(QompOptionsPage* page, list) {
+		page->init(player);
 		ui->sw_pages->addWidget(page);
 		QListWidgetItem* it = new QListWidgetItem(ui->lw_pagesNames);
 		it->setText(page->name());

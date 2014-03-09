@@ -17,42 +17,30 @@
  *
  */
 
-#ifndef QOMPOPTIONSDLG_H
-#define QOMPOPTIONSDLG_H
+#ifndef QompPluginTreeView_H
+#define QompPluginTreeView_H
 
-#include <QDialog>
+#include <QTreeView>
+#include "libqomp_global.h"
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
-class QompPlayer;
-
-class QompOptionsDlg : public QDialog
+class LIBQOMPSHARED_EXPORT QompPluginTreeView : public QTreeView
 {
 	Q_OBJECT
-	
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
-	~QompOptionsDlg();
-
-public slots:
-	virtual void accept();
-
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
-
-private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
+	/**
+	* This class shows search results and designed for use with QompPluginTreeModel.
+	* It's a tree of elements of artists - albums - songs.
+	* Can select and unselect elements with mouse doubleclick
+	* or Space and Return(Enter) keyboard keys.
+	*/
+	QompPluginTreeView(QWidget *parent = 0);
 	
+protected:
+	void keyPressEvent(QKeyEvent *ke);
+	void mouseDoubleClickEvent(QMouseEvent *e);
+
 private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
+	void itemActivated();
 };
 
-#endif // QOMPOPTIONSDLG_H
+#endif // QompPluginTreeView_H

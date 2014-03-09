@@ -85,6 +85,8 @@ private:
 	void stopPlayer();
 	void playIndex(const QModelIndex& index);
 
+	static QompPlayer* createPlayer();
+
 private:
 	QompMainWin* mainWin_;
 	QompPlayListModel* model_;
