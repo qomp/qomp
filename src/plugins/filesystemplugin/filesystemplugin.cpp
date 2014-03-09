@@ -37,7 +37,7 @@ QList<Tune*> FilesystemPlugin::getTunes()
 	f.setViewMode(QFileDialog::List);
 	f.setAcceptMode(QFileDialog::AcceptOpen);
 #if defined HAVE_QT5 && defined Q_OS_ANDROID
-	setWindowState(Qt::WindowMaximized);
+	f.setWindowState(Qt::WindowMaximized);
 #endif
 	QList<Tune*> list;
 

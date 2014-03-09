@@ -84,7 +84,9 @@ macx {
    QMAKE_INFO_PLIST = $$PWD/Info.plist
 }
 
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+android {
+    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
-OTHER_FILES += \
-    android/AndroidManifest.xml
+    OTHER_FILES += \
+        android/AndroidManifest.xml
+}
