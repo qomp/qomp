@@ -18,6 +18,8 @@ TARGET = qomp
 DESTDIR = $$PWD/../bin
 TEMPLATE = app
 
+QT += network
+
 include(src.pri)
 
 unix:!android {

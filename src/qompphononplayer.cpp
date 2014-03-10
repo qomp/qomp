@@ -126,6 +126,7 @@ void QompPhononPlayer::doSetTune()
 
 void QompPhononPlayer::playerStateChanged(Phonon::State newState, Phonon::State oldState)
 {
+	Q_UNUSED(oldState)
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompPhononPlayer::stateChanged"
 		 << "oldState: " << PhononState2QompState(oldState)
