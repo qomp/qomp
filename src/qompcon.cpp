@@ -83,6 +83,7 @@ QompCon::~QompCon()
 	Options::instance()->setOption(OPTION_VOLUME, player_->volume());
 
 	delete mainWin_;
+	delete player_;
 	delete Tune::emptyTune();
 }
 

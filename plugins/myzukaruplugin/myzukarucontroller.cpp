@@ -28,6 +28,10 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
+#ifdef DEBUG_OUTPUT
+#include <QtDebug>
+#endif
+
 
 static const QString artistsRegExp = QString(
 		"<tr>\\s+"
@@ -61,16 +65,16 @@ static const QString albumsRegExp = QString(
 		".+ </tr>"
 		);
 
-static const QString albumsRegExp2 = QString(
-			"<div itemtype=.+>\\s+"
+static const QString albumsRegExp2 = QString::fromUtf8(
+			"<div itemtype=[^>]+>\\s+"
 			"<div>\\s+"
 			"<a.+href=\"(/Album/[^\"]+)\">\\s+"					//cap(1) - internalId
 			"([^<]+)"								//cap(2) - album
 			"</a>.+"
-			"<a .+"
+			"<a.+"
 			"</a>\\s+"
 			"</div>.+"
-			"Год релиза: (\\d+)?.+"							//cap(3) - year
+			"Год релиза:\\s+(\\d+)?.+"						//cap(3) - year
 			"</div>"
 			);
 
@@ -215,6 +219,9 @@ static QList<QompPluginModelItem*> parseAlbums(const QString& replyStr, int albu
 
 static QList<QompPluginModelItem*> parseAlbums2(const QString& replyStr, int albumsIndex)
 {
+#ifdef DEBUG_OUTPUT
+	qDebug() <<replyStr;
+#endif
 	QList<QompPluginModelItem*> albums;
 	if(albumsIndex != -1) {
 		QRegExp albumRx(albumsRegExp2, Qt::CaseInsensitive);
