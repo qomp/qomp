@@ -90,7 +90,7 @@ QStringList PluginManager::pluginsDirs()
 	dirs << qApp->applicationDirPath()+"/plugins";
 
 #ifndef Q_OS_WIN
-	disrs << QOMP_DATADIR+"/plugins";
+	dirs << QString("%1/%2").arg(QOMP_DATADIR).arg("plugins");
 #endif
 
 	return dirs;

@@ -27,3 +27,5 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
     DEFINES += HAVE_QT5
 }
+
+android: ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
