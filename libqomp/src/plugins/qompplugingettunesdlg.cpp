@@ -101,6 +101,8 @@ void QompPluginGettunesDlg::suggestionActionTriggered(QAction *a)
 
 void QompPluginGettunesDlg::search()
 {
+	ui->cb_search->blockSignals(true);
+
 	const QString text = ui->cb_search->currentText();
 	int index = ui->cb_search->findText(text);
 	if(index != -1) {
@@ -108,6 +110,8 @@ void QompPluginGettunesDlg::search()
 	}
 	ui->cb_search->insertItem(0, text);
 	ui->cb_search->setCurrentIndex(0);
+
+	ui->cb_search->blockSignals(false);
 
 	emit doSearch(text);
 }
