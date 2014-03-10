@@ -90,7 +90,7 @@ QStringList PluginManager::pluginsDirs()
 	dirs << qApp->applicationDirPath()+"/plugins";
 
 #ifndef Q_OS_WIN
-	disrs << QOMP_LIBDIR;
+	disrs << QOMP_DATADIR+"/plugins";
 #endif
 
 	return dirs;
@@ -211,30 +211,5 @@ void PluginManager::qompPlayerChanged(QompPlayer *player)
 	}
 }
 
-//#ifdef HAVE_QT5
-//Q_IMPORT_PLUGIN(MyzukaruPlugin)
-////Q_IMPORT_PLUGIN(DeezerPlugin)
-//Q_IMPORT_PLUGIN(YandexMusicPlugin)
-//Q_IMPORT_PLUGIN(ProstoPleerPlugin)
-//Q_IMPORT_PLUGIN(FilesystemPlugin)
-//Q_IMPORT_PLUGIN(UrlPlugin)
-//Q_IMPORT_PLUGIN(LastFmPlugin)
-//Q_IMPORT_PLUGIN(Tune2FilePlugin)
-//#ifdef HAVE_DBUS
-//Q_IMPORT_PLUGIN(MprisPlugin)
-//#endif
-//#else
-//Q_IMPORT_PLUGIN(myzukaruplugin)
-////Q_IMPORT_PLUGIN(deezerplugin)
-//Q_IMPORT_PLUGIN(yandexmusicplugin)
-//Q_IMPORT_PLUGIN(prostopleerplugin)
-//Q_IMPORT_PLUGIN(filesystemplugin)
-//Q_IMPORT_PLUGIN(urlplugin)
-//Q_IMPORT_PLUGIN(lastfmplugin)
-//Q_IMPORT_PLUGIN(tunetofileplugin)
-//#ifdef HAVE_DBUS
-//Q_IMPORT_PLUGIN(mprisplugin)
-//#endif
-//#endif
 
 PluginManager* PluginManager::instance_ = 0;

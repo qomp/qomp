@@ -20,9 +20,6 @@ TEMPLATE = app
 
 include(src.pri)
 
-LANG_PATH = qomp.translations/translations
-TRANSLATIONS = $$LANG_PATH/qomp_ru.ts
-
 unix:!android {
 	INCLUDEPATH += /usr/include/KDE/
 	
@@ -43,15 +40,7 @@ unix:!android {
 	icon5.path = $$PREFIX/share/icons/hicolor/32x32/apps
 	icon5.extra = cp -f src/icons/qomp_32.png $(INSTALL_ROOT)$$icon5.path/qomp.png
 
-        translations.path = $$DATADIR/translations
-        LRELEASE = "lrelease"
-        !exists($$LRELEASE)
-            LRELEASE = "lrelease-qt4"
-
-	translations.extra = lrelease qomp.pro && cp -f $$LANG_PATH/qomp_*.qm  $(INSTALL_ROOT)$$translations.path
-	INSTALLS += translations
-
-	INSTALLS += dt icon icon1 icon2 icon3 icon4 icon5
+        INSTALLS += dt icon icon1 icon2 icon3 icon4 icon5
 }
 
 win32:RC_FILE += $$PWD/../qomp.rc

@@ -9,7 +9,7 @@ include($$PWD/../conf.pri)
 
 DEFINES += LIBQOMP_LIBRARY
 
-unix {
+unix:!android {
     target.path = $$PREFIX/lib
     INSTALLS += target
 }

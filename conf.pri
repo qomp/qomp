@@ -20,10 +20,8 @@ isEmpty(PREFIX) {
 
 BINDIR = $$PREFIX/bin
 DATADIR = $$PREFIX/share/qomp
-LIBDIR = $$PREFIX/lib/qomp
 
 DEFINES += QOMP_DATADIR='\\"$$DATADIR\\"'
-DEFINES += QOMP_LIBDIR='\\"$$LIBDIR\\"'
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets

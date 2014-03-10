@@ -16,3 +16,8 @@ CONFIG(debug, debug|release) {
     LIBS += -L$$PWD/../bin -lqomp
 }
 
+unix:!android {
+    target.path = $$DATADIR/plugins
+    INSTALLS += target
+}
+
