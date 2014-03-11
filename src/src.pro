@@ -28,7 +28,7 @@ unix:!android {
 	target.path = $$BINDIR
 	INSTALLS += target
 	dt.path = $$PREFIX/share/applications/
-	dt.files = qomp.desktop
+	dt.files = $$PWD/../qomp.desktop
 	icon.path = $$PREFIX/share/icons/hicolor/128x128/apps
 	icon.extra = cp -f icons/qomp.png $(INSTALL_ROOT)$$icon.path/qomp.png
 	icon1.path = $$PREFIX/share/icons/hicolor/16x16/apps
