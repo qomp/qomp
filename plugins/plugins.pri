@@ -1,5 +1,7 @@
 include($$PWD/../conf.pri)
 
+CONFIG += plugin
+
 DESTDIR = $$PWD/../bin/plugins
 
 QT += network
