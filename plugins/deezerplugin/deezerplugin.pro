@@ -1,12 +1,12 @@
 HEADERS += \
-    src/plugins/deezerplugin/deezerplugin.h \
-    src/plugins/deezerplugin/deezergettunesdlg.h \
-    src/plugins/deezerplugin/deezerplugindefines.h \
-    src/plugins/deezerplugin/deezerauth.h
+    deezerplugin.h \
+    deezergettunesdlg.h \
+    deezerplugindefines.h \
+    deezerauth.h
 
 SOURCES += \
-    src/plugins/deezerplugin/deezerplugin.cpp \
-    src/plugins/deezerplugin/deezergettunesdlg.cpp \
-    src/plugins/deezerplugin/deezerauth.cpp
+    deezerplugin.cpp \
+    deezergettunesdlg.cpp \
+    deezerauth.cpp
 
 QT += xml
