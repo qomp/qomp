@@ -39,8 +39,14 @@ Options::Options()
 	: QObject(QCoreApplication::instance())
 	, set_(0)
 {
+#ifdef Q_OS_ANDROID
+	set_ = new QSettings(QString("/sdcard/.%1/%2.ini")
+			     .arg(qApp->organizationName(), qApp->applicationName()),
+			     QSettings::IniFormat, this);
+#else
 	set_ = new QSettings(QSettings::IniFormat, QSettings::UserScope,
 			     qApp->organizationName(), qApp->applicationName(), this);
+#endif
 }
 
 Options::~Options()
@@ -63,6 +69,9 @@ QVariant Options::getOption(const QString& name, const QVariant& defValue)
 void Options::setOption(const QString& name, const QVariant& value)
 {
 	set_->setValue(name, value);
+#ifdef Q_OS_ANDROID
+	set_->sync();
+#endif
 }
 
 void Options::applyOptions()
