@@ -27,6 +27,9 @@
 #include <QStringList>
 #include <QMimeData>
 #include <QTextStream>
+#ifdef Q_OS_ANDROID
+#include <QApplication>
+#endif
 
 static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
 
@@ -281,12 +284,24 @@ void QompPlayListModel::saveState()
 	if(ind.isValid())
 		curTrack = ind.row();
 	Options::instance()->setOption(OPTION_CURRENT_TRACK, curTrack);
-	saveTunes(Qomp::cacheDir() + cachedPlayListFileName);
+#ifdef Q_OS_ANDROID
+	QString path = QString("/sdcard/.%1%2")
+				     .arg(qApp->organizationName(), cachedPlayListFileName);
+#else
+	QString path = Qomp::cacheDir() + cachedPlayListFileName;
+#endif
+	saveTunes(path);
 }
 
 void QompPlayListModel::restoreState()
 {
-	QList<Tune*> tl = Tune::tunesFromFile(Qomp::cacheDir() + cachedPlayListFileName);
+#ifdef Q_OS_ANDROID
+	QString path = QString("/sdcard/.%1%2")
+				     .arg(qApp->organizationName(), cachedPlayListFileName);
+#else
+	QString path = Qomp::cacheDir() + cachedPlayListFileName;
+#endif
+	QList<Tune*> tl = Tune::tunesFromFile(path);
 	if(!tl.isEmpty()) {
 		addTunes(tl);
 		QModelIndex ind = index(Options::instance()->getOption(OPTION_CURRENT_TRACK, 0).toInt(),0);

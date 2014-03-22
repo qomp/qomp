@@ -31,6 +31,7 @@
 
 static const QString PLUGINS_OPTIONS_PREFIX = "plugins.is-enabled.";
 
+
 PluginManager::PluginManager() :
 	QObject(QCoreApplication::instance())
 {
@@ -57,6 +58,10 @@ void PluginManager::loadPlugins()
 		QDir dir(d);
 		if(dir.exists()) {
 			foreach(const QString& file, dir.entryList(QDir::Files)) {
+#ifdef Q_OS_ANDROID
+				if(!file.endsWith("plugin.so"))
+					continue;
+#endif
 				QFileInfo info(d + '/' + file);
 				if(info.isFile()) {
 					QPluginLoader loader(info.absoluteFilePath(), this);
@@ -68,6 +73,8 @@ void PluginManager::loadPlugins()
 							plugins_.append(pp);
 							plugin->setEnabled(en);
 						}
+						else
+							loader.unload();
 					}
 				}
 			}
@@ -88,11 +95,12 @@ QStringList PluginManager::pluginsDirs()
 {
 	QStringList dirs;
 	dirs << qApp->applicationDirPath()+"/plugins";
-
-#ifndef Q_OS_WIN
+#ifdef Q_OS_ANDROID
+	dirs << "assets:/plugins";
+	dirs << qApp->applicationDirPath();
+#elif defined (Q_OS_UNIX)
 	dirs << QString("%1/%2").arg(QOMP_DATADIR).arg("plugins");
 #endif
-
 	return dirs;
 }
 

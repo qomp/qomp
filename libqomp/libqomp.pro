@@ -2,7 +2,11 @@ include($$PWD/../conf.pri)
 
 QT += network
 
-TARGET = qomp
+android {
+    TARGET = qomp-shared
+} else {
+    TARGET = qomp
+}
 TEMPLATE = lib
 
 DESTDIR = $$PWD/../bin

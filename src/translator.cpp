@@ -138,6 +138,8 @@ QStringList Translator::transDirs()
 		appDir.cdUp();
 		appDir.cd("Translations");
 		list.append(appDir.absolutePath());
+#elif defined (Q_OS_ANDROID)
+		list.append("assets:/translations");
 #endif
 	}
 	return list;

@@ -20,8 +20,6 @@ TEMPLATE = app
 
 QT += network
 
-include(src.pri)
-
 unix:!android {
 	INCLUDEPATH += /usr/include/KDE/
 	
@@ -53,11 +51,14 @@ macx {
 }
 
 android {
-    OTHER_FILES += \
-        $$PWD/../android/AndroidManifest.xml
+    QT += xml
+    OTHER_FILES += $$PWD/../android/AndroidManifest.xml
+    LIBS += -L$$PWD/../bin -lqomp-shared
+    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
+    ANDROID_EXTRA_LIBS += $$PWD/../bin/libqomp-shared.so
+} else {
+    LIBS += -L$$PWD/../bin -lqomp
 }
 
 INCLUDEPATH += $$PWD/../libqomp/include
 DEPENDPATH += $$PWD/../libqomp/include
-
-LIBS += -L$$PWD/../bin -lqomp
