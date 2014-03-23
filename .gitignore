@@ -19,7 +19,7 @@ debug/
 *.user
 *.user.*
 qomp
-object_script.qomp*
+*object_script.*
 qomp_*.deb
 description-pak
 backup*qomp.tgz
@@ -27,3 +27,4 @@ qomp.pbproj/
 qomp.app/
 *.dmg
 bin/
+android/assets
