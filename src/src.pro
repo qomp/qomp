@@ -20,6 +20,8 @@ TEMPLATE = app
 
 QT += network
 
+include(src.pri)
+
 unix:!android {
 	INCLUDEPATH += /usr/include/KDE/
 	
