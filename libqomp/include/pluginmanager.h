@@ -25,7 +25,7 @@
 #include "libqomp_global.h"
 
 
-class QompPlugin;
+class PluginHost;
 class QompOptionsPage;
 class TuneURLResolveStrategy;
 class QompPlayer;
@@ -48,17 +48,20 @@ public:
 	QStringList tunePlugins() const;
 	TuneURLResolveStrategy* urlResolveStrategy(const QString& strategyName) const;
 	void qompPlayerChanged(QompPlayer* player);
+
+signals:
+	void pluginStatusChanged(const QString& pluginName, bool loaded);
 	
 private:
 	PluginManager();
 	void loadStaticPlugins();
 	void loadPlugins();
-	QompPlugin* pluginForName(const QString& pluginName) const;
+	PluginHost* pluginForName(const QString& pluginName) const;
 	static QStringList pluginsDirs();
 
 private:
 	static PluginManager* instance_;
-	typedef QPair<QompPlugin*, bool> PluginPair;
+	typedef QPair<PluginHost*, bool> PluginPair;
 	QList<PluginPair> plugins_;
 };
 

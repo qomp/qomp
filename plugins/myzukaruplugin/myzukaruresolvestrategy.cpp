@@ -122,8 +122,14 @@ MyzukaruResolveStrategy *MyzukaruResolveStrategy::instance()
 	return instance_;
 }
 
+void MyzukaruResolveStrategy::reset()
+{
+	delete instance_;
+	instance_ = 0;
+}
+
 MyzukaruResolveStrategy::MyzukaruResolveStrategy() :
-	QObject(QCoreApplication::instance())
+	TuneURLResolveStrategy(QCoreApplication::instance())
 {
 }
 

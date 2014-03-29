@@ -92,7 +92,8 @@ QompOptionsPage *Tune2FilePlugin::options()
 	if(!enabled_)
 		return 0;
 
-	return new T2FSettings;
+	optPage_ = new T2FSettings;
+	return optPage_;
 }
 
 void Tune2FilePlugin::qompPlayerChanged(QompPlayer *player)
@@ -108,6 +109,9 @@ void Tune2FilePlugin::setEnabled(bool enabled)
 
 void Tune2FilePlugin::unload()
 {
+	if(optPage_)
+		delete optPage_;
+
 	if(!enabled_ || file_.isEmpty())
 		return;
 

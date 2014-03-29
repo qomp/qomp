@@ -24,11 +24,13 @@
 
 #include "tune.h"
 
-class MyzukaruResolveStrategy : public QObject, public TuneURLResolveStrategy
+class MyzukaruResolveStrategy : public TuneURLResolveStrategy
 {
 	Q_OBJECT
 public:
 	static MyzukaruResolveStrategy* instance();
+
+	static void reset();
 
 	virtual QUrl getUrl(const Tune *t);
 	virtual QString name() const;

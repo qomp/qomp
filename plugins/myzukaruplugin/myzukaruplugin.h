@@ -28,8 +28,7 @@ class MyzukaruPlugin : public QObject, public QompPlugin, public QompTunePlugin
 	Q_OBJECT
 	Q_INTERFACES(QompPlugin QompTunePlugin)
 #ifdef HAVE_QT5
-	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
-	Q_PLUGIN_METADATA(IID "Qomp.QompTunePlugin/0.1")
+	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1" FILE "metadata.json")
 #endif
 public:
 	MyzukaruPlugin();
@@ -40,7 +39,7 @@ public:
 	virtual QompOptionsPage* options();
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const;
 	virtual void setEnabled(bool /*enabled*/) {}
-	virtual void unload() {}
+	virtual void unload();
 };
 
 #endif // MYZUKARUPLUGIN_H

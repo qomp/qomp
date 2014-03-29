@@ -60,6 +60,11 @@ TuneURLResolveStrategy *MyzukaruPlugin::urlResolveStrategy() const
 	return MyzukaruResolveStrategy::instance();
 }
 
+void MyzukaruPlugin::unload()
+{
+	MyzukaruResolveStrategy::reset();
+}
+
 #ifndef HAVE_QT5
 Q_EXPORT_PLUGIN2(myzukaruplugin, MyzukaruPlugin)
 #endif

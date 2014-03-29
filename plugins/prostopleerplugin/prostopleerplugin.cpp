@@ -55,12 +55,19 @@ QompOptionsPage *ProstoPleerPlugin::options()
 	if(!enabled_)
 		return 0;
 
-	return new ProstopleerPluginSettings();
+	optPage_ = new ProstopleerPluginSettings();
+	return optPage_ ;
 }
 
 void ProstoPleerPlugin::setEnabled(bool enabled)
 {
 	enabled_ = enabled;
+}
+
+void ProstoPleerPlugin::unload()
+{
+	if(optPage_)
+		delete optPage_;
 }
 
 #ifndef HAVE_QT5

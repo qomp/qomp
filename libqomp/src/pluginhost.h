@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,26 +17,37 @@
  *
  */
 
-#ifndef YANDEXMUSICURLRESOLVESTRATEGY_H
-#define YANDEXMUSICURLRESOLVESTRATEGY_H
+#ifndef PLUGINHOST_H
+#define PLUGINHOST_H
 
-#include "tune.h"
 #include <QObject>
 
-class YandexMusicURLResolveStrategy : public TuneURLResolveStrategy
+class QPluginLoader;
+class QompPlugin;
+
+class PluginHost : public QObject
 {
 	Q_OBJECT
 public:
-	static YandexMusicURLResolveStrategy* instance();
+	PluginHost(const QString& file, QObject *parent = 0);
+	~PluginHost();
 
-	static void reset();
-
-	virtual QUrl getUrl(const Tune *t);
-	virtual QString name() const;
+	bool load();
+	void unload();
+	bool isValid();
+	QString name() const;
+	QString version() const;
+	QString description() const;
+	QObject* instance() const;
+	QompPlugin* plugin() const;
 
 private:
-	explicit YandexMusicURLResolveStrategy();
-	static YandexMusicURLResolveStrategy* instance_;
+	QString fileName_;
+	QPluginLoader* loader_;
+	QString version_;
+	QString description_;
+	QString name_;
+	bool valid_;
 };
 
-#endif // YANDEXMUSICURLRESOLVESTRATEGY_H
+#endif // PLUGINHOST_H

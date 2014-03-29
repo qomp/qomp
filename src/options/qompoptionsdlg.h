@@ -49,6 +49,12 @@ private slots:
 	void applyOptions();
 	void itemChanged(int row);
 	void buttonClicked(QAbstractButton* b);
+	void pageDestroyed();
+	void pluginLoadingStatusChanged(const QString& pluginName, bool status);
+
+private:
+	void addPluginPage(const QString& name);
+
 	
 private:
 	Ui::QompOptionsDlg *ui;

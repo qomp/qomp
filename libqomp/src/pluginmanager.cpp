@@ -23,6 +23,8 @@
 #include "qomptunepluign.h"
 #include "qompplayerstatusplugin.h"
 #include "tune.h"
+#include "pluginhost.h"
+
 #include <QCoreApplication>
 #include <QPluginLoader>
 #include <QtPlugin>
@@ -39,17 +41,25 @@ PluginManager::PluginManager() :
 	loadPlugins();
 }
 
+PluginManager::~PluginManager()
+{
+	foreach(const PluginPair& pp, plugins_) {
+		delete pp.first;
+	}
+	plugins_.clear();
+}
+
 void PluginManager::loadStaticPlugins()
 {
-	foreach(QObject* plugin, QPluginLoader::staticInstances()) {
-		QompPlugin* qp = qobject_cast<QompPlugin*>(plugin);
-		if(qp) {
-			bool en = isPluginEnabled(qp->name());
-			PluginPair pp = qMakePair(qp, en);
-			plugins_.append(pp);
-			qp->setEnabled(en);
-		}
-	}
+//	foreach(QObject* plugin, QPluginLoader::staticInstances()) {
+//		QompPlugin* qp = qobject_cast<QompPlugin*>(plugin);
+//		if(qp) {
+//			bool en = isPluginEnabled(qp->name());
+//			PluginPair pp = qMakePair(qp, en);
+//			plugins_.append(pp);
+//			qp->setEnabled(en);
+//		}
+//	}
 }
 
 void PluginManager::loadPlugins()
@@ -58,31 +68,23 @@ void PluginManager::loadPlugins()
 		QDir dir(d);
 		if(dir.exists()) {
 			foreach(const QString& file, dir.entryList(QDir::Files)) {
-#ifdef Q_OS_ANDROID
-				if(!file.endsWith("plugin.so"))
-					continue;
-#endif
-				QFileInfo info(d + '/' + file);
-				if(info.isFile()) {
-					QPluginLoader loader(info.absoluteFilePath(), this);
-					if(loader.load()) {
-						QompPlugin *plugin = qobject_cast<QompPlugin*>(loader.instance());
-						if(plugin) {
-							bool en = isPluginEnabled(plugin->name());
-							PluginPair pp = qMakePair(plugin, en);
-							plugins_.append(pp);
-							plugin->setEnabled(en);
-						}
-						else
-							loader.unload();
-					}
+				PluginHost* host = new PluginHost(d + '/' + file, this);
+				if(host->isValid()) {
+					bool en = isPluginEnabled(host->name());
+					PluginPair pp = qMakePair(host, en);
+					plugins_.append(pp);
+					if(en)
+						en = host->load();
+					emit pluginStatusChanged(host->name(), en);
 				}
+				else
+					delete host;
 			}
 		}
 	}
 }
 
-QompPlugin *PluginManager::pluginForName(const QString &pluginName) const
+PluginHost *PluginManager::pluginForName(const QString &pluginName) const
 {
 	foreach(const PluginPair& pp, plugins_) {
 		if(pp.first->name() == pluginName)
@@ -113,13 +115,6 @@ PluginManager *PluginManager::instance()
 	return instance_;
 }
 
-PluginManager::~PluginManager()
-{
-	foreach(const PluginPair& pp, plugins_) {
-		pp.first->unload();
-	}
-}
-
 QStringList PluginManager::availablePlugins() const
 {
 	QStringList list;
@@ -132,9 +127,12 @@ QStringList PluginManager::availablePlugins() const
 QList<Tune*> PluginManager::getTune(const QString &pluginName)
 {
 	QList<Tune*> tl;
-	QompTunePlugin *p = dynamic_cast<QompTunePlugin*>(pluginForName(pluginName));
-	if(p) {
-		tl = p->getTunes();
+	PluginHost* h = pluginForName(pluginName);
+	if(h) {
+		QompTunePlugin *p = qobject_cast<QompTunePlugin*>(h->instance());
+		if(p) {
+			tl = p->getTunes();
+		}
 	}
 
 	return tl;
@@ -142,25 +140,28 @@ QList<Tune*> PluginManager::getTune(const QString &pluginName)
 
 QompOptionsPage *PluginManager::getOptions(const QString &pluginName)
 {
-	QompPlugin *p = pluginForName(pluginName);
-	if(p) {
-		return p->options();
+	PluginHost* h = pluginForName(pluginName);
+	if(h) {
+		QompPlugin *p = h->plugin();
+		if(p) {
+			return p->options();
+		}
 	}
 	return 0;
 }
 
 QString PluginManager::getVersion(const QString &pluginName) const
 {
-	QompPlugin *p = pluginForName(pluginName);
-	if(p) {
-		return p->version();
+	PluginHost* h = pluginForName(pluginName);
+	if(h) {
+		return h->version();
 	}
 	return QString();
 }
 
 QString PluginManager::getDescription(const QString &pluginName) const
 {
-	QompPlugin *p = pluginForName(pluginName);
+	PluginHost *p = pluginForName(pluginName);
 	if(p) {
 		return p->description();
 	}
@@ -178,8 +179,15 @@ void PluginManager::setPluginEnabled(const QString &pluginName, bool enabled)
 	for(int i = 0; i < plugins_.size(); i++) {
 		PluginPair& pp = plugins_[i];
 		if(pp.first->name() == pluginName) {
-			pp.second = enabled;
-			pp.first->setEnabled(pp.second);
+			if(pp.second != enabled) {
+				pp.second = enabled;
+				if(pp.second)
+					pp.first->load();
+				else
+					pp.first->unload();
+
+				emit pluginStatusChanged(pluginName, enabled);
+			}
 		}
 	}
 }
@@ -188,7 +196,9 @@ QStringList PluginManager::tunePlugins() const
 {
 	QStringList list;
 	foreach(const PluginPair& pp, plugins_) {
-		QompTunePlugin *p = dynamic_cast<QompTunePlugin*>(pp.first);
+		if(!pp.second)
+			continue;
+		QompTunePlugin *p = qobject_cast<QompTunePlugin*>(pp.first->instance());
 		if(p)
 			list.append(pp.first->name());
 	}
@@ -199,7 +209,9 @@ QStringList PluginManager::tunePlugins() const
 TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) const
 {
 	foreach(const PluginPair& pp, plugins_) {
-		QompTunePlugin *p = dynamic_cast<QompTunePlugin*>(pp.first);
+		if(!pp.second)
+			continue;
+		QompTunePlugin *p = qobject_cast<QompTunePlugin*>(pp.first->instance());
 		if(p) {
 			TuneURLResolveStrategy *rs = p->urlResolveStrategy();
 			if(rs && rs->name() == name)
@@ -212,7 +224,9 @@ TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) c
 void PluginManager::qompPlayerChanged(QompPlayer *player)
 {
 	foreach(const PluginPair& pp, plugins_) {
-		QompPlayerStatusPlugin *p = dynamic_cast<QompPlayerStatusPlugin*>(pp.first);
+		if(!pp.second)
+			continue;
+		QompPlayerStatusPlugin *p = qobject_cast<QompPlayerStatusPlugin*>(pp.first->instance());
 		if(p) {
 			p->qompPlayerChanged(player);
 		}

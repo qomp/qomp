@@ -14,4 +14,7 @@ FORMS += $$PWD/lastfmsettings.ui \
 
 QT += xml
 
+OTHER_FILES += \
+    $$PWD/metadata.json
+
 

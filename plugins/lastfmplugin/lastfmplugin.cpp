@@ -100,6 +100,12 @@ void LastFmPlugin::setEnabled(bool enabled)
 	enabled_ = enabled;
 }
 
+void LastFmPlugin::unload()
+{
+	if(settings_)
+		delete settings_;
+}
+
 void LastFmPlugin::playerStatusChanged()
 {
 	if(!enabled_)

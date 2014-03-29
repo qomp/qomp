@@ -13,3 +13,6 @@ unix:!macx:!android {
            $$PWD/mprisplugin.cpp
 }
 
+OTHER_FILES += \
+    $$PWD/metadata.json
+

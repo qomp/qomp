@@ -21,13 +21,18 @@
 #define TUNE_H
 
 #include <QUrl>
+#include <QPointer>
+
 #include "libqomp_global.h"
 
 class Tune;
 
-class LIBQOMPSHARED_EXPORT TuneURLResolveStrategy
+class LIBQOMPSHARED_EXPORT TuneURLResolveStrategy : public QObject
 {
+	Q_OBJECT
 public:
+	explicit TuneURLResolveStrategy(QObject* p = 0);
+
 	virtual QUrl getUrl(const Tune* t) = 0;
 	virtual QString name() const = 0;
 };
@@ -51,7 +56,7 @@ public:
 	int id() const;
 	bool canSave() const { return canSave_; }
 
-	void setUrlResolveStrategy(TuneURLResolveStrategy* strategy);
+	void setUrlResolveStrategy(TuneURLResolveStrategy* strategy) const;
 	TuneURLResolveStrategy* strategy() const;
 
 	bool operator==(const Tune& other) const;
@@ -65,7 +70,7 @@ private:
 	static int lastId_;
 	int id_;
 	bool canSave_;
-	TuneURLResolveStrategy* strategy_;
+	mutable QPointer<TuneURLResolveStrategy> strategy_;
 
 	static const Tune* empty_;
 };

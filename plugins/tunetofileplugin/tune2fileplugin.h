@@ -24,13 +24,14 @@
 #include "qompplayerstatusplugin.h"
 #include "qompplayer.h"
 
+#include <QPointer>
+
 class Tune2FilePlugin : public QObject, public QompPlugin, public QompPlayerStatusPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QompPlugin QompPlayerStatusPlugin)
 #ifdef HAVE_QT5
-	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
-	Q_PLUGIN_METADATA(IID "Qomp.QompPlayerStatusPlugin/0.1")
+	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1" FILE "metadata.json")
 #endif
 
 public:
@@ -53,6 +54,7 @@ private:
 	QompPlayer *player_;
 	QString file_;
 	bool enabled_;
+	QPointer<QompOptionsPage> optPage_;
 };
 
 #endif // TUNE2FILEPLUGIN_H

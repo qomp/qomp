@@ -39,13 +39,6 @@
      </column>
     </widget>
    </item>
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>*Enabling/disabling plugins requires restart!</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>

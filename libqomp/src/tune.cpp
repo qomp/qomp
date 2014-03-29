@@ -28,7 +28,15 @@
 static const QString separator = "@qomp@";
 static const QString simpleStrategyName = "SimpleStrategy";
 
-class SimpleStrategy : public QObject, public TuneURLResolveStrategy
+
+TuneURLResolveStrategy::TuneURLResolveStrategy(QObject *p) :
+	QObject(p)
+{
+}
+
+
+
+class SimpleStrategy : public TuneURLResolveStrategy
 {
 public:
 	static SimpleStrategy* instance()
@@ -53,7 +61,7 @@ public:
 
 private:
 	static SimpleStrategy* instance_;
-	SimpleStrategy() : QObject(QCoreApplication::instance()){}
+	SimpleStrategy() : TuneURLResolveStrategy(QCoreApplication::instance()){}
 };
 
 SimpleStrategy* SimpleStrategy::instance_ = 0;
@@ -71,13 +79,13 @@ Tune::Tune(bool canSave) :
 
 QUrl Tune::getUrl() const
 {
-	return strategy_->getUrl(this);
+	return strategy()->getUrl(this);
 }
 
 QString Tune::toString() const
 {
 	QStringList list;
-	list << artist << title << trackNumber << album << duration << url << file << strategy_->name() << (canSave_ ? "true" : "false");
+	list << artist << title << trackNumber << album << duration << url << file << strategy()->name() << (canSave_ ? "true" : "false");
 	return list.join(separator);
 }
 
@@ -113,13 +121,18 @@ int Tune::id() const
 	return id_;
 }
 
-void Tune::setUrlResolveStrategy(TuneURLResolveStrategy *strategy)
+void Tune::setUrlResolveStrategy(TuneURLResolveStrategy *strategy) const
 {
-	strategy_ = strategy;
+	if(strategy_ != strategy) {
+		strategy_ = strategy;
+	}
 }
 
 TuneURLResolveStrategy *Tune::strategy() const
 {
+	if(!strategy_)
+		setUrlResolveStrategy(SimpleStrategy::instance());
+
 	return strategy_;
 }
 

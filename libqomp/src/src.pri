@@ -7,7 +7,8 @@ SOURCES += \
         $$PWD/qompnetworkingfactory.cpp \
         $$PWD/qompplayer.cpp \
         $$PWD/tune.cpp \
-        $$PWD/pluginmanager.cpp
+        $$PWD/pluginmanager.cpp \
+        $$PWD/pluginhost.cpp
 
 HEADERS +=\
         $$PWD/libqomp_global.h \
@@ -19,7 +20,8 @@ HEADERS +=\
         $$PWD/qompplayer.h \
         $$PWD/tune.h \
         $$PWD/defines.h \
-        $$PWD/pluginmanager.h
+        $$PWD/pluginmanager.h \
+        $$PWD/pluginhost.h
 
 include(plugins/plugins.pri)
 include(options/options.pri)

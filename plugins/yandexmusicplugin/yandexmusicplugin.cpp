@@ -59,6 +59,11 @@ TuneURLResolveStrategy *YandexMusicPlugin::urlResolveStrategy() const
 	return YandexMusicURLResolveStrategy::instance();
 }
 
+void YandexMusicPlugin::unload()
+{
+	YandexMusicURLResolveStrategy::reset();
+}
+
 #ifndef HAVE_QT5
 Q_EXPORT_PLUGIN2(yandexmusicplugin, YandexMusicPlugin)
 #endif

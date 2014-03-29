@@ -15,3 +15,6 @@ SOURCES += $$PWD/prostopleerplugin.cpp \
 
 FORMS += $$PWD/prostopleerpluginresultswidget.ui \
     $$PWD/prostopleerpluginsettings.ui
+
+OTHER_FILES += \
+    $$PWD/metadata.json

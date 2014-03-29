@@ -161,8 +161,14 @@ YandexMusicURLResolveStrategy *YandexMusicURLResolveStrategy::instance()
 	return instance_;
 }
 
+void YandexMusicURLResolveStrategy::reset()
+{
+	delete instance_;
+	instance_ = 0;
+}
+
 YandexMusicURLResolveStrategy::YandexMusicURLResolveStrategy() :
-	QObject(QCoreApplication::instance())
+	TuneURLResolveStrategy(QCoreApplication::instance())
 {
 }
 

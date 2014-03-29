@@ -13,4 +13,5 @@ SOURCES += $$PWD/myzukaruplugin.cpp \
     $$PWD/myzukarucontroller.cpp \
     $$PWD/myzukaruresolvestrategy.cpp
 
-FORMS +=
+OTHER_FILES += \
+    $$PWD/metadata.json

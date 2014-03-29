@@ -52,20 +52,16 @@ QompOptionsDlg::QompOptionsDlg(QompPlayer *player, QompMainWin *parent) :
 		ui->lw_pagesNames->addItem(it);
 	}
 
-	foreach(QString p, PluginManager::instance()->availablePlugins()) {
-		QWidget *w = PluginManager::instance()->getOptions(p);
-		if(w) {
-			ui->sw_pages->addWidget(w);
-			QListWidgetItem* it = new QListWidgetItem(ui->lw_pagesNames);
-			it->setText(p);
-			ui->lw_pagesNames->addItem(it);
-		}
+	foreach(const QString& p, PluginManager::instance()->availablePlugins()) {
+		addPluginPage(p);
 	}
 	ui->sw_pages->setCurrentIndex(0);
 	ui->lw_pagesNames->setCurrentRow(0);
 
 	connect(ui->lw_pagesNames, SIGNAL(currentRowChanged(int)), SLOT(itemChanged(int)));
 	connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), SLOT(buttonClicked(QAbstractButton*)));
+
+	connect(PluginManager::instance(), SIGNAL(pluginStatusChanged(QString, bool)), SLOT(pluginLoadingStatusChanged(QString,bool)));
 
 	adjustSize();
 	ui->lw_pagesNames->setFixedWidth(ui->lw_pagesNames->width());
@@ -108,7 +104,6 @@ void QompOptionsDlg::keyReleaseEvent(QKeyEvent *ke)
 
 void QompOptionsDlg::applyOptions()
 {
-
 	for(int i = 0; i < ui->sw_pages->count(); i++) {
 		QompOptionsPage* p = static_cast<QompOptionsPage*>(ui->sw_pages->widget(i));
 		p->applyOptions();
@@ -127,5 +122,33 @@ void QompOptionsDlg::buttonClicked(QAbstractButton *b)
 {
 	if(ui->buttonBox->standardButton(b) == QDialogButtonBox::Apply) {
 		applyOptions();
+	}
+}
+
+void QompOptionsDlg::pageDestroyed()
+{
+	QWidget* w = static_cast<QWidget*>(sender());
+	int ind = ui->sw_pages->indexOf(w);
+	ui->sw_pages->removeWidget(w);
+	QListWidgetItem* it = ui->lw_pagesNames->item(ind);
+	ui->lw_pagesNames->removeItemWidget(it);
+	delete it;
+}
+
+void QompOptionsDlg::pluginLoadingStatusChanged(const QString &pluginName, bool status)
+{
+	if(status)
+		addPluginPage(pluginName);
+}
+
+void QompOptionsDlg::addPluginPage(const QString &name)
+{
+	QWidget *w = PluginManager::instance()->getOptions(name);
+	if(w) {
+		ui->sw_pages->addWidget(w);
+		QListWidgetItem* it = new QListWidgetItem(ui->lw_pagesNames);
+		it->setText(name);
+		ui->lw_pagesNames->addItem(it);
+		connect(w, SIGNAL(destroyed()), SLOT(pageDestroyed()));
 	}
 }
