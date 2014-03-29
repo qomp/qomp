@@ -34,6 +34,7 @@ if ( UNIX )
 	)
 	set ( libqomp_HDRS
 		src/options.h
+    src/pluginhost.h
 		src/pluginmanager.h
 		src/qompbusylabel.h
 		src/qompmetadataresolver.h
@@ -51,6 +52,7 @@ if ( UNIX )
 		src/qompnetworkingfactory.cpp
 		src/qompplayer.cpp
 		src/tune.cpp
+    src/pluginhost.cpp
 		src/pluginmanager.cpp
 		${plugins_SRCS}
 	)
