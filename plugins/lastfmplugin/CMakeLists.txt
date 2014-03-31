@@ -1,7 +1,6 @@
-project ( lastfmplugin )
+set ( PLUGIN lastfmplugin )
 cmake_minimum_required( VERSION 2.8.6 )
-if ( UNIX )
-	set ( CMAKE_BUILD_TYPE Release )
+if ( ${UNIX} )
 	set ( CMAKE_AUTOMOC TRUE )
 	add_definitions ( -Wall )
 	find_package ( Qt4 REQUIRED )
@@ -16,13 +15,13 @@ if ( UNIX )
 		../../libqomp/include
 	)
 	set ( lastfmplugin_HDRS
-		lastfmplugin.h
+		${PLUGIN}.h
 		lastfmsettings.h
 		lastfmdefines.h
 		lastfmauthdlg.h
 	)
 	set ( lastfmplugin_SRCS
-		lastfmplugin.cpp
+		${PLUGIN}.cpp
 		lastfmsettings.cpp
 		lastfmauthdlg.cpp
 	)
@@ -31,9 +30,9 @@ if ( UNIX )
 		lastfmauthdlg.ui
 	)
 	QT4_WRAP_UI(UIS ${lastfmplugin_UIS})
-	add_library ( ${PROJECT_NAME} SHARED ${lastfmplugin_SRCS} ${UIS} )
+	add_library ( ${PLUGIN} SHARED ${lastfmplugin_SRCS} ${UIS} )
 	target_link_libraries (
-		${PROJECT_NAME}
+		${PLUGIN}
 		${QT_QTCORE_LIBRARY}
 		${QT_QTGUI_LIBRARY}
 		${QT_QTXML_LIBRARY}
@@ -41,9 +40,9 @@ if ( UNIX )
 	)
 	install (
 		TARGETS
-		${PROJECT_NAME}
+		${PLUGIN}
 		LIBRARY
 		DESTINATION
 		${CMAKE_INSTALL_PREFIX}/share/qomp/plugins
 	)
-endif( UNIX )
+endif( ${UNIX} )

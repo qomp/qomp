@@ -8,11 +8,26 @@ or
 Build:
   linux:
 	qmake && make && sudo make install
-
 	
+  linux using cmake utility (only on Linux with Qt4):
+	mkdir build && cd build
+	cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+	make && make install (sudo if needed)
+
   windows:
 	qmake
 	mingw32-make
 
-
-
+Usefull cmake flags:
+	--build and install only needed plugins:
+	   -DBUILD_PLUGINS=${plugins}
+	   possible values for plugins:
+	     filesystemplugin urlplugin prostopleerplugin
+	     myzukaruplugin yandexmusicplugin lastfmplugin
+	     tunetofileplugin mprisplugin
+	   example:
+	     cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_PLUGINS="filesystemplugin;urlplugin"..
+	--set build type:
+	   -DCMAKE_BUILD_TYPE=Release
+	   or
+	   -DCMAKE_BUILD_TYPE=Debug

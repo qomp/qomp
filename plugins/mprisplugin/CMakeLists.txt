@@ -1,7 +1,6 @@
-project ( mprisplugin )
+set ( PLUGIN mprisplugin )
 cmake_minimum_required( VERSION 2.8.6 )
-if ( UNIX )
-	set ( CMAKE_BUILD_TYPE Release )
+if ( ${UNIX} )
 	set ( CMAKE_AUTOMOC TRUE )
 	add_definitions ( -Wall -DHAVE_DBUS )
 	find_package ( Qt4 REQUIRED )
@@ -17,29 +16,29 @@ if ( UNIX )
 	set ( mprisplugin_HDRS
 		mprisadapter.h
 		mpriscontroller.h
-		mprisplugin.h
+		${PLUGIN}.h
 	)
 	set ( mprisplugin_SRCS
 		mprisadapter.cpp
 		mpriscontroller.cpp
-		mprisplugin.cpp
+		${PLUGIN}.cpp
 	)
 	add_library (
-		${PROJECT_NAME}
+		${PLUGIN}
 		SHARED
 		${mprisplugin_SRCS}
 	)
 	target_link_libraries (
-		${PROJECT_NAME}
+		${PLUGIN}
 		${QT_QTCORE_LIBRARY}
 		${QT_QTGUI_LIBRARY}
 		${QT_QTDBUS_LIBRARY}
 	)
 	install (
 		TARGETS
-		${PROJECT_NAME}
+		${PLUGIN}
 		LIBRARY
 		DESTINATION
 		${CMAKE_INSTALL_PREFIX}/share/qomp/plugins
 	)
-endif( UNIX )
+endif( ${UNIX} )

@@ -1,7 +1,6 @@
-project ( tunetofileplugin )
+set ( PLUGIN tunetofileplugin )
 cmake_minimum_required( VERSION 2.8.6 )
-if ( UNIX )
-	set ( CMAKE_BUILD_TYPE Release )
+if ( ${UNIX} )
 	set ( CMAKE_AUTOMOC TRUE )
 	add_definitions ( -Wall )
 	find_package ( Qt4 REQUIRED )
@@ -24,21 +23,21 @@ if ( UNIX )
 	)
 	QT4_WRAP_UI(UIS ${tunetofileplugin_UIS})
 	add_library (
-		${PROJECT_NAME}
+		${PLUGIN}
 		SHARED
 		${tunetofileplugin_SRCS}
 		${UIS}
 	)
 	target_link_libraries (
-		${PROJECT_NAME}
+		${PLUGIN}
 		${QT_QTCORE_LIBRARY}
 		${QT_QTGUI_LIBRARY}
 	)
 	install (
 		TARGETS
-		${PROJECT_NAME}
+		${PLUGIN}
 		LIBRARY
 		DESTINATION
 		${CMAKE_INSTALL_PREFIX}/share/qomp/plugins
 	)
-endif( UNIX )
+endif( ${UNIX} )
