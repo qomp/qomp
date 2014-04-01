@@ -48,6 +48,7 @@ public:
 	QStringList tunePlugins() const;
 	TuneURLResolveStrategy* urlResolveStrategy(const QString& strategyName) const;
 	void qompPlayerChanged(QompPlayer* player);
+	void sortPlugins();
 
 signals:
 	void pluginStatusChanged(const QString& pluginName, bool loaded);

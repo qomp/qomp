@@ -24,6 +24,7 @@
 #include "qompplayerstatusplugin.h"
 #include "tune.h"
 #include "pluginhost.h"
+#include "defines.h"
 
 #include <QCoreApplication>
 #include <QPluginLoader>
@@ -39,6 +40,7 @@ PluginManager::PluginManager() :
 {
 	loadStaticPlugins();
 	loadPlugins();
+	sortPlugins();
 }
 
 PluginManager::~PluginManager()
@@ -79,6 +81,20 @@ void PluginManager::loadPlugins()
 				}
 				else
 					delete host;
+			}
+		}
+	}
+}
+
+void PluginManager::sortPlugins()
+{
+	QStringList order = Options::instance()->getOption(OPTION_PLUGINS_ORDER, QStringList()).toStringList();
+	for(int i = 0; i < order.count() && i < plugins_.count(); ++i) {
+		const QString& name = order.at(i);
+		for(int j = 0; j < plugins_.count(); ++j) {
+			if(plugins_.at(j).first->name() == name) {
+				plugins_.move(j, i);
+				break;
 			}
 		}
 	}

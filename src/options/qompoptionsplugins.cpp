@@ -19,6 +19,10 @@
 
 #include "qompoptionsplugins.h"
 #include "pluginmanager.h"
+#include "options.h"
+#include "defines.h"
+
+#include <QModelIndex>
 
 #include "ui_qompoptionsplugins.h"
 
@@ -42,18 +46,28 @@ void QompOptionsPlugins::retranslate()
 
 void QompOptionsPlugins::applyOptions()
 {
+	QStringList order;
 	for(int i = 0; i < ui->tw_plugins->topLevelItemCount(); i++) {
 		QTreeWidgetItem* it = ui->tw_plugins->topLevelItem(i);
 		PluginManager::instance()->setPluginEnabled(it->text(0), it->data(0, Qt::CheckStateRole).toBool());
+		order.append(it->text(0));
 	}
+	Options::instance()->setOption(OPTION_PLUGINS_ORDER, order);
+	PluginManager::instance()->sortPlugins();
 }
 
 void QompOptionsPlugins::restoreOptions()
 {
+	ui->tw_plugins->model()->disconnect(SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(fixSelection(QModelIndex,int,int)));
 	ui->tw_plugins->clear();
 	foreach(const QString& name, PluginManager::instance()->availablePlugins()) {
 		QTreeWidgetItem* it = new QTreeWidgetItem(ui->tw_plugins);
-		it->setFlags(it->flags() | Qt::ItemIsUserCheckable);
+		it->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable |
+			     Qt::ItemIsEnabled |
+#ifdef HAVE_QT5
+			     Qt::ItemNeverHasChildren |
+#endif
+			     Qt::ItemIsDragEnabled);
 		it->setData(0, Qt::CheckStateRole, PluginManager::instance()->isPluginEnabled(name) ? 2 : 0);
 		it->setText(0, name);
 		it->setText(1, PluginManager::instance()->getVersion(name));
@@ -61,4 +75,10 @@ void QompOptionsPlugins::restoreOptions()
 		ui->tw_plugins->addTopLevelItem(it);
 	}
 	ui->tw_plugins->resizeColumnToContents(0);
+	connect(ui->tw_plugins->model(), SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(fixSelection(QModelIndex,int,int)));
+}
+
+void QompOptionsPlugins::fixSelection(const QModelIndex& parent, int start, int /*end*/)
+{
+	ui->tw_plugins->setCurrentIndex(ui->tw_plugins->model()->index(start, 0, parent));
 }

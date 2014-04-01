@@ -22,6 +22,8 @@
 
 #include "qompoptionspage.h"
 
+class QModelIndex;
+
 namespace Ui {
 class QompOptionsPlugins;
 }
@@ -40,6 +42,9 @@ public:
 public slots:
 	virtual void applyOptions();
 	virtual void restoreOptions();
+
+private slots:
+	void fixSelection(const QModelIndex &parent, int start, int end);
 
 private:
 	Ui::QompOptionsPlugins *ui;
