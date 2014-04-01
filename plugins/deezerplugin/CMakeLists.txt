@@ -1,6 +1,5 @@
-project ( deezerplugin )
+set ( PLUGIN deezerplugin )
 cmake_minimum_required( VERSION 2.8.6 )
-set ( CMAKE_BUILD_TYPE Release )
 set ( CMAKE_AUTOMOC TRUE )
 add_definitions ( -Wall )
 find_package ( Qt4 REQUIRED )
@@ -14,17 +13,17 @@ include_directories (
 	../../libqomp/include
 )
 set ( deezerplugin_HDRS
-	deezerplugin.h
+	${PLUGIN}.h
 	deezergettunesdlg.h
 	deezerplugindefines.h
 	deezerauth.h
 )
 
 set ( deezerplugin_SRCS
-	deezerplugin.cpp
+	${PLUGIN}.cpp
 	deezergettunesdlg.cpp
 	deezerauth.cpp
 )
 
-add_library ( ${PROJECT_NAME} SHARED ${deezerplugin_SRCS} ${deezerplugin_HDRS} )
-target_link_libraries ( ${PROJECT_NAME}  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} )
+add_library ( ${${PLUGIN}} SHARED ${deezerplugin_SRCS} ${deezerplugin_HDRS} )
+target_link_libraries ( ${${PLUGIN}}  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} )

@@ -1,7 +1,6 @@
-project ( libqomp )
+set ( QOMP_LIB libqomp )
 cmake_minimum_required( VERSION 2.8.6 )
-if ( UNIX )
-	set ( CMAKE_BUILD_TYPE Release )
+if ( ${UNIX} )
 	set ( CMAKE_AUTOMOC TRUE )
 	find_package ( Qt4 REQUIRED )
 	include ( ${QT_USE_FILE} )
@@ -64,28 +63,28 @@ if ( UNIX )
 	add_definitions ( -Wall -DQOMP_DATADIR="${LIBQOMP_DATADIR}" -LIBQOMP_LIBRARY )
 
 	add_library (
-		${PROJECT_NAME}
+		${QOMP_LIB}
 		SHARED
 		${libqomp_SRCS}
 		${libqomp_UIS}
 		${options_HDRS}
 	)
 	target_link_libraries (
-		${PROJECT_NAME}
+		${QOMP_LIB}
 		${QT_QTCORE_LIBRARY}
 		${QT_QTGUI_LIBRARY}
 		${QT_QTNETWORK_LIBRARY}
 	)
 	set_target_properties (
-		${PROJECT_NAME}
+		${QOMP_LIB}
 		PROPERTIES 
 		OUTPUT_NAME qomp
 		CLEAN_DIRECT_OUTPUT 1
 	)
 	install (
 		TARGETS
-		${PROJECT_NAME}
+		${QOMP_LIB}
 		LIBRARY DESTINATION
 		${CMAKE_INSTALL_PREFIX}/lib
 	)
-endif( UNIX )
+endif( ${UNIX} )

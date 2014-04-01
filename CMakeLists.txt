@@ -1,11 +1,11 @@
 project( qomp )
 cmake_minimum_required( VERSION 2.8.6 )
 
-if ( UNIX )
-	set ( CMAKE_BUILD_TYPE Release )
+if ( ${UNIX} AND NOT ( ${APPLE} OR ${CYGWIN} ) )
 	set ( CMAKE_AUTOMOC TRUE )
 	set ( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}/share )
 	set ( APPDATA_PATH ${DATADIR_PATH}/${PROJECT_NAME} )
+	set ( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
 	add_definitions ( -Wall -DHAVE_X11 -DQOMP_DATADIR="${APPDATA_PATH}" -DHAVE_PHONON ) 
 	find_package ( Qt4 REQUIRED )
 	include ( ${QT_USE_FILE} )
@@ -77,9 +77,11 @@ if ( UNIX )
 		src/qompmenu.cpp
 		${options_SRCS}
 	)
-	set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-	set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
-	subdirs(libqomp plugins)
+	set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+	set ( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
+	set ( LIBQOMP_LIBRARY libqomp )
+	add_subdirectory ( ${LIBQOMP_LIBRARY} )
+	add_subdirectory ( plugins )
 	add_executable (
 		${PROJECT_NAME}
 		${qomp_SRCS}
@@ -91,7 +93,7 @@ if ( UNIX )
 	if ( ${Phonon_FOUND} )
 		target_link_libraries (
 			${PROJECT_NAME}
-			libqomp
+			${LIBQOMP_LIBRARY}
 			${PHONON_LIBRARY}
 			${QT_QTCORE_LIBRARY}
 			${QT_QTGUI_LIBRARY}
@@ -101,7 +103,7 @@ if ( UNIX )
 	else ()
 		target_link_libraries (
 			${PROJECT_NAME}
-			libqomp
+			${LIBQOMP_LIBRARY}
 			${QT_PHONON_LIBRARY}
 			${QT_QTCORE_LIBRARY}
 			${QT_QTGUI_LIBRARY}
@@ -131,4 +133,6 @@ if ( UNIX )
 	INSTALL ( FILES ${ICON_64} DESTINATION ${ICONS_PREFIX}/64x64/apps RENAME qomp.png )
 	INSTALL ( FILES ${TRS} DESTINATION ${TRS_PATH} )
 	INSTALL ( FILES ${DESKTOPFILES} DESTINATION ${DESKTOP_PATH} )
-endif ( UNIX )
+	
+	unset( BUILD_PLUGINS CACHE )
+endif ( ${UNIX} AND NOT ( ${APPLE} OR ${CYGWIN} ) )
