@@ -90,7 +90,8 @@ QompCon::~QompCon()
 void QompCon::init()
 {
 	QVariant vVer = Options::instance()->getOption(OPTION_APPLICATION_VERSION);
-	if(vVer == QVariant::Invalid) { //First launch
+	if(vVer == QVariant::Invalid  //First launch
+			|| vVer.toString() != APPLICATION_VERSION) {
 		QHash <const char*, QVariant> hash;
 		hash.insert(OPTION_START_MINIMIZED,	false);
 		hash.insert(OPTION_AUTOSTART_PLAYBACK,	false);
@@ -103,17 +104,16 @@ void QompCon::init()
 		hash.insert(OPTION_TRAY_DOUBLE_CLICK,	1);
 		hash.insert(OPTION_TRAY_MIDDLE_CLICK,	0);
 		hash.insert(OPTION_TRAY_LEFT_CLICK,	2);
+		hash.insert(OPTION_REPEAT_ALL,		false);
+		hash.insert(OPTION_PLUGINS_ORDER,	QStringList()	<< "Myzuka.ru"
+									<< "Yandex.Music"
+									<< "Pleer.com");
 
 		foreach(const char* key, hash.keys()) {
-			Options::instance()->setOption(key, hash.value(key));
+			if(Options::instance()->getOption(key) == QVariant::Invalid)
+				Options::instance()->setOption(key, hash.value(key));
 		}
-	}
-	QString ver = vVer.toString();
-	if(ver != APPLICATION_VERSION) {
-		//Here in the future we can do some updates
-		if(Options::instance()->getOption(OPTION_REPEAT_ALL) == QVariant::Invalid) {
-			Options::instance()->setOption(OPTION_REPEAT_ALL, false);
-		}
+
 		Options::instance()->setOption(OPTION_APPLICATION_VERSION, APPLICATION_VERSION);
 	}
 	updateOptions();
