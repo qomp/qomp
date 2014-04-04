@@ -1,5 +1,6 @@
 CONFIG += release
 CONFIG -= debug
+CONFIG -= debug_and_release debug_and_release_target
 
 unix:!mac:!android:DEFINES += HAVE_X11
 
