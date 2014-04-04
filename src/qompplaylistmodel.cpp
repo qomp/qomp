@@ -45,6 +45,7 @@ void QompPlayListModel::addTunes(const QList<Tune*> &tunes)
 	emit beginInsertRows(QModelIndex(), tunes_.size(), tunes_.size()+tunes.size());
 	tunes_.append(tunes);
 	emit endInsertRows();
+	emit totalTimeChanged(totalTime());
 }
 
 Tune *QompPlayListModel::tune(const QModelIndex &index) const
@@ -83,6 +84,7 @@ void QompPlayListModel::removeTune(Tune *tune)
 		tunes_.removeAt(i);
 		delete tune;
 		endRemoveRows();
+		emit totalTimeChanged(totalTime());
 	}
 }
 
@@ -335,4 +337,14 @@ void QompPlayListModel::tuneDataUpdated(Tune *tune)
 {
 	int i = tunes_.indexOf(tune);
 	emit dataChanged(index(i), index(i));
+	emit totalTimeChanged(totalTime());
+}
+
+uint QompPlayListModel::totalTime() const
+{
+	uint total = 0;
+	foreach(Tune* t, tunes_) {
+		total += Qomp::durationStringToSeconds(t->duration);
+	}
+	return total;
 }

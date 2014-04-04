@@ -67,9 +67,13 @@ public:
 
 signals:
 	void currentTuneChanged(Tune*);
+	void totalTimeChanged(uint);
 
 public slots:
 	void tuneDataUpdated(Tune* tune);
+
+private:
+	uint totalTime() const;
 
 private:
 	QList<Tune*> tunes_;

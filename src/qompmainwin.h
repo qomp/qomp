@@ -67,6 +67,7 @@ private slots:
 
 	void updateOptions();
 	void removeSelectedIndexes();
+	void totalDurationChanged(uint time);
 
 signals:
 	void exit();

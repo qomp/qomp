@@ -32,7 +32,7 @@
 #if defined HAVE_QT5 && defined Q_OS_ANDROID
 #include <QGestureEvent>
 #endif
-
+#include <QTime>
 
 QompMainWin::QompMainWin(QWidget *parent) :
 	QMainWindow(parent),
@@ -59,6 +59,7 @@ QompMainWin::QompMainWin(QWidget *parent) :
 	connect(trayIcon_, SIGNAL(trayWheeled(int)), SLOT(trayWheeled(int)));
 
 	restoreWindowState();
+	totalDurationChanged(0);
 }
 
 QompMainWin::~QompMainWin()
@@ -83,6 +84,7 @@ void QompMainWin::setModel(QompPlayListModel *model)
 	model_ = model;
 	ui->playList->setModel(model_);
 	connect(model_, SIGNAL(currentTuneChanged(Tune*)), SLOT(updateTuneInfo(Tune*)));
+	connect(model_, SIGNAL(totalTimeChanged(uint)), SLOT(totalDurationChanged(uint)));
 }
 
 void QompMainWin::bringToFront()
@@ -212,6 +214,12 @@ void QompMainWin::playerStateChanged(Qomp::State state)
 		break;
 	}
 	updateTuneInfo(model_->currentTune());
+}
+
+void QompMainWin::totalDurationChanged(uint time)
+{
+	QTime t = QTime(0,0,0,0).addSecs(time);
+	ui->lb_playtime->setText(t.toString("hh:mm:ss"));
 }
 
 void QompMainWin::setCurrentPosition(qint64 ms)

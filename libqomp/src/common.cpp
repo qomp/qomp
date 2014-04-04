@@ -106,6 +106,18 @@ QString durationMiliSecondsToString(qint64 ms)
 	return t.toString(format);
 }
 
+uint durationStringToSeconds(const QString& dur)
+{
+	uint total = 0;
+	int factor = 1;
+	QStringList parts = dur.split(":");
+	while(!parts.isEmpty()) {
+		total += parts.takeLast().toInt()*factor;
+		factor *= 60;
+	}
+	return total;
+}
+
 QString unescape(const QString& escaped)
 {
 	QTextDocument doc;

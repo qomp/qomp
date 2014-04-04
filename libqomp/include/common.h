@@ -32,6 +32,7 @@ LIBQOMPSHARED_EXPORT QString decodePassword(const QString& str, const QString &k
 
 LIBQOMPSHARED_EXPORT QString durationSecondsToString(uint sec);
 LIBQOMPSHARED_EXPORT QString durationMiliSecondsToString(qint64 ms);
+LIBQOMPSHARED_EXPORT uint durationStringToSeconds(const QString& dur);
 
 LIBQOMPSHARED_EXPORT QString unescape(const QString& escaped);
 LIBQOMPSHARED_EXPORT QString fixEncoding(const QString& encoded);

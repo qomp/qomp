@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>387</width>
-    <height>603</height>
+    <width>399</width>
+    <height>597</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -83,7 +83,7 @@ QLabel {
     color: #3244C9; 
 }
 
-QLabel#lb_artist_title {
+QLabel#lb_artist_title, QLabel#lb_track_title, QLabel#lb_playtime {
 	background-color: #DFE1F5;
 	border-top-left-radius: 2px;
 	border-bottom-left-radius: 2px;
@@ -92,29 +92,11 @@ QLabel#lb_artist_title {
 	border-left:  1px solid #698ebf;
 }
 
-QLabel#lb_track_title {
-	background-color: #DFE1F5;
-	border-top-left-radius: 2px;
-	border-bottom-left-radius: 2px;
-	border-top: 1px solid #698ebf;
-	border-bottom:  1px solid #698ebf;
-	border-left:  1px solid #698ebf;
-}
-
-QLabel#lb_artist {
+QLabel#lb_artist, QLabel#lb_title, QLabel#lb_playtime {
 	background-color: #DFE1F5;
 	border-top-right-radius: 2px;
 	border-bottom-right-radius: 2px;
 	border-top:  1px solid #698ebf;
-	border-bottom: 1px solid #698ebf;
-	border-right: 1px solid #698ebf;
-}
-
-QLabel#lb_title {
-	background-color: #DFE1F5;
-	border-top-right-radius: 2px;
-	border-bottom-right-radius: 2px;
-	border-top: 1px solid #698ebf;
 	border-bottom: 1px solid #698ebf;
 	border-right: 1px solid #698ebf;
 }
@@ -485,7 +467,7 @@ QToolTip {
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <widget class="QToolButton" name="tb_open">
         <property name="toolTip">
@@ -567,7 +549,41 @@ QToolTip {
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_3">
+       <widget class="QLabel" name="lb_playtime">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>74</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>74</width>
+          <height>18</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
