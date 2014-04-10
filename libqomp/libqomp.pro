@@ -9,7 +9,7 @@ android {
 }
 TEMPLATE = lib
 
-DESTDIR = $$PWD/../bin
+DESTDIR = $$OUT_PWD/../bin
 
 DEFINES += LIBQOMP_LIBRARY
 
@@ -20,23 +20,10 @@ unix:!android {
 
 include(src/src.pri)
 
-#for(file, HEADERS) {
-#    item = item$${file}
-#    $${item}.target = $${file}
-#    $${item}.commands = $(COPY_FILE) $${file} $$PWD/include
-#    QMAKE_EXTRA_TARGETS += $$item
-#    PRE_TARGETDEPS += $$item
-#}
-
-
 for(FILE, HEADERS) {
         DDIR = $$PWD/include
 
-        # Replace slashes in paths with backslashes for Windows
-        win32:FILE ~= s,/,\\,g
-        win32:DDIR ~= s,/,\\,g
-
-        QMAKE_POST_LINK += $$QMAKE_COPY $$quote($$FILE) $$quote($$DDIR) $$escape_expand(\\n\\t)
+        QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$FILE) $$shell_path($$DDIR) $$escape_expand(\\n\\t)
  }
 
 

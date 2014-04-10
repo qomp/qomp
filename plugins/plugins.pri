@@ -2,7 +2,7 @@ include($$PWD/../conf.pri)
 
 CONFIG += plugin
 
-DESTDIR = $$PWD/../bin/plugins
+DESTDIR = $$OUT_PWD/../../bin/plugins
 
 QT += network
 
@@ -14,12 +14,12 @@ DEPENDPATH += $$PWD/../libqomp/include
 
 
 android {
-    LIBS += -L$$PWD/../bin -lqomp-shared
+    LIBS += -L$$OUT_PWD/../../bin -lqomp-shared
 
     target.path = /libs/$$ANDROID_TARGET_ARCH
     INSTALLS += target
 } else {
-    LIBS += -L$$PWD/../bin -lqomp
+    LIBS += -L$$OUT_PWD/../../bin -lqomp
 }
 
 unix:!android {

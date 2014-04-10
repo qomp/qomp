@@ -15,12 +15,13 @@ phonon_backend {
 }
 
 TARGET = qomp
-DESTDIR = $$PWD/../bin
+DESTDIR = $$OUT_PWD/../bin
 TEMPLATE = app
 
 QT += network
 
 include(src.pri)
+include($$PWD/../translations.pri)
 
 unix:!android {
 	INCLUDEPATH += /usr/include/KDE/
@@ -55,11 +56,11 @@ macx {
 android {
     QT += xml
     OTHER_FILES += $$PWD/../android/AndroidManifest.xml
-    LIBS += -L$$PWD/../bin -lqomp-shared
+    LIBS += -L$$OUT_PWD/../bin -lqomp-shared
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
-    ANDROID_EXTRA_LIBS += $$PWD/../bin/libqomp-shared.so
+    ANDROID_EXTRA_LIBS += $$OUT_PWD/../bin/libqomp-shared.so
 } else {
-    LIBS += -L$$PWD/../bin -lqomp
+    LIBS += -L$$OUT_PWD/../bin -lqomp
 }
 
 INCLUDEPATH += $$PWD/../libqomp/include
