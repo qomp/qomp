@@ -107,6 +107,7 @@ private:
 
 	void saveWindowState();
 	void restoreWindowState();
+	void updateVolumSliderToolTip();
 	
 private:
 	Ui::QompMainWin *ui;

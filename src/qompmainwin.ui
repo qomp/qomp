@@ -17,7 +17,7 @@
    <string>qomp</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="qomp.qrc">
+   <iconset>
     <normaloff>:/icons/icons/qomp.png</normaloff>:/icons/icons/qomp.png</iconset>
   </property>
   <property name="styleSheet">
@@ -260,11 +260,14 @@ QToolTip {
       </item>
       <item>
        <widget class="QToolButton" name="tb_mute">
+        <property name="toolTip">
+         <string>Mute</string>
+        </property>
         <property name="text">
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/volume</normaloff>:/icons/volume</iconset>
         </property>
         <property name="iconSize">
@@ -332,7 +335,7 @@ QToolTip {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/prev</normaloff>:/icons/prev</iconset>
         </property>
         <property name="iconSize">
@@ -352,7 +355,7 @@ QToolTip {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/play</normaloff>:/icons/play</iconset>
         </property>
         <property name="iconSize">
@@ -372,7 +375,7 @@ QToolTip {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/stop</normaloff>:/icons/stop</iconset>
         </property>
         <property name="iconSize">
@@ -392,7 +395,7 @@ QToolTip {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/next</normaloff>:/icons/next</iconset>
         </property>
         <property name="iconSize">
@@ -425,7 +428,7 @@ QToolTip {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/repeat</normaloff>:/icons/repeat</iconset>
         </property>
         <property name="iconSize">
@@ -477,7 +480,7 @@ QToolTip {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
         </property>
         <property name="iconSize">
@@ -497,7 +500,7 @@ QToolTip {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/load</normaloff>:/icons/load</iconset>
         </property>
         <property name="iconSize">
@@ -517,7 +520,7 @@ QToolTip {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/save</normaloff>:/icons/save</iconset>
         </property>
         <property name="iconSize">
@@ -537,7 +540,7 @@ QToolTip {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/delete</normaloff>:/icons/delete</iconset>
         </property>
         <property name="iconSize">
@@ -611,7 +614,7 @@ QToolTip {
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="qomp.qrc">
+         <iconset>
           <normaloff>:/icons/options</normaloff>:/icons/options</iconset>
         </property>
        </widget>
@@ -634,8 +637,6 @@ QToolTip {
    <header>qompplaylistview.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="qomp.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

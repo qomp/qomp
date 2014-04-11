@@ -161,13 +161,20 @@ void QompMainWin::actClearActivated()
 void QompMainWin::volumeSliderMoved(int vol)
 {
 	qreal newVol = qreal(vol)/1000;
+	updateVolumSliderToolTip();
 	emit volumeSliderMoved(newVol);
+}
+
+void QompMainWin::updateVolumSliderToolTip()
+{
+	ui->volumeSlider->setToolTip(QString("%1 %").arg(QString::number(ui->volumeSlider->value() / 10)));
 }
 
 void QompMainWin::volumeChanged(qreal vol)
 {
 	ui->volumeSlider->blockSignals(true);
 	ui->volumeSlider->setValue(vol*1000);
+	updateVolumSliderToolTip();
 	ui->volumeSlider->blockSignals(false);
 }
 
