@@ -31,6 +31,7 @@
 #include "pluginmanager.h"
 #include "qompplayer.h"
 #include "tune.h"
+#include "thememanager.h"
 
 #include <QApplication>
 #include <QFileDialog>
@@ -58,6 +59,7 @@ QompCon::QompCon(QObject *parent) :
 	qRegisterMetaType<Qomp::State>("State");
 
 	Translator::instance();
+	ThemeManager::instance()->setTheme("blue");
 
 	setupModel();
 	setupPlayer();

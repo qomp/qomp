@@ -11,7 +11,8 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/translator.cpp \
     $$PWD/updateschecker.cpp \
     $$PWD/qompplaylistview.cpp \
-    $$PWD/qompmenu.cpp
+    $$PWD/qompmenu.cpp \
+    $$PWD/thememanager.cpp
 
 HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qompcon.h \
@@ -23,7 +24,8 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/translator.h \
     $$PWD/updateschecker.h \
     $$PWD/qompplaylistview.h \
-    $$PWD/qompmenu.h
+    $$PWD/qompmenu.h \
+    $$PWD/thememanager.h
 
 FORMS    += $$PWD/qompmainwin.ui \
     $$PWD/aboutdlg.ui
@@ -46,4 +48,5 @@ qtmultimedia_backend {
 
 include (options/options.pri)
 
-RESOURCES += $$PWD/qomp.qrc
+RESOURCES += $$PWD/qomp.qrc \
+    $$PWD/themes.qrc
