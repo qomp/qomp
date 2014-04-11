@@ -32,7 +32,7 @@
 #include "defines.h"
 #include "qompnetworkingfactory.h"
 
-static const QString url = "http://code.google.com/p/qomp/source/browse/src/defines.h";
+static const QString url = "http://code.google.com/p/qomp/source/browse/libqomp/include/defines.h";
 static const QString downloadUrl = "http://sourceforge.net/projects/qomp/files/";
 
 
