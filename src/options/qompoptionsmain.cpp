@@ -24,6 +24,7 @@
 #include "qompplayer.h"
 #include "translator.h"
 #include "qomptrayicon.h"
+#include "thememanager.h"
 #include "ui_qompoptionsmain.h"
 
 static const QString defaultDevice = QObject::tr("default");
@@ -59,43 +60,47 @@ void QompOptionsMain::init(QompPlayer *player)
 
 void QompOptionsMain::applyOptions()
 {
-	Options::instance()->setOption(OPTION_AUTOSTART_PLAYBACK, ui->cb_autostartPlayback->isChecked());
-	Options::instance()->setOption(OPTION_START_MINIMIZED, ui->cb_minimized->isChecked());
-	Options::instance()->setOption(OPTION_PROXY_HOST, ui->le_host->text());
-	Options::instance()->setOption(OPTION_PROXY_PASS, Qomp::encodePassword(ui->le_pass->text(), DECODE_KEY));
-	Options::instance()->setOption(OPTION_PROXY_PORT, ui->le_port->text());
-	Options::instance()->setOption(OPTION_PROXY_USER, ui->le_user->text());
-	Options::instance()->setOption(OPTION_PROXY_USE, ui->gb_proxy->isChecked());
-	Options::instance()->setOption(OPTION_PROXY_TYPE, ui->cb_proxy_type->currentText());
-	Options::instance()->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->currentText());
-	Options::instance()->setOption(OPTION_UPDATE_METADATA, ui->cb_metaData->isChecked());
-	Options::instance()->setOption(OPTION_HIDE_ON_CLOSE, ui->cb_hideOnClose->isChecked());
-	Options::instance()->setOption(OPTION_DEFAULT_ENCODING, ui->le_encoding->text().toUtf8());
-	Options::instance()->setOption(OPTION_TRAY_DOUBLE_CLICK, ui->cb_doubleClick->currentIndex());
-	Options::instance()->setOption(OPTION_TRAY_MIDDLE_CLICK, ui->cb_middleClick->currentIndex());
-	Options::instance()->setOption(OPTION_TRAY_LEFT_CLICK, ui->cb_leftClick->currentIndex());
-	Translator::instance()->retranslate(ui->cb_lang->currentText());
+	Options* o = Options::instance();
+
+	o->setOption(OPTION_AUTOSTART_PLAYBACK, ui->cb_autostartPlayback->isChecked());
+	o->setOption(OPTION_START_MINIMIZED, ui->cb_minimized->isChecked());
+	o->setOption(OPTION_PROXY_HOST, ui->le_host->text());
+	o->setOption(OPTION_PROXY_PASS, Qomp::encodePassword(ui->le_pass->text(), DECODE_KEY));
+	o->setOption(OPTION_PROXY_PORT, ui->le_port->text());
+	o->setOption(OPTION_PROXY_USER, ui->le_user->text());
+	o->setOption(OPTION_PROXY_USE, ui->gb_proxy->isChecked());
+	o->setOption(OPTION_PROXY_TYPE, ui->cb_proxy_type->currentText());
+	o->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->currentText());
+	o->setOption(OPTION_UPDATE_METADATA, ui->cb_metaData->isChecked());
+	o->setOption(OPTION_HIDE_ON_CLOSE, ui->cb_hideOnClose->isChecked());
+	o->setOption(OPTION_DEFAULT_ENCODING, ui->le_encoding->text().toUtf8());
+	o->setOption(OPTION_TRAY_DOUBLE_CLICK, ui->cb_doubleClick->currentIndex());
+	o->setOption(OPTION_TRAY_MIDDLE_CLICK, ui->cb_middleClick->currentIndex());
+	o->setOption(OPTION_TRAY_LEFT_CLICK, ui->cb_leftClick->currentIndex());
+	o->setOption(OPTION_THEME, ui->cb_theme->currentText());
+	o->setOption(OPTION_CURRENT_TRANSLATION,ui->cb_lang->currentText());
 }
 
 void QompOptionsMain::restoreOptions()
 {
-	ui->cb_autostartPlayback->setChecked(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool());
-	ui->cb_minimized->setChecked(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool());
-	ui->gb_proxy->setChecked(Options::instance()->getOption(OPTION_PROXY_USE).toBool());
-	ui->le_host->setText(Options::instance()->getOption(OPTION_PROXY_HOST).toString());
-	ui->le_pass->setText(Qomp::decodePassword(Options::instance()->getOption(OPTION_PROXY_PASS).toString(), DECODE_KEY));
-	ui->le_port->setText(Options::instance()->getOption(OPTION_PROXY_PORT).toString());
-	ui->le_user->setText(Options::instance()->getOption(OPTION_PROXY_USER).toString());
-	ui->cb_proxy_type->setCurrentIndex(ui->cb_proxy_type->findText(Options::instance()->getOption(OPTION_PROXY_TYPE).toString()));
-	ui->cb_metaData->setChecked(Options::instance()->getOption(OPTION_UPDATE_METADATA).toBool());
-	ui->cb_hideOnClose->setChecked(Options::instance()->getOption(OPTION_HIDE_ON_CLOSE).toBool());
-	ui->le_encoding->setText(Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray());
+	Options* o = Options::instance();
+	ui->cb_autostartPlayback->setChecked(o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool());
+	ui->cb_minimized->setChecked(o->getOption(OPTION_START_MINIMIZED).toBool());
+	ui->gb_proxy->setChecked(o->getOption(OPTION_PROXY_USE).toBool());
+	ui->le_host->setText(o->getOption(OPTION_PROXY_HOST).toString());
+	ui->le_pass->setText(Qomp::decodePassword(o->getOption(OPTION_PROXY_PASS).toString(), DECODE_KEY));
+	ui->le_port->setText(o->getOption(OPTION_PROXY_PORT).toString());
+	ui->le_user->setText(o->getOption(OPTION_PROXY_USER).toString());
+	ui->cb_proxy_type->setCurrentIndex(ui->cb_proxy_type->findText(o->getOption(OPTION_PROXY_TYPE).toString()));
+	ui->cb_metaData->setChecked(o->getOption(OPTION_UPDATE_METADATA).toBool());
+	ui->cb_hideOnClose->setChecked(o->getOption(OPTION_HIDE_ON_CLOSE).toBool());
+	ui->le_encoding->setText(o->getOption(OPTION_DEFAULT_ENCODING).toByteArray());
 
 	ui->cb_output->clear();
 	ui->cb_output->addItem(defaultDevice);
 	if(player_)
 		ui->cb_output->addItems(player_->audioOutputDevice());
-	QString dev = Options::instance()->getOption(OPTION_AUDIO_DEVICE, defaultDevice).toString();
+	QString dev = o->getOption(OPTION_AUDIO_DEVICE, defaultDevice).toString();
 	int index = ui->cb_output->findText(dev);
 	if(index == -1)
 		ui->cb_output->setCurrentIndex(ui->cb_output->findText(defaultDevice));
@@ -104,7 +109,7 @@ void QompOptionsMain::restoreOptions()
 
 	ui->cb_lang->clear();
 	ui->cb_lang->addItems(Translator::instance()->availableTranslations());
-	QString curTr = Translator::instance()->currentTranslation();
+	QString curTr = o->getOption(OPTION_CURRENT_TRANSLATION).toString();
 	index = ui->cb_lang->findText(curTr);
 	if(index != -1)
 		ui->cb_lang->setCurrentIndex(index);
@@ -113,12 +118,17 @@ void QompOptionsMain::restoreOptions()
 
 	QStringList actions = QompTrayIcon::availableActions();
 	ui->cb_middleClick->addItems(actions);
-	QompTrayActionType type = Options::instance()->getOption(OPTION_TRAY_MIDDLE_CLICK).toInt();
+	QompTrayActionType type = o->getOption(OPTION_TRAY_MIDDLE_CLICK).toInt();
 	ui->cb_middleClick->setCurrentIndex(type);
 	ui->cb_leftClick->addItems(actions);
-	type = Options::instance()->getOption(OPTION_TRAY_LEFT_CLICK).toInt();
+	type = o->getOption(OPTION_TRAY_LEFT_CLICK).toInt();
 	ui->cb_leftClick->setCurrentIndex(type);
 	ui->cb_doubleClick->addItems(actions);
-	type = Options::instance()->getOption(OPTION_TRAY_DOUBLE_CLICK).toInt();
+	type = o->getOption(OPTION_TRAY_DOUBLE_CLICK).toInt();
 	ui->cb_doubleClick->setCurrentIndex(type);
+
+	ui->cb_theme->addItems(ThemeManager::instance()->availableThemes());
+	const QString them = o->getOption(OPTION_THEME).toString();
+	int i = ui->cb_theme->findText(them);
+	ui->cb_theme->setCurrentIndex(i);
 }

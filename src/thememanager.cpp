@@ -35,10 +35,12 @@ ThemeManager *ThemeManager::instance()
 
 void ThemeManager::setTheme(const QString &theme)
 {
-	QFile file(themes_.value(theme));
-	if(file.exists() && file.open(QFile::ReadOnly | QFile::Text)) {
-		const QByteArray content = file.readAll();
-		qApp->setStyleSheet(content);
+	if(!theme.isEmpty() && themes_.contains(theme)) {
+		QFile file(themes_.value(theme));
+		if(file.exists() && file.open(QFile::ReadOnly | QFile::Text)) {
+			const QByteArray content = file.readAll();
+			qApp->setStyleSheet(content);
+		}
 	}
 }
 
@@ -74,16 +76,16 @@ QStringList ThemeManager::themeFolders()
 	QStringList list;
 	list << ":/themes/";
 #ifdef Q_OS_WIN
-		list.append(qApp->applicationDirPath()+"/themes");
+	list.append(qApp->applicationDirPath()+"/themes");
 #elif defined (HAVE_X11)
-		list.append(QString(QOMP_DATADIR) + "/themes");
+	list.append(QString(QOMP_DATADIR) + "/themes");
 #elif defined (Q_OS_MAC)
-		QDir appDir = qApp->applicationDirPath();
-		appDir.cdUp();
-		appDir.cd("Themes");
-		list.append(appDir.absolutePath());
+	QDir appDir = qApp->applicationDirPath();
+	appDir.cdUp();
+	appDir.cd("Themes");
+	list.append(appDir.absolutePath());
 #elif defined (Q_OS_ANDROID)
-		list.append("assets:/themes");
+	list.append("assets:/themes");
 #endif
 	return list;
 }

@@ -42,7 +42,7 @@ public:
 
 private slots:
 	void exit();
-	void updateOptions();
+	void updateSettings();
 
 	void actPlayNext();
 	void actPlayPrev();
@@ -81,6 +81,7 @@ private:
 	void setupMainWin();
 	void setupPlayer();
 	void setupModel();
+	void checkVersion();
 
 	void stopPlayer();
 	void playIndex(const QModelIndex& index);

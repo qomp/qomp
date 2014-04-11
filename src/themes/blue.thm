@@ -74,7 +74,7 @@ QSlider::handle:horizontal {
     width: 10px;
 }
 
-QLabel, QCheckBox {
+QLabel, QCheckBox, QGroupBox {
     color: #3244C9;
 }
 

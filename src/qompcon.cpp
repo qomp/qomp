@@ -57,25 +57,6 @@ QompCon::QompCon(QObject *parent) :
 {
 	qRegisterMetaType<Tune*>("Tune*");
 	qRegisterMetaType<Qomp::State>("State");
-
-	Translator::instance();
-	ThemeManager::instance()->setTheme("blue");
-
-	setupModel();
-	setupPlayer();
-	setupMainWin();
-
-	model_->restoreState();
-
-	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateOptions()));
-
-	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
-		mainWin_->hide();
-	else
-		mainWin_->show();
-
-	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
-		actPlay();
 }
 
 QompCon::~QompCon()
@@ -89,7 +70,7 @@ QompCon::~QompCon()
 	delete Tune::emptyTune();
 }
 
-void QompCon::init()
+void QompCon::checkVersion()
 {
 	QVariant vVer = Options::instance()->getOption(OPTION_APPLICATION_VERSION);
 	if(vVer == QVariant::Invalid  //First launch
@@ -110,6 +91,8 @@ void QompCon::init()
 		hash.insert(OPTION_PLUGINS_ORDER,	QStringList()	<< "Myzuka.ru"
 									<< "Yandex.Music"
 									<< "Pleer.com");
+		hash.insert(OPTION_THEME,		"blue");
+		hash.insert(OPTION_CURRENT_TRANSLATION, QLocale::system().name().split("_").first());
 
 		foreach(const char* key, hash.keys()) {
 			if(Options::instance()->getOption(key) == QVariant::Invalid)
@@ -118,7 +101,28 @@ void QompCon::init()
 
 		Options::instance()->setOption(OPTION_APPLICATION_VERSION, APPLICATION_VERSION);
 	}
-	updateOptions();
+}
+
+void QompCon::init()
+{
+	checkVersion();
+	updateSettings();
+
+	setupModel();
+	setupPlayer();
+	setupMainWin();
+
+	model_->restoreState();
+
+	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateSettings()));
+
+	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
+		mainWin_->hide();
+	else
+		mainWin_->show();
+
+	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
+		actPlay();
 }
 
 void QompCon::exit()
@@ -126,10 +130,11 @@ void QompCon::exit()
 	qApp->exit();
 }
 
-void QompCon::updateOptions()
+void QompCon::updateSettings()
 {
 	QompNetworkingFactory::instance()->updateProxySettings();
-	player_->setAudioOutputDevice(Options::instance()->getOption(OPTION_AUDIO_DEVICE).toString());
+	ThemeManager::instance()->setTheme(Options::instance()->getOption(OPTION_THEME).toString());
+	Translator::instance()->retranslate(Options::instance()->getOption(OPTION_CURRENT_TRANSLATION).toString());
 }
 
 void QompCon::actPlayNext()
@@ -396,6 +401,7 @@ void QompCon::setupPlayer()
 	connect(model_,  SIGNAL(currentTuneChanged(Tune*)), player_, SLOT(setTune(Tune*)));
 
 	player_->setVolume(Options::instance()->getOption(OPTION_VOLUME, 1).toReal());
+	player_->setAudioOutputDevice(Options::instance()->getOption(OPTION_AUDIO_DEVICE).toString());
 }
 
 void QompCon::setupModel()

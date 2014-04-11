@@ -25,7 +25,6 @@
 #include <QLibraryInfo>
 
 #include "translator.h"
-#include "options.h"
 #include "defines.h"
 
 
@@ -48,11 +47,6 @@ Translator::Translator()
 	: QTranslator(qApp)
 	, qtTrans_(new QTranslator())
 {
-	QVariant vCur = Options::instance()->getOption(OPTION_CURRENT_TRANSLATION);
-	if(vCur == QVariant::Invalid) {
-		vCur = QLocale::system().name().split("_").first();
-	}
-	retranslate(vCur.toString());
 }
 
 Translator::~Translator()
@@ -91,8 +85,6 @@ void Translator::retranslate(const QString& fileName)
 		qApp->removeTranslator(this);
 		qApp->removeTranslator(qtTrans_);
 	}
-
-	setCurrentTranslation(fileName);
 }
 
 QStringList Translator::availableTranslations()
@@ -113,16 +105,6 @@ QStringList Translator::availableTranslations()
 	}
 
 	return translations;
-}
-
-QString Translator::currentTranslation() const
-{
-	return Options::instance()->getOption(OPTION_CURRENT_TRANSLATION, "en").toString();
-}
-
-void Translator::setCurrentTranslation(const QString &tr)
-{
-	Options::instance()->setOption(OPTION_CURRENT_TRANSLATION, tr);
 }
 
 QStringList Translator::transDirs()

@@ -61,4 +61,6 @@
 #define OPTION_TRAY_MIDDLE_CLICK	"main.tray-middle-click"
 #define OPTION_TRAY_DOUBLE_CLICK	"main.tray-double-click"
 
+#define OPTION_THEME	"main.theme"
+
 #endif // DEFINES_H
