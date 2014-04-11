@@ -75,6 +75,7 @@ if ( ${UNIX} AND NOT ( ${APPLE} OR ${CYGWIN} ) )
 		src/updateschecker.cpp
 		src/qompplaylistview.cpp
 		src/qompmenu.cpp
+		src/thememanager.cpp      
 		${options_SRCS}
 	)
 	set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
