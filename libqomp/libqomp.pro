@@ -21,9 +21,10 @@ unix:!android {
 include(src/src.pri)
 
 for(FILE, HEADERS) {
-        DDIR = $$PWD/include
+    DDIR = $$PWD/include
 
-        QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$FILE) $$shell_path($$DDIR) $$escape_expand(\\n\\t)
- }
+    QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$FILE) $$shell_path($$DDIR) $$escape_expand(\\n\\t)
+}
+
 
 
