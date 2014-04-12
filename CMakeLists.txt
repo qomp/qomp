@@ -75,6 +75,7 @@ if ( ${UNIX} AND NOT ( ${APPLE} OR ${CYGWIN} ) )
 		src/updateschecker.cpp
 		src/qompplaylistview.cpp
 		src/qompmenu.cpp
+		src/thememanager.cpp      
 		${options_SRCS}
 	)
 	set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
@@ -112,7 +113,7 @@ if ( ${UNIX} AND NOT ( ${APPLE} OR ${CYGWIN} ) )
 		)
 	endif ( ${Phonon_FOUND} )
 
-	INSTALL ( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin )
+	INSTALL ( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 	
 	set ( DESKTOP_PATH ${DATADIR_PATH}/applications )
 	set ( DESKTOPFILES ${PROJECT_NAME}.desktop )
