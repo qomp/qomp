@@ -33,7 +33,7 @@ QList<Tune*> FilesystemPlugin::getTunes()
 	QFileDialog f(0, tr("Select file(s)"),
 		      Options::instance()->getOption("filesystemplugin.lastdir", QDir::homePath()).toString(),
 		      tr("Audio files(*.mp3 *.ogg *.wav *.flac);;All files(*)"));
-	f.setFileMode(QFileDialog::ExistingFile);
+	f.setFileMode(QFileDialog::ExistingFiles);
 	f.setViewMode(QFileDialog::List);
 	f.setAcceptMode(QFileDialog::AcceptOpen);
 #if defined HAVE_QT5 && defined Q_OS_ANDROID
