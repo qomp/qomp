@@ -78,6 +78,11 @@ void QompPlayListModel::setCurrentTune(Tune *tune)
 
 void QompPlayListModel::removeTune(Tune *tune)
 {
+	if(tune == currentTune()) {
+		currentTune_ = (Tune*)Tune::emptyTune();
+		emit currentTuneChanged(currentTune_);
+	}
+
 	int i = tunes_.indexOf(tune);
 	if(i != -1) {
 		beginRemoveRows(QModelIndex(), i, i);
@@ -273,9 +278,10 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 void QompPlayListModel::clear()
 {
 	beginResetModel();
+	currentTune_ = (Tune*)Tune::emptyTune();
+	emit currentTuneChanged(currentTune_);
 	qDeleteAll(tunes_);
 	tunes_.clear();
-	currentTune_ = (Tune*)Tune::emptyTune();
 	endResetModel();
 }
 

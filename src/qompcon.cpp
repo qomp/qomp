@@ -292,21 +292,12 @@ void QompCon::actClearPlaylist()
 
 void QompCon::actRemoveSelected(const QModelIndexList &list)
 {
-	bool removingCurrent = false;
 	QList<Tune*> tl;
-	foreach(const QModelIndex& index, list) {
-		Tune* t = model_->tune(index);
-		if(t == model_->currentTune())
-			removingCurrent = true;
-		tl << t;
-	}
+	foreach(const QModelIndex& index, list)
+		tl.append(model_->tune(index));
+
 	foreach(Tune* tune, tl)
 		model_->removeTune(tune);
-
-	if(removingCurrent) {
-		stopPlayer();
-		model_->setCurrentTune(model_->tune(model_->index(0,0)));
-	}
 }
 
 void QompCon::actDoSettings()
