@@ -34,7 +34,6 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 		return;
 
 	painter->save();
-	QFontMetrics fm = o.fontMetrics;
 	QRect rect = o.rect;
 	QPalette palette = o.palette;
 	QFont font = o.font;
@@ -75,8 +74,9 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 
 	QRect durRect(rect);
 	QString dur = index.data(QompPlayListModel::DurationRole).toString();
+	QFontMetrics fm(font);
 	int w = fm.width(dur);
-	durRect.setRight(durRect.right() - 3);
+	durRect.setRight(durRect.right() - 5);
 	durRect.setLeft(durRect.right() - w - 1);
 	rect.setRight(durRect.left() - 2);
 	rect.setLeft(rect.left() + 5);
