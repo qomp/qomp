@@ -42,6 +42,7 @@ if ( ${UNIX} AND NOT ( ${APPLE} OR ${CYGWIN} ) )
 	)
 	set ( qomp_RSCS
 		src/qomp.qrc
+		src/themes.qrc
 	)
 	QT4_ADD_RESOURCES( RSCS ${qomp_RSCS} )
 	set ( qomp_TRS
