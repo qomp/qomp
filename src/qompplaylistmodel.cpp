@@ -283,6 +283,7 @@ void QompPlayListModel::clear()
 	qDeleteAll(tunes_);
 	tunes_.clear();
 	endResetModel();
+	emit totalTimeChanged(totalTime());
 }
 
 void QompPlayListModel::saveState()
