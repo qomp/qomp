@@ -23,7 +23,13 @@
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QVariantMap>
 
-class Tune;
+struct QompMetaData {
+	QString title;
+	QString artist;
+	QString album;
+	QString url;
+	int trackNumber;
+};
 
 class MprisAdapter : public QDBusAbstractAdaptor
 {
@@ -38,7 +44,7 @@ public:
 	QVariantMap metadata() const;
 	QString playbackStatus() const;
 	void setStatus(const QString &status);
-	void setMetadata(int trackNumber, Tune *tune);
+	void setMetadata(const QompMetaData &tune);
 	void updateProperties();
 
 private:

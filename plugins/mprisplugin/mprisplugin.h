@@ -22,8 +22,8 @@
 
 #include "qompplugin.h"
 #include "qompplayerstatusplugin.h"
-
-class MprisController;
+#include "mpriscontroller.h"
+#include "tune.h"
 
 class MprisPlugin : public QObject, public QompPlugin, public QompPlayerStatusPlugin
 {
@@ -36,7 +36,7 @@ public:
 	explicit MprisPlugin();
 	~MprisPlugin() {}
 	virtual QString name() const { return tr("MPRIS Plugin"); }
-	virtual QString version() const { return "0.1"; }
+	virtual QString version() const { return "0.2"; }
 	virtual QString description() const { return tr("Interface to MPRIS"); }
 	virtual QompOptionsPage* options() { return 0; }
 	virtual void qompPlayerChanged(QompPlayer* player);
@@ -45,14 +45,18 @@ public:
 
 private slots:
 	void playerStatusChanged();
+	void tuneInfoLoaded(Tune *tuneInfo);
 
 private:
 	void disableMpris();
+	void getMetaData();
+	void sendMetadata(const QString &status);
 
 private:
 	QompPlayer *player_;
 	bool enabled_;
 	MprisController* mpris_;
+	QompMetaData *tune_;
 };
 
 #endif // MPRISPLUGIN_H

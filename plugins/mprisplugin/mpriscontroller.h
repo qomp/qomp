@@ -31,7 +31,7 @@ public:
 	explicit MprisController(QObject *parent = 0);
 	~MprisController();
 
-	void sendData(const QString &status, int trackNumber, Tune* tune);
+	void sendData(const QString &status, const QompMetaData &tune);
 
 private:
 	MprisAdapter *mprisAdapter_;

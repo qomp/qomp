@@ -18,17 +18,21 @@
  */
 
 #include "mprisplugin.h"
-#include "mpriscontroller.h"
 #include "qompplayer.h"
 #include "tune.h"
 
 #include <QTimer>
 #include <QtPlugin>
 
+#define STOPPED "Stopped"
+#define PAUSED "Paused"
+#define PLAYING "Playing"
+
 MprisPlugin::MprisPlugin() :
 	player_(0),
 	enabled_(true),
-	mpris_(0)
+	mpris_(0),
+	tune_(0)
 {
 }
 
@@ -36,15 +40,19 @@ void MprisPlugin::qompPlayerChanged(QompPlayer *player)
 {
 	player_ = player;
 	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
+	connect(player_, SIGNAL(tuneDataUpdated(Tune*)), SLOT(tuneInfoLoaded(Tune*)));
 }
 
 void MprisPlugin::setEnabled(bool enabled)
 {
 	enabled_ = enabled;
-	if(enabled_)
+	if(enabled_) {
 		mpris_ = new MprisController(this);
-	else
+		tune_ = new QompMetaData();
+	}
+	else {
 		disableMpris();
+	}
 }
 
 void MprisPlugin::unload()
@@ -57,20 +65,54 @@ void MprisPlugin::playerStatusChanged()
 	if(!enabled_ || !mpris_)
 		return;
 
-	Tune* t = player_->currentTune();
-	int num = t->trackNumber.isEmpty() ? 0 : t->trackNumber.toInt();
 	switch(player_->state()) {
-    case Qomp::StatePlaying:
-		mpris_->sendData("Playing", num ,t);
-		break;
-    case Qomp::StateStopped:
-        mpris_->sendData("Stopped", num ,(Tune*)Tune::emptyTune());
-		break;
-    case Qomp::StatePaused:
-        mpris_->sendData("Paused", num ,(Tune*)Tune::emptyTune());
-		break;
-	default:
-		break;
+		case Qomp::StatePlaying:
+			getMetaData();
+			sendMetadata(PLAYING);
+			break;
+		case Qomp::StateStopped:
+			sendMetadata(STOPPED);
+			break;
+		case Qomp::StatePaused:
+			sendMetadata(PAUSED);
+			break;
+		default:
+			break;
+	}
+}
+
+void MprisPlugin::tuneInfoLoaded(Tune *tuneInfo)
+{
+	Q_UNUSED(tuneInfo);
+	if(!enabled_ || !mpris_)
+		return;
+
+	if (player_->state() == Qomp::StatePlaying) {
+		getMetaData();
+		sendMetadata(PLAYING);
+	}
+}
+
+void MprisPlugin::getMetaData()
+{
+	Tune* t = player_->currentTune();
+	if (t) {
+		int num = t->trackNumber.isEmpty() ? 0 : t->trackNumber.toInt();
+		tune_->artist = t->artist;
+		tune_->title= t->title;
+		tune_->album = t->album;
+		tune_->trackNumber = num;
+		tune_->url = t->getUrl().toString();
+	}
+}
+
+void MprisPlugin::sendMetadata(const QString &status)
+{
+	if (status == STOPPED || status == PAUSED) {
+		mpris_->sendData(status, QompMetaData());
+	}
+	else if (status == PLAYING){
+		mpris_->sendData(status, *tune_);
 	}
 }
 
@@ -78,6 +120,8 @@ void MprisPlugin::disableMpris()
 {
 	delete mpris_;
 	mpris_ = 0;
+	delete tune_;
+	tune_ = 0;
 }
 
 #ifndef HAVE_QT5

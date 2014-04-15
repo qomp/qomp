@@ -35,9 +35,9 @@ MprisController::~MprisController()
 	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
 }
 
-void MprisController::sendData(const QString &status, int trackNumber, Tune *tune)
+void MprisController::sendData(const QString &status, const QompMetaData &tune)
 {
 	mprisAdapter_->setStatus(status);
-	mprisAdapter_->setMetadata(trackNumber, tune);
+	mprisAdapter_->setMetadata(tune);
 	mprisAdapter_->updateProperties();
 }
