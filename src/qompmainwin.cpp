@@ -260,8 +260,11 @@ void QompMainWin::toggleVisibility()
 void QompMainWin::trayWheeled(int delta)
 {
 	int vol = ui->volumeSlider->value();
+	int min = ui->volumeSlider->minimum();
+	int max = ui->volumeSlider->maximum();
 	vol += delta;
-	emit volumeChanged(qreal(vol)/1000);
+	vol = (vol < min) ? min : (vol >= max) ? max : vol;
+	ui->volumeSlider->setValue(vol);
 }
 
 void QompMainWin::closeEvent(QCloseEvent *e)
