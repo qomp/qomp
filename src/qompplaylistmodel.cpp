@@ -36,7 +36,8 @@ static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
 
 
 QompPlayListModel::QompPlayListModel(QObject *parent) :
-	QAbstractListModel(parent)
+	QAbstractListModel(parent),
+	currentTune_((Tune*)Tune::emptyTune())
 {
 }
 
@@ -293,23 +294,13 @@ void QompPlayListModel::saveState()
 	if(ind.isValid())
 		curTrack = ind.row();
 	Options::instance()->setOption(OPTION_CURRENT_TRACK, curTrack);
-#ifdef Q_OS_ANDROID
-	QString path = QString("/sdcard/.%1%2")
-				     .arg(qApp->organizationName(), cachedPlayListFileName);
-#else
 	QString path = Qomp::cacheDir() + cachedPlayListFileName;
-#endif
 	saveTunes(path);
 }
 
 void QompPlayListModel::restoreState()
 {
-#ifdef Q_OS_ANDROID
-	QString path = QString("/sdcard/.%1%2")
-				     .arg(qApp->organizationName(), cachedPlayListFileName);
-#else
 	QString path = Qomp::cacheDir() + cachedPlayListFileName;
-#endif
 	QList<Tune*> tl = Tune::tunesFromFile(path);
 	if(!tl.isEmpty()) {
 		addTunes(tl);

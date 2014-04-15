@@ -134,7 +134,9 @@ QString unescape(const QString& escaped)
 QString cacheDir()
 {
 	QString dir;
-#ifdef HAVE_QT5
+#ifdef Q_OS_ANDROID
+	dir = QString("/sdcard/.%1").arg(qApp->organizationName());
+#elif defined HAVE_QT5
 	QStringList list = QStandardPaths::standardLocations(QStandardPaths::CacheLocation);
 	if(!list.isEmpty())
 		dir = list.first();
