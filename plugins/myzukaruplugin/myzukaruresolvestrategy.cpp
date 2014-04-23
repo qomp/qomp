@@ -74,6 +74,7 @@ public:
 		QNetworkRequest nr(url);
 		nr.setRawHeader("Accept", "*/*");
 		nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+		nr.setRawHeader("Referer", MYZUKA_URL);
 		QNetworkReply *reply = QompNetworkingFactory::instance()->getNetworkAccessManager()->get(nr);
 		connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinished()));
 		timer_->start();
@@ -99,7 +100,7 @@ private slots:
 			QRegExp re("\"(http://[^\"]+)\"");
 			QString text = QString::fromUtf8(reply->readAll());
 			if(re.indexIn(text) != -1) {
-				url_ = re.cap(1);
+				url_.setUrl(re.cap(1).replace("\\u0026", "&"),QUrl::TolerantMode);
 			}
 		}
 		loop_->quit();
