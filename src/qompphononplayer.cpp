@@ -51,7 +51,7 @@ QompPhononPlayer::QompPhononPlayer() :
 	connect(audioOutput_, SIGNAL(volumeChanged(qreal)), SIGNAL(volumeChanged(qreal)));
 	connect(audioOutput_, SIGNAL(mutedChanged(bool)), SIGNAL(mutedChanged(bool)));
 
-	connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
+    connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)));
 }
 
 QompPhononPlayer::~QompPhononPlayer()

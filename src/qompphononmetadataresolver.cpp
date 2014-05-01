@@ -36,9 +36,9 @@ void QompPhononMetaDataResolver::run()
 	setPriority(QThread::LowestPriority);
 	resolver_ = new Phonon::MediaObject();
 	resolver_->moveToThread(this);
-	connect(resolver_, SIGNAL(metaDataChanged()), SLOT(metaDataReady()));
-	connect(resolver_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(resolverStateChanged(Phonon::State,Phonon::State)));
-	connect(resolver_, SIGNAL(totalTimeChanged(qint64)), SLOT(totalTimeChanged(qint64)));
+    connect(resolver_, SIGNAL(metaDataChanged()), SLOT(metaDataReady()), Qt::BlockingQueuedConnection);
+    connect(resolver_, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(resolverStateChanged(Phonon::State,Phonon::State)), Qt::BlockingQueuedConnection);
+    connect(resolver_, SIGNAL(totalTimeChanged(qint64)), SLOT(totalTimeChanged(qint64)), Qt::BlockingQueuedConnection);
 	resolver_->setCurrentSource(objectForTune(get()));
 	resolver_->pause();
 	exec();

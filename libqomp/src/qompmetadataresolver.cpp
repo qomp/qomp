@@ -63,7 +63,7 @@ void QompMetaDataResolver::tuneFinished()
 	}
 	mutex_->unlock();
 
-	if( !(t == Tune::emptyTune()) )
+    if(t != Tune::emptyTune())
 		emit tuneUpdated(t);
 }
 
