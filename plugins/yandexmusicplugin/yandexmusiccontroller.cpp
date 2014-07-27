@@ -27,6 +27,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
+#ifdef DEBUG_OUTPUT
+#include <QtDebug>
+#endif
 
 // cap(1) - song title
 // cap(2) - song id
@@ -50,8 +53,8 @@ static const QString albumReString = "<div class=\"b-albums\" title=\"([^\"]+)\"
 
 // cap(1) - artist id
 // cap(2) - artist
-// cap(3) - artist mark
-static const QString artistReString = "<div class=\"b-artist-group \"><a href=\"([^\"]+)\" class=\"b-link\"><span class=\"b-mark\">([^<]+)</span>([^<]*)</a>";
+static const QString artistReString = "<div class=\"b-list__item-inner\"><div class=\"b-artist-group \">"
+		"<a href=\"([^\"]+)\" class=\"b-link\">([^<]+)</a></div>";
 
 
 static const QString currentPageReString = "<b class=\"b-pager__current\">([^<]*)</b>";
@@ -196,6 +199,11 @@ void YandexMusicController::artistsSearchFinished()
 
 	if(reply->error() == QNetworkReply::NoError) {
 		QString replyStr = QString::fromUtf8(reply->readAll());
+
+#ifdef DEBUG_OUTPUT
+		qDebug() << replyStr;
+#endif
+
 		QRegExp artistRe(artistReString);
 		artistRe.setMinimal(true);
 		int off = 0;
@@ -203,7 +211,7 @@ void YandexMusicController::artistsSearchFinished()
 		while((off = artistRe.indexIn(replyStr, off)) != -1) {
 			off += artistRe.matchedLength();
 			QompPluginArtist* artist = new QompPluginArtist;
-			artist->artist = Qomp::unescape(artistRe.cap(2)+artistRe.cap(3));
+			artist->artist = Qomp::unescape(artistRe.cap(2));
 			artist->internalId = artistRe.cap(1).replace("#!", "fragment");
 			artist->setItems(QList<QompPluginModelItem*>() << new QompPluginTune()); //add fake item
 			artists.append(artist);
