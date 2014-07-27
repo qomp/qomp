@@ -66,7 +66,7 @@ static const QString albumsRegExp = QString(
 		);
 
 static const QString albumsRegExp2 = QString::fromUtf8(
-			"<div itemtype=[^>]+>\\s+"
+			"<div data-type=[^>]+>\\s+"
 			"<div>\\s+"
 			"<a.+href=\"(/Album/[^\"]+)\">\\s+"					//cap(1) - internalId
 			"([^<]+)"								//cap(2) - album
