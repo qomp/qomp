@@ -49,8 +49,8 @@ unix:!android {
 win32:RC_FILE += $$PWD/../qomp.rc
 
 macx {
-   ICON = $$PWD/icons/qomp.icns
-   QMAKE_INFO_PLIST = $$PWD/Info.plist
+   ICON = icons/qomp.icns
+   QMAKE_INFO_PLIST = ../Info.plist
 }
 
 android {
