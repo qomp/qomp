@@ -116,6 +116,8 @@ QStringList PluginManager::pluginsDirs()
 #ifdef Q_OS_ANDROID
 	dirs << "assets:/plugins";
 	dirs << qApp->applicationDirPath();
+#elif defined (Q_OS_MAC)
+	dirs << QString ("%1/../Resources/plugins").arg(qApp->applicationDirPath());
 #elif defined (Q_OS_UNIX)
 	dirs << QString("%1/%2").arg(QOMP_DATADIR).arg("plugins");
 #endif
