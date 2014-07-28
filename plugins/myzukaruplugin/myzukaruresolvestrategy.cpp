@@ -70,7 +70,7 @@ public:
 		qDebug() << "MyzukaruResolveStrategyPrivate::getUrl()";
 #endif
 		QUrl url(MYZUKA_URL);
-		url.setPath(QString("/Song/GetFileUrl/%1").arg(tune_->url));
+		url.setPath(QString("/Song/GetPlayFileUrl/%1").arg(tune_->url));
 		QNetworkRequest nr(url);
 		nr.setRawHeader("Accept", "*/*");
 		nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
