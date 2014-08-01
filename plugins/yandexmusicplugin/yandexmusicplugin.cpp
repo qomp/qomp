@@ -20,6 +20,7 @@
 #include "yandexmusicplugin.h"
 #include "yandexmusiccontroller.h"
 #include "yandexmusicurlresolvestrategy.h"
+#include "qomppluginaction.h"
 
 #include <QtPlugin>
 
@@ -62,6 +63,14 @@ TuneURLResolveStrategy *YandexMusicPlugin::urlResolveStrategy() const
 void YandexMusicPlugin::unload()
 {
 	YandexMusicURLResolveStrategy::reset();
+}
+
+QList<QompPluginAction *> YandexMusicPlugin::getTunesActions()
+{
+	QList<QompPluginAction *> l;
+	QompPluginAction *act = new QompPluginAction(QIcon(), tr("Yandex.Music"), this, "getTunes", this);
+	l.append(act);
+	return l;
 }
 
 #ifndef HAVE_QT5

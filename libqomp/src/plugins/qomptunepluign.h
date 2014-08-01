@@ -26,16 +26,17 @@
 class Tune;
 
 class TuneURLResolveStrategy;
+class QompPluginAction;
 
 class LIBQOMPSHARED_EXPORT QompTunePlugin
 {
 public:
 	virtual ~QompTunePlugin() {}
 
-	virtual QList<Tune*> getTunes() = 0;
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const = 0;
+	virtual QList<QompPluginAction*> getTunesActions() = 0;
 };
 
-Q_DECLARE_INTERFACE(QompTunePlugin, "Qomp.QompTunePlugin/0.1")
+Q_DECLARE_INTERFACE(QompTunePlugin, "Qomp.QompTunePlugin/0.2")
 
 #endif // QOMPTUNEPLUIGN_H

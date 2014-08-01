@@ -20,6 +20,7 @@
 #include "filesystemplugin.h"
 #include "options.h"
 #include "tune.h"
+#include "qomppluginaction.h"
 
 #include <QFileDialog>
 #include <QtPlugin>
@@ -62,6 +63,15 @@ QompOptionsPage *FilesystemPlugin::options()
 {
 	return 0;
 }
+
+QList<QompPluginAction *> FilesystemPlugin::getTunesActions()
+{
+	QList<QompPluginAction *> l;
+	QompPluginAction *act = new QompPluginAction(QIcon(), tr("File System"), this, "getTunes", this);
+	l.append(act);
+	return l;
+}
+
 
 #ifndef HAVE_QT5
 Q_EXPORT_PLUGIN2(filesystemplugin, FilesystemPlugin)

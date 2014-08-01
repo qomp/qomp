@@ -22,9 +22,9 @@
 #include "options.h"
 #include "qomptunepluign.h"
 #include "qompplayerstatusplugin.h"
-#include "tune.h"
 #include "pluginhost.h"
 #include "defines.h"
+#include "tune.h"
 
 #include <QCoreApplication>
 #include <QPluginLoader>
@@ -142,20 +142,6 @@ QStringList PluginManager::availablePlugins() const
 	return list;
 }
 
-QList<Tune*> PluginManager::getTune(const QString &pluginName)
-{
-	QList<Tune*> tl;
-	PluginHost* h = pluginForName(pluginName);
-	if(h) {
-		QompTunePlugin *p = qobject_cast<QompTunePlugin*>(h->instance());
-		if(p) {
-			tl = p->getTunes();
-		}
-	}
-
-	return tl;
-}
-
 QompOptionsPage *PluginManager::getOptions(const QString &pluginName)
 {
 	PluginHost* h = pluginForName(pluginName);
@@ -222,6 +208,19 @@ QStringList PluginManager::tunePlugins() const
 	}
 
 	return list;
+}
+
+QList<QompPluginAction *> PluginManager::tunesActions()
+{
+	QList<QompPluginAction *> l;
+	foreach(const PluginPair& pp, plugins_) {
+		if(!pp.second)
+			continue;
+		QompTunePlugin *p = qobject_cast<QompTunePlugin*>(pp.first->instance());
+		if(p)
+			l.append(p->getTunesActions());
+	}
+	return l;
 }
 
 TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) const

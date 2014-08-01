@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,44 +17,23 @@
  *
  */
 
-#include "urlplugin.h"
-#include "tune.h"
 #include "qomppluginaction.h"
+#include "tune.h"
 
-#include <QInputDialog>
-#include <QtPlugin>
-
-UrlPlugin::UrlPlugin()
+QompPluginAction::QompPluginAction(const QIcon &ico,
+				   const QString &text,
+				   QObject *receiver,
+				   const char *slot,
+				   QObject *parent) :
+		QAction(ico, text, parent),
+		receiver_(receiver),
+		slot_(slot)
 {
 }
 
-QList<Tune*> UrlPlugin::getTunes()
+QList<Tune *> QompPluginAction::getTunes()
 {
 	QList<Tune*> list;
-	bool ok = false;
-	QString url = QInputDialog::getText(0, tr("Input url"), "URL:",QLineEdit::Normal, "", &ok);
-	if(ok) {
-		Tune *tune = new Tune;
-		tune->url = url;
-		list.append(tune);
-	}
-
+	QMetaObject::invokeMethod(receiver_, slot_, Qt::DirectConnection, Q_RETURN_ARG(QList<Tune*>, list) );
 	return list;
 }
-
-QompOptionsPage *UrlPlugin::options()
-{
-	return 0;
-}
-
-QList<QompPluginAction *> UrlPlugin::getTunesActions()
-{
-	QList<QompPluginAction *> l;
-	QompPluginAction *act = new QompPluginAction(QIcon(), tr("Url"), this, "getTunes", this);
-	l.append(act);
-	return l;
-}
-
-#ifndef HAVE_QT5
-Q_EXPORT_PLUGIN2(urlplugin, UrlPlugin)
-#endif

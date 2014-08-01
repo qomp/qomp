@@ -21,6 +21,7 @@
 #include "myzukarudefines.h"
 #include "myzukarucontroller.h"
 #include "myzukaruresolvestrategy.h"
+#include "qomppluginaction.h"
 
 #include <QtPlugin>
 
@@ -63,6 +64,14 @@ TuneURLResolveStrategy *MyzukaruPlugin::urlResolveStrategy() const
 void MyzukaruPlugin::unload()
 {
 	MyzukaruResolveStrategy::reset();
+}
+
+QList<QompPluginAction *> MyzukaruPlugin::getTunesActions()
+{
+	QList<QompPluginAction *> l;
+	QompPluginAction *act = new QompPluginAction(QIcon(), tr("Myzuka.ru"), this, "getTunes", this);
+	l.append(act);
+	return l;
 }
 
 #ifndef HAVE_QT5

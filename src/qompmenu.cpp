@@ -20,6 +20,7 @@
 #include "qompmenu.h"
 #include "pluginmanager.h"
 #include "tune.h"
+#include "qomppluginaction.h"
 
 #include <QApplication>
 #include <QClipboard>
@@ -61,20 +62,29 @@ QompGetTunesMenu::QompGetTunesMenu(const QString &name, QWidget *parent) :
 
 void QompGetTunesMenu::actionActivated()
 {
-	QAction* act = static_cast<QAction*>(sender());
-	QList<Tune*> t = PluginManager::instance()->getTune(act->text());
+//	QAction* act = static_cast<QAction*>(sender());
+//	QList<Tune*> t = PluginManager::instance()->getTune(act->text());
+//	if(!t.isEmpty())
+//		emit tunes(t);
+
+	QompPluginAction* act = static_cast<QompPluginAction*>(sender());
+	QList<Tune*> t = act->getTunes();
 	if(!t.isEmpty())
 		emit tunes(t);
-
 }
 
 void QompGetTunesMenu::buildMenu()
 {
-	foreach(const QString& name, PluginManager::instance()->tunePlugins()) {
-		if(PluginManager::instance()->isPluginEnabled(name)) {
-			QAction* act = addAction(name, this, SLOT(actionActivated()));
-			act->setParent(this);
-		}
+//	foreach(const QString& name, PluginManager::instance()->tunePlugins()) {
+//		if(PluginManager::instance()->isPluginEnabled(name)) {
+//			QAction* act = addAction(name, this, SLOT(actionActivated()));
+//			act->setParent(this);
+//		}
+//	}
+	foreach(QompPluginAction* act, PluginManager::instance()->tunesActions()) {
+		act->setParent(this);
+		addAction(act);
+		connect(act, SIGNAL(triggered()), SLOT(actionActivated()));
 	}
 }
 

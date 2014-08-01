@@ -29,7 +29,7 @@ class PluginHost;
 class QompOptionsPage;
 class TuneURLResolveStrategy;
 class QompPlayer;
-class Tune;
+class QompPluginAction;
 
 
 class LIBQOMPSHARED_EXPORT PluginManager : public QObject
@@ -39,13 +39,13 @@ public:
 	static PluginManager* instance();
 	virtual ~PluginManager();
 	QStringList availablePlugins() const;
-	QList<Tune*> getTune(const QString& pluginName);
 	QompOptionsPage* getOptions(const QString& pluginName);
 	QString getVersion(const QString& pluginName) const;
 	QString getDescription(const QString& pluginName) const;
 	bool isPluginEnabled(const QString& pluginName) const;
 	void setPluginEnabled(const QString& pluginName, bool enabled);
 	QStringList tunePlugins() const;
+	QList<QompPluginAction*> tunesActions();
 	TuneURLResolveStrategy* urlResolveStrategy(const QString& strategyName) const;
 	void qompPlayerChanged(QompPlayer* player);
 	void sortPlugins();

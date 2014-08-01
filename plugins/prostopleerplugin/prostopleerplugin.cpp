@@ -21,6 +21,7 @@
 #include "prostopleercontroller.h"
 #include "prostopleerplugindefines.h"
 #include "prostopleerpluginsettings.h"
+#include "qomppluginaction.h"
 
 #include <QtPlugin>
 
@@ -68,6 +69,14 @@ void ProstoPleerPlugin::unload()
 {
 	if(optPage_)
 		delete optPage_;
+}
+
+QList<QompPluginAction *> ProstoPleerPlugin::getTunesActions()
+{
+	QList<QompPluginAction *> l;
+	QompPluginAction *act = new QompPluginAction(QIcon(), tr("Pleer.com"), this, "getTunes", this);
+	l.append(act);
+	return l;
 }
 
 #ifndef HAVE_QT5

@@ -35,11 +35,14 @@ public:
 	virtual QString name() const { return "Filesystem"; }
 	virtual QString version() const { return "0.1.1"; }
 	virtual QString description() const { return tr("Open music from filesystem"); }
-	virtual QList<Tune*> getTunes();
 	virtual QompOptionsPage* options();
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
 	virtual void setEnabled(bool/* enabled*/) {}
 	virtual void unload(){}
+	virtual QList<QompPluginAction*> getTunesActions();
+
+private slots:
+	QList<Tune*> getTunes();
 };
 
 #endif // FILESYSTEMPLUGIN_H

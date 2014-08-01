@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,26 +17,24 @@
  *
  */
 
-#ifndef QOMPTUNEPLUIGN_H
-#define QOMPTUNEPLUIGN_H
+#ifndef QOMPPLUGINACTION_H
+#define QOMPPLUGINACTION_H
 
-#include <QObject>
+#include <QAction>
 #include "libqomp_global.h"
 
 class Tune;
 
-class TuneURLResolveStrategy;
-class QompPluginAction;
-
-class LIBQOMPSHARED_EXPORT QompTunePlugin
+class LIBQOMPSHARED_EXPORT QompPluginAction : public QAction
 {
+	Q_OBJECT
 public:
-	virtual ~QompTunePlugin() {}
+	QompPluginAction(const QIcon& ico, const QString& text, QObject* receiver, const char* slot, QObject *parent = 0);
+	QList<Tune*> getTunes();
 
-	virtual TuneURLResolveStrategy* urlResolveStrategy() const = 0;
-	virtual QList<QompPluginAction*> getTunesActions() = 0;
+private:
+	QObject* receiver_;
+	const char* slot_;
 };
 
-Q_DECLARE_INTERFACE(QompTunePlugin, "Qomp.QompTunePlugin/0.2")
-
-#endif // QOMPTUNEPLUIGN_H
+#endif // QOMPPLUGINACTION_H
