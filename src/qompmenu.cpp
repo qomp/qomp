@@ -51,23 +51,25 @@ void QompMenu::menuAboutToShow()
 QompGetTunesMenu::QompGetTunesMenu(QWidget *parent) :
 	QompMenu(parent)
 {
-	setIcon(QIcon(":/icons/add"));
+	init();
 }
 
 QompGetTunesMenu::QompGetTunesMenu(const QString &name, QWidget *parent) :
 	QompMenu(name, parent)
 {
-	setIcon(QIcon(":/icons/add"));
+	init();
 }
 
-void QompGetTunesMenu::actionActivated()
+QompGetTunesMenu::~QompGetTunesMenu()
 {
-//	QAction* act = static_cast<QAction*>(sender());
-//	QList<Tune*> t = PluginManager::instance()->getTune(act->text());
-//	if(!t.isEmpty())
-//		emit tunes(t);
+	foreach (QAction* act, actions()) {
+		delete act->menu();
+	}
+}
 
-	QompPluginAction* act = static_cast<QompPluginAction*>(sender());
+void QompGetTunesMenu::actionActivated(QAction* sender)
+{
+	QompPluginAction* act = static_cast<QompPluginAction*>(sender);
 	QList<Tune*> t = act->getTunes();
 	if(!t.isEmpty())
 		emit tunes(t);
@@ -75,17 +77,16 @@ void QompGetTunesMenu::actionActivated()
 
 void QompGetTunesMenu::buildMenu()
 {
-//	foreach(const QString& name, PluginManager::instance()->tunePlugins()) {
-//		if(PluginManager::instance()->isPluginEnabled(name)) {
-//			QAction* act = addAction(name, this, SLOT(actionActivated()));
-//			act->setParent(this);
-//		}
-//	}
 	foreach(QompPluginAction* act, PluginManager::instance()->tunesActions()) {
 		act->setParent(this);
 		addAction(act);
-		connect(act, SIGNAL(triggered()), SLOT(actionActivated()));
 	}
+}
+
+void QompGetTunesMenu::init()
+{
+	setIcon(QIcon(":/icons/add"));
+	connect(this, SIGNAL(triggered(QAction*)), SLOT(actionActivated(QAction*)));
 }
 
 

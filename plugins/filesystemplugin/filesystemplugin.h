@@ -43,6 +43,7 @@ public:
 
 private slots:
 	QList<Tune*> getTunes();
+	QList<Tune*> getFolders();
 };
 
 #endif // FILESYSTEMPLUGIN_H

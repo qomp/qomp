@@ -43,15 +43,17 @@ class QompGetTunesMenu : public QompMenu
 public:
 	explicit QompGetTunesMenu(QWidget *parent = 0);
 	QompGetTunesMenu(const QString& name, QWidget *parent = 0);
+	~QompGetTunesMenu();
 
 signals:
 	void tunes(const QList<Tune*>&);
 
 private slots:
-	void actionActivated();
+	void actionActivated(QAction *sender);
 
 private:
 	void buildMenu();
+	void init();
 };
 
 class QompMainMenu : public QompMenu

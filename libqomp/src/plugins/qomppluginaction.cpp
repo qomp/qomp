@@ -34,6 +34,7 @@ QompPluginAction::QompPluginAction(const QIcon &ico,
 QList<Tune *> QompPluginAction::getTunes()
 {
 	QList<Tune*> list;
-	QMetaObject::invokeMethod(receiver_, slot_, Qt::DirectConnection, Q_RETURN_ARG(QList<Tune*>, list) );
+	if(receiver_)
+		QMetaObject::invokeMethod(receiver_, slot_, Qt::DirectConnection, Q_RETURN_ARG(QList<Tune*>, list) );
 	return list;
 }
