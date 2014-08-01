@@ -83,7 +83,7 @@ static QList<Tune*> getTunesRecursive(const QString& folder)
 
 QList<Tune *> FilesystemPlugin::getFolders()
 {
-	QFileDialog f(0, tr("Select folder(s)"),
+	QFileDialog f(0, tr("Select folder"),
 			Options::instance()->getOption("filesystemplugin.lastdir",QDir::homePath()).toString()
 		      );
 	f.setFileMode(QFileDialog::Directory);
