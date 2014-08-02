@@ -21,10 +21,58 @@
 #include "options.h"
 #include "tune.h"
 #include "qomppluginaction.h"
+#include "common.h"
+
+#include <taglib/fileref.h>
+#include <taglib/tag.h>
+#include <taglib/audioproperties.h>
 
 #include <QFileDialog>
 #include <QtPlugin>
 #include <QMenu>
+
+static Tune* tuneFromFile(const QString& file)
+{
+	Tune* tune = new Tune(false);
+	tune->file = file;
+	TagLib::FileRef ref(file.toStdWString().data());
+	if(!ref.isNull()) {
+		if(ref.tag()) {
+			TagLib::Tag* tag = ref.tag();
+			tune->artist = QString::fromStdWString( tag->artist().toWString() );
+			tune->album = QString::fromStdWString( tag->album().toWString() );
+			tune->title = QString::fromStdWString( tag->title().toWString() );
+			tune->trackNumber = QString::number( tag->track() );
+		}
+
+		if(ref.audioProperties()) {
+			TagLib::AudioProperties *prop = ref.audioProperties();
+			tune->duration = Qomp::durationSecondsToString( prop->length() );
+			tune->bitRate = QString::number( prop->bitrate() );
+		}
+	}
+
+	return tune;
+}
+
+static QList<Tune*> getTunesRecursive(const QString& folder)
+{
+	QList<Tune*> list;
+
+	QDir dir(folder);
+	foreach(const QString& entry, dir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)) {
+		QFileInfo fi(dir.absolutePath() + "/" +entry);
+		if(fi.isDir()) {
+			list.append(getTunesRecursive(fi.absoluteFilePath()));
+		}
+		else  {
+			list.append(tuneFromFile(fi.absoluteFilePath()));
+		}
+	}
+
+	return list;
+}
+
 
 
 FilesystemPlugin::FilesystemPlugin()
@@ -53,31 +101,9 @@ QList<Tune*> FilesystemPlugin::getTunes()
 		}
 
 		foreach(const QString& file, files) {
-			Tune* tune = new Tune(false);
-			tune->file = file;
-			list.append(tune);
+			list.append(tuneFromFile(file));
 		}
 	}
-	return list;
-}
-
-static QList<Tune*> getTunesRecursive(const QString& folder)
-{
-	QList<Tune*> list;
-
-	QDir dir(folder);
-	foreach(const QString& entry, dir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)) {
-		QFileInfo fi(dir.absolutePath() + "/" +entry);
-		if(fi.isDir()) {
-			list.append(getTunesRecursive(fi.absoluteFilePath()));
-		}
-		else  {
-			Tune* tune = new Tune(false);
-			tune->file = fi.absoluteFilePath();
-			list.append(tune);
-		}
-	}
-
 	return list;
 }
 
