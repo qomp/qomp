@@ -20,6 +20,7 @@ if ( ${UNIX} )
 		src/plugins/qompplugintreeview.h
 		src/plugins/qompplugintreemodel.h
 		src/plugins/qompplugincontroller.h
+		src/plugins/qomppluginaction.h
 	)
 	set ( plugins_SRCS
 		src/plugins/qompplugingettunesdlg.cpp
@@ -27,6 +28,7 @@ if ( ${UNIX} )
 		src/plugins/qompplugintreemodel.cpp
 		src/plugins/qompplugintypes.cpp
 		src/plugins/qompplugincontroller.cpp
+		src/plugins/qomppluginaction.cpp
 	)
 	set ( options_HDRS
 		src/options/qompoptionspage.h
