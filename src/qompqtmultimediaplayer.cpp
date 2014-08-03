@@ -47,7 +47,7 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 
 QompQtMultimediaPlayer::~QompQtMultimediaPlayer()
 {
-	delete resolver_;
+	//delete resolver_;
 }
 
 void QompQtMultimediaPlayer::doSetTune()
