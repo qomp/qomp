@@ -130,6 +130,9 @@ static const QString songsRegExp3 = QString(
 
 static QList<QompPluginModelItem*> parseTunes(const QString& replyStr, int songIndex)
 {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QList<QompPluginModelItem*> parseTunes" << replyStr;
+#endif
 	QList<QompPluginModelItem*> tunes;
 	if(songIndex != -1) {
 		QRegExp songRx(songsRegExp, Qt::CaseInsensitive);
@@ -220,7 +223,7 @@ static QList<QompPluginModelItem*> parseAlbums(const QString& replyStr, int albu
 static QList<QompPluginModelItem*> parseAlbums2(const QString& replyStr, int albumsIndex)
 {
 #ifdef DEBUG_OUTPUT
-	qDebug() <<replyStr;
+	qDebug() << "QList<QompPluginModelItem*> parseAlbums2" << replyStr;
 #endif
 	QList<QompPluginModelItem*> albums;
 	if(albumsIndex != -1) {
