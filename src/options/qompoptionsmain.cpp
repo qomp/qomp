@@ -36,6 +36,10 @@ QompOptionsMain::QompOptionsMain(QWidget *parent) :
 {
 	ui->setupUi(this);
 	restoreOptions();
+
+	ui->cb_metaData->hide();
+	ui->label_8->hide();
+	ui->le_encoding->hide();
 }
 
 QompOptionsMain::~QompOptionsMain()

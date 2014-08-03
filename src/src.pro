@@ -63,7 +63,7 @@ android {
     LIBS += -L$$OUT_PWD/../bin -lqomp
 }
 
-LIBS += -ltag
+#LIBS += -ltag
 
 INCLUDEPATH += $$PWD/../libqomp/include
 DEPENDPATH += $$PWD/../libqomp/include

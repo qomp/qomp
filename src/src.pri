@@ -12,8 +12,8 @@ SOURCES += $$PWD/main.cpp\
     $$PWD/updateschecker.cpp \
     $$PWD/qompplaylistview.cpp \
     $$PWD/qompmenu.cpp \
-    $$PWD/thememanager.cpp \
-    $$PWD/qomptaglibmetadataresolver.cpp
+#    $$PWD/qomptaglibmetadataresolver.cpp \
+    $$PWD/thememanager.cpp
 
 HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qompcon.h \
@@ -26,8 +26,9 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/updateschecker.h \
     $$PWD/qompplaylistview.h \
     $$PWD/qompmenu.h \
-    $$PWD/thememanager.h \
-    $$PWD/qomptaglibmetadataresolver.h
+#    $$PWD/qomptaglibmetadataresolver.h \
+    $$PWD/thememanager.h
+
 
 FORMS    += $$PWD/qompmainwin.ui \
     $$PWD/aboutdlg.ui
