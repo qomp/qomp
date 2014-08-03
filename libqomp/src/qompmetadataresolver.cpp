@@ -21,26 +21,19 @@
 #include "tune.h"
 #include "common.h"
 
-#include <QMutexLocker>
-#include <QMutex>
 #include <QTimer>
 
 QompMetaDataResolver::QompMetaDataResolver(QObject *parent) :
-	QThread(parent),
-	mutex_(new QMutex())
+	QObject(parent)
 {
 }
 
 QompMetaDataResolver::~QompMetaDataResolver()
 {
-	if(isRunning())
-		quit();
-	delete mutex_;
 }
 
 void QompMetaDataResolver::resolve(const QList<Tune*> &tunes)
 {
-	QMutexLocker locker(mutex_);
 	bool s = data_.isEmpty();
 	addTunes(tunes);
 	if(s) {
@@ -57,11 +50,9 @@ void QompMetaDataResolver::tuneFinished()
 {
 	Tune* t = (Tune*)Tune::emptyTune();
 
-	mutex_->lock();
 	if(!data_.isEmpty()) {
 		t = data_.takeFirst();
 	}
-	mutex_->unlock();
 
 	if(t != Tune::emptyTune())
 		emit tuneUpdated(t);
@@ -72,40 +63,40 @@ bool QompMetaDataResolver::isDataEmpty() const
 	return data_.isEmpty();
 }
 
-void QompMetaDataResolver::updateTuneMetadata(const QMap<QString, QString> &data)
-{
-	if(data.isEmpty())
-		return;
+//void QompMetaDataResolver::updateTuneMetadata(const QMap<QString, QString> &data)
+//{
+//	if(data.isEmpty())
+//		return;
 
-	QString tmp = Qomp::fixEncoding(data.value("ARTIST"));
-	Tune* t = data_.first();
-	if(!tmp.isEmpty())
-		t->artist = tmp;
+//	QString tmp = Qomp::fixEncoding(data.value("ARTIST"));
+//	Tune* t = data_.first();
+//	if(!tmp.isEmpty())
+//		t->artist = tmp;
 
-	tmp = Qomp::fixEncoding(data.value("ALBUM"));
-	if(!tmp.isEmpty())
-		t->album = tmp;
+//	tmp = Qomp::fixEncoding(data.value("ALBUM"));
+//	if(!tmp.isEmpty())
+//		t->album = tmp;
 
-	tmp = Qomp::fixEncoding(data.value("TITLE"));
-	if(!tmp.isEmpty())
-		t->title = tmp;
+//	tmp = Qomp::fixEncoding(data.value("TITLE"));
+//	if(!tmp.isEmpty())
+//		t->title = tmp;
 
-	tmp = data.value("TRACK-NUMBER");
-	if(!tmp.isEmpty())
-		t->trackNumber = tmp;
+//	tmp = data.value("TRACK-NUMBER");
+//	if(!tmp.isEmpty())
+//		t->trackNumber = tmp;
 
-	tmp = data.value("BITRATE");
-	if(!tmp.isEmpty())
-		t->bitRate = tmp;
-}
+//	tmp = data.value("BITRATE");
+//	if(!tmp.isEmpty())
+//		t->bitRate = tmp;
+//}
 
-void QompMetaDataResolver::updateTuneDuration(qint64 msec)
-{
-	if(msec == -1 || msec == 0)
-		return;
+//void QompMetaDataResolver::updateTuneDuration(qint64 msec)
+//{
+//	if(msec == -1 || msec == 0)
+//		return;
 
-	data_.first()->duration = Qomp::durationMiliSecondsToString(msec);
-}
+//	data_.first()->duration = Qomp::durationMiliSecondsToString(msec);
+//}
 
 void QompMetaDataResolver::addTunes(const QList<Tune*> &tunes)
 {

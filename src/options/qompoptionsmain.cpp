@@ -36,11 +36,6 @@ QompOptionsMain::QompOptionsMain(QWidget *parent) :
 {
 	ui->setupUi(this);
 	restoreOptions();
-
-	//Metadata resolving doesn`t work normal in qt5, so hide this option
-#ifdef HAVE_QT5
-	ui->cb_metaData->hide();
-#endif
 }
 
 QompOptionsMain::~QompOptionsMain()

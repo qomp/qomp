@@ -277,9 +277,7 @@ void QompCon::setTunes(const QList<Tune*> &tunes)
 
 		if(Options::instance()->getOption(OPTION_UPDATE_METADATA).toBool())
 		{
-#ifndef HAVE_QT5
 			player_->resolveMetadata(tunes);
-#endif
 		}
 	}
 }

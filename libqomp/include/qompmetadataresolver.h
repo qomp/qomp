@@ -20,14 +20,13 @@
 #ifndef QOMPMETADATARESOLVER_H
 #define QOMPMETADATARESOLVER_H
 
-#include <QThread>
-#include <QMap>
+#include <QObject>
+//#include <QMap>
 #include "libqomp_global.h"
 
-class QMutex;
 class Tune;
 
-class LIBQOMPSHARED_EXPORT QompMetaDataResolver : public QThread
+class LIBQOMPSHARED_EXPORT QompMetaDataResolver : public QObject
 {
 	Q_OBJECT
 public:
@@ -44,16 +43,18 @@ protected:
 	void tuneFinished();
 	bool isDataEmpty() const;
 
-protected:
-	void updateTuneMetadata(const QMap<QString, QString>& data);
-	void updateTuneDuration(qint64 msec);
+protected slots:
+	virtual void start() = 0;
+
+//protected:
+//	void updateTuneMetadata(const QMap<QString, QString>& data);
+//	void updateTuneDuration(qint64 msec);
 
 private:
 	void addTunes(const QList<Tune*>& tunes);
 
 private:
 	QList<Tune*> data_;
-	QMutex* mutex_;
 };
 
 #endif // QOMPMETADATARESOLVER_H

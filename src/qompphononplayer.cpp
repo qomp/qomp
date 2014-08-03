@@ -18,7 +18,8 @@
  */
 
 #include "qompphononplayer.h"
-#include "qompphononmetadataresolver.h"
+//#include "qompphononmetadataresolver.h"
+#include "qomptaglibmetadataresolver.h"
 #include "tune.h"
 
 #include <Phonon/AudioOutput>
@@ -33,7 +34,7 @@
 
 QompPhononPlayer::QompPhononPlayer() :
 	QompPlayer(),
-	resolver_(new QompPhononMetaDataResolver(this))
+	resolver_(new QompTagLibMetaDataResolver(this))
 {
 	mediaObject_ = new Phonon::MediaObject(this);
 	audioOutput_ = new Phonon::AudioOutput(Phonon::MusicCategory, this);

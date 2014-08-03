@@ -31,11 +31,6 @@
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-//#include <QNetworkCookieJar>
-//#include <QAbstractNetworkCache>
-//#include <QNetworkConfiguration>
-#include <QNetworkProxy>
-#include <QApplication>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -46,30 +41,13 @@ static const uint tagSize = 5000;
 
 QompTagLibMetaDataResolver::QompTagLibMetaDataResolver(QObject *parent) :
 	QompMetaDataResolver(parent),
-	nam_(0)
+	nam_(QompNetworkingFactory::instance()->getNetworkAccessManager())
 {
 }
 
-void QompTagLibMetaDataResolver::run()
+void QompTagLibMetaDataResolver::start()
 {
-	nam_ = new QNetworkAccessManager();
-	QNetworkAccessManager* m = QompNetworkingFactory::instance()->getNetworkAccessManager();
-
-//	nam_->setCache(m->cache());
-//	nam_->cache()->setParent(m);
-
-//	nam_->setConfiguration(m->configuration());
-
-//	nam_->setCookieJar(m->cookieJar());
-//	nam_->cookieJar()->setParent(m);
-
-	nam_->setProxy(m->proxy());
-	connect(nam_, SIGNAL(finished(QNetworkReply*)), SLOT(requestFinished(QNetworkReply*)));
-
 	resolveNextMedia();
-	exec();
-	nam_->deleteLater();
-	nam_ = 0;
 }
 
 void QompTagLibMetaDataResolver::dataReady()
@@ -90,11 +68,11 @@ void QompTagLibMetaDataResolver::dataReady()
 			if(ref.tag()) {
 				TagLib::Tag* tag = ref.tag();
 #ifdef DEBUG_OUTPUT
-	qDebug() << "QompTagLibMetaDataResolver::dataReady()  not null tag   " << QString::fromStdWString( tag->title().toWString() );
+	qDebug() << "QompTagLibMetaDataResolver::dataReady()  not null tag";
 #endif
-				tune->artist = Qomp::fixEncoding(QString::fromStdWString( tag->artist().toWString() ));
-				tune->album = Qomp::fixEncoding(QString::fromStdWString( tag->album().toWString() ));
-				tune->title = Qomp::fixEncoding(QString::fromStdWString( tag->title().toWString() ));
+				tune->artist = Qomp::fixEncoding( tag->artist() );
+				tune->album = Qomp::fixEncoding( tag->album() );
+				tune->title = Qomp::fixEncoding( tag->title() );
 				tune->trackNumber = QString::number( tag->track() );
 			}
 
@@ -117,26 +95,16 @@ void QompTagLibMetaDataResolver::dataReady()
 	}
 }
 
-void QompTagLibMetaDataResolver::requestFinished(QNetworkReply *r)
-{
-#ifdef DEBUG_OUTPUT
-	qDebug() << "QompTagLibMetaDataResolver::requestFinished";
-#endif
-	r->deleteLater();
-}
-
 void QompTagLibMetaDataResolver::resolveNextMedia()
 {
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompTagLibMetaDataResolver::resolveNextMedia()";
 #endif
-	if(isDataEmpty()) {
-		exit();
-	}
-	else {
+	if(!isDataEmpty()) {
 		Tune* t = get();
 		QNetworkReply* r = nam_->get(QNetworkRequest(t->getUrl()));
 		connect(r, SIGNAL(readyRead()), SLOT(dataReady()));
+		connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
 	}
 }
 

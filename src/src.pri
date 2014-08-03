@@ -33,19 +33,19 @@ FORMS    += $$PWD/qompmainwin.ui \
     $$PWD/aboutdlg.ui
 
 phonon_backend {
-    HEADERS += $$PWD/qompphononplayer.h \
-    $$PWD/qompphononmetadataresolver.h
+    HEADERS += $$PWD/qompphononplayer.h #\
+    #$$PWD/qompphononmetadataresolver.h
 
-    SOURCES += $$PWD/qompphononplayer.cpp \
-    $$PWD/qompphononmetadataresolver.cpp
+    SOURCES += $$PWD/qompphononplayer.cpp #\
+    #$$PWD/qompphononmetadataresolver.cpp
 }
 
 qtmultimedia_backend {
-    HEADERS += $$PWD/qompqtmultimediaplayer.h \
-        $$PWD/qompqtmultimediametadataresolver.h
+    HEADERS += $$PWD/qompqtmultimediaplayer.h #\
+       # $$PWD/qompqtmultimediametadataresolver.h
 
-    SOURCES += $$PWD/qompqtmultimediaplayer.cpp \
-        $$PWD/qompqtmultimediametadataresolver.cpp
+    SOURCES += $$PWD/qompqtmultimediaplayer.cpp #\
+       # $$PWD/qompqtmultimediametadataresolver.cpp
 }
 
 include (options/options.pri)

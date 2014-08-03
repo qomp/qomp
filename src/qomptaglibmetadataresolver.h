@@ -37,11 +37,10 @@ public:
 	explicit QompTagLibMetaDataResolver(QObject *parent = 0);
 
 protected:
-	void run();
+	virtual void start();
 
 private slots:
 	void dataReady();
-	void requestFinished(QNetworkReply *r);
 
 private:
 	void resolveNextMedia();

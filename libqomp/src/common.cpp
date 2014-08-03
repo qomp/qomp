@@ -31,6 +31,8 @@
 #include <QDir>
 #include <QTextCodec>
 
+#include <taglib/tstring.h>
+
 namespace Qomp {
 
 QString encodePassword(const QString &pass, const QString &key)
@@ -171,15 +173,16 @@ QString dataDir()
 	return dir;
 }
 
-QString fixEncoding(const QString &encoded)
+QString fixEncoding(const TagLib::String& encoded)
 {
+	QString ret = QString::fromStdWString(encoded.toWString());
+
 	const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray();
 	QTextCodec *tc = QTextCodec::codecForName(decoding);
-	if(!tc)
-		return encoded;
-
-	QByteArray ba = encoded.toLatin1();
-	return tc->canEncode(encoded) ? encoded : tc->toUnicode(ba);
+	if(tc) {
+		ret = tc->toUnicode(encoded.to8Bit().data());
+	}
+	return ret;
 }
 
 } //namespace Qomp
