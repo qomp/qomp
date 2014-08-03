@@ -4,12 +4,14 @@ if ( ${UNIX} )
 	set ( CMAKE_AUTOMOC TRUE )
 	add_definitions ( -Wall )
 	find_package ( Qt4 REQUIRED )
+	find_package ( TagLib REQUIRED )
 	include ( ${QT_USE_FILE} )
 	include_directories (
 		${CMAKE_SOURCE_DIR}
 		${CMAKE_CURRENT_BINARY_DIR}
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
+		${TAGLIB_INCLUDE_DIR}
 		../../libqomp/include
 	)
 	set ( filesystemplugin_HDRS
@@ -25,6 +27,7 @@ if ( ${UNIX} )
 	)
 	target_link_libraries (
 		${PLUGIN}
+		${TAGLIB_LIBRARY}
 		${QT_QTCORE_LIBRARY}
 		${QT_QTGUI_LIBRARY}
 	)
