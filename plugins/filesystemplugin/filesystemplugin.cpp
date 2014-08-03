@@ -35,7 +35,7 @@ static Tune* tuneFromFile(const QString& file)
 {
 	Tune* tune = new Tune(false);
 	tune->file = file;
-	TagLib::FileRef ref(file.toStdWString().data());
+	TagLib::FileRef ref(file.toStdString().data());
 	if(!ref.isNull()) {
 		if(ref.tag()) {
 			TagLib::Tag* tag = ref.tag();
@@ -66,7 +66,10 @@ static QList<Tune*> getTunesRecursive(const QString& folder)
 			list.append(getTunesRecursive(fi.absoluteFilePath()));
 		}
 		else  {
-			list.append(tuneFromFile(fi.absoluteFilePath()));
+			static const QRegExp songRe("\\.mp3|ogg|flac|wav|ape|mp4$");
+			QString song = fi.absoluteFilePath();
+			if(songRe.indexIn(song) != -1)
+				list.append(tuneFromFile(song));
 		}
 	}
 

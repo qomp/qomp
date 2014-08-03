@@ -18,7 +18,7 @@
  */
 
 #include "qompqtmultimediaplayer.h"
-#include "qompqtmultimediametadataresolver.h"
+#include "qomptaglibmetadataresolver.h"
 #include "tune.h"
 
 #include <QMediaPlayer>
@@ -33,7 +33,7 @@
 QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	QompPlayer(),
 	player_(new QMediaPlayer(this)),
-	resolver_(new QompQtMultimediaMetaDataResolver())
+	resolver_(new QompTagLibMetaDataResolver(this))
 {
 	connect(player_, SIGNAL(positionChanged(qint64)), SIGNAL(currentPositionChanged(qint64)));
 	connect(player_, SIGNAL(volumeChanged(int)), SLOT(volumeChanged(int)));
