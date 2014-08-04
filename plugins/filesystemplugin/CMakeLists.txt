@@ -16,7 +16,6 @@ else ( ${Qt5Widgets_FOUND} )
 set (USE_QT5 FALSE)
 endif ( ${Qt5Widgets_FOUND} )
 
-set ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" )
 find_package ( TagLib REQUIRED )
 if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
