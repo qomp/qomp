@@ -2,7 +2,7 @@ set ( PLUGIN mprisplugin )
 cmake_minimum_required( VERSION 2.8.6 )
 if ( ${UNIX} )
 	set ( CMAKE_AUTOMOC TRUE )
-	add_definitions ( -Wall -DHAVE_DBUS )
+	add_definitions ( -Wall -DQT_PLUGIN -DHAVE_DBUS )
 	find_package ( Qt4 REQUIRED )
 	include ( ${QT_USE_FILE} )
 	include_directories (
@@ -34,6 +34,7 @@ if ( ${UNIX} )
 		${QT_QTGUI_LIBRARY}
 		${QT_QTDBUS_LIBRARY}
 	)
+	add_dependencies(${PLUGIN} libqomp qomp )
 	install (
 		TARGETS
 		${PLUGIN}

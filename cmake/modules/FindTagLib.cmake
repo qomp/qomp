@@ -9,20 +9,31 @@ if ( UNIX AND NOT( APPLE OR CYGWIN ) )
 	set ( TAGLIB_DEFINITIONS ${PC_TAGLIB_CFLAGS_OTHER} )
 endif ( UNIX AND NOT( APPLE OR CYGWIN ) )
 
+if ( ${WIN32} )
+	set ( LIBINCS 
+		taglib/taglib.h
+	)
+else ( ${WIN32} )
+	set ( LIBINCS 
+		taglib.h
+	)
+endif( ${WIN32} )
 find_path(
-	TAGLIB_INCLUDE_DIR taglib.h
+	TAGLIB_INCLUDE_DIR ${LIBINCS}
 	HINTS
 	${TAGLIB_ROOT}/include
 	${PC_TAGLIB_INCLUDEDIR}
 	${PC_TAGLIB_INCLUDE_DIRS}
 	PATH_SUFFIXES
 	""
+	if ( NOT ${WIN32} )
 	taglib
+	endif ( NOT ${WIN32} )
 )
 
 find_library(
 	TAGLIB_LIBRARY
-	NAMES taglib tag
+	NAMES taglib tag tag_c
 	HINTS 
 	${PC_TAGLIB_LIBDIR}
 	${PC_TAGLIB_LIBRARY_DIRS}

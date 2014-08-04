@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.8.6 )
+cmake_minimum_required( VERSION 2.8.11 )
 
 set ( plugins_list
 	filesystemplugin
@@ -20,8 +20,8 @@ endif ( "${BUILD_PLUGINS}" STREQUAL "ALL" )
 foreach (plugin ${plugins_list})
 	foreach (subdir ${plugins})
 		if ( ${plugin} STREQUAL ${subdir} )
-			message("Parse subdirectory: ./${plugin}")
-			add_subdirectory("./${plugin}")
+			message("Parse subdirectory: ${plugin}")
+			add_subdirectory("${plugin}")
 		endif ( ${plugin} STREQUAL ${subdir} )
 	endforeach(subdir)
 endforeach(plugin)
