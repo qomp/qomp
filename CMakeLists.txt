@@ -5,8 +5,10 @@ cmake_minimum_required( VERSION 2.8.11 )
 set ( CMAKE_AUTOMOC ON )
 set ( CMAKE_INCLUDE_CURRENT_DIR ON )
 set ( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
-
-add_definitions ( -Wall )
+if ( ${WIN32} )
+	set ( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
+endif ( ${WIN32} )
+set ( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
 set ( LIBQOMP_LIBRARY libqomp )
 add_subdirectory ( ${LIBQOMP_LIBRARY} )
@@ -46,7 +48,7 @@ set ( qomp_SRCS
 	src/updateschecker.cpp
 	src/qompplaylistview.cpp
 	src/qompmenu.cpp
-	src/thememanager.cpp      
+	src/thememanager.cpp
 	${options_SRCS}
 )
 
@@ -62,12 +64,14 @@ endif ( ${Qt5Widgets_FOUND} )
 if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
 	find_package ( Qt5Network REQUIRED )
+	find_package ( Qt5Multimedia REQUIRED )
 	find_package ( Qt5LinguistTools )
 	include_directories (
 		${CMAKE_SOURCE_DIR}
 		${CMAKE_CURRENT_BINARY_DIR}
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
+		${Qt5Multimedia_INCLUDES}
 		libqomp/include
 		libqomp/src
 		libqomp/src/options
@@ -82,14 +86,19 @@ if ( ${USE_QT5} )
 	)
 	set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 	add_definitions(
+		-DHAVE_QT5
+		-DHAVE_QTMULTIMEDIA
 		${Qt5Widgets_DEFINITIONS}
 		${Qt5Network_DEFINITIONS}
-		-DHAVE_QT5
-		-DHAVE_MULTIMEDIA
+		${Qt5Multimedia_DEFINITIONS}
 	)
 	set (QT_DEPLIBS
 		Qt5::Widgets
 		${Qt5Network_LIBRARIES} 
+		${Qt5Multimedia_LIBRARIES}
+	)
+	set (qomp_MMEDIA
+		src/qompqtmultimediaplayer.cpp
 	)
 else ( ${USE_QT5} )
 	find_package ( Qt4 REQUIRED )
@@ -122,14 +131,17 @@ endif ( ${USE_QT5} )
 
 
 if ( ${WIN32} )
+	set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+	set ( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
 	add_executable (
 		${PROJECT_NAME}
 		WIN32
 		${qomp_SRCS}
+		${qomp_MMEDIA}
 		${main_UIS}
 		${RSCS}
 		${TRS}
-		#qomp.rc
+		qomp.rc
 	)
 	target_link_libraries (
 			${PROJECT_NAME}
@@ -207,5 +219,5 @@ if ( ${UNIX} )
 	INSTALL ( FILES ${TRS} DESTINATION ${TRS_PATH} )
 	INSTALL ( FILES ${DESKTOPFILES} DESTINATION ${DESKTOP_PATH} )
 	
-	unset( BUILD_PLUGINS CACHE )
 endif ( ${UNIX} )
+unset( BUILD_PLUGINS CACHE )
