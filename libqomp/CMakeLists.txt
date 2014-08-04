@@ -47,6 +47,7 @@ set ( libqomp_SRCS
 set ( libqomp_UIFILES
 	src/plugins/qompplugingettunesdlg.ui
 )
+find_package ( TagLib REQUIRED )
 #
 find_package ( Qt5Widgets QUIET )
 if ( ${Qt5Widgets_FOUND} )
@@ -70,6 +71,7 @@ if ( ${USE_QT5} )
 		${CMAKE_CURRENT_BINARY_DIR}
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
+		${TAGLIB_INCLUDE_DIR}
 		include
 		src
 		src/plugins
@@ -95,6 +97,7 @@ else ( ${USE_QT5} )
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
 		${QT_QTNETWORK_INCLUDE_DIR}
+		${TAGLIB_INCLUDE_DIR}
 		include
 		src
 		src/plugins
@@ -124,6 +127,7 @@ set_target_properties (
 target_link_libraries (
 	${QOMP_LIB}
 	${QT_DEPLIBS}
+	${TAGLIB_LIBRARY}
 )
 
 if ( ${UNIX} )
