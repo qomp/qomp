@@ -48,34 +48,26 @@ set ( libqomp_UIFILES
 	src/plugins/qompplugingettunesdlg.ui
 )
 find_package ( TagLib REQUIRED )
-#
-find_package ( Qt5Widgets QUIET )
-if ( ${Qt5Widgets_FOUND} )
-	set (USE_QT5 TRUE)
-	message ( "-- Looking for Qt5 - found" )
-else ( ${Qt5Widgets_FOUND} )
-	set (USE_QT5 FLASE)
-	message ( "-- Looking for Qt5 - not found" )
-endif ( ${Qt5Widgets_FOUND} )
 
 if ( ${UNIX} )
 	set (LIBQOMP_DATADIR ${CMAKE_INSTALL_PREFIX}/share/qomp)
 	add_definitions ( -DQOMP_DATADIR="${LIBQOMP_DATADIR}" )
 endif ( ${UNIX} )
-
+include_directories (
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${TAGLIB_INCLUDE_DIR}
+	include
+	src
+	src/plugins
+	src/options
+)
 if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
 	find_package ( Qt5Network REQUIRED )
 	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
-		${TAGLIB_INCLUDE_DIR}
-		include
-		src
-		src/plugins
-		src/options
 	)
 	qt5_wrap_ui(libqomp_UIS ${libqomp_UIFILES})
 	set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
@@ -86,22 +78,15 @@ if ( ${USE_QT5} )
 	)
 	set (QT_DEPLIBS
 		Qt5::Widgets
-		${Qt5Network_LIBRARIES}
+		Qt5::Network
 	)
 else ( ${USE_QT5} )
 	find_package ( Qt4 REQUIRED )
 	include ( ${QT_USE_FILE} )
 	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
 		${QT_QTNETWORK_INCLUDE_DIR}
-		${TAGLIB_INCLUDE_DIR}
-		include
-		src
-		src/plugins
-		src/options
 	)
 	QT4_WRAP_UI(libqomp_UIS ${libqomp_UIFILES})
 	set (QT_DEPLIBS

@@ -17,23 +17,17 @@ set ( myzukaruplugin_SRCS
 	myzukarucontroller.cpp
 	myzukaruresolvestrategy.cpp
 )
-
-find_package ( Qt5Widgets QUIET )
-if ( ${Qt5Widgets_FOUND} )
-set (USE_QT5 TRUE)
-else ( ${Qt5Widgets_FOUND} )
-set (USE_QT5 FALSE)
-endif ( ${Qt5Widgets_FOUND} )
-
+include_directories (
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}
+	../../libqomp/include
+)
 if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
 	find_package ( Qt5Network REQUIRED )
 	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
-		../../libqomp/include
 	)
 	set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 	add_definitions(
@@ -43,18 +37,15 @@ if ( ${USE_QT5} )
 	)
 	set (QT_DEPLIBS
 		Qt5::Widgets
-		${Qt5Network_LIBRARIES}
+		Qt5::Network
 	)
 else ( ${USE_QT5} )
 	find_package ( Qt4 REQUIRED )
 	include ( ${QT_USE_FILE} )
 	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
 		${QT_QTNETWORK_INCLUDE_DIR}
-		../../libqomp/include
 	)
 	set (QT_DEPLIBS
 		${QT_QTCORE_LIBRARY}

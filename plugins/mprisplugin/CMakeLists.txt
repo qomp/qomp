@@ -1,18 +1,8 @@
 set ( PLUGIN mprisplugin )
-cmake_minimum_required( VERSION 2.8.6 )
+cmake_minimum_required( VERSION 2.8.11 )
 if ( ${UNIX} )
 	set ( CMAKE_AUTOMOC TRUE )
 	add_definitions ( -Wall -DQT_PLUGIN -DHAVE_DBUS )
-	find_package ( Qt4 REQUIRED )
-	include ( ${QT_USE_FILE} )
-	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
-		${QT_QTCORE_INCLUDE_DIR}
-		${QT_QTGUI_INCLUDE_DIR}
-		${QT_QTDBUS_INCLUDE_DIR}
-		../../libqomp/include
-	)
 	set ( mprisplugin_HDRS
 		mprisadapter.h
 		mpriscontroller.h
@@ -23,6 +13,42 @@ if ( ${UNIX} )
 		mpriscontroller.cpp
 		${PLUGIN}.cpp
 	)
+	include_directories (
+		${CMAKE_SOURCE_DIR}
+		${CMAKE_CURRENT_BINARY_DIR}
+		../../libqomp/include
+	)
+	if ( ${USE_QT5} )
+		find_package ( Qt5Widgets REQUIRED )
+		find_package ( Qt5Dbus REQUIRED )
+		include_directories (
+			${Qt5Widgets_INCLUDES}
+			${Qt5Dbus_INCLUDES}
+		)
+		set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+		add_definitions(
+			${Qt5Widgets_DEFINITIONS}
+			${Qt5Dbus_DEFINITIONS}
+			-DHAVE_QT5
+		)
+		set (QT_DEPLIBS
+			Qt5::Widgets
+			Qt5::Dbus
+		)
+	else ( ${USE_QT5} )
+		find_package ( Qt4 REQUIRED )
+		include ( ${QT_USE_FILE} )
+		include_directories (
+			${QT_QTCORE_INCLUDE_DIR}
+			${QT_QTGUI_INCLUDE_DIR}
+			${QT_QTDBUS_INCLUDE_DIR}
+		)
+		set (QT_DEPLIBS
+			${QT_QTCORE_LIBRARY}
+			${QT_QTGUI_LIBRARY}
+			${QT_QTDBUS_LIBRARY}
+		)
+	endif ( ${USE_QT5} )
 	add_library (
 		${PLUGIN}
 		SHARED
@@ -30,9 +56,8 @@ if ( ${UNIX} )
 	)
 	target_link_libraries (
 		${PLUGIN}
-		${QT_QTCORE_LIBRARY}
-		${QT_QTGUI_LIBRARY}
-		${QT_QTDBUS_LIBRARY}
+		${QT_DEPLIBS}
+
 	)
 	add_dependencies(${PLUGIN} libqomp qomp )
 	install (

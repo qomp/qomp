@@ -8,23 +8,18 @@ set ( filesystemplugin_HDRS
 set ( filesystemplugin_SRCS
 	${PLUGIN}.cpp
 )
-
-find_package ( Qt5Widgets QUIET )
-if ( ${Qt5Widgets_FOUND} )
-set (USE_QT5 TRUE)
-else ( ${Qt5Widgets_FOUND} )
-set (USE_QT5 FALSE)
-endif ( ${Qt5Widgets_FOUND} )
-
 find_package ( TagLib REQUIRED )
+include_directories (
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${TAGLIB_INCLUDE_DIR}
+	../../libqomp/include
+)
 if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
 	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
 		${Qt5Widgets_INCLUDES}
 		${TAGLIB_INCLUDE_DIR}
-		../../libqomp/include
 	)
 	set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 	add_definitions(
@@ -38,12 +33,9 @@ else ( ${USE_QT5} )
 	find_package ( Qt4 REQUIRED )
 	include ( ${QT_USE_FILE} )
 	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
 		${TAGLIB_INCLUDE_DIR}
-		../../libqomp/include
 	)
 	set (QT_DEPLIBS
 		${QT_QTCORE_LIBRARY}

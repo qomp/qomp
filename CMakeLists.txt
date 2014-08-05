@@ -5,6 +5,7 @@ cmake_minimum_required( VERSION 2.8.11 )
 set ( CMAKE_AUTOMOC ON )
 set ( CMAKE_INCLUDE_CURRENT_DIR ON )
 set ( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
+set ( USE_QT5 OFF CACHE BOOL "Use Qt5" )
 if ( ${WIN32} )
 	set ( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
 endif ( ${WIN32} )
@@ -52,15 +53,6 @@ set ( qomp_SRCS
 	${options_SRCS}
 )
 
-find_package ( Qt5Widgets QUIET )
-if ( ${Qt5Widgets_FOUND} )
-	set (USE_QT5 TRUE)
-	message ( "-- Looking for Qt5 - found" )
-else ( ${Qt5Widgets_FOUND} )
-	set (USE_QT5 FLASE)
-	message ( "-- Looking for Qt5 - not found" )
-endif ( ${Qt5Widgets_FOUND} )
-
 if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
 	find_package ( Qt5Network REQUIRED )
@@ -94,8 +86,8 @@ if ( ${USE_QT5} )
 	)
 	set (QT_DEPLIBS
 		Qt5::Widgets
-		${Qt5Network_LIBRARIES} 
-		${Qt5Multimedia_LIBRARIES}
+		Qt5::Network
+		Qt5::Multimedia
 	)
 	set (qomp_MMEDIA
 		src/qompqtmultimediaplayer.cpp
@@ -152,6 +144,7 @@ if ( ${WIN32} )
 	INSTALL ( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} )
 	set ( TRS_PATH ${CMAKE_INSTALL_PREFIX}/translations )
 	INSTALL ( FILES ${TRS} DESTINATION ${TRS_PATH} )
+	INSTALL ( FILES LICENSE.txt DESTINATION ${CMAKE_INSTALL_PREFIX} )
 endif ( ${WIN32} )
 
 if ( ${UNIX} )

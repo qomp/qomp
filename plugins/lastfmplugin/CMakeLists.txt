@@ -17,12 +17,6 @@ set ( lastfmplugin_UIS
 	lastfmsettings.ui
 	lastfmauthdlg.ui
 )
-find_package ( Qt5Widgets QUIET )
-if ( ${Qt5Widgets_FOUND} )
-set (USE_QT5 TRUE)
-else ( ${Qt5Widgets_FOUND} )
-set (USE_QT5 FALSE)
-endif ( ${Qt5Widgets_FOUND} )
 
 if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
@@ -46,8 +40,8 @@ if ( ${USE_QT5} )
 	qt5_wrap_ui(UIS ${lastfmplugin_UIS})
 	set (QT_DEPLIBS
 		Qt5::Widgets
-		${Qt5Network_LIBRARIES}
-		${Qt5Xml_LIBRARIES}
+		Qt5::Network
+		Qt5::Xml
 	)
 else ( ${USE_QT5} )
 	find_package ( Qt4 REQUIRED )
