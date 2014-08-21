@@ -31,7 +31,7 @@
 #include <QDir>
 #include <QTextCodec>
 
-#include <taglib/tstring.h>
+//#include <taglib/tstring.h>
 
 namespace Qomp {
 
