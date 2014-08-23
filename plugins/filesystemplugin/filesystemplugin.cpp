@@ -23,9 +23,15 @@
 #include "qomppluginaction.h"
 #include "common.h"
 
+#ifndef Q_OS_MAC
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 #include <taglib/audioproperties.h>
+#else
+#include <fileref.h>
+#include <tag.h>
+#include <audioproperties.h>
+#endif
 
 #include <QFileDialog>
 #include <QtPlugin>
