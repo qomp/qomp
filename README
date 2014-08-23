@@ -1,33 +1,48 @@
 Quick(Qt) Online Music Player
 
 Dependences:
-	Qt 4.8.x, phonon
+	Qt 4.8.x, phonon, taglib
 or
-	Qt 5.x.x
+	Qt 5.x.x, taglib
 
 Build:
   linux:
 	qmake && make && sudo make install
 	
-  linux using cmake utility (only on Linux with Qt4):
+  linux and windows using cmake utility:
 	mkdir build && cd build
 	cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 	make && make install (sudo if needed)
-
+  
+  windows using cmake utility:
+	mkdir build && cd build
+	cmake -DCMAKE_INSTALL_PREFIX=./release -DUSE_QT5=ON ..
+	mingw32-make && mingw32-make install
+	
   windows:
 	qmake
 	mingw32-make
 
 Usefull cmake flags:
-	--build and install only needed plugins:
-	   -DBUILD_PLUGINS=${plugins}
-	   possible values for plugins:
-	     filesystemplugin urlplugin prostopleerplugin
-	     myzukaruplugin yandexmusicplugin lastfmplugin
-	     tunetofileplugin mprisplugin
-	   example:
-	     cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_PLUGINS="filesystemplugin;urlplugin"..
-	--set build type:
-	   -DCMAKE_BUILD_TYPE=Release
-	   or
-	   -DCMAKE_BUILD_TYPE=Debug
+**build qomp with Qt5:
+   -DUSE_QT5=ON
+   set this flag to ON to build qomp with Qt5 libraries
+   default value is OFF
+**build and install only needed plugins:
+   -DBUILD_PLUGINS=${plugins}
+   possible values for plugins:
+     filesystemplugin urlplugin prostopleerplugin
+     myzukaruplugin yandexmusicplugin lastfmplugin
+     tunetofileplugin mprisplugin
+   example:
+     cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_PLUGINS="filesystemplugin;urlplugin"..
+   default value is ALL
+**set build type:
+   -DCMAKE_BUILD_TYPE=Release
+   or
+   -DCMAKE_BUILD_TYPE=Debug
+   default value is Release
+**set path to taglib library:
+   -DTAGLIB_ROOT=%YOUR_PATH%
+   usefull to build qomp in windows,
+   default value is c:\build\taglib
