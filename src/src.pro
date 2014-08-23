@@ -58,7 +58,7 @@ android {
     OTHER_FILES += $$PWD/../android/AndroidManifest.xml
     LIBS += -L$$OUT_PWD/../bin -lqomp-shared
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
-    ANDROID_EXTRA_LIBS += $$OUT_PWD/../bin/libqomp-shared.so
+    ANDROID_EXTRA_LIBS += $$OUT_PWD/../bin/libqomp-shared.so $$[QT_INSTALL_LIBS]/libtag.so
 } else {
     LIBS += -L$$OUT_PWD/../bin -lqomp
 }

@@ -30,6 +30,9 @@
 #endif
 #include <QDir>
 #include <QTextCodec>
+#ifdef Q_OS_ANDROID
+#include <QCoreApplication>
+#endif
 
 //#include <taglib/tstring.h>
 
