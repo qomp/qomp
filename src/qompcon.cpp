@@ -23,7 +23,6 @@
 #include "defines.h"
 #include "qompnetworkingfactory.h"
 #include "translator.h"
-#include "qomptunedownloader.h"
 #include "qompplaylistmodel.h"
 #include "qompoptionsdlg.h"
 #include "pluginmanager.h"
@@ -33,12 +32,13 @@
 #include "aboutdlg.h"
 #include "thememanager.h"
 #include "updateschecker.h"
+#include "qomptunedownloader.h"
 #else
 #include "qompqmlengine.h"
 #endif
 
 
-#include <QApplication>
+#include <QCoreApplication>
 #ifdef HAVE_QT5
 #include <QThread>
 #endif
@@ -295,8 +295,10 @@ void QompCon::actAboutQomp()
 
 void QompCon::actDownloadTune(Tune *tune, const QString &dir)
 {
+#ifndef Q_OS_ANDROID
 	QompTuneDownloader *td = new QompTuneDownloader(this);
 	td->download(tune, dir);
+#endif
 }
 
 void QompCon::actToggleTuneState(Tune *tune)

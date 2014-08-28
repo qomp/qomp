@@ -27,7 +27,7 @@ Rectangle {
 
 		clip: true
 
-		snapMode: ListView.SnapToItem
+//		snapMode: ListView.SnapToItem
 		boundsBehavior: Flickable.StopAtBounds
 
 		delegate: Rectangle {
@@ -45,7 +45,11 @@ Rectangle {
 				anchors.verticalCenter: parent.verticalCenter
 				checked: model.state
 
-				onClicked: root.itemCheckClick(index)
+				onClicked: {
+					view.currentIndex = index
+					view.positionViewAtIndex(index,ListView.Visible)
+					root.itemCheckClick(index)
+				}
 			}
 
 			QompImage {

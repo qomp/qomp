@@ -27,9 +27,7 @@
 #include <QStringList>
 #include <QMimeData>
 #include <QTextStream>
-#ifdef Q_OS_ANDROID
-#include <QApplication>
-#endif
+
 
 static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
 

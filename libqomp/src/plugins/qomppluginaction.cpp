@@ -24,15 +24,28 @@
 #include <QtDebug>
 #endif
 
+#ifndef Q_OS_ANDROID
+#include <QAction>
+#endif
+
 QompPluginAction::QompPluginAction(const QIcon &ico,
 				   const QString &text,
 				   QObject *receiver,
 				   const char *slot,
 				   QObject *parent) :
-		QAction(ico, text, parent),
-		receiver_(receiver),
-		slot_(slot)
+	QObject(parent),
+	receiver_(receiver),
+	slot_(slot),
+#ifndef Q_OS_ANDROID
+	action_(new QAction(ico, text, this))
+#else
+	text_(text),
+	icon_(ico)
+#endif
 {
+#ifndef Q_OS_ANDROID
+	connect(action_, SIGNAL(triggered()), SIGNAL(triggered()));
+#endif
 }
 
 QompPluginAction::~QompPluginAction()
@@ -49,3 +62,18 @@ QList<Tune *> QompPluginAction::getTunes()
 		QMetaObject::invokeMethod(receiver_, slot_, Qt::DirectConnection, Q_RETURN_ARG(QList<Tune*>, list) );
 	return list;
 }
+
+QString QompPluginAction::text() const
+{
+#ifndef Q_OS_ANDROID
+	return action_->text();
+#else
+	return text_;
+#endif
+}
+#ifndef Q_OS_ANDROID
+QAction *QompPluginAction::action() const
+{
+	return action_;
+}
+#endif

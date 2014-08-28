@@ -26,7 +26,8 @@ DATADIR = $$PREFIX/share/qomp
 DEFINES += QOMP_DATADIR='\\"$$DATADIR\\"'
 
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
+    !android:  QT += widgets
+
     DEFINES += HAVE_QT5
     CONFIG += c++11
 }
@@ -44,5 +45,6 @@ else {
 
 android {
     QT += quick qml androidextras
+    DEFINES += QOMP_MOBILE
 }
 

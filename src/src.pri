@@ -3,18 +3,14 @@ DEPENDPATH += $$PWD
 
 SOURCES += $$PWD/main.cpp \
     $$PWD/qompcon.cpp \
-    $$PWD/qompplaylistmodel.cpp \    
-    $$PWD/qomptunedownloader.cpp \
-    $$PWD/qompmenu.cpp \
+    $$PWD/qompplaylistmodel.cpp \      
     $$PWD/translator.cpp
 #    $$PWD/qomptaglibmetadataresolver.cpp \
 
 
 HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qompcon.h \
-    $$PWD/qompplaylistmodel.h \
-    $$PWD/qomptunedownloader.h \
-    $$PWD/qompmenu.h \
+    $$PWD/qompplaylistmodel.h \   
     $$PWD/translator.h
 #    $$PWD/qomptaglibmetadataresolver.h \
 
@@ -33,14 +29,18 @@ else {
         $$PWD/aboutdlg.cpp \
         $$PWD/qompplaylistdelegate.cpp \
         $$PWD/qompplaylistview.cpp \
-        $$PWD/updateschecker.cpp \        
+        $$PWD/updateschecker.cpp \
+        $$PWD/qompmenu.cpp \
+        $$PWD/qomptunedownloader.cpp \
         $$PWD/thememanager.cpp
 
     HEADERS += $$PWD/qomptrayicon.h \
         $$PWD/aboutdlg.h \
         $$PWD/qompplaylistdelegate.h \
         $$PWD/updateschecker.h \
-        $$PWD/qompplaylistview.h \       
+        $$PWD/qompplaylistview.h \
+        $$PWD/qompmenu.h \
+        $$PWD/qomptunedownloader.h \
         $$PWD/thememanager.h
 
     FORMS   += \

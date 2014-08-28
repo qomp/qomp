@@ -29,6 +29,7 @@
 #include <QMenu>
 #include <QTimer>
 #include <QDialog>
+#include <QMessageBox>
 
 static const int sugTimerInterval = 500;
 
@@ -230,6 +231,11 @@ void QompPluginGettunesDlg::startBusyWidget()
 void QompPluginGettunesDlg::stopBusyWidget()
 {
 	d->ui->lb_busy->stop();
+}
+
+int QompPluginGettunesDlg::showAlert(const QString &title, const QString &text)
+{
+	return QMessageBox::critical(d->dialog_, title, text);
 }
 
 void QompPluginGettunesDlg::newSuggestions(const QStringList &list)

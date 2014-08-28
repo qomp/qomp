@@ -253,4 +253,12 @@ void QompPluginGettunesDlg::itemSelected(const QModelIndex &ind)
 	emit itemSelected(item);
 }
 
+int QompPluginGettunesDlg::showAlert(const QString &title, const QString &text)
+{
+	QMetaObject::invokeMethod(d->item_, "showAlert",
+				  Q_ARG(QVariant, title),
+				  Q_ARG(QVariant, text));
+	return 0;
+}
+
 #include "qompplugingettunesdlg_mobile.moc"

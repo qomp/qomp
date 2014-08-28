@@ -60,6 +60,8 @@ public:
 	 */
 	void stopBusyWidget();
 
+	int showAlert(const QString& title, const QString& text);
+
 signals:
 	/**
 	 * The signal is emited when text in search combobox changed by user

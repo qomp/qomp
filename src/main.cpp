@@ -17,13 +17,22 @@
  *
  */
 
+#ifdef QOMP_MOBILE
+#include <QGuiApplication>
+#else
 #include <QApplication>
+#endif
+
 #include "qompcon.h"
 #include "defines.h"
 
 int main(int argc, char *argv[])
 {
+#ifdef QOMP_MOBILE
+	QGuiApplication a(argc, argv);
+#else
 	QApplication a(argc, argv);
+#endif
 	a.setApplicationName(APPLICATION_NAME);
 	a.setApplicationVersion(APPLICATION_VERSION);
 	a.setOrganizationName(APPLICATION_NAME);

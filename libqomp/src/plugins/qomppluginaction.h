@@ -20,23 +20,42 @@
 #ifndef QOMPPLUGINACTION_H
 #define QOMPPLUGINACTION_H
 
-#include <QAction>
+#include <QIcon>
 #include "libqomp_global.h"
 
 class Tune;
+#ifndef Q_OS_ANDROID
+class QAction;
+#endif
 
-class LIBQOMPSHARED_EXPORT QompPluginAction : public QAction
+class LIBQOMPSHARED_EXPORT QompPluginAction : public QObject
 {
 	Q_OBJECT
+	Q_PROPERTY(QString text READ text())
 public:
 	QompPluginAction(const QIcon& ico, const QString& text, QObject* receiver, const char* slot, QObject *parent = 0);
 	~QompPluginAction();
 
 	QList<Tune*> getTunes();
 
+	QString text() const;
+#ifndef Q_OS_ANDROID
+	QAction* action() const;
+#endif
+
+signals:
+	void triggered();
+
 private:
 	QObject* receiver_;
 	const char* slot_;
+
+#ifndef Q_OS_ANDROID
+	QAction* action_;
+#else
+	QString text_;
+	QIcon icon_;
+#endif
 };
 
 #endif // QOMPPLUGINACTION_H

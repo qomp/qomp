@@ -161,14 +161,14 @@ QList<QompPluginAction *> FilesystemPlugin::getTunesActions()
 	QMenu *m = new QMenu;
 
 	QompPluginAction *act = new QompPluginAction(QIcon(), tr("File System"), 0, "", this);
-	act->setMenu(m);
+	act->action()->setMenu(m);
 	l.append(act);
 
-	act = new QompPluginAction(QIcon(), tr("Select Files"), this, "getTunes", this);
-	m->addAction(act);
+	act = new QompPluginAction(QIcon(), tr("Select Files"), this, "getTunes", act);
+	m->addAction(act->action());
 
-	act = new QompPluginAction(QIcon(), tr("Select Folders"), this, "getFolders", this);
-	m->addAction(act);
+	act = new QompPluginAction(QIcon(), tr("Select Folders"), this, "getFolders", act);
+	m->addAction(act->action());
 
 	return l;
 }

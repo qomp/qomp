@@ -28,7 +28,7 @@
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QMessageBox>
+
 
 static const QString ProstoPleerUrl = "http://pleer.com";
 
@@ -161,7 +161,7 @@ void ProstoPleerController::searchFinished()
 		dlg_->enableNext(!list.isEmpty());
 	}
 	else {
-		QMessageBox::critical(0, tr("Error"), reply->errorString());
+		dlg_->showAlert(tr("Error"), reply->errorString());
 	}
 }
 

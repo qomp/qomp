@@ -149,8 +149,20 @@ Item {
 
 			PropertyChanges {
 				target: mainRect
-				color: Qt.darker(mainRect.color)
+				color: Qt.darker("lightsteelblue")
 			}
 		}
 	]
+
+	MessageDialog {
+		id: alertDlg
+		visible: false
+		icon: StandardIcon.Warning
+	}
+
+	function showAlert(title, text) {
+		alertDlg.title = title
+		alertDlg.text = text
+		alertDlg.open()
+	}
 }

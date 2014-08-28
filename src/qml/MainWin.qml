@@ -248,6 +248,7 @@ Rectangle {
 	}
 
 	function enshureItemVisible(index) {
+		playlist.currentIndex = index
 		playlist.positionViewAtIndex(index, ListView.Contain)
 	}
 }

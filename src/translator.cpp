@@ -18,7 +18,7 @@
  *
  */
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QLocale>
 #include <QDir>
 #include <QStringList>

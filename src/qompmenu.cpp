@@ -69,7 +69,7 @@ QompGetTunesMenu::~QompGetTunesMenu()
 
 void QompGetTunesMenu::actionActivated(QAction* sender)
 {
-	QompPluginAction* act = static_cast<QompPluginAction*>(sender);
+	QompPluginAction* act = static_cast<QompPluginAction*>(sender->parent());
 	QList<Tune*> t = act->getTunes();
 	if(!t.isEmpty())
 		emit tunes(t);
@@ -79,7 +79,7 @@ void QompGetTunesMenu::buildMenu()
 {
 	foreach(QompPluginAction* act, PluginManager::instance()->tunesActions()) {
 		act->setParent(this);
-		addAction(act);
+		addAction(act->action());
 	}
 }
 

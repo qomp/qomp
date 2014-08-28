@@ -21,7 +21,7 @@
 #include "options.h"
 #include "defines.h"
 #include <QSettings>
-#include <QApplication>
+#include <QCoreApplication>
 
 
 Options* Options::instance_ = 0;
