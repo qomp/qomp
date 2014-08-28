@@ -1,37 +1,54 @@
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
-SOURCES += $$PWD/main.cpp\
-    $$PWD/qompmainwin.cpp \
+
+SOURCES += $$PWD/main.cpp \
     $$PWD/qompcon.cpp \
-    $$PWD/qompplaylistmodel.cpp \
-    $$PWD/qomptrayicon.cpp \
-    $$PWD/aboutdlg.cpp \
+    $$PWD/qompplaylistmodel.cpp \    
     $$PWD/qomptunedownloader.cpp \
-    $$PWD/qompplaylistdelegate.cpp \
-    $$PWD/translator.cpp \
-    $$PWD/updateschecker.cpp \
-    $$PWD/qompplaylistview.cpp \
     $$PWD/qompmenu.cpp \
+    $$PWD/translator.cpp
 #    $$PWD/qomptaglibmetadataresolver.cpp \
-    $$PWD/thememanager.cpp
+
 
 HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qompcon.h \
     $$PWD/qompplaylistmodel.h \
-    $$PWD/qomptrayicon.h \
-    $$PWD/aboutdlg.h \
     $$PWD/qomptunedownloader.h \
-    $$PWD/qompplaylistdelegate.h \
-    $$PWD/translator.h \
-    $$PWD/updateschecker.h \
-    $$PWD/qompplaylistview.h \
     $$PWD/qompmenu.h \
+    $$PWD/translator.h
 #    $$PWD/qomptaglibmetadataresolver.h \
-    $$PWD/thememanager.h
 
+RESOURCES+= $$PWD/qomp.qrc
 
-FORMS    += $$PWD/qompmainwin.ui \
-    $$PWD/aboutdlg.ui
+android {
+    SOURCES     +=  $$PWD/qompmainwin_mobile.cpp
+
+    HEADERS     +=
+
+    RESOURCES   += $$PWD/qml.qrc
+}
+else {
+    SOURCES += $$PWD/qomptrayicon.cpp \
+        $$PWD/qompmainwin.cpp \
+        $$PWD/aboutdlg.cpp \
+        $$PWD/qompplaylistdelegate.cpp \
+        $$PWD/qompplaylistview.cpp \
+        $$PWD/updateschecker.cpp \        
+        $$PWD/thememanager.cpp
+
+    HEADERS += $$PWD/qomptrayicon.h \
+        $$PWD/aboutdlg.h \
+        $$PWD/qompplaylistdelegate.h \
+        $$PWD/updateschecker.h \
+        $$PWD/qompplaylistview.h \       
+        $$PWD/thememanager.h
+
+    FORMS   += \
+        $$PWD/qompmainwin.ui \
+        $$PWD/aboutdlg.ui
+
+    RESOURCES   += $$PWD/themes.qrc
+}
 
 phonon_backend {
     HEADERS += $$PWD/qompphononplayer.h #\
@@ -49,7 +66,7 @@ qtmultimedia_backend {
        # $$PWD/qompqtmultimediametadataresolver.cpp
 }
 
+lupdate_only {
+    SOURCES += $$PWD/qml/*.qml
+}
 include (options/options.pri)
-
-RESOURCES += $$PWD/qomp.qrc \
-    $$PWD/themes.qrc

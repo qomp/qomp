@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,41 +23,39 @@
 #include "common.h"
 #include "qompplayer.h"
 #include "translator.h"
+#ifndef Q_OS_ANDROID
 #include "qomptrayicon.h"
 #include "thememanager.h"
+#endif
 #include "ui_qompoptionsmain.h"
 
 static const QString defaultDevice = QObject::tr("default");
 
-QompOptionsMain::QompOptionsMain(QWidget *parent) :
-	QompOptionsPage(parent),
-	ui(new Ui::QompOptionsMain),
-	player_(0)
+class QompOptionsMain::Private
 {
-	ui->setupUi(this);
-	restoreOptions();
+public:
+	Private(QompOptionsMain* page) :
+		page_(page),
+		ui(new Ui::QompOptionsMain),
+		widget_(new QWidget)
+	{
+		ui->setupUi(widget_);
 
-	ui->cb_metaData->hide();
-	ui->label_8->hide();
-	ui->le_encoding->hide();
-}
+		ui->cb_metaData->hide();
+		ui->label_8->hide();
+		ui->le_encoding->hide();
+	}
 
-QompOptionsMain::~QompOptionsMain()
-{
-	delete ui;
-}
+	void applyOptions();
+	void restoreOptions();
 
-void QompOptionsMain::retranslate()
-{
-	ui->retranslateUi(this);
-}
+	QompOptionsMain* page_;
+	Ui::QompOptionsMain *ui;
+	QWidget* widget_;
+};
 
-void QompOptionsMain::init(QompPlayer *player)
-{
-	player_ = player;
-}
 
-void QompOptionsMain::applyOptions()
+void QompOptionsMain::Private::applyOptions()
 {
 	Options* o = Options::instance();
 
@@ -80,7 +78,7 @@ void QompOptionsMain::applyOptions()
 	o->setOption(OPTION_CURRENT_TRANSLATION,ui->cb_lang->currentText());
 }
 
-void QompOptionsMain::restoreOptions()
+void QompOptionsMain::Private::restoreOptions()
 {
 	Options* o = Options::instance();
 	ui->cb_autostartPlayback->setChecked(o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool());
@@ -97,8 +95,8 @@ void QompOptionsMain::restoreOptions()
 
 	ui->cb_output->clear();
 	ui->cb_output->addItem(defaultDevice);
-	if(player_)
-		ui->cb_output->addItems(player_->audioOutputDevice());
+	if(page_->player_)
+		ui->cb_output->addItems(page_->player_->audioOutputDevice());
 	QString dev = o->getOption(OPTION_AUDIO_DEVICE, defaultDevice).toString();
 	int index = ui->cb_output->findText(dev);
 	if(index == -1)
@@ -115,6 +113,7 @@ void QompOptionsMain::restoreOptions()
 	else
 		ui->cb_lang->setCurrentIndex(0);
 
+#ifndef Q_OS_ANDROID
 	QStringList actions = QompTrayIcon::availableActions();
 	ui->cb_middleClick->addItems(actions);
 	QompTrayActionType type = o->getOption(OPTION_TRAY_MIDDLE_CLICK).toInt();
@@ -126,8 +125,49 @@ void QompOptionsMain::restoreOptions()
 	type = o->getOption(OPTION_TRAY_DOUBLE_CLICK).toInt();
 	ui->cb_doubleClick->setCurrentIndex(type);
 
+	ui->cb_theme->clear();
 	ui->cb_theme->addItems(ThemeManager::instance()->availableThemes());
 	const QString them = o->getOption(OPTION_THEME).toString();
 	int i = ui->cb_theme->findText(them);
 	ui->cb_theme->setCurrentIndex(i);
+#endif
+}
+
+QompOptionsMain::QompOptionsMain(QObject *parent) :
+	QompOptionsPage(parent),	
+	player_(0)
+{	
+	d = new Private(this);
+	restoreOptions();
+}
+
+QompOptionsMain::~QompOptionsMain()
+{
+	delete d->ui;
+	delete d;
+}
+
+void QompOptionsMain::retranslate()
+{
+	d->ui->retranslateUi(d->widget_);
+}
+
+void QompOptionsMain::init(QompPlayer *player)
+{
+	player_ = player;
+}
+
+QObject *QompOptionsMain::page() const
+{
+	return d->widget_;
+}
+
+void QompOptionsMain::applyOptions()
+{
+	d->applyOptions();
+}
+
+void QompOptionsMain::restoreOptions()
+{
+	d->restoreOptions();
 }

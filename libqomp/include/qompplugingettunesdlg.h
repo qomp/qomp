@@ -23,29 +23,32 @@
 #include "common.h"
 #include "libqomp_global.h"
 
-#include <QDialog>
+#include <QObject>
 
-namespace Ui {
-class QompPluginGettunesDlg;
-}
-
-class QMenu;
 class QompPluginModelItem;
 class QModelIndex;
-class QTimer;
+class QStyle;
 
 
-class LIBQOMPSHARED_EXPORT QompPluginGettunesDlg : public QDialog
+class LIBQOMPSHARED_EXPORT QompPluginGettunesDlg : public QObject
 {
 	Q_OBJECT
 	
 public:
-	explicit QompPluginGettunesDlg(QWidget *parent = 0);
+	explicit QompPluginGettunesDlg(QObject *parent = 0);
 	virtual ~QompPluginGettunesDlg();
 
 	enum Result { ResultOK, ResultCancel };
 
+	/**
+	 * wrapper to internal dialog exec() call
+	 */
 	virtual Result go();
+
+	/**
+	 * set internal dialo title
+	 */
+	void setWindowTitle(const QString& title) const;
 
 	/**
 	 * Call this to start busy widget
@@ -72,14 +75,11 @@ public slots:
 	void newSuggestions(const QStringList& list);
 
 protected:
-	void keyPressEvent(QKeyEvent *e);
-	bool eventFilter(QObject *o, QEvent *e);
-
 	/**
 	 * You should set results widget (like QompPluginTreeView)
 	 * before use this dialog
 	 */
-	void setResultsWidget(QWidget* widget);
+	void setResultsWidget(QObject* widget);
 
 	/**
 	 * Return current text in combo box
@@ -89,15 +89,10 @@ protected:
 protected slots:
 	void itemSelected(const QModelIndex& ind);
 
-private slots:
-	void suggestionActionTriggered(QAction* a);
-	void search();
-	void timeout();
-
 private:
-	Ui::QompPluginGettunesDlg *ui;
-	QMenu *suggestionsMenu_;
-	QTimer* sugTimer_;
+	class Private;
+	Private* d;
+	friend class Private;
 };
 
 #endif // QOMPPLUGINGETTUNESDLG_H

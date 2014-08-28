@@ -20,6 +20,10 @@
 #include "qomppluginaction.h"
 #include "tune.h"
 
+#ifdef DEBUG_OUTPUT
+#include <QtDebug>
+#endif
+
 QompPluginAction::QompPluginAction(const QIcon &ico,
 				   const QString &text,
 				   QObject *receiver,
@@ -29,6 +33,13 @@ QompPluginAction::QompPluginAction(const QIcon &ico,
 		receiver_(receiver),
 		slot_(slot)
 {
+}
+
+QompPluginAction::~QompPluginAction()
+{
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompPluginAction destroyed";
+#endif
 }
 
 QList<Tune *> QompPluginAction::getTunes()

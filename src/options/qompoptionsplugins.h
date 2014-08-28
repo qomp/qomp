@@ -24,30 +24,25 @@
 
 class QModelIndex;
 
-namespace Ui {
-class QompOptionsPlugins;
-}
-
 class QompOptionsPlugins : public QompOptionsPage
 {
 	Q_OBJECT
 	
 public:
-	explicit QompOptionsPlugins(QWidget *parent = 0);
+	explicit QompOptionsPlugins(QObject *parent = 0);
 	~QompOptionsPlugins();
 
 	virtual QString name() const { return tr("Plugins"); }
 	virtual void retranslate();
+	virtual QObject* page() const;
 
 public slots:
 	virtual void applyOptions();
 	virtual void restoreOptions();
 
-private slots:
-	void fixSelection(const QModelIndex &parent, int start, int end);
-
 private:
-	Ui::QompOptionsPlugins *ui;
+	class Private;
+	Private* d;
 };
 
 #endif // QOMPOPTIONSPLUGINS_H

@@ -20,36 +20,22 @@
 #ifndef QOMPOPTIONSDLG_H
 #define QOMPOPTIONSDLG_H
 
-#include <QDialog>
+#include <QObject>
 
-namespace Ui {
-class QompOptionsDlg;
-}
-class QompOptionsPage;
-class QAbstractButton;
-class QompMainWin;
 class QompPlayer;
 
-class QompOptionsDlg : public QDialog
+class QompOptionsDlg : public QObject
 {
 	Q_OBJECT
 	
 public:
-	QompOptionsDlg(QompPlayer* player, QompMainWin *parent = 0);
+	QompOptionsDlg(QompPlayer* player, QObject *parent = 0);
 	~QompOptionsDlg();
 
-public slots:
-	virtual void accept();
-
-protected:
-	void changeEvent(QEvent *e);
-	void keyReleaseEvent(QKeyEvent* ke);
+	void exec();
 
 private slots:
-	void applyOptions();
-	void itemChanged(int row);
-	void buttonClicked(QAbstractButton* b);
-	void pageDestroyed();
+	void applyOptions();	
 	void pluginLoadingStatusChanged(const QString& pluginName, bool status);
 
 private:
@@ -57,8 +43,10 @@ private:
 
 	
 private:
-	Ui::QompOptionsDlg *ui;
-//	QList<QompOptionsPage*> pages_;
+	class Private;
+	Private* d;
+	friend class Private;
+	QompPlayer* player_;
 };
 
 #endif // QOMPOPTIONSDLG_H

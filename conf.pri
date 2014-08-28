@@ -41,3 +41,8 @@ else {
         return ($$shell_path($$1))
     }
 }
+
+android {
+    QT += quick qml androidextras
+}
+

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,117 +22,151 @@
 #include "pluginmanager.h"
 #include "qompoptionsmain.h"
 #include "options.h"
-#include "qompmainwin.h"
 #include "qompoptionsplugins.h"
 
 #include "ui_qompoptionsdlg.h"
 
 #include <QAbstractButton>
 #include <QListWidgetItem>
-#include <QKeyEvent>
+#include <QDialog>
 
-QompOptionsDlg::QompOptionsDlg(QompPlayer *player, QompMainWin *parent) :
-	QDialog(parent),
-	ui(new Ui::QompOptionsDlg)
+class QompOptionsDlg::Private: public QObject
 {
-#if defined HAVE_QT5 && defined Q_OS_ANDROID
-	setWindowState(Qt::WindowMaximized);
-#endif
-	ui->setupUi(this);
-	QList<QompOptionsPage*> list;
-	QompOptionsMain* om = new QompOptionsMain(this);
-	QompOptionsPlugins* op = new QompOptionsPlugins(this);
-	list << om << op;
+	Q_OBJECT
+public:
+	Private(QompOptionsDlg* p) :
+		QObject(p),
+		parentDialog_(p),
+		dlg_(new QDialog),
+		ui(new Ui::QompOptionsDlg)
+	{
+		ui->setupUi(dlg_);
 
-	foreach(QompOptionsPage* page, list) {
-		page->init(player);
-		ui->sw_pages->addWidget(page);
+		QompOptionsMain* om = new QompOptionsMain(this);
+		QompOptionsPlugins* op = new QompOptionsPlugins(this);
+		pages_ << om << op;
+
+		foreach(QompOptionsPage* page, pages_) {
+			addPage(page);
+		}
+
+		foreach(const QString& p, PluginManager::instance()->availablePlugins()) {
+			addPluginPage(p);
+		}
+
+		ui->sw_pages->setCurrentIndex(0);
+		ui->lw_pagesNames->setCurrentRow(0);
+
+		connect(ui->lw_pagesNames, SIGNAL(currentRowChanged(int)), SLOT(itemChanged(int)));
+		connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), SLOT(buttonClicked(QAbstractButton*)));
+
+		connect(PluginManager::instance(), SIGNAL(pluginStatusChanged(QString, bool)), parentDialog_, SLOT(pluginLoadingStatusChanged(QString,bool)));
+
+		dlg_->adjustSize();
+		ui->lw_pagesNames->setFixedWidth(ui->lw_pagesNames->width());
+		dlg_->installEventFilter(this);
+
+		connect(dlg_, SIGNAL(accepted()), parentDialog_, SLOT(applyOptions()));
+	}
+
+	void addPluginPage(const QString& name)
+	{
+		QompOptionsPage *p = PluginManager::instance()->getOptions(name);
+		if(p) {
+			pages_.append(p);
+			addPage(p);
+		}
+	}
+
+protected:
+	bool eventFilter(QObject *o, QEvent *e)
+	{
+		if(o == dlg_ && e->type() == QEvent::LanguageChange) {
+			ui->retranslateUi(dlg_);
+			for(int i = 0; i < pages_.count(); i++) {
+				QompOptionsPage* p = pages_.at(i);
+				p->retranslate();
+				QListWidgetItem* it = ui->lw_pagesNames->item(i);
+				it->setText(p->name());
+			}
+		}
+		return QObject::eventFilter(o, e);
+	}
+
+private slots:
+	void buttonClicked(QAbstractButton* b)
+	{
+		if(ui->buttonBox->standardButton(b) == QDialogButtonBox::Apply) {
+			parentDialog_->applyOptions();
+		}
+	}
+
+	void itemChanged(int row)
+	{
+		ui->sw_pages->setCurrentIndex(row);
+		pages_.at(row)->restoreOptions();
+	}
+
+	void pageDestroyed()
+	{
+		QompOptionsPage* page = static_cast<QompOptionsPage*>(sender());
+		int ind = pages_.indexOf(page);
+		QWidget* w = ui->sw_pages->widget(ind);
+		ui->sw_pages->removeWidget(w);
+		delete w;
+		QListWidgetItem* it = ui->lw_pagesNames->item(ind);
+		ui->lw_pagesNames->removeItemWidget(it);
+		pages_.removeAll(page);
+		delete it;
+	}
+
+private:
+	void addPage(QompOptionsPage* page)
+	{
+		page->init(parentDialog_->player_);
+		QWidget* widget = qobject_cast<QWidget*>(page->page());
+		Q_ASSERT(widget);
+		ui->sw_pages->addWidget(widget);
 		QListWidgetItem* it = new QListWidgetItem(ui->lw_pagesNames);
 		it->setText(page->name());
 		ui->lw_pagesNames->addItem(it);
+		connect(page, SIGNAL(destroyed()), SLOT(pageDestroyed()));
 	}
 
-	foreach(const QString& p, PluginManager::instance()->availablePlugins()) {
-		addPluginPage(p);
-	}
-	ui->sw_pages->setCurrentIndex(0);
-	ui->lw_pagesNames->setCurrentRow(0);
+public:
+	QompOptionsDlg* parentDialog_;
+	QDialog* dlg_;
+	Ui::QompOptionsDlg *ui;
+	QList<QompOptionsPage*> pages_;
+};
 
-	connect(ui->lw_pagesNames, SIGNAL(currentRowChanged(int)), SLOT(itemChanged(int)));
-	connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), SLOT(buttonClicked(QAbstractButton*)));
 
-	connect(PluginManager::instance(), SIGNAL(pluginStatusChanged(QString, bool)), SLOT(pluginLoadingStatusChanged(QString,bool)));
 
-	adjustSize();
-	ui->lw_pagesNames->setFixedWidth(ui->lw_pagesNames->width());
+
+QompOptionsDlg::QompOptionsDlg(QompPlayer *player, QObject *parent) :
+	QObject(parent),
+	player_(player)
+{
+	d = new Private(this);
 }
 
 QompOptionsDlg::~QompOptionsDlg()
 {
-	delete ui;
+	delete d->ui;
 }
 
-void QompOptionsDlg::accept()
+void QompOptionsDlg::exec()
 {
-	applyOptions();
-	QDialog::accept();
-}
-
-void QompOptionsDlg::changeEvent(QEvent *e)
-{
-	if(e->type() == QEvent::LanguageChange) {
-		ui->retranslateUi(this);
-		for(int i = 0; i < ui->sw_pages->count(); i++) {
-			QompOptionsPage* p = static_cast<QompOptionsPage*>(ui->sw_pages->widget(i));
-			p->retranslate();
-			QListWidgetItem* it = ui->lw_pagesNames->item(i);
-			it->setText(p->name());
-		}
-	}
-	QDialog::changeEvent(e);
-}
-
-void QompOptionsDlg::keyReleaseEvent(QKeyEvent *ke)
-{
-	QDialog::keyReleaseEvent(ke);
-#if defined HAVE_QT5 && defined Q_OS_ANDROID
-	if(ke->key() == Qt::Key_Back) {
-		reject();
-	}
-#endif
+	d->dlg_->exec();
 }
 
 void QompOptionsDlg::applyOptions()
 {
-	for(int i = 0; i < ui->sw_pages->count(); i++) {
-		QompOptionsPage* p = static_cast<QompOptionsPage*>(ui->sw_pages->widget(i));
-		p->applyOptions();
+	for(int i=0; i<d->pages_.count(); ++i) {
+		d->pages_.at(i)->applyOptions();
 	}
 
 	Options::instance()->applyOptions();
-}
-
-void QompOptionsDlg::itemChanged(int row)
-{
-	ui->sw_pages->setCurrentIndex(row);
-	static_cast<QompOptionsPage*>(ui->sw_pages->currentWidget())->restoreOptions();
-}
-
-void QompOptionsDlg::buttonClicked(QAbstractButton *b)
-{
-	if(ui->buttonBox->standardButton(b) == QDialogButtonBox::Apply) {
-		applyOptions();
-	}
-}
-
-void QompOptionsDlg::pageDestroyed()
-{
-	QWidget* w = static_cast<QWidget*>(sender());
-	int ind = ui->sw_pages->indexOf(w);
-	ui->sw_pages->removeWidget(w);
-	QListWidgetItem* it = ui->lw_pagesNames->item(ind);
-	ui->lw_pagesNames->removeItemWidget(it);
-	delete it;
 }
 
 void QompOptionsDlg::pluginLoadingStatusChanged(const QString &pluginName, bool status)
@@ -143,12 +177,7 @@ void QompOptionsDlg::pluginLoadingStatusChanged(const QString &pluginName, bool 
 
 void QompOptionsDlg::addPluginPage(const QString &name)
 {
-	QWidget *w = PluginManager::instance()->getOptions(name);
-	if(w) {
-		ui->sw_pages->addWidget(w);
-		QListWidgetItem* it = new QListWidgetItem(ui->lw_pagesNames);
-		it->setText(name);
-		ui->lw_pagesNames->addItem(it);
-		connect(w, SIGNAL(destroyed()), SLOT(pageDestroyed()));
-	}
+	d->addPluginPage(name);
 }
+
+#include "qompoptionsdlg.moc"

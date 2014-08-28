@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,10 +22,6 @@
 
 #include "qompplugingettunesdlg.h"
 
-namespace Ui {
-class ProstoPleerPluginResultsWidget;
-}
-
 class QAbstractItemModel;
 
 class ProstoPleerPluginGetTunesDialog : public QompPluginGettunesDlg
@@ -33,7 +29,7 @@ class ProstoPleerPluginGetTunesDialog : public QompPluginGettunesDlg
 	Q_OBJECT
 	
 public:
-	explicit ProstoPleerPluginGetTunesDialog(QWidget *parent = 0);
+	explicit ProstoPleerPluginGetTunesDialog(QObject *parent = 0);
 	~ProstoPleerPluginGetTunesDialog();
 
 	void setAuthStatus(const QString&);
@@ -54,7 +50,9 @@ signals:
 	void prev();
 	
 private:
-	Ui::ProstoPleerPluginResultsWidget *ui;
+	class Private;
+	Private* p;
+	friend class Privat;
 };
 
 #endif // GETTUNESDIALOG_H

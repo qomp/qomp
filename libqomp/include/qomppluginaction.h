@@ -30,6 +30,8 @@ class LIBQOMPSHARED_EXPORT QompPluginAction : public QAction
 	Q_OBJECT
 public:
 	QompPluginAction(const QIcon& ico, const QString& text, QObject* receiver, const char* slot, QObject *parent = 0);
+	~QompPluginAction();
+
 	QList<Tune*> getTunes();
 
 private:

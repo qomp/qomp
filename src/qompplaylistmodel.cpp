@@ -43,7 +43,7 @@ QompPlayListModel::QompPlayListModel(QObject *parent) :
 
 void QompPlayListModel::addTunes(const QList<Tune*> &tunes)
 {
-	emit beginInsertRows(QModelIndex(), tunes_.size(), tunes_.size()+tunes.size());
+	emit beginInsertRows(QModelIndex(), tunes_.size(), tunes_.size()+tunes.size()-1);
 	tunes_.append(tunes);
 	emit endInsertRows();
 	emit totalTimeChanged(totalTime());
@@ -329,6 +329,19 @@ void QompPlayListModel::loadTunes(const QString &fileName)
 {
 	QList<Tune*> tl = Tune::tunesFromFile(fileName);
 	addTunes(tl);
+}
+
+QHash<int, QByteArray> QompPlayListModel::roleNames() const
+{
+	QHash<int, QByteArray> roles;
+	roles[ArtistRole] = "artist";
+	roles[TitleRole] = "title";
+	roles[TrackRole] = "track";
+	roles[DurationRole] = "duration";
+	roles[URLRole] = "url";
+	roles[FileRole] = "file";
+	roles[IsCurrentTuneRole] = "current";
+	return roles;
 }
 
 void QompPlayListModel::tuneDataUpdated(Tune *tune)

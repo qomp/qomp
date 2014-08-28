@@ -65,6 +65,8 @@ public:
 	void saveTunes(const QString& fileName);
 	void loadTunes(const QString& fileName);
 
+	virtual QHash<int, QByteArray> roleNames() const;
+
 signals:
 	void currentTuneChanged(Tune*);
 	void totalTimeChanged(uint);

@@ -19,8 +19,21 @@
 
 #include "qompplugintypes.h"
 #include "tune.h"
-#include <QStyle>
-#include <QApplication>
+#include <QPixmap>
+#include <QPixmapCache>
+#include <QIcon>
+
+
+static const QIcon& folderIcon()
+{
+	static QIcon ico;
+	if(ico.isNull()) {
+		QPixmap p(":/icons/folder");
+		ico = QIcon(p);
+		QPixmapCache::insert(QString::number(ico.cacheKey()), p);
+	}
+	return ico;
+}
 
 //-----------------------
 //----QompPluginItem-----
@@ -108,8 +121,19 @@ QompCon::ModelItemType QompPluginTune::type() const
 
 QIcon QompPluginTune::icon() const
 {
-	static const QIcon ico(":/icons/icons/tune.png");
-	return QIcon(ico.pixmap(QSize(64,64),url.isEmpty() ? QIcon::Disabled : QIcon::Normal));
+	static QIcon icoDis;
+	if(icoDis.isNull()) {
+		QIcon tmp(":/icons/icons/tune.png");
+		icoDis = QIcon(tmp.pixmap(64, QIcon::Disabled));
+		QPixmapCache::insert(QString::number(icoDis.cacheKey()),icoDis.pixmap(64));
+	}
+	static QIcon icoEn;
+	if(icoEn.isNull()) {
+		QPixmap p(":/icons/icons/tune.png");
+		icoEn = QIcon(p);
+		QPixmapCache::insert(QString::number(icoEn.cacheKey()),p);
+	}
+	return url.isEmpty() ? icoDis : icoEn;
 }
 
 Tune *QompPluginTune::toTune() const
@@ -148,7 +172,7 @@ QompCon::ModelItemType QompPluginAlbum::type() const
 
 QIcon QompPluginAlbum::icon() const
 {
-	return qApp->style()->standardIcon(QStyle::SP_DirIcon);
+	return folderIcon();
 }
 
 
@@ -174,5 +198,5 @@ QompCon::ModelItemType QompPluginArtist::type() const
 
 QIcon QompPluginArtist::icon() const
 {
-	return qApp->style()->standardIcon(QStyle::SP_DirIcon);
+	return folderIcon();
 }

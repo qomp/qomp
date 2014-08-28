@@ -28,21 +28,44 @@
 #include <QKeyEvent>
 #include <QMenu>
 #include <QTimer>
+#include <QDialog>
 
 static const int sugTimerInterval = 500;
 
-QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::QompPluginGettunesDlg),
-	suggestionsMenu_(new QMenu(this)),
-	sugTimer_(new QTimer(this))
+
+class QompPluginGettunesDlg::Private : public QObject
 {
-#if defined HAVE_QT5 && defined Q_OS_ANDROID
-	setWindowState(Qt::WindowMaximized);
-#endif
-	ui->setupUi(this);
+	Q_OBJECT
+public:
+	Private(QompPluginGettunesDlg* p = 0);
+	~Private();
 
+public slots:
+	void suggestionActionTriggered(QAction* a);
+	void search();
+	void timeout();
 
+protected:
+	void keyPressEvent(QKeyEvent *e);
+	bool eventFilter(QObject *o, QEvent *e);
+
+public:
+	Ui::QompPluginGettunesDlg *ui;
+	QDialog* dialog_;
+	QMenu *suggestionsMenu_;
+	QTimer* sugTimer_;
+	QompPluginGettunesDlg* mainDlg_;
+};
+
+QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
+	QObject(p),
+	ui(new Ui::QompPluginGettunesDlg),
+	dialog_(new QDialog),
+	suggestionsMenu_(new QMenu(dialog_)),
+	sugTimer_(new QTimer(this)),
+	mainDlg_(p)
+{
+	ui->setupUi(dialog_);
 	QStringList searchHistory = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
 
 	ui->cb_search->addItems(searchHistory);
@@ -59,10 +82,11 @@ QompPluginGettunesDlg::QompPluginGettunesDlg(QWidget *parent) :
 
 	ui->cb_search->installEventFilter(this);
 	suggestionsMenu_->installEventFilter(this);
+	dialog_->installEventFilter(this);
 	connect(suggestionsMenu_, SIGNAL(triggered(QAction*)), SLOT(suggestionActionTriggered(QAction*)));
 }
 
-QompPluginGettunesDlg::~QompPluginGettunesDlg()
+QompPluginGettunesDlg::Private::~Private()
 {
 	QStringList searchHistory;
 	for(int i = 0; (i < ui->cb_search->count() && i < 10); i++) {
@@ -72,20 +96,7 @@ QompPluginGettunesDlg::~QompPluginGettunesDlg()
 	delete ui;
 }
 
-QompPluginGettunesDlg::Result QompPluginGettunesDlg::go()
-{
-	if(exec() == QDialog::Accepted)
-		return ResultOK;
-
-	return ResultCancel;
-}
-
-void QompPluginGettunesDlg::setResultsWidget(QWidget *widget)
-{
-	ui->mainLayout->insertWidget(1, widget);
-}
-
-void QompPluginGettunesDlg::suggestionActionTriggered(QAction *a)
+void QompPluginGettunesDlg::Private::suggestionActionTriggered(QAction *a)
 {
 	if(a) {
 		ui->cb_search->blockSignals(true);
@@ -99,7 +110,9 @@ void QompPluginGettunesDlg::suggestionActionTriggered(QAction *a)
 	}
 }
 
-void QompPluginGettunesDlg::search()
+
+
+void QompPluginGettunesDlg::Private::search()
 {
 	ui->cb_search->blockSignals(true);
 
@@ -113,34 +126,15 @@ void QompPluginGettunesDlg::search()
 
 	ui->cb_search->blockSignals(false);
 
-	emit doSearch(text);
+	emit mainDlg_->doSearch(text);
 }
 
-void QompPluginGettunesDlg::timeout()
+void QompPluginGettunesDlg::Private::timeout()
 {
-	emit searchTextChanged(currentSearchText());
+	emit mainDlg_->searchTextChanged(mainDlg_->currentSearchText());
 }
 
-QString QompPluginGettunesDlg::currentSearchText() const
-{
-	return ui->cb_search->currentText();
-}
-
-void QompPluginGettunesDlg::keyPressEvent(QKeyEvent *e)
-{
-	if(e->key() == Qt::Key_Return && ui->cb_search->hasFocus()) {
-		search();
-		e->accept();
-		return;
-	}
-#if defined HAVE_QT5 && defined Q_OS_ANDROID
-	if(e->key() == Qt::Key_Back)
-		reject();
-#endif
-	QDialog::keyPressEvent(e);
-}
-
-bool QompPluginGettunesDlg::eventFilter(QObject *o, QEvent *e)
+bool QompPluginGettunesDlg::Private::eventFilter(QObject *o, QEvent *e)
 {
 	if(o == suggestionsMenu_ && e->type() == QEvent::KeyPress) {
 		QKeyEvent* ke = static_cast<QKeyEvent*>(e);
@@ -171,30 +165,83 @@ bool QompPluginGettunesDlg::eventFilter(QObject *o, QEvent *e)
 			return true;
 		}
 	}
-	return QDialog::eventFilter(o, e);
+	else if(o == dialog_ && e->type() == QEvent::KeyPress) {
+		QKeyEvent* ke = static_cast<QKeyEvent*>(e);
+		if(ke->key() == Qt::Key_Return && ui->cb_search->hasFocus()) {
+			search();
+			ke->accept();
+			return true;
+		}
+	}
+	return QObject::eventFilter(o, e);
+}
+
+
+
+
+
+
+
+QompPluginGettunesDlg::QompPluginGettunesDlg(QObject *parent) :
+	QObject(parent)
+
+{
+	d = new Private(this);
+}
+
+QompPluginGettunesDlg::~QompPluginGettunesDlg()
+{
+	delete d;
+	d = 0;
+}
+
+QompPluginGettunesDlg::Result QompPluginGettunesDlg::go()
+{
+	if(d->dialog_->exec() == QDialog::Accepted)
+		return ResultOK;
+
+	return ResultCancel;
+}
+
+void QompPluginGettunesDlg::setWindowTitle(const QString &title) const
+{
+	d->dialog_->setWindowTitle(title);
+}
+
+void QompPluginGettunesDlg::setResultsWidget(QObject *widget)
+{
+	QWidget *w = qobject_cast<QWidget*>(widget);
+	Q_ASSERT(w);
+	if(w)
+		d->ui->mainLayout->insertWidget(1, w);
+}
+
+QString QompPluginGettunesDlg::currentSearchText() const
+{
+	return d->ui->cb_search->currentText();
 }
 
 void QompPluginGettunesDlg::startBusyWidget()
 {
-	if(!ui->lb_busy->isActive())
-		ui->lb_busy->start();
+	if(!d->ui->lb_busy->isActive())
+		d->ui->lb_busy->start();
 }
 
 void QompPluginGettunesDlg::stopBusyWidget()
 {
-	ui->lb_busy->stop();
+	d->ui->lb_busy->stop();
 }
 
 void QompPluginGettunesDlg::newSuggestions(const QStringList &list)
 {
-	suggestionsMenu_->clear();
+	d->suggestionsMenu_->clear();
 
 	foreach(const QString& sug, list) {
-		QAction* act = new QAction(sug, suggestionsMenu_);
-		suggestionsMenu_->addAction(act);
+		QAction* act = new QAction(sug, d->suggestionsMenu_);
+		d->suggestionsMenu_->addAction(act);
 	}
-	suggestionsMenu_->popup(mapToGlobal(ui->cb_search->geometry().bottomLeft()));
-	suggestionsMenu_->move(mapToGlobal(ui->cb_search->geometry().bottomLeft()));
+	d->suggestionsMenu_->popup(d->dialog_->mapToGlobal(d->ui->cb_search->geometry().bottomLeft()));
+	d->suggestionsMenu_->move(d->dialog_->mapToGlobal(d->ui->cb_search->geometry().bottomLeft()));
 }
 
 void QompPluginGettunesDlg::itemSelected(const QModelIndex &ind)
@@ -210,3 +257,5 @@ void QompPluginGettunesDlg::itemSelected(const QModelIndex &ind)
 
 	emit itemSelected(item);
 }
+
+#include "qompplugingettunesdlg.moc"

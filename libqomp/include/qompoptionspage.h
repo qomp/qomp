@@ -20,19 +20,20 @@
 #ifndef QOMPOPTIONSPAGE_H
 #define QOMPOPTIONSPAGE_H
 
-#include <QWidget>
+#include <QObject>
 #include "libqomp_global.h"
 
 class QompPlayer;
 
-class LIBQOMPSHARED_EXPORT QompOptionsPage : public QWidget
+class LIBQOMPSHARED_EXPORT QompOptionsPage : public QObject
 {
 	Q_OBJECT
 public:
-	QompOptionsPage(QWidget *parent = 0) : QWidget(parent) {}
+	QompOptionsPage(QObject *parent = 0) : QObject(parent) {}
 	virtual QString name() const = 0;
 	virtual void retranslate() = 0;
 	virtual void init(QompPlayer* player) { Q_UNUSED(player) }
+	virtual QObject* page() const = 0;
 
 public slots:
 	virtual void applyOptions() = 0;

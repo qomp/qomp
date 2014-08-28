@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,69 +18,14 @@
  */
 
 #include "tune2fileplugin.h"
-#include "ui_tunetofilesettings.h"
-#include "qompoptionspage.h"
+#include "tunetofilesettings.h"
 #include "options.h"
 #include "tune.h"
 
-#include <QFileDialog>
 #include <QTimer>
 #include <QtPlugin>
+#include <QFile>
 
-
-#define T2FOPT_FILE "plugins.tunetofile.file"
-#define T2FOPT_LAST_DIR "plugins.tunetofile.dir"
-
-class T2FSettings : public QompOptionsPage
-{
-	Q_OBJECT
-
-public:
-	T2FSettings(QWidget* p = 0) : QompOptionsPage(p)
-	{
-		ui = new Ui::TuneToFileSettings;
-		ui->setupUi(this);
-		ui->tb_open->setIcon(qApp->style()->standardIcon(QStyle::SP_DirOpenIcon));
-		connect(ui->tb_open, SIGNAL(clicked()), SLOT(getFileName()));
-
-		restoreOptions();
-	}
-
-	~T2FSettings()
-	{
-		delete ui;
-	}
-	virtual QString name() const { return tr("Tune to File"); }
-	virtual void retranslate()
-	{
-		ui->retranslateUi(this);
-	}
-
-public slots:
-	virtual void applyOptions()
-	{
-		Options::instance()->setOption(T2FOPT_FILE, ui->le_file->text());
-	}
-
-	virtual void restoreOptions()
-	{
-		ui->le_file->setText(QDir::toNativeSeparators(Options::instance()->getOption(T2FOPT_FILE).toString()));
-	}
-
-private slots:
-	void getFileName()
-	{
-		QString file = QFileDialog::getSaveFileName(this, tr("Store tune into file"), Options::instance()->getOption(T2FOPT_LAST_DIR, QDir::homePath()).toString());
-		if(!file.isEmpty())
-		{
-			ui->le_file->setText(QDir::toNativeSeparators(file));
-			Options::instance()->setOption(T2FOPT_LAST_DIR, QFileInfo(file).filePath());
-		}
-	}
-
-private:
-	Ui::TuneToFileSettings *ui;
-};
 
 Tune2FilePlugin::Tune2FilePlugin() : enabled_(false)
 {
@@ -92,7 +37,7 @@ QompOptionsPage *Tune2FilePlugin::options()
 	if(!enabled_)
 		return 0;
 
-	optPage_ = new T2FSettings;
+	optPage_ = new TuneToFileSettings;
 	return optPage_;
 }
 
@@ -155,4 +100,3 @@ void Tune2FilePlugin::init()
 Q_EXPORT_PLUGIN2(tunetofileplugin, Tune2FilePlugin)
 #endif
 
-#include "tune2fileplugin.moc"

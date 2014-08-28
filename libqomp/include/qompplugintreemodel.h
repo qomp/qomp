@@ -70,7 +70,7 @@ public:
 	 * Return pointer on QompPluginModelItem, which represented by given QModelIndex.
 	 * Return 0 if index not valid
 	 */
-	QompPluginModelItem* item(const QModelIndex& index);
+	QompPluginModelItem* item(const QModelIndex& index) const;
 
 	/**
 	 * Return list of selected items
@@ -103,6 +103,7 @@ public:
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 	virtual QModelIndex parent(const QModelIndex& index) const;
 	virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
+	virtual QHash<int, QByteArray> roleNames() const;
 
 protected:
 	/**

@@ -35,9 +35,13 @@ ThemeManager *ThemeManager::instance()
 
 void ThemeManager::setTheme(const QString &theme)
 {
+	if(currentTheme_ == theme)
+		return;
+
 	if(!theme.isEmpty() && themes_.contains(theme)) {
 		QFile file(themes_.value(theme));
 		if(file.exists() && file.open(QFile::ReadOnly | QFile::Text)) {
+			currentTheme_ = theme;
 			const QByteArray content = file.readAll();
 			qApp->setStyleSheet(content);
 		}

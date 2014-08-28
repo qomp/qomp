@@ -29,5 +29,6 @@
         <file alias="ok">icons/buttons/Ok.png</file>
         <file alias="arrow-down">icons/buttons/arrow-down.png</file>
         <file alias="arrow-up">icons/buttons/arrow-up.png</file>
+        <file alias="folder">icons/buttons/Folder.png</file>
     </qresource>
 </RCC>

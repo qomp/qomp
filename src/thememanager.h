@@ -40,6 +40,7 @@ private:
 
 	static ThemeManager* instance_;
 	QMap<QString,QString> themes_;
+	QString currentTheme_;
 };
 
 #endif // THEMEMANAGER_H

@@ -23,19 +23,16 @@
 #include "qompoptionspage.h"
 #include "lastfmdefines.h"
 
-namespace Ui {
-class LastFmSettings;
-}
-
 class LastFmSettings : public QompOptionsPage
 {
 	Q_OBJECT
 	
 public:
-	explicit LastFmSettings(QWidget *parent = 0);
+	explicit LastFmSettings(QObject *parent = 0);
 	~LastFmSettings();
 	virtual QString name() const { return LASTFM_NAME; }
 	virtual void retranslate();
+	virtual QObject* page() const;
 
 public slots:
 	virtual void applyOptions();
@@ -45,7 +42,8 @@ signals:
 	void doLogin();
 	
 private:
-	Ui::LastFmSettings *ui;
+	class Private;
+	Private* d;
 };
 
 #endif // LASTFMSETTINGS_H

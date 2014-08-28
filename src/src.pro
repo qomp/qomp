@@ -20,6 +20,7 @@ TEMPLATE = app
 
 QT += network
 
+
 include(src.pri)
 include($$PWD/../translations.pri)
 
@@ -67,3 +68,6 @@ android {
 
 INCLUDEPATH += $$PWD/../libqomp/include
 DEPENDPATH += $$PWD/../libqomp/include
+
+OTHER_FILES += \
+    ../android/src/com/googlecode/qomp/Qomp.java

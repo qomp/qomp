@@ -42,6 +42,7 @@ private:
 	static QStringList transDirs();
 
 	QTranslator* qtTrans_;
+	QString currentTrans_;
 };
 
 #endif // TRANSLATOR_H

@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qmlshared/qmldir</file>
+        <file>qmlshared/QompToolButton.qml</file>
+        <file>qmlshared/GetTunesDlg.qml</file>
+        <file>qmlshared/QompButton.qml</file>
+        <file>qmlshared/QompAppWindow.qml</file>
+        <file>qmlshared/QompImage.qml</file>
+    </qresource>
+</RCC>

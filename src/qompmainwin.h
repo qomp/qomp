@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,30 +20,23 @@
 #ifndef QOMPMAINWIN_H
 #define QOMPMAINWIN_H
 
-#include <QMainWindow>
 #include <QModelIndex>
 
 #include "common.h"
 
-namespace Ui {
-	class QompMainWin;
-}
-
 class QompPlayListModel;
-class QompTrayIcon;
 class Tune;
-class QompMainMenu;
 
-class QompMainWin : public QMainWindow
+
+class QompMainWin : public QObject
 {
 	Q_OBJECT
 	
 public:
-	QompMainWin(QWidget *parent = 0);
+	QompMainWin(QObject *parent = 0);
 	~QompMainWin();
 
 	void setModel(QompPlayListModel* model);
-	void bringToFront();
 
 public slots:
 	void toggleVisibility();
@@ -52,28 +45,14 @@ public slots:
 	void setCurrentPosition(qint64 ms);
 	void currentTotalTimeChanged(qint64 ms);
 	void playerStateChanged(Qomp::State state);
-
-private slots:
-	void actOpenActivated();
-	void actClearActivated();
-	void volumeSliderMoved(int);
-	void doTrackContextMenu(const QPoint& p);
-	void doMainContextMenu();
-
-	void updateTuneInfo(Tune *tune);
-	void updateIcons(Qomp::State state);
-
-	void trayWheeled(int delta);
-
-	void updateOptions();
-	void removeSelectedIndexes();
-	void totalDurationChanged(uint time);
+	void hide();
+	void show();
+	void loadPlaylist(const QString& fileName);
+	void savePlaylist(const QString& fileName);
 
 signals:
 	void exit();
-	void downloadTune(Tune* tune);
-	void loadPlaylist();
-	void savePlaylist();
+	void downloadTune(Tune* tune, const QString& dir);
 	void doOptions();
 	void aboutQomp();
 	void checkForUpdates();
@@ -95,26 +74,14 @@ signals:
 	void mediaClicked(const QModelIndex& index);
 
 protected:
-	void closeEvent(QCloseEvent *e);
-	void changeEvent(QEvent *e);
-	void keyPressEvent(QKeyEvent* e);
-	bool event(QEvent *event);
-
-private:
-	void connectActions();
-	void connectMainMenu();
-	void setupPlaylist();
-
-	void saveWindowState();
-	void restoreWindowState();
-	void updateVolumSliderToolTip();
+	bool eventFilter(QObject *o, QEvent *e);
 	
 private:
-	Ui::QompMainWin *ui;
-	QompPlayListModel* model_;
-	QompTrayIcon* trayIcon_;
-	QompMainMenu *mainMenu_;
+	class Private;
+	Private* d;
+	friend class Privare;
 
+	QompPlayListModel* model_;
 	Qomp::State currentState_;
 };
 

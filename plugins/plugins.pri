@@ -11,8 +11,6 @@ TEMPLATE = lib
 INCLUDEPATH += $$PWD/../libqomp/include
 DEPENDPATH += $$PWD/../libqomp/include
 
-
-
 android {
     LIBS += -L$$OUT_PWD/../../bin -lqomp-shared
 
@@ -26,3 +24,8 @@ unix:!android {
     target.path = $$DATADIR/plugins
     INSTALLS += target
 }
+
+lupdate_only {
+    SOURCES += $$PWD/qml/*.qml
+}
+

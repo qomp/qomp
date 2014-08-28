@@ -1,7 +1,18 @@
 INCLUDEPATH += $$PWD
 
+android {
+    SOURCES += $$PWD/qompplugingettunesdlg_mobile.cpp
+}
+else {
+    HEADERS +=  $$PWD/qompplugintreeview.h
+
+    SOURCES +=  $$PWD/qompplugintreeview.cpp \
+                $$PWD/qompplugingettunesdlg.cpp
+
+    FORMS   += $$PWD/qompplugingettunesdlg.ui
+}
+
 HEADERS += $$PWD/qompplugingettunesdlg.h \
-    $$PWD/qompplugintreeview.h \
     $$PWD/qompplugintreemodel.h \
     $$PWD/qompplugin.h \
     $$PWD/qompplugintypes.h \
@@ -10,13 +21,9 @@ HEADERS += $$PWD/qompplugingettunesdlg.h \
     $$PWD/qompplugincontroller.h \
     $$PWD/qomppluginaction.h
 
-SOURCES += $$PWD/qompplugingettunesdlg.cpp \
-    $$PWD/qompplugintreeview.cpp \
-    $$PWD/qompplugintreemodel.cpp \
+SOURCES += $$PWD/qompplugintreemodel.cpp \
     $$PWD/qompplugintypes.cpp \
     $$PWD/qompplugincontroller.cpp \
     $$PWD/qomppluginaction.cpp
-
-FORMS += $$PWD/qompplugingettunesdlg.ui
 
 

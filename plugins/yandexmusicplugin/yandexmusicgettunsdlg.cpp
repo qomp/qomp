@@ -23,10 +23,10 @@
 
 YandexMusicGettunsDlg::YandexMusicGettunsDlg() :
 	QompPluginGettunesDlg(),
-	tabWidget_(new QTabWidget(this)),
-	artistsView_(new QompPluginTreeView(this)),
-	albumsView_(new QompPluginTreeView(this)),
-	tracksView_(new QompPluginTreeView(this))
+	tabWidget_(new QTabWidget(0)),
+	artistsView_(new QompPluginTreeView(tabWidget_)),
+	albumsView_(new QompPluginTreeView(tabWidget_)),
+	tracksView_(new QompPluginTreeView(tabWidget_))
 {
 	setWindowTitle("Yandex.Music");
 

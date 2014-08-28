@@ -21,6 +21,7 @@
 #include "qompplugintypes.h"
 #include <QIcon>
 
+
 QompPluginTreeModel::QompPluginTreeModel(QObject *parent) :
 	QAbstractItemModel(parent)
 {
@@ -33,7 +34,7 @@ QompPluginTreeModel::~QompPluginTreeModel()
 
 void QompPluginTreeModel::addTopLevelItems(const QList<QompPluginModelItem *> &items)
 {
-	beginInsertRows(QModelIndex(), topLevelItems_.size(), topLevelItems_.size() + items.size());
+	beginInsertRows(QModelIndex(), topLevelItems_.size(), topLevelItems_.size() + items.size()-1);
 	topLevelItems_.append(items);
 	foreach(QompPluginModelItem* item,  items) {
 		item->setModel(this);
@@ -90,7 +91,7 @@ QompPluginModelItem *QompPluginTreeModel::itemForId(const QString &id, QompPlugi
 	return 0;
 }
 
-QompPluginModelItem *QompPluginTreeModel::item(const QModelIndex &index)
+QompPluginModelItem *QompPluginTreeModel::item(const QModelIndex &index) const
 {
 	if(!index.isValid())
 		return 0;
@@ -125,7 +126,12 @@ QVariant QompPluginTreeModel::data(const QModelIndex &index, int role) const
 		return ((QompPluginModelItem*)index.internalPointer())->toString();
 	}
 	else if(role == Qt::DecorationRole) {
-		return ((QompPluginModelItem*)index.internalPointer())->icon();
+		QIcon ico = ((QompPluginModelItem*)index.internalPointer())->icon();
+#ifdef Q_OS_ANDROID
+		return ico.cacheKey();
+#else
+		return ico;
+#endif
 	}
 	return QVariant();
 }
@@ -223,6 +229,15 @@ QModelIndex QompPluginTreeModel::index(int row, int column, const QModelIndex &p
 	}
 
 	return QModelIndex();
+}
+
+QHash<int, QByteArray> QompPluginTreeModel::roleNames() const
+{
+	QHash<int, QByteArray> roles;
+	roles[Qt::DisplayRole] = "text";
+	roles[Qt::CheckStateRole] = "state";
+	roles[Qt::DecorationRole] = "icon";
+	return roles;
 }
 
 QModelIndex QompPluginTreeModel::index(QompPluginModelItem *item) const

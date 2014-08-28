@@ -23,18 +23,22 @@
 #include "defines.h"
 #include "qompnetworkingfactory.h"
 #include "translator.h"
-#include "updateschecker.h"
-#include "aboutdlg.h"
 #include "qomptunedownloader.h"
 #include "qompplaylistmodel.h"
 #include "qompoptionsdlg.h"
 #include "pluginmanager.h"
 #include "qompplayer.h"
 #include "tune.h"
+#ifndef Q_OS_ANDROID
+#include "aboutdlg.h"
 #include "thememanager.h"
+#include "updateschecker.h"
+#else
+#include "qompqmlengine.h"
+#endif
+
 
 #include <QApplication>
-#include <QFileDialog>
 #ifdef HAVE_QT5
 #include <QThread>
 #endif
@@ -57,6 +61,9 @@ QompCon::QompCon(QObject *parent) :
 {
 	qRegisterMetaType<Tune*>("Tune*");
 	qRegisterMetaType<Qomp::State>("State");
+#ifdef Q_OS_ANDROID
+	connect(QompQmlEngine::instance(), SIGNAL(quit()), SLOT(exit()));
+#endif
 }
 
 QompCon::~QompCon()
@@ -68,6 +75,9 @@ QompCon::~QompCon()
 	delete mainWin_;
 	delete player_;
 	delete Tune::emptyTune();
+#ifdef Q_OS_ANDROID
+	delete QompQmlEngine::instance();
+#endif
 }
 
 void QompCon::checkVersion()
@@ -133,7 +143,9 @@ void QompCon::exit()
 void QompCon::updateSettings()
 {
 	QompNetworkingFactory::instance()->updateProxySettings();
+#ifndef Q_OS_ANDROID
 	ThemeManager::instance()->setTheme(Options::instance()->getOption(OPTION_THEME).toString());
+#endif
 	Translator::instance()->retranslate(Options::instance()->getOption(OPTION_CURRENT_TRANSLATION).toString());
 }
 
@@ -225,43 +237,6 @@ void QompCon::actSetVolume(qreal vol)
 	player_->setVolume(vol);
 }
 
-void QompCon::actSavePlaylist()
-{
-	QFileDialog f(mainWin_,tr("Select Playlist"),
-		      Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), tr("qomp playlist (*.qomp)"));
-	f.setViewMode(QFileDialog::List);
-	f.setAcceptMode(QFileDialog::AcceptSave);
-#if defined HAVE_QT5 && defined Q_OS_ANDROID
-	f.setWindowState(Qt::WindowMaximized);
-#endif
-	if (f.exec() == QFileDialog::Accepted) {
-		QStringList files = f.selectedFiles();
-		if(!files.isEmpty()) {
-			Options::instance()->setOption(LAST_DIR, files.first());
-			model_->saveTunes(files.first());
-		}
-	}
-}
-
-void QompCon::actLoadPlaylist()
-{
-	QFileDialog f(mainWin_,tr("Select Playlist"),
-		      Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), tr("qomp playlist (*.qomp)"));
-	f.setFileMode(QFileDialog::ExistingFile);
-	f.setViewMode(QFileDialog::List);
-	f.setAcceptMode(QFileDialog::AcceptOpen);
-#if defined HAVE_QT5 && defined Q_OS_ANDROID
-	f.setWindowState(Qt::WindowMaximized);
-#endif
-	if (f.exec() == QFileDialog::Accepted) {
-		QStringList files = f.selectedFiles();
-		if(!files.isEmpty()) {
-			Options::instance()->setOption(LAST_DIR, files.first());
-			model_->loadTunes(files.first());
-		}
-	}
-}
-
 void QompCon::setTunes(const QList<Tune*> &tunes)
 {
 	if(!tunes.isEmpty()) {
@@ -306,23 +281,20 @@ void QompCon::actDoSettings()
 
 void QompCon::actCheckForUpdates()
 {
+#ifndef Q_OS_ANDROID
 	new UpdatesChecker(this);
+#endif
 }
 
 void QompCon::actAboutQomp()
 {
+#ifndef Q_OS_ANDROID
 	new AboutDlg(0);
+#endif
 }
 
-void QompCon::actDownloadTune(Tune *tune)
+void QompCon::actDownloadTune(Tune *tune, const QString &dir)
 {
-	static const QString option = "main.last-save-dir";
-	QString dir = QFileDialog::getExistingDirectory(mainWin_, tr("Select directory"),
-				Options::instance()->getOption(option, QDir::homePath()).toString());
-	if(dir.isEmpty())
-		return;
-
-	Options::instance()->setOption(option, dir);
 	QompTuneDownloader *td = new QompTuneDownloader(this);
 	td->download(tune, dir);
 }
@@ -357,12 +329,10 @@ void QompCon::setupMainWin()
 	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)),	mainWin_, SLOT(currentTotalTimeChanged(qint64)));
 
 	connect(mainWin_, SIGNAL(exit()),				SLOT(exit()));
-	connect(mainWin_, SIGNAL(loadPlaylist()),			SLOT(actLoadPlaylist()));
-	connect(mainWin_, SIGNAL(savePlaylist()),			SLOT(actSavePlaylist()));
 	connect(mainWin_, SIGNAL(aboutQomp()),				SLOT(actAboutQomp()));
 	connect(mainWin_, SIGNAL(checkForUpdates()),			SLOT(actCheckForUpdates()));
 	connect(mainWin_, SIGNAL(doOptions()),				SLOT(actDoSettings()));
-	connect(mainWin_, SIGNAL(downloadTune(Tune*)),			SLOT(actDownloadTune(Tune*)));
+	connect(mainWin_, SIGNAL(downloadTune(Tune*,QString)),		SLOT(actDownloadTune(Tune*,QString)));
 	connect(mainWin_, SIGNAL(actMuteActivated(bool)),		SLOT(actMuteToggle(bool)));
 	connect(mainWin_, SIGNAL(volumeSliderMoved(qreal)),		SLOT(actSetVolume(qreal)));
 	connect(mainWin_, SIGNAL(seekSliderMoved(int)),			SLOT(actSeek(int)));
@@ -389,8 +359,10 @@ void QompCon::setupPlayer()
 	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStateChanged(Qomp::State)));
 	connect(model_,  SIGNAL(currentTuneChanged(Tune*)), player_, SLOT(setTune(Tune*)));
 
+#ifndef Q_OS_ANDROID
 	player_->setVolume(Options::instance()->getOption(OPTION_VOLUME, 1).toReal());
 	player_->setAudioOutputDevice(Options::instance()->getOption(OPTION_AUDIO_DEVICE).toString());
+#endif
 }
 
 void QompCon::setupModel()

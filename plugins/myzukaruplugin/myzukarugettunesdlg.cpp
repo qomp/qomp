@@ -27,10 +27,10 @@
 
 MyzukaruGettunesDlg::MyzukaruGettunesDlg(QWidget *parent) :
 	QompPluginGettunesDlg(parent),
-	tabWidget_(new QTabWidget(this)),
-	artistsView_(new QompPluginTreeView(this)),
-	albumsView_(new QompPluginTreeView(this)),
-	tracksView_(new QompPluginTreeView(this))
+	tabWidget_(new QTabWidget(parent)),
+	artistsView_(new QompPluginTreeView(tabWidget_)),
+	albumsView_(new QompPluginTreeView(tabWidget_)),
+	tracksView_(new QompPluginTreeView(tabWidget_))
 {
 	setWindowTitle(MYZUKA_PLUGIN_NAME);
 

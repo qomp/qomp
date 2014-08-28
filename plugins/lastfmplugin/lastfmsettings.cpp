@@ -24,23 +24,44 @@
 #include "lastfmdefines.h"
 
 
-LastFmSettings::LastFmSettings(QWidget *parent) :
-	QompOptionsPage(parent),
-	ui(new Ui::LastFmSettings)
+class LastFmSettings::Private
 {
-	ui->setupUi(this);
+public:
+	Private(LastFmSettings* p) :
+		page_(p),
+		widget_(new QWidget),
+		ui(new Ui::LastFmSettings)
+	{
+		ui->setupUi(widget_);
+		QObject::connect(ui->pb_authentication, SIGNAL(clicked()), page_, SIGNAL(doLogin()));
+	}
+
+	LastFmSettings* page_;
+	QWidget* widget_;
+	Ui::LastFmSettings* ui;
+};
+
+LastFmSettings::LastFmSettings(QObject *parent) :
+	QompOptionsPage(parent)
+{
+	d = new Private(this);
 	restoreOptions();
-	connect(ui->pb_authentication, SIGNAL(clicked()), SIGNAL(doLogin()));
 }
 
 LastFmSettings::~LastFmSettings()
 {
-	delete ui;
+	delete d->ui;
+	delete d;
 }
 
 void LastFmSettings::retranslate()
 {
-	ui->retranslateUi(this);
+	d->ui->retranslateUi(d->widget_);
+}
+
+QObject *LastFmSettings::page() const
+{
+	return d->widget_;
 }
 
 void LastFmSettings::applyOptions()
@@ -49,5 +70,5 @@ void LastFmSettings::applyOptions()
 
 void LastFmSettings::restoreOptions()
 {
-	ui->lb_username->setText(Options::instance()->getOption(LASTFM_OPT_USER).toString());
+	d->ui->lb_username->setText(Options::instance()->getOption(LASTFM_OPT_USER).toString());
 }

@@ -2,19 +2,29 @@ include($$PWD/../plugins.pri)
 
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/prostopleerplugin.h \
-    $$PWD/prostopleerplugingettunesdialog.h \
-    $$PWD/prostopleerpluginsettings.h \
-    $$PWD/prostopleerplugindefines.h \
-    $$PWD/prostopleercontroller.h
+android {
+    SOURCES += $$PWD/prostopleerplugingettunesdialog_mobile.cpp \
+               $$PWD/prostopleerpluginsettings_mobile.cpp
 
-SOURCES += $$PWD/prostopleerplugin.cpp \
-    $$PWD/prostopleerplugingettunesdialog.cpp \
-    $$PWD/prostopleerpluginsettings.cpp \
-    $$PWD/prostopleercontroller.cpp
+    RESOURCES += $$PWD/qml.qrc
+}
+else {
+    SOURCES +=  $$PWD/prostopleerplugingettunesdialog.cpp \
+                $$PWD/prostopleerpluginsettings.cpp \
 
-FORMS += $$PWD/prostopleerpluginresultswidget.ui \
-    $$PWD/prostopleerpluginsettings.ui
+    FORMS   +=  $$PWD/prostopleerpluginresultswidget.ui \
+                $$PWD/prostopleerpluginsettings.ui
+}
 
-OTHER_FILES += \
-    $$PWD/metadata.json
+HEADERS +=  $$PWD/prostopleerpluginsettings.h \
+            $$PWD/prostopleerplugin.h \
+            $$PWD/prostopleerplugingettunesdialog.h \
+            $$PWD/prostopleerplugindefines.h \
+            $$PWD/prostopleercontroller.h
+
+SOURCES +=  $$PWD/prostopleerplugin.cpp \
+            $$PWD/prostopleercontroller.cpp
+
+
+OTHER_FILES += $$PWD/metadata.json
+

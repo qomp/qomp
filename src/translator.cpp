@@ -63,11 +63,15 @@ void Translator::reset()
 
 void Translator::retranslate(const QString& fileName)
 {
+	if(currentTrans_ == fileName)
+		return;
+
 	bool foundFile = false;
 	foreach(const QString& dir, transDirs()) {
 		if(load("qomp_"+fileName, dir)) {
 			qApp->installTranslator(this);
 			foundFile = true;
+			currentTrans_ = fileName;
 
 			QStringList dirs;
 			dirs << QLibraryInfo::location(QLibraryInfo::TranslationsPath) << dir;

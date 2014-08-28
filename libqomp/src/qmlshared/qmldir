@@ -1,0 +1,7 @@
+module QompShared
+QompToolButton	 1.0 QompToolButton.qml
+QompButton       1.0 QompButton.qml
+QompImage        1.0 QompImage.qml
+
+internal GetTunesDlg    GetTunesDlg.qml
+internal QompAppWindow  QompAppWindow.qml

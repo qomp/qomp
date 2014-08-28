@@ -161,7 +161,7 @@ void ProstoPleerController::searchFinished()
 		dlg_->enableNext(!list.isEmpty());
 	}
 	else {
-		QMessageBox::critical(dlg_, tr("Error"), reply->errorString());
+		QMessageBox::critical(0, tr("Error"), reply->errorString());
 	}
 }
 

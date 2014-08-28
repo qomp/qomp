@@ -20,7 +20,6 @@
 #ifndef QOMP_H
 #define QOMP_H
 
-#include <QObject>
 #include <QModelIndex>
 
 #include "common.h"
@@ -56,8 +55,7 @@ private slots:
 	void actMuteToggle(bool mute);
 	void actSeek(int ms);
 	void actSetVolume(qreal vol);
-	void actSavePlaylist();
-	void actLoadPlaylist();
+
 	void setTunes(const QList<Tune*>& tunes);
 
 	void actClearPlaylist();
@@ -67,7 +65,7 @@ private slots:
 	void actCheckForUpdates();
 	void actAboutQomp();
 
-	void actDownloadTune(Tune* tune);
+	void actDownloadTune(Tune* tune, const QString& dir);
 	void actToggleTuneState(Tune* tune);
 	void actRemoveTune(Tune* tune);
 

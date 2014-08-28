@@ -25,69 +25,79 @@
 
 #include <QKeyEvent>
 
-ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QWidget *parent) :
-	QompPluginGettunesDlg(parent),
-	ui(new Ui::ProstoPleerPluginResultsWidget)
+class ProstoPleerPluginGetTunesDialog::Private
 {
+public:
+	Private() : ui(new Ui::ProstoPleerPluginResultsWidget) {}
+	Ui::ProstoPleerPluginResultsWidget *ui;
+};
+
+
+ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QObject *parent) :
+	QompPluginGettunesDlg(parent)
+{
+	p = new Private;
+
 	setWindowTitle(PROSTOPLEER_PLUGIN_NAME);
 
-	QWidget* widget = new QWidget(this);
-	ui->setupUi(widget);
+	QWidget* widget = new QWidget();
+	p->ui->setupUi(widget);
 	setResultsWidget(widget);
 
-	ui->tb_prev->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
-	ui->tb_next->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
+	p->ui->tb_prev->setIcon(qApp->style()->standardIcon(QStyle::SP_ArrowLeft));
+	p->ui->tb_next->setIcon(qApp->style()->standardIcon(QStyle::SP_ArrowRight));
 
-	ui->tb_prev->hide();
-	ui->lb_pages->hide();
-	ui->lb_total->hide();
+	p->ui->tb_prev->hide();
+	p->ui->lb_pages->hide();
+	p->ui->lb_total->hide();
 
-	connect(ui->tv_results, SIGNAL(clicked(QModelIndex)), SLOT(itemSelected(QModelIndex)));
-	connect(ui->tb_next, SIGNAL(clicked()), SIGNAL(next()));
-	connect(ui->tb_prev, SIGNAL(clicked()), SIGNAL(prev()));
+	connect(p->ui->tv_results, SIGNAL(clicked(QModelIndex)), SLOT(itemSelected(QModelIndex)));
+	connect(p->ui->tb_next, SIGNAL(clicked()), SIGNAL(next()));
+	connect(p->ui->tb_prev, SIGNAL(clicked()), SIGNAL(prev()));
 }
 
 ProstoPleerPluginGetTunesDialog::~ProstoPleerPluginGetTunesDialog()
 {
-	delete ui;
+	delete p->ui;
+	delete p;
 }
 
 void ProstoPleerPluginGetTunesDialog::setAuthStatus(const QString &status)
 {
-	ui->lb_auth->setText(status);
+	p->ui->lb_auth->setText(status);
 }
 
 int ProstoPleerPluginGetTunesDialog::page() const
 {
-	return ui->lb_current->text().toInt();
+	return p->ui->lb_current->text().toInt();
 }
 
-void ProstoPleerPluginGetTunesDialog::setPage(int p)
+void ProstoPleerPluginGetTunesDialog::setPage(int page)
 {
-	ui->lb_current->setText(QString::number(p));
+	p->ui->lb_current->setText(QString::number(page));
 }
 
 int ProstoPleerPluginGetTunesDialog::totalPages() const
 {
-	return ui->lb_pages->text().toInt();
+	return p->ui->lb_pages->text().toInt();
 }
 
-void ProstoPleerPluginGetTunesDialog::setTotalPages(int p)
+void ProstoPleerPluginGetTunesDialog::setTotalPages(int pages)
 {
-	ui->lb_pages->setText(QString::number(p));
+	p->ui->lb_pages->setText(QString::number(pages));
 }
 
 void ProstoPleerPluginGetTunesDialog::enableNext(bool enabled)
 {
-	ui->tb_next->setEnabled(enabled);
+	p->ui->tb_next->setEnabled(enabled);
 }
 
 void ProstoPleerPluginGetTunesDialog::enablePrev(bool enabled)
 {
-	ui->tb_prev->setEnabled(enabled);
+	p->ui->tb_prev->setEnabled(enabled);
 }
 
 void ProstoPleerPluginGetTunesDialog::setModel(QAbstractItemModel *model)
 {
-	ui->tv_results->setModel(model);
+	p->ui->tv_results->setModel(model);
 }

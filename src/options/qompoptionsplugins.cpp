@@ -26,25 +26,32 @@
 
 #include "ui_qompoptionsplugins.h"
 
-QompOptionsPlugins::QompOptionsPlugins(QWidget *parent) :
-	QompOptionsPage(parent),
-	ui(new Ui::QompOptionsPlugins)
+class QompOptionsPlugins::Private: public QObject
 {
-	ui->setupUi(this);
-	restoreOptions();
-}
+	Q_OBJECT
+public:
+	Private(QompOptionsPlugins* page) :
+		QObject(page),
+		page_(page),
+		ui(new Ui::QompOptionsPlugins),
+		widget_(new QWidget)
+	{
+		ui->setupUi(widget_);
+	}
 
-QompOptionsPlugins::~QompOptionsPlugins()
-{
-	delete ui;
-}
+	void applyOptions();
+	void restoreOptions();
 
-void QompOptionsPlugins::retranslate()
-{
-	ui->retranslateUi(this);
-}
+private slots:
+	void fixSelection(const QModelIndex& parent, int start, int /*end*/);
 
-void QompOptionsPlugins::applyOptions()
+public:
+	QompOptionsPlugins* page_;
+	Ui::QompOptionsPlugins *ui;
+	QWidget* widget_;
+};
+
+void QompOptionsPlugins::Private::applyOptions()
 {
 	QStringList order;
 	for(int i = 0; i < ui->tw_plugins->topLevelItemCount(); i++) {
@@ -56,7 +63,7 @@ void QompOptionsPlugins::applyOptions()
 	PluginManager::instance()->sortPlugins();
 }
 
-void QompOptionsPlugins::restoreOptions()
+void QompOptionsPlugins::Private::restoreOptions()
 {
 	ui->tw_plugins->model()->disconnect(SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(fixSelection(QModelIndex,int,int)));
 	ui->tw_plugins->clear();
@@ -78,7 +85,45 @@ void QompOptionsPlugins::restoreOptions()
 	connect(ui->tw_plugins->model(), SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(fixSelection(QModelIndex,int,int)));
 }
 
-void QompOptionsPlugins::fixSelection(const QModelIndex& parent, int start, int /*end*/)
+void QompOptionsPlugins::Private::fixSelection(const QModelIndex& parent, int start, int /*end*/)
 {
 	ui->tw_plugins->setCurrentIndex(ui->tw_plugins->model()->index(start, 0, parent));
 }
+
+
+
+
+QompOptionsPlugins::QompOptionsPlugins(QObject *parent) :
+	QompOptionsPage(parent)
+{
+	d = new Private(this);
+	restoreOptions();
+}
+
+QompOptionsPlugins::~QompOptionsPlugins()
+{
+	delete d->ui;
+	delete d;
+}
+
+void QompOptionsPlugins::retranslate()
+{
+	d->ui->retranslateUi(d->widget_);
+}
+
+QObject *QompOptionsPlugins::page() const
+{
+	return d->widget_;
+}
+
+void QompOptionsPlugins::applyOptions()
+{
+	d->applyOptions();
+}
+
+void QompOptionsPlugins::restoreOptions()
+{
+	d->restoreOptions();
+}
+
+#include "qompoptionsplugins.moc"

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,17 +24,33 @@
 #include "common.h"
 #include "prostopleerplugindefines.h"
 
-ProstopleerPluginSettings::ProstopleerPluginSettings(QWidget *parent) :
-	QompOptionsPage(parent),
-	ui(new Ui::ProstopleerPluginSettings)
+class ProstopleerPluginSettings::Private
 {
-	ui->setupUi(this);
+public:
+	Private(ProstopleerPluginSettings* p) :
+		page_(p),
+		widget_(new QWidget),
+		ui(new Ui::ProstopleerPluginSettings)
+	{
+		ui->setupUi(widget_);
+	}
+
+	ProstopleerPluginSettings* page_;
+	QWidget* widget_;
+	Ui::ProstopleerPluginSettings* ui;
+};
+
+ProstopleerPluginSettings::ProstopleerPluginSettings(QObject *parent) :
+	QompOptionsPage(parent)
+{
+	d = new Private(this);
 	restoreOptions();
 }
 
 ProstopleerPluginSettings::~ProstopleerPluginSettings()
 {
-	delete ui;
+	delete d->ui;
+	delete d;
 }
 
 QString ProstopleerPluginSettings::name() const
@@ -44,17 +60,22 @@ QString ProstopleerPluginSettings::name() const
 
 void ProstopleerPluginSettings::retranslate()
 {
-	ui->retranslateUi(this);
+	d->ui->retranslateUi(d->widget_);
+}
+
+QObject *ProstopleerPluginSettings::page() const
+{
+	return d->widget_;
 }
 
 void ProstopleerPluginSettings::applyOptions()
 {
-	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN, ui->le_login->text());
-	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD, Qomp::encodePassword(ui->le_pass->text(), PROSTOPLEER_DECODE_KEY));
+	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN, d->ui->le_login->text());
+	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD, Qomp::encodePassword(d->ui->le_pass->text(), PROSTOPLEER_DECODE_KEY));
 }
 
 void ProstopleerPluginSettings::restoreOptions()
 {
-	ui->le_login->setText(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN).toString());
-	ui->le_pass->setText(Qomp::decodePassword(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString(), PROSTOPLEER_DECODE_KEY));
+	d->ui->le_login->setText(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN).toString());
+	d->ui->le_pass->setText(Qomp::decodePassword(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString(), PROSTOPLEER_DECODE_KEY));
 }

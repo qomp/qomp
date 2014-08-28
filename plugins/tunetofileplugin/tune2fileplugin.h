@@ -26,6 +26,8 @@
 
 #include <QPointer>
 
+class TuneToFileSettings;
+
 class Tune2FilePlugin : public QObject, public QompPlugin, public QompPlayerStatusPlugin
 {
 	Q_OBJECT
@@ -54,7 +56,7 @@ private:
 	QompPlayer *player_;
 	QString file_;
 	bool enabled_;
-	QPointer<QompOptionsPage> optPage_;
+	QPointer<TuneToFileSettings> optPage_;
 };
 
 #endif // TUNE2FILEPLUGIN_H

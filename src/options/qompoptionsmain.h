@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,9 +22,6 @@
 
 #include "qompoptionspage.h"
 
-namespace Ui {
-class QompOptionsMain;
-}
 class QompPlayer;
 
 class QompOptionsMain : public QompOptionsPage
@@ -32,20 +29,23 @@ class QompOptionsMain : public QompOptionsPage
 	Q_OBJECT
 	
 public:
-	QompOptionsMain(QWidget *parent = 0);
+	QompOptionsMain(QObject *parent = 0);
 	~QompOptionsMain();
 
 	virtual QString name() const { return tr("Main"); }
 	virtual void retranslate();
 
 	virtual void init(QompPlayer* player);
+	virtual QObject* page() const;
 
 public slots:
 	virtual void applyOptions();
 	virtual void restoreOptions();
 	
 private:
-	Ui::QompOptionsMain *ui;
+	class Private;
+	Private* d;
+	friend class Private;
 	QompPlayer* player_;
 };
 

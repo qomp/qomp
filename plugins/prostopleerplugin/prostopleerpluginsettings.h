@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,30 +20,26 @@
 #ifndef PROSTOPLEERPLUGINSETTINGS_H
 #define PROSTOPLEERPLUGINSETTINGS_H
 
-#include <QWidget>
 #include "qompoptionspage.h"
-
-namespace Ui {
-class ProstopleerPluginSettings;
-}
 
 class ProstopleerPluginSettings : public QompOptionsPage
 {
-	Q_OBJECT
-	
+	Q_OBJECT	
 public:
-	explicit ProstopleerPluginSettings(QWidget *parent = 0);
+	explicit ProstopleerPluginSettings(QObject *parent = 0);
 	~ProstopleerPluginSettings();
 
 	virtual QString name() const;
 	virtual void retranslate();
+	virtual QObject* page() const;
 
 public slots:
 	virtual void applyOptions();
 	virtual void restoreOptions();
 	
 private:
-	Ui::ProstopleerPluginSettings *ui;
+	class Private;
+	Private* d;
 };
 
 #endif // PROSTOPLEERPLUGINSETTINGS_H
