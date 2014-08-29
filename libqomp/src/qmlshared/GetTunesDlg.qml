@@ -8,6 +8,7 @@ Item {
 	signal doSearch()
 	signal accepted()
 	signal rejected()
+	signal editTextChanged()
 
 	property string title;
 	property bool status: false
@@ -15,10 +16,12 @@ Item {
 	property alias serchText: items.editText
 	readonly property alias content: placeholder
 	property bool busy: false
+	property bool waitForSuggestions: false
 
 	Keys.onReleased: {
 		if (event.key === Qt.Key_Back) {
 			root.rejected()
+			event.accepted = true
 		}
 	}
 
@@ -33,7 +36,7 @@ Item {
 
 			anchors.top: parent.top
 			width: parent.width
-			height: 80
+			height: 80 * scaler.scaleY
 
 			color: "transparent"
 
@@ -42,11 +45,12 @@ Item {
 
 				anchors.right: parent.right
 				anchors.verticalCenter: parent.verticalCenter
-				anchors.leftMargin: 10
-				anchors.rightMargin: 10
+				anchors.leftMargin: 10 * scaler.scaleX
+				anchors.rightMargin: 10 * scaler.scaleX
 
 				icon: "qrc:///icons/search"
 
+				focus: true
 				onClicked: {
 					Qt.inputMethod.hide()
 					root.doSearch()
@@ -56,12 +60,38 @@ Item {
 			ComboBox {
 				id: items
 
+				property bool inserting: false
+
 				anchors.verticalCenter: parent.verticalCenter
 				anchors.left: parent.left
 				anchors.right: search.left
-				anchors.margins: 10
+				anchors.margins: 10 * scaler.scaleMargins
 
 				editable: true
+				clip: true
+
+				onEditTextChanged: {
+					if(!inserting) {
+						if(editText.length > 2)
+							root.editTextChanged()
+					}
+					else
+						inserting = false
+				}
+
+				onActivated: inserting = true
+
+				BusyIndicator {
+					id: sugIndicator
+
+					anchors.right: parent.right
+					anchors.rightMargin: 50 * scaler.scaleX
+					anchors.verticalCenter: parent.verticalCenter
+					height: parent.height * 0.8
+
+					visible: root.waitForSuggestions
+					running: visible
+				}
 			}
 		}
 
@@ -86,7 +116,7 @@ Item {
 			anchors.left: parent.left
 			anchors.right: parent.right
 
-			height: 100
+			height: 100 * scaler.scaleY
 			color: "transparent"
 
 			QompButton {
@@ -94,7 +124,7 @@ Item {
 
 				anchors.bottom: parent.bottom
 				anchors.right: parent.right
-				anchors.margins: 15
+				anchors.margins: 15 * scaler.scaleMargins
 
 				text: qsTr("OK")
 
@@ -109,7 +139,7 @@ Item {
 
 				anchors.bottom: parent.bottom
 				anchors.right: btnok.left
-				anchors.margins: 15
+				anchors.margins: 15 * scaler.scaleMargins
 
 				text: qsTr("Cancel")
 
@@ -137,6 +167,48 @@ Item {
 		}
 	}
 
+	Menu {
+		id: suggestions
+
+		Instantiator {
+			id: creator
+
+			model:[]
+
+			MenuItem {
+				text: modelData
+				onTriggered: {
+					items.inserting = true
+					items.editText = text
+					items.inserting = false
+				}
+			}
+			onObjectAdded: suggestions.insertItem(index, object)
+			onObjectRemoved: suggestions.removeItem(object)
+		}
+	}
+
+	MessageDialog {
+		id: alertDlg
+		visible: false
+		icon: StandardIcon.Warning
+	}
+
+	function showAlert(title, text) {
+		alertDlg.title = title
+		alertDlg.text = text
+		alertDlg.open()
+	}
+
+	function doSuggestions(list) {
+		root.waitForSuggestions = false
+		creator.active = false
+		creator.model = list
+		creator.active = true
+		suggestions.popup()
+	}
+
+
 	states: [
 		State {
 			name: "busy"
@@ -153,16 +225,4 @@ Item {
 			}
 		}
 	]
-
-	MessageDialog {
-		id: alertDlg
-		visible: false
-		icon: StandardIcon.Warning
-	}
-
-	function showAlert(title, text) {
-		alertDlg.title = title
-		alertDlg.text = text
-		alertDlg.open()
-	}
 }

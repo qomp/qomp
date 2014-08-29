@@ -24,7 +24,6 @@
 #include "tune.h"
 #include "qompqmlengine.h"
 
-#include <QKeyEvent>
 #include <QTimer>
 #include <QQuickItem>
 #include <QQmlContext>
@@ -32,7 +31,7 @@
 #include <QEventLoop>
 #include <QQmlProperty>
 
-static const int sugTimerInterval = 500;
+static const int sugTimerInterval = 1000;
 
 
 class QompPluginGettunesDlg::Private : public QObject
@@ -43,13 +42,8 @@ public:
 	~Private();
 
 public slots:
-	void suggestionActionTriggered(QAction* a);
 	void search();
 	void timeout();
-
-protected:
-	void keyPressEvent(QKeyEvent *e);
-	bool eventFilter(QObject *o, QEvent *e);
 
 public:
 	QQuickItem* item_;
@@ -71,13 +65,15 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	searchHistory_ = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
 	QQmlProperty::write(item_, "model", QVariant::fromValue(searchHistory_));
 
+	sugTimer_->setSingleShot(true);
+	sugTimer_->setInterval(sugTimerInterval);
+
 	connect(item_, SIGNAL(doSearch()), SLOT(search()));
 	connect(item_, SIGNAL(accepted()), loop_, SLOT(quit()));
 	connect(item_, SIGNAL(rejected()), loop_, SLOT(quit()));
 	connect(item_, SIGNAL(destroyed()), loop_, SLOT(quit()));
-//	connect(ui->cb_search, SIGNAL(editTextChanged(QString)), sugTimer_, SLOT(start()));
-//	connect(suggestionsMenu_, SIGNAL(triggered(QAction*)), SLOT(suggestionActionTriggered(QAction*)));
-//	connect(sugTimer_, SIGNAL(timeout()), SLOT(timeout()));
+	connect(item_, SIGNAL(editTextChanged()), sugTimer_, SLOT(start()));
+	connect(sugTimer_, SIGNAL(timeout()), SLOT(timeout()));
 }
 
 QompPluginGettunesDlg::Private::~Private()
@@ -85,20 +81,6 @@ QompPluginGettunesDlg::Private::~Private()
 	Options::instance()->setOption(OPTION_SEARCH_HISTORY, searchHistory_);
 	QompQmlEngine::instance()->removeItem();
 	//item_->deleteLater();
-}
-
-void QompPluginGettunesDlg::Private::suggestionActionTriggered(QAction *a)
-{
-//	if(a) {
-//		ui->cb_search->blockSignals(true);
-//		const QString text = a->text();
-//		if(ui->cb_search->findText(text) == -1) {
-//			ui->cb_search->insertItem(0, text);
-//		}
-//		ui->cb_search->setCurrentIndex(ui->cb_search->findText(text));
-//		search();
-//		ui->cb_search->blockSignals(false);
-//	}
 }
 
 void QompPluginGettunesDlg::Private::search()
@@ -113,7 +95,7 @@ void QompPluginGettunesDlg::Private::search()
 	}
 	searchHistory_.insert(0, text);
 	while(searchHistory_.length() > 10)
-		searchHistory_.takeFirst();
+		searchHistory_.takeLast();
 
 	QQmlProperty::write(item_, "model", QVariant::fromValue(searchHistory_));
 
@@ -122,53 +104,12 @@ void QompPluginGettunesDlg::Private::search()
 
 void QompPluginGettunesDlg::Private::timeout()
 {
-	emit mainDlg_->searchTextChanged(mainDlg_->currentSearchText());
+	QString text = mainDlg_->currentSearchText();
+	if(text.length() > 2) {
+		emit mainDlg_->searchTextChanged(mainDlg_->currentSearchText());
+		QQmlProperty::write(item_, "waitForSuggestions", true);
+	}
 }
-
-bool QompPluginGettunesDlg::Private::eventFilter(QObject *o, QEvent *e)
-{
-//	if(o == suggestionsMenu_ && e->type() == QEvent::KeyPress) {
-//		QKeyEvent* ke = static_cast<QKeyEvent*>(e);
-//		if(ke->key() == Qt::Key_Escape) {
-//			suggestionsMenu_->hide();
-//			ui->cb_search->setFocus();
-//			return true;
-//		}
-//		else if(ke->key() != Qt::Key_Up
-//			&& ke->key() != Qt::Key_Down
-//			&& ke->key() != Qt::Key_Return) {
-//			qApp->postEvent(ui->cb_search, new QKeyEvent(ke->type(),
-//								     ke->key(),
-//								     ke->modifiers(),
-//								     ke->text(),
-//								     ke->isAutoRepeat(),
-//								     ushort(ke->count())));
-//			ke->accept();
-//			suggestionsMenu_->hide();
-//			ui->cb_search->setFocus();
-//			return true;
-//		}
-//	}
-//	//Workaround inserting combobox suggestion on menu popup
-//	else if(o == ui->cb_search) {
-//		if(/*e->type() == QEvent::FocusIn ||*/ e->type() == QEvent::FocusOut) {
-//			e->ignore();
-//			return true;
-//		}
-//	}
-//	else if(o == dialog_ && e->type() == QEvent::KeyPress) {
-//		QKeyEvent* ke = static_cast<QKeyEvent*>(e);
-//		if(ke->key() == Qt::Key_Return && ui->cb_search->hasFocus()) {
-//			search();
-//			ke->accept();
-//			return true;
-//		}
-//	}
-	return QObject::eventFilter(o, e);
-}
-
-
-
 
 
 
@@ -190,6 +131,7 @@ QompPluginGettunesDlg::Result QompPluginGettunesDlg::go()
 {
 	QompQmlEngine::instance()->addItem(d->item_);
 	d->loop_->exec();
+	d->loop_->disconnect();
 	if(d->item_->property("status").toBool())
 		return ResultOK;
 
@@ -232,14 +174,11 @@ void QompPluginGettunesDlg::stopBusyWidget()
 
 void QompPluginGettunesDlg::newSuggestions(const QStringList &list)
 {
-//	d->suggestionsMenu_->clear();
+	QStringList l(list);
+	while(l.size() > 8)
+		l.takeLast();
 
-//	foreach(const QString& sug, list) {
-//		QAction* act = new QAction(sug, d->suggestionsMenu_);
-//		d->suggestionsMenu_->addAction(act);
-//	}
-//	d->suggestionsMenu_->popup(d->dialog_->mapToGlobal(d->ui->cb_search->geometry().bottomLeft()));
-//	d->suggestionsMenu_->move(d->dialog_->mapToGlobal(d->ui->cb_search->geometry().bottomLeft()));
+	QMetaObject::invokeMethod(d->item_, "doSuggestions", Q_ARG(QVariant, QVariant::fromValue(l)));
 }
 
 void QompPluginGettunesDlg::itemSelected(const QModelIndex &ind)

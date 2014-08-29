@@ -1,5 +1,6 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
+import QtQuick.Controls.Styles 1.2
 import "qrc:///qmlshared"
 
 Rectangle {
@@ -15,9 +16,7 @@ Rectangle {
 
 	color: "lightgray"
 
-	Component.onCompleted: root.nextEnabled = false
-
-	ListView {
+	QompPluginsSearchListView {
 		id: view
 
 		anchors.top: parent.top
@@ -25,60 +24,13 @@ Rectangle {
 		anchors.left: parent.left
 		anchors.right: parent.right
 
-		clip: true
-
-//		snapMode: ListView.SnapToItem
-		boundsBehavior: Flickable.StopAtBounds
-
-		delegate: Rectangle {
-			id: delegate
-
-			height: 60
-			width: parent.width
-			color: "transparent"
-
-			CheckBox {
-				id: chkbx
-
-				anchors.left: parent.left
-				anchors.leftMargin: 10
-				anchors.verticalCenter: parent.verticalCenter
-				checked: model.state
-
-				onClicked: {
-					view.currentIndex = index
-					view.positionViewAtIndex(index,ListView.Visible)
-					root.itemCheckClick(index)
-				}
-			}
-
-			QompImage {
-				id: image
-				anchors.left: chkbx.right
-				anchors.leftMargin: 10
-				anchors.verticalCenter: parent.verticalCenter
-				height: delegate.height * 0.9
-				width: height
-				source: "image://qomp/"+model.icon
-			}
-
-			Text {
-				id: txt
-				anchors.left: image.right
-				anchors.right: parent.right
-				height: parent.height
-				clip: true
-				verticalAlignment: Text.AlignVCenter
-				font.pixelSize: 18
-				text: model.text
-			}
-		}
+		onCheckBoxClicked: root.itemCheckClick(index)
 	}
 
 	Rectangle {
 		id: info
 
-		height: 80
+		height: 80 * scaler.scaleY
 		anchors.left: parent.left
 		anchors.right: parent.right
 		anchors.bottom: parent.bottom
@@ -92,7 +44,7 @@ Rectangle {
 			anchors.top: parent.top
 			height: parent.height/2
 			width: Math.max(contentWidth, authTxt.contentWidth)
-			anchors.leftMargin: 5
+			anchors.leftMargin: 5 * scaler.scaleX
 			font.pixelSize: height / 2
 			verticalAlignment: Text.AlignVCenter
 			text: qsTr("Current Page:")
@@ -105,10 +57,11 @@ Rectangle {
 			anchors.left: pageTxt.right
 			anchors.top: parent.top
 			height: parent.height/2
-			width: 80
-			anchors.leftMargin: 5
+			width: 80 * scaler.scaleX
+			anchors.leftMargin: 5 * scaler.scaleX
 			font.pixelSize: height / 2
 			verticalAlignment: Text.AlignVCenter
+			text: "0"
 		}
 
 		Item {
@@ -122,6 +75,7 @@ Rectangle {
 				height: parent.height*0.9
 				icon: "qrc:/icons/arrow-up"
 				rotation: 90
+				enabled: false
 
 				onClicked: root.actNext()
 			}
@@ -148,8 +102,8 @@ Rectangle {
 			anchors.bottom: parent.bottom
 			height: parent.height/2
 			clip: true
-			width: 200
-			anchors.leftMargin: 5
+			width: 200 * scaler.scaleX
+			anchors.leftMargin: 5 * scaler.scaleX
 			font.pixelSize: height / 2
 			verticalAlignment: Text.AlignVCenter
 		}

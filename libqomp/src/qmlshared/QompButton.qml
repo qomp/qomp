@@ -9,9 +9,9 @@ Rectangle {
 
 	signal clicked()
 
-	width: 140 //* scaler.scaleX
-	height: 72 //* scaler.scaleY
-	radius: 6 //* scaler.scaleMargins
+	width: 140 * scaler.scaleX
+	height: 72 * scaler.scaleY
+	radius: 6 * scaler.scaleMargins
 	border.width: 2
 
 	gradient: Gradient {
@@ -43,7 +43,6 @@ Rectangle {
 		horizontalAlignment: Text.AlignHCenter
 		anchors.centerIn: parent
 		font.pixelSize: root.height / 3
-		//font.pointSize: 20
 		color: "DarkBlue"
 
 		Behavior on color {

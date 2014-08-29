@@ -8,13 +8,13 @@ Rectangle {
 	property bool enabled: true
 	property alias icon: image.source
 
-	height: 72
+	height: 72 * scaler.scaleY
 	width: height
 
 
 	border.width: 2
 	border.color: "black"
-	radius: 5
+	radius: 5 * scaler.scaleMargins
 
 	MouseArea {
 		id: ma

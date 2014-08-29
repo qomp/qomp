@@ -123,13 +123,13 @@ QIcon QompPluginTune::icon() const
 {
 	static QIcon icoDis;
 	if(icoDis.isNull()) {
-		QIcon tmp(":/icons/icons/tune.png");
-		icoDis = QIcon(tmp.pixmap(64, QIcon::Disabled));
-		QPixmapCache::insert(QString::number(icoDis.cacheKey()),icoDis.pixmap(64));
+		QPixmap p(":/icons/tune_disabled");
+		icoDis = QIcon(p);
+		QPixmapCache::insert(QString::number(icoDis.cacheKey()),p);
 	}
 	static QIcon icoEn;
 	if(icoEn.isNull()) {
-		QPixmap p(":/icons/icons/tune.png");
+		QPixmap p(":/icons/tune");
 		icoEn = QIcon(p);
 		QPixmapCache::insert(QString::number(icoEn.cacheKey()),p);
 	}

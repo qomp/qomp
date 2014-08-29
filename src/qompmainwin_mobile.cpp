@@ -63,7 +63,7 @@ public slots:
 	void savePlaylistActivate(const QJSValue& file);
 
 	void updateTuneInfo(Tune *tune);
-	void updateIcons(Qomp::State state);
+	void updateState(Qomp::State state);
 
 	void updateOptions(const QJSValue &val);
 	void totalDurationChanged(uint time);
@@ -107,8 +107,8 @@ void QompMainWin::Private::setUp()
 
 	connect(root(), SIGNAL(positionChanged(QJSValue)), SLOT(sliderMoved(QJSValue)));
 	connectActions();
-	root()->installEventFilter(mainWin_);
 	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(buildOpenTunesMenu()));
+
 	totalDurationChanged(0);
 }
 
@@ -234,17 +234,24 @@ void QompMainWin::Private::updateTuneInfo(Tune* tune)
 				  Q_ARG(QVariant, mainWin_->model_->indexForTune(tune).row()));
 }
 
-void QompMainWin::Private::updateIcons(Qomp::State state)
+void QompMainWin::Private::updateState(Qomp::State state)
 {
 	switch (state) {
 	case Qomp::StatePlaying:
-		QMetaObject::invokeMethod(root(), "setPlayIcon", Q_ARG(QVariant,true));
 		QQmlProperty::write(root(), "playing", true);
 		break;
+
+	case Qomp::StateLoading:
+	case Qomp::StateBuffering:
+		QQmlProperty::write(root(), "busy", true);
+		break;
+
 	case Qomp::StatePaused:
+	case Qomp::StateStopped:
+	case Qomp::StateError:
 	default:
-		QMetaObject::invokeMethod(root(), "setPlayIcon", Q_ARG(QVariant,false));
 		QQmlProperty::write(root(), "playing", false);
+		QQmlProperty::write(root(), "busy", false);
 		break;
 	}
 }
@@ -254,10 +261,10 @@ void QompMainWin::Private::updateOptions(const QJSValue& val)
 	Options::instance()->setOption(OPTION_REPEAT_ALL, val.toBool());
 }
 
-void QompMainWin::Private::totalDurationChanged(uint /*time*/)
+void QompMainWin::Private::totalDurationChanged(uint time)
 {
-//	QTime t = QTime(0,0,0,0).addSecs(time);
-//	ui->lb_playtime->setText(t.toString("hh:mm:ss"));
+	QTime t = QTime(0,0,0,0).addSecs(time);
+	QQmlProperty::write(root(), "totalDuration", t.toString("hh:mm:ss"));
 }
 
 
@@ -306,18 +313,8 @@ void QompMainWin::playerStateChanged(Qomp::State state)
 	if(currentState_ == state)
 		return;
 
-	d->updateIcons(state);
 	currentState_ = state;
-
-	switch(state) {
-	case Qomp::StateBuffering:
-	case Qomp::StateLoading:
-		QQmlProperty::write(d->root(), "busy", true);
-		break;
-	default:
-		QQmlProperty::write(d->root(), "busy", false);
-		break;
-	}
+	d->updateState(state);
 	d->updateTuneInfo(model_->currentTune());
 }
 
@@ -342,30 +339,6 @@ void QompMainWin::toggleVisibility()
 
 bool QompMainWin::eventFilter(QObject *o, QEvent *e)
 {
-	if(o == d->root()) {
-//		if(e->type() == QEvent::LanguageChange) {
-//			d->ui->retranslateUi(d->mainWin_);
-//		}
-//		else
-		if(e->type() == QEvent::Close) {
-//			if(Options::instance()->getOption(OPTION_HIDE_ON_CLOSE).toBool()) {
-//				hide();
-//				e->ignore();
-//			}
-//			else {
-				emit exit();
-				e->accept();
-//			}
-		}
-
-		//Dont forget remove this!!!!!
-		if (e->type() == QEvent::KeyPress) {
-			QKeyEvent *ke = static_cast<QKeyEvent*>(e);
-			if(ke->key() == Qt::Key_O && ke->modifiers() == Qt::ControlModifier)
-				QMetaObject::invokeMethod(d->root(), "doMainMenu");
-		}
-	}
-
 	return QObject::eventFilter(o,e);
 }
 

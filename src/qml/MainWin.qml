@@ -36,17 +36,20 @@ Rectangle {
 	property bool playing: false
 	property bool busy: false
 	property bool repeat: false
+	property string totalDuration;
+
+	readonly property bool active: Stack.status === Stack.Active
 
 	color: "lightblue"
 
 	Keys.onReleased: {
 		if (event.key === Qt.Key_Back) {
 			root.actExit()
-			event.accepted
+			event.accepted = true
 		}
 		else if (event.key === Qt.Key_Menu) {
 			root.doMainMenu()
-			event.accepted
+			event.accepted = true
 		}
 	}
 
@@ -68,7 +71,7 @@ Rectangle {
 		highlight: Rectangle { color: Qt.darker(root.color) }
 
 		delegate: PlayListDelegate {
-			busy: model.current && root.busy
+			busy: model.current && root.busy && root.active
 			playing: model.current && root.playing
 			onLongTap: {
 				trackMenu.canDownload = false //Temporary disable
@@ -80,7 +83,7 @@ Rectangle {
 
 	Rectangle {
 		id: controls
-		height: 150
+		height: 150 * scaler.scaleY
 		anchors.bottom: parent.bottom
 		color: "SteelBlue"
 		width: parent.width
@@ -91,8 +94,8 @@ Rectangle {
 			anchors.top: parent.top
 			anchors.left: parent.left
 			anchors.right: parent.right
-			height: 30
-			anchors.margins: 10
+			height: controls.height / 5
+			anchors.margins: 10 * scaler.scaleMargins
 
 			Text {
 				id: curPosTxt
@@ -100,8 +103,8 @@ Rectangle {
 				anchors.left: parent.left
 				verticalAlignment: Text.AlignVCenter
 				horizontalAlignment: Text.AlignLeft
-				width: 50
-				font.pixelSize: 18
+				width: 60 * scaler.scaleX
+				font.pixelSize: parent.height / 1.5
 				color: "white"
 			}
 
@@ -111,8 +114,8 @@ Rectangle {
 				anchors.right: parent.right
 				verticalAlignment: Text.AlignVCenter
 				horizontalAlignment: Text.AlignRight
-				width: 50
-				font.pixelSize: 18
+				width: curPosTxt.width
+				font.pixelSize: curPosTxt.font.pixelSize
 				color: "white"
 			}
 
@@ -122,7 +125,7 @@ Rectangle {
 				anchors.verticalCenter: parent.verticalCenter
 				anchors.left: curPosTxt.right
 				anchors.right: totalDurTxt.left
-				anchors.margins: 10
+				anchors.margins: 10 * scaler.scaleMargins
 
 				onValueChanged: {
 					if (pressed)
@@ -136,7 +139,7 @@ Rectangle {
 			anchors.left: parent.left
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom
-			anchors.margins: 10
+			anchors.margins: 10 * scaler.scaleMargins
 
 			Row {
 				anchors.horizontalCenter: parent.horizontalCenter
@@ -150,7 +153,7 @@ Rectangle {
 				}
 				QompToolButton {
 					id: play
-					icon: "qrc:///icons/play"
+					icon:root.playing ? "qrc:///icons/pause" : "qrc:///icons/play"
 					anchors.verticalCenter: parent.verticalCenter
 					onClicked: root.actPlay()
 				}
@@ -233,10 +236,6 @@ Rectangle {
 
 		onAccepted: fileDialog.onDialogAccepted()
 		visible: false
-	}
-
-	function setPlayIcon(playing) {
-		play.icon = playing ? "qrc:///icons/pause" : "qrc:///icons/play"
 	}
 
 	function doMainMenu() {

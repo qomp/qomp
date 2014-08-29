@@ -6,5 +6,7 @@
         <file>qmlshared/QompButton.qml</file>
         <file>qmlshared/QompAppWindow.qml</file>
         <file>qmlshared/QompImage.qml</file>
+        <file>qmlshared/QompCheckBox.qml</file>
+        <file>qmlshared/QompPluginsSearchListView.qml</file>
     </qresource>
 </RCC>

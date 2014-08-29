@@ -26,6 +26,6 @@ unix:!android {
 }
 
 lupdate_only {
-    SOURCES += $$PWD/qml/*.qml
+    SOURCES += ($$_PRO_FILE_PWD_)/qml/*.qml
 }
 

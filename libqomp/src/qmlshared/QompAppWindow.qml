@@ -12,23 +12,21 @@ ApplicationWindow {
 	height: 600
 	width: 300
 
-	Component.onCompleted: {
-		//add empty rect to view
-		root.addView(Qt.createQmlObject("import QtQuick 2.3; Item{}", root))
-	}
-
 	color: "lightblue"
 
-	onClosing: root.exit()
+	onClosing: {
+		event.accepted = true
+		root.exit()
+	}
 
 	Item {
 		anchors.fill: parent
 
 		Keys.onReleased: {
 			if (event.key === Qt.Key_Back) {
-				if (mainview.depth > 2) { // first view - is emty rect
-					removeView();
-					event.accepted = true;
+				event.accepted = true;
+				if (mainview.depth > 1) {
+					removeView();	
 				}
 				else {
 					root.exit()
@@ -68,13 +66,12 @@ ApplicationWindow {
 		}
 	}
 	function addView(item) {
-		contents.push({item: item})
+		contents.push({item: item, destroyOnPop: true/* ,immediate: true*/})
 		contents.currentItem.focus = true
 	}
 
 	function removeView() {
-		var item = contents.pop({})
-		item.destroy(contents.animDuration * 2)
+		var item = contents.pop({/*immediate: true*/})
 		contents.currentItem.focus = true
 	}
 

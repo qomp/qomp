@@ -14,7 +14,7 @@ Rectangle {
 	signal longTap()
 
 	width: parent.width
-	height: 100
+	height: 100 * scaler.scaleY
 
 	color: "transparent"
 
@@ -25,7 +25,8 @@ Rectangle {
 		anchors.top: parent.top
 		anchors.left: parent.left
 		anchors.right: parent.right
-		anchors.margins: 5
+		anchors.margins: 5 * scaler.scaleMargins
+		anchors.leftMargin: 15 * scaler.scaleMargins
 
 		text: {
 			var txt = model.title
@@ -42,7 +43,7 @@ Rectangle {
 		clip: true
 		elide: Text.ElideMiddle
 		font.bold: model.current === undefined ? false : model.current
-		font.pixelSize: 24
+		font.pixelSize: parent.height / 4
 		horizontalAlignment: Text.AlignLeft
 		verticalAlignment: Text.AlignVCenter
 	}
@@ -54,14 +55,14 @@ Rectangle {
 		anchors.top: mainText.bottom
 		anchors.left: parent.left
 		anchors.right: parent.right
-		anchors.margins: 5
-		anchors.leftMargin: 15
+		anchors.margins: mainText.anchors.margins
+		anchors.leftMargin: mainText.anchors.leftMargin
 
 		text: model.artist + '  ' + model.duration
 		horizontalAlignment: Text.AlignLeft
 		verticalAlignment: Text.AlignTop
 		clip: true
-		font.pixelSize: 18
+		font.pixelSize: parent.height / 5.5
 	}
 
 	QompImage {
@@ -71,7 +72,7 @@ Rectangle {
 		anchors.verticalCenter: parent.verticalCenter
 		height: root.height * 0.7
 		width: height
-		source: "qrc:///icons/icons/tune.png"
+		source: "qrc:///icons/tune"
 		opacity: 0
 
 		Behavior on opacity {
@@ -120,7 +121,7 @@ Rectangle {
 	states: [
 		State {
 			name: "playing"
-			when: root.playing == true && root.busy === false
+			when: root.playing == true
 
 			PropertyChanges {
 				target: image

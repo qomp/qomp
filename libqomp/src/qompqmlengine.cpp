@@ -18,6 +18,7 @@
  */
 
 #include "qompqmlengine.h"
+#include "scaler.h"
 
 #include <QCoreApplication>
 #include <QQuickItem>
@@ -28,12 +29,10 @@
 #include <QQuickImageProvider>
 #include <QPixmapCache>
 
-#ifdef Q_OS_ANDROID
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
 #include <QtAndroid>
 #include <QKeyEvent>
-#endif
 
 QQuickWindow* _instance = nullptr;
 
@@ -52,8 +51,10 @@ public:
 	virtual QPixmap	requestPixmap(const QString &id, QSize */*size*/, const QSize &/*requestedSize*/)
 	{
 		QPixmap pix;
-		QPixmapCache::find(id, &pix);
-		return pix;
+		if(QPixmapCache::find(id, &pix))
+			return pix.copy();
+
+		return QPixmap();
 	}
 
 	static const QString& name()
@@ -81,10 +82,10 @@ QompQmlEngine::~QompQmlEngine()
 
 QQuickItem *QompQmlEngine::createItem(const QUrl &url)
 {
-	QQmlContext* context = new QQmlContext(this);
+	//QQmlContext* context = new QQmlContext(this);
 	QQmlComponent* comp = new QQmlComponent(this, url);
-	QQuickItem* item = static_cast<QQuickItem*>(comp->create(context));
-	context->setParent(item);
+	QQuickItem* item = static_cast<QQuickItem*>(comp->create(rootContext()));
+	//context->setParent(item);
 	comp->setParent(item);
 	connect(item, SIGNAL(destroyed()), SLOT(itemDeleted()));
 	return item;
@@ -120,6 +121,9 @@ QompQmlEngine::QompQmlEngine() :
 	window_ = static_cast<QQuickWindow*>(rootObjects().first());
 	connect(window_, SIGNAL(exit()), SIGNAL(quit()));
 	_instance = window_;
+
+	Scaler* scal = new Scaler(this);
+	rootContext()->setContextProperty("scaler", scal);
 
 #ifdef Q_OS_ANDROID
 	QAndroidJniObject act = QtAndroid::androidActivity();

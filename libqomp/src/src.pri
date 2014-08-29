@@ -9,7 +9,6 @@ SOURCES += $$PWD/common.cpp \
         $$PWD/pluginmanager.cpp \
         $$PWD/pluginhost.cpp
 
-
 HEADERS += $$PWD/libqomp_global.h \
         $$PWD/common.h \
         $$PWD/options.h \        
@@ -23,9 +22,11 @@ HEADERS += $$PWD/libqomp_global.h \
 
 
 android {
-    HEADERS += $$PWD/qompqmlengine.h
+    HEADERS += $$PWD/qompqmlengine.h  \
+         $$PWD/scaler.h
 
-    SOURCES += $$PWD/qompqmlengine.cpp
+    SOURCES += $$PWD/qompqmlengine.cpp  \
+         $$PWD/scaler.cpp
 
     RESOURCES += $$PWD/qml.qrc
 }
