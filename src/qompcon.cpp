@@ -35,8 +35,11 @@
 #include "qomptunedownloader.h"
 #else
 #include "qompqmlengine.h"
-#endif
 
+#include <QAndroidJniEnvironment>
+#include <QAndroidJniObject>
+#include <QtAndroid>
+#endif
 
 #include <QCoreApplication>
 #ifdef HAVE_QT5
@@ -53,6 +56,32 @@
 #include <QDebug>
 #endif
 
+
+#ifdef Q_OS_ANDROID
+static QompCon* _instance;
+
+static void incomingCallStart(JNIEnv */*env*/, jobject /*thiz*/)
+{
+	_instance->incomingCall(true);
+}
+
+static void incomingCallFinish(JNIEnv */*env*/, jobject /*thiz*/)
+{
+	_instance->incomingCall(false);
+}
+
+static void notifyIcon(const QString& text)
+{
+	QAndroidJniObject str = QAndroidJniObject::fromString(text);
+	QAndroidJniObject::callStaticMethod<void>("com/googlecode/qomp/Qomp",
+							"showStatusIcon",
+							"(Ljava/lang/String;)V",
+							str.object<jstring>());
+}
+#endif
+
+
+
 QompCon::QompCon(QObject *parent) :
 	QObject(parent),
 	mainWin_(0),
@@ -63,6 +92,18 @@ QompCon::QompCon(QObject *parent) :
 	qRegisterMetaType<Qomp::State>("State");
 #ifdef Q_OS_ANDROID
 	connect(QompQmlEngine::instance(), SIGNAL(quit()), SLOT(exit()));
+
+	_instance = this;
+
+	QAndroidJniObject act = QtAndroid::androidActivity();
+	QAndroidJniEnvironment jni;
+	jclass clazz = jni->GetObjectClass(act.object());
+	JNINativeMethod methods[] = {
+			{ "incomingCallStart",  "()V", (void*)incomingCallStart  },
+			{ "incomingCallFinish", "()V", (void*)incomingCallFinish }
+		};
+	jni->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0]));
+	jni->DeleteLocalRef(clazz);
 #endif
 }
 
@@ -134,6 +175,26 @@ void QompCon::init()
 	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
 		actPlay();
 }
+
+#ifdef Q_OS_ANDROID
+void QompCon::incomingCall(bool begining)
+{
+	static Qomp::State state = Qomp::StateStopped;
+
+	if(begining) {
+		if(player_->state() == Qomp::StatePlaying) {
+			state = Qomp::StatePlaying;
+			actPause();
+		}
+	}
+	else {
+		if(state == Qomp::StatePlaying) {
+			actPlay();
+			state =  Qomp::StateStopped;
+		}
+	}
+}
+#endif
 
 void QompCon::exit()
 {
@@ -370,6 +431,7 @@ void QompCon::setupPlayer()
 void QompCon::setupModel()
 {
 	model_ = new QompPlayListModel(this);
+	connect(model_, SIGNAL(currentTuneChanged(Tune*)), SLOT(currentTuneChanged(Tune*)));
 }
 
 void QompCon::stopPlayer()
@@ -441,4 +503,9 @@ void QompCon::playerStateChanged(Qomp::State state)
 	mainWin_->playerStateChanged(state);
 	if (state == Qomp::StateError && QompNetworkingFactory::instance()->isNetworkAvailable())
 		mediaFinished(true);
+}
+
+void QompCon::currentTuneChanged(Tune *t)
+{
+	notifyIcon(model_->indexForTune(t).data().toString());
 }

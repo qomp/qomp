@@ -38,6 +38,9 @@ public:
 	~QompCon();
 
 	void init();
+#ifdef Q_OS_ANDROID
+	void incomingCall(bool begining);
+#endif
 
 private slots:
 	void exit();
@@ -71,6 +74,7 @@ private slots:
 
 	void mediaFinished(bool afterError = false);
 	void playerStateChanged(Qomp::State state);
+	void currentTuneChanged(Tune* t);
 
 //protected:
 //	bool eventFilter(QObject *obj, QEvent *e);

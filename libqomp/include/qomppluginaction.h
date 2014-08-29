@@ -31,7 +31,8 @@ class QAction;
 class LIBQOMPSHARED_EXPORT QompPluginAction : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString text READ text())
+	Q_PROPERTY(QString text READ text() NOTIFY textChanged())
+
 public:
 	QompPluginAction(const QIcon& ico, const QString& text, QObject* receiver, const char* slot, QObject *parent = 0);
 	~QompPluginAction();
@@ -45,6 +46,7 @@ public:
 
 signals:
 	void triggered();
+	void textChanged();
 
 private:
 	QObject* receiver_;

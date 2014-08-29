@@ -242,15 +242,17 @@ void QompMainWin::Private::updateState(Qomp::State state)
 		break;
 
 	case Qomp::StateLoading:
-	case Qomp::StateBuffering:
+	//case Qomp::StateBuffering:
 		QQmlProperty::write(root(), "busy", true);
 		break;
 
 	case Qomp::StatePaused:
 	case Qomp::StateStopped:
-	case Qomp::StateError:
-	default:
 		QQmlProperty::write(root(), "playing", false);
+		QQmlProperty::write(root(), "busy", false);
+		break;
+//	case Qomp::StateError:
+	default:
 		QQmlProperty::write(root(), "busy", false);
 		break;
 	}

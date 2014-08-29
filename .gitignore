@@ -18,7 +18,7 @@ debug/
 .rcc/
 *.user
 *.user.*
-qomp
+./qomp*
 *object_script.*
 qomp_*.deb
 description-pak
@@ -27,4 +27,4 @@ qomp.pbproj/
 qomp.app/
 *.dmg
 bin/
-android/assets
+android/assets/

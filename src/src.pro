@@ -70,4 +70,5 @@ INCLUDEPATH += $$PWD/../libqomp/include
 DEPENDPATH += $$PWD/../libqomp/include
 
 OTHER_FILES += \
-    ../android/src/com/googlecode/qomp/Qomp.java
+    ../android/src/com/googlecode/qomp/Qomp.java \
+    ../android/src/com/googlecode/qomp/CallbackActivity.java
