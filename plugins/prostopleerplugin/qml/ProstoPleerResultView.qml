@@ -47,7 +47,7 @@ Rectangle {
 			anchors.leftMargin: 5 * scaler.scaleX
 			font.pixelSize: height / 2
 			verticalAlignment: Text.AlignVCenter
-			text: qsTr("Current Page:")
+			text: qsTr("Current:")
 
 		}
 
@@ -91,7 +91,7 @@ Rectangle {
 			anchors.leftMargin: 5
 			font.pixelSize: height / 2
 			verticalAlignment: Text.AlignVCenter
-			text: qsTr("Authorization:")
+			text: qsTr("Authorization: ")
 
 		}
 
