@@ -43,7 +43,6 @@ public:
 #endif
 
 private slots:
-	void exit();
 	void updateSettings();
 
 	void actPlayNext();
@@ -76,6 +75,7 @@ private slots:
 	void playerStateChanged(Qomp::State state);
 	void currentTuneChanged(Tune* t);
 
+	void deInit();
 //protected:
 //	bool eventFilter(QObject *obj, QEvent *e);
 

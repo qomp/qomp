@@ -78,6 +78,13 @@ static void notifyIcon(const QString& text)
 							"(Ljava/lang/String;)V",
 							str.object<jstring>());
 }
+
+static void deInitActivity()
+{
+	QAndroidJniObject::callStaticMethod<void>("com/googlecode/qomp/Qomp",
+						"deInit", "()V");
+
+}
 #endif
 
 
@@ -91,8 +98,6 @@ QompCon::QompCon(QObject *parent) :
 	qRegisterMetaType<Tune*>("Tune*");
 	qRegisterMetaType<Qomp::State>("State");
 #ifdef Q_OS_ANDROID
-	connect(QompQmlEngine::instance(), SIGNAL(quit()), SLOT(exit()));
-
 	_instance = this;
 
 	QAndroidJniObject act = QtAndroid::androidActivity();
@@ -105,20 +110,11 @@ QompCon::QompCon(QObject *parent) :
 	jni->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0]));
 	jni->DeleteLocalRef(clazz);
 #endif
+	connect(qApp, SIGNAL(aboutToQuit()), SLOT(deInit()));
 }
 
 QompCon::~QompCon()
 {
-	model_->saveState();
-
-	Options::instance()->setOption(OPTION_VOLUME, player_->volume());
-
-	delete mainWin_;
-	delete player_;
-	delete Tune::emptyTune();
-#ifdef Q_OS_ANDROID
-	delete QompQmlEngine::instance();
-#endif
 }
 
 void QompCon::checkVersion()
@@ -152,6 +148,30 @@ void QompCon::checkVersion()
 
 		Options::instance()->setOption(OPTION_APPLICATION_VERSION, APPLICATION_VERSION);
 	}
+}
+
+void QompCon::deInit()
+{
+	stopPlayer();
+	model_->saveState();
+
+	Options::instance()->setOption(OPTION_VOLUME, player_->volume());
+
+	delete mainWin_;
+	delete player_;
+	delete Tune::emptyTune();
+	delete model_;
+
+	//we do this cleanup here cos sometimes on android
+	//we catch random crashes on exit;
+	delete Options::instance();
+	delete Translator::instance();
+#ifndef Q_OS_ANDROID
+	delete ThemeManager::instance();
+#else
+	deInitActivity();
+	delete QompQmlEngine::instance();
+#endif
 }
 
 void QompCon::init()
@@ -195,12 +215,6 @@ void QompCon::incomingCall(bool begining)
 	}
 }
 #endif
-
-void QompCon::exit()
-{
-	qApp->exit();
-}
-
 void QompCon::updateSettings()
 {
 	QompNetworkingFactory::instance()->updateProxySettings();
@@ -391,7 +405,6 @@ void QompCon::setupMainWin()
 	connect(player_, SIGNAL(volumeChanged(qreal)),			mainWin_, SLOT(volumeChanged(qreal)));
 	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)),	mainWin_, SLOT(currentTotalTimeChanged(qint64)));
 
-	connect(mainWin_, SIGNAL(exit()),				SLOT(exit()));
 	connect(mainWin_, SIGNAL(aboutQomp()),				SLOT(actAboutQomp()));
 	connect(mainWin_, SIGNAL(checkForUpdates()),			SLOT(actCheckForUpdates()));
 	connect(mainWin_, SIGNAL(doOptions()),				SLOT(actDoSettings()));
@@ -507,5 +520,8 @@ void QompCon::playerStateChanged(Qomp::State state)
 
 void QompCon::currentTuneChanged(Tune *t)
 {
+	Q_UNUSED(t);
+#ifdef Q_OS_ANDROID
 	notifyIcon(model_->indexForTune(t).data().toString());
+#endif
 }

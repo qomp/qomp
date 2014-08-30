@@ -70,7 +70,7 @@ QStringList ThemeManager::availableThemes() const
 }
 
 ThemeManager::ThemeManager() :
-	QObject(QCoreApplication::instance())
+	QObject(qApp)
 {
 	loadThemes();
 }

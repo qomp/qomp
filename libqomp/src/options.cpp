@@ -36,7 +36,7 @@ Options* Options::instance()
 }
 
 Options::Options()
-	: QObject(QCoreApplication::instance())
+	: QObject(qApp)
 	, set_(0)
 {
 #ifdef Q_OS_ANDROID

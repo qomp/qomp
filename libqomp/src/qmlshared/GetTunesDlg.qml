@@ -20,8 +20,8 @@ Item {
 
 	Keys.onReleased: {
 		if (event.key === Qt.Key_Back) {
-			root.rejected()
 			event.accepted = true
+			root.rejected()			
 		}
 	}
 
@@ -53,6 +53,7 @@ Item {
 				focus: true
 				onClicked: {
 					Qt.inputMethod.hide()
+					root.waitForSuggestions = false
 					root.doSearch()
 				}
 			}
@@ -201,11 +202,13 @@ Item {
 	}
 
 	function doSuggestions(list) {
-		root.waitForSuggestions = false
-		creator.active = false
-		creator.model = list
-		creator.active = true
-		suggestions.popup()
+		if(root.waitForSuggestions) {
+			root.waitForSuggestions = false
+			creator.active = false
+			creator.model = list
+			creator.active = true
+			suggestions.popup()
+		}
 	}
 
 

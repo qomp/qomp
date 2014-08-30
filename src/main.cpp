@@ -28,16 +28,20 @@
 
 int main(int argc, char *argv[])
 {
+	QGuiApplication* a;
 #ifdef QOMP_MOBILE
-	QGuiApplication a(argc, argv);
+	a = new QGuiApplication(argc, argv);
 #else
-	QApplication a(argc, argv);
+	a = new QApplication(argc, argv);
 #endif
-	a.setApplicationName(APPLICATION_NAME);
-	a.setApplicationVersion(APPLICATION_VERSION);
-	a.setOrganizationName(APPLICATION_NAME);
-	a.setQuitOnLastWindowClosed(false);
-	QompCon qomp;
-	qomp.init();
-	return a.exec();
+	a->setApplicationName(APPLICATION_NAME);
+	a->setApplicationVersion(APPLICATION_VERSION);
+	a->setOrganizationName(APPLICATION_NAME);
+	a->setQuitOnLastWindowClosed(false);
+	QompCon* qomp = new QompCon;
+	qomp->init();
+	int ret = a->exec();
+	delete qomp;
+	delete a;
+	return ret;
 }

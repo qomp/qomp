@@ -91,7 +91,8 @@ QompMainWin::Private::Private(QompMainWin *p) :
 
 QompMainWin::Private::~Private()
 {
-	delete root_;
+	//will be deleted by js engine
+	//delete root_;
 }
 
 void QompMainWin::Private::setUp()
@@ -131,7 +132,6 @@ void QompMainWin::Private::connectActions()
 	connect(r, SIGNAL(actStop()), mainWin_,  SIGNAL(actStopActivated()));	
 	connect(r, SIGNAL(actNext()), mainWin_,  SIGNAL(actNextActivated()));
 	connect(r, SIGNAL(actPrev()), mainWin_,  SIGNAL(actPrevActivated()));
-	connect(r, SIGNAL(actExit()), mainWin_,  SIGNAL(exit()));
 
 	//connect(ui->tbOptions, SIGNAL(clicked()), mainWin_, SIGNAL(doOptions()));
 }

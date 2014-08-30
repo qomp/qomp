@@ -70,11 +70,15 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     @Override
     public void onDestroy() {
         //Log.i("Qomp", "onDestroy");
-        getManager().cancel(NotifRef);
-        unregisterReceiver(callReceiver_);
-        unregisterReceiver(notifyReceiver_);
         super.onDestroy();
     }
+
+    public static void deInit() {
+        _instance.unregisterReceiver(_instance.callReceiver_);
+        _instance.unregisterReceiver(_instance.notifyReceiver_);
+        _instance.getManager().cancel(_instance.NotifRef);
+    }
+
 
     //http://stackoverflow.com/questions/17667245/how-to-show-option-menu-in-android-4-2
     //http://stackoverflow.com/questions/14068138/alternate-to-haspermanentmenukey-for-android-2-3-3

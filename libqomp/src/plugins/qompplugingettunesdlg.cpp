@@ -56,6 +56,7 @@ public:
 	QMenu *suggestionsMenu_;
 	QTimer* sugTimer_;
 	QompPluginGettunesDlg* mainDlg_;
+	bool waitForSuggestions_;
 };
 
 QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
@@ -64,7 +65,8 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	dialog_(new QDialog),
 	suggestionsMenu_(new QMenu(dialog_)),
 	sugTimer_(new QTimer(this)),
-	mainDlg_(p)
+	mainDlg_(p),
+	waitForSuggestions_(false)
 {
 	ui->setupUi(dialog_);
 	QStringList searchHistory = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
@@ -117,6 +119,7 @@ void QompPluginGettunesDlg::Private::search()
 {
 	ui->cb_search->blockSignals(true);
 
+	waitForSuggestions_ = false;
 	const QString text = ui->cb_search->currentText();
 	int index = ui->cb_search->findText(text);
 	if(index != -1) {
@@ -240,6 +243,9 @@ int QompPluginGettunesDlg::showAlert(const QString &title, const QString &text)
 
 void QompPluginGettunesDlg::newSuggestions(const QStringList &list)
 {
+	if(!d->waitForSuggestions_)
+		return;
+
 	d->suggestionsMenu_->clear();
 
 	foreach(const QString& sug, list) {

@@ -17,7 +17,6 @@ Rectangle {
 	signal actLoadPlaylist(var str)
 	signal actSavePlaylist(var str)
 	signal actDoOpenMenu()
-	signal actExit()
 
 	signal itemActivated(var index)
 
@@ -43,11 +42,7 @@ Rectangle {
 	color: "lightblue"
 
 	Keys.onReleased: {
-		if (event.key === Qt.Key_Back) {
-			root.actExit()
-			event.accepted = true
-		}
-		else if (event.key === Qt.Key_Menu) {
+		if (event.key === Qt.Key_Menu) {
 			root.doMainMenu()
 			event.accepted = true
 		}
@@ -178,7 +173,6 @@ Rectangle {
 
 		repeatAll: root.repeat
 
-		onExit: root.actExit()
 		onOpen: root.actDoOpenMenu()
 		onClear: root.actClearPlaylist()
 		onLoadPlaylist: {

@@ -74,18 +74,20 @@ QompQmlEngine *QompQmlEngine::instance()
 }
 
 QompQmlEngine::~QompQmlEngine()
-{
-//	QMetaObject::invokeMethod(window_, "clear", Qt::DirectConnection);
-
+{	
+	window_->update();
+	qApp->processEvents();
 	removeImageProvider(QompImageProvider::name());
+	delete scaler_;
+	clearComponentCache();
+	collectGarbage();
+	qApp->processEvents();
 }
 
 QQuickItem *QompQmlEngine::createItem(const QUrl &url)
 {
-	//QQmlContext* context = new QQmlContext(this);
 	QQmlComponent* comp = new QQmlComponent(this, url);
 	QQuickItem* item = static_cast<QQuickItem*>(comp->create(rootContext()));
-	//context->setParent(item);
 	comp->setParent(item);
 	connect(item, SIGNAL(destroyed()), SLOT(itemDeleted()));
 	return item;
@@ -113,17 +115,15 @@ void QompQmlEngine::itemDeleted()
 
 QompQmlEngine::QompQmlEngine() :
 	QQmlApplicationEngine(qApp),
-	window_(0)
+	window_(0),
+	scaler_(new Scaler)
 {
 	addImageProvider(QompImageProvider::name(), new QompImageProvider);
+	rootContext()->setContextProperty("scaler", scaler_);
 
 	load(QUrl("qrc:///qmlshared/QompAppWindow.qml"));
 	window_ = static_cast<QQuickWindow*>(rootObjects().first());
-	connect(window_, SIGNAL(exit()), SIGNAL(quit()));
 	_instance = window_;
-
-	Scaler* scal = new Scaler(this);
-	rootContext()->setContextProperty("scaler", scal);
 
 #ifdef Q_OS_ANDROID
 	QAndroidJniObject act = QtAndroid::androidActivity();

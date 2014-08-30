@@ -25,6 +25,7 @@
 
 class QQuickItem;
 class QQuickWindow;
+class Scaler;
 
 class LIBQOMPSHARED_EXPORT QompQmlEngine : public QQmlApplicationEngine
 {
@@ -45,6 +46,7 @@ private:
 	QompQmlEngine();
 
 	QQuickWindow* window_;
+	Scaler* scaler_;
 };
 
 #endif // QOMPQMLENGINE_H

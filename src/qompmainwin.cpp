@@ -118,7 +118,7 @@ void QompMainWin::Private::connectMainMenu()
 	connect(mainMenu_, SIGNAL(actAbout()), parentWin_, SIGNAL(aboutQomp()));
 	connect(mainMenu_, SIGNAL(actDoOptions()), parentWin_, SIGNAL(doOptions()));
 	connect(mainMenu_, SIGNAL(tunes(QList<Tune*>)), parentWin_, SIGNAL(tunes(QList<Tune*>)));
-	connect(mainMenu_, SIGNAL(actExit()), parentWin_, SIGNAL(exit()));
+	connect(mainMenu_, SIGNAL(actExit()), qApp, SLOT(quit()));
 }
 
 void QompMainWin::Private::connectActions()
@@ -426,7 +426,7 @@ bool QompMainWin::eventFilter(QObject *o, QEvent *e)
 				e->ignore();
 			}
 			else {
-				emit exit();
+				qApp->quit();
 				e->accept();
 			}
 		}

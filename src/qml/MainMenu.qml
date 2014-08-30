@@ -6,7 +6,6 @@ Menu {
 
 	signal clear()
 	signal open()
-	signal exit()
 	signal loadPlaylist()
 	signal savePlaylist()
 
@@ -37,6 +36,6 @@ Menu {
 //	}
 	MenuItem {
 		text: qsTr("Exit")
-		onTriggered: mainMenu.exit()
+		onTriggered: Qt.quit()
 	}
 }

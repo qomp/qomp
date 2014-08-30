@@ -5,19 +5,9 @@ import QtQuick.Controls 1.2
 ApplicationWindow {
 	id: root
 
-	signal exit()
-
 	visible: true
 
-	height: 600
-	width: 300
-
 	color: "lightblue"
-
-	onClosing: {
-		event.accepted = true
-		root.exit()
-	}
 
 	Item {
 		anchors.fill: parent
@@ -25,57 +15,74 @@ ApplicationWindow {
 		Keys.onReleased: {
 			if (event.key === Qt.Key_Back) {
 				event.accepted = true;
-				if (mainview.depth > 1) {
-					removeView();	
+				if (contents.item.depth > 1) {
+					root.removeView();
 				}
 				else {
-					root.exit()
+					root.clear()
+					contents.sourceComponent = dummy
+					Qt.quit()
 				}
 			}
 		}
 
-		StackView {
+		Loader {
 			id: contents
 
-			property int animDuration: 200
 			anchors.fill: parent
+			sourceComponent: stack
+			focus: true
+		}
 
-			delegate: StackViewDelegate {
-				function transitionFinished(properties) {
-					properties.exitItem.opacity = 1
-				}
+		Component {
+			id: dummy
+			Item{}
+		}
 
-				pushTransition: StackViewTransition {
-					id: trans
-					PropertyAnimation {
-						duration: contents.animDuration
-						target: enterItem
-						property: "opacity"
-						from: 0
-						to: 1
+		Component {
+			id: stack
+
+			StackView {
+				id: sv
+				property int animDuration: 200
+
+				delegate: StackViewDelegate {
+					function transitionFinished(properties) {
+						properties.exitItem.opacity = 1
 					}
-					PropertyAnimation {
-						duration: contents.animDuration
-						target: exitItem
-						property: "opacity"
-						from: 1
-						to: 0
+
+					pushTransition: StackViewTransition {
+						id: trans
+						PropertyAnimation {
+							duration: sv.animDuration
+							target: enterItem
+							property: "opacity"
+							from: 0
+							to: 1
+						}
+						PropertyAnimation {
+							duration: sv.animDuration
+							target: exitItem
+							property: "opacity"
+							from: 1
+							to: 0
+						}
 					}
 				}
 			}
 		}
 	}
 	function addView(item) {
-		contents.push({item: item, destroyOnPop: true/* ,immediate: true*/})
-		contents.currentItem.focus = true
+		contents.item.push({item: item, destroyOnPop: true/* ,immediate: true*/})
+		contents.item.currentItem.focus = true
 	}
 
 	function removeView() {
-		var item = contents.pop({/*immediate: true*/})
-		contents.currentItem.focus = true
+		var item = contents.item.pop({/*immediate: true*/})
+		contents.item.currentItem.focus = true
 	}
 
 	function clear() {
-		contents.clear()
+		contents.item.clear()
 	}
 }

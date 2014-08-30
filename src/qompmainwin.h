@@ -51,7 +51,6 @@ public slots:
 	void savePlaylist(const QString& fileName);
 
 signals:
-	void exit();
 	void downloadTune(Tune* tune, const QString& dir);
 	void doOptions();
 	void aboutQomp();
