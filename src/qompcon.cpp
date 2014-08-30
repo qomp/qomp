@@ -385,6 +385,7 @@ void QompCon::actToggleTuneState(Tune *tune)
 void QompCon::actRemoveTune(Tune *tune)
 {
 	if(model_->currentTune() == tune) {
+		stopPlayer();
 		model_->setCurrentTune(model_->tune(model_->index(0,0)));
 	}
 	model_->removeTune(tune);

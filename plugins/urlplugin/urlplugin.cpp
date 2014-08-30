@@ -21,7 +21,13 @@
 #include "tune.h"
 #include "qomppluginaction.h"
 
+#ifndef Q_OS_ANDROID
 #include <QInputDialog>
+#else
+#include "qompqmlengine.h"
+#include <QEventLoop>
+#include <QQuickItem>
+#endif
 #include <QtPlugin>
 
 UrlPlugin::UrlPlugin()
@@ -31,13 +37,31 @@ UrlPlugin::UrlPlugin()
 QList<Tune*> UrlPlugin::getTunes()
 {
 	QList<Tune*> list;
+#ifndef Q_OS_ANDROID
 	bool ok = false;
 	QString url = QInputDialog::getText(0, tr("Input url"), "URL:",QLineEdit::Normal, "", &ok);
-	if(ok) {
+	if(ok && !url.isEmpty()) {
 		Tune *tune = new Tune;
 		tune->url = url;
 		list.append(tune);
 	}
+#else
+	QEventLoop l;
+	QQuickItem *item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/GetUrlDlg.qml"));
+	connect(item, SIGNAL(accepted()), &l, SLOT(quit()));
+	connect(item, SIGNAL(destroyed()), &l, SLOT(quit()));
+	QompQmlEngine::instance()->addItem(item);
+	l.exec();
+	if(item->property("status").toBool()) {
+		QString url = item->property("url").toString();
+		if(!url.isEmpty()) {
+			Tune *tune = new Tune;
+			tune->url = url;
+			list.append(tune);
+		}
+	}
+	QompQmlEngine::instance()->removeItem();
+#endif
 
 	return list;
 }
