@@ -5,13 +5,17 @@ import QtQuick.Controls.Styles 1.2
 CheckBox {
 	id: root
 
+	property int checkBoxHeight: parent.height * 0.8
+	property int spacing: 0
+
 	style: CheckBoxStyle {
 		id: style
 		indicator: Rectangle {
+			id: checkRect
 			color: "white"
 
-			implicitWidth: root.parent.height * 0.8
-			implicitHeight: implicitWidth
+			implicitWidth: implicitHeight
+			implicitHeight: root.checkBoxHeight
 
 			border.width: 2
 			border.color: root.checked? "midnightblue" : "black"
@@ -25,6 +29,6 @@ CheckBox {
 			}
 		}
 
-		spacing:0
+		spacing: root.spacing
 	}
 }

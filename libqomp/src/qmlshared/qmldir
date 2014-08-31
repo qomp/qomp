@@ -4,6 +4,13 @@ QompButton                  1.0 QompButton.qml
 QompImage                   1.0 QompImage.qml
 QompCheckBox                1.0 QompCheckBox.qml
 QompPluginsSearchListView   1.0 QompPluginsSearchListView.qml
+BasePage                    1.0 BasePage.qml
+ButtonsPage                 1.0 ButtonsPage.qml
+PageTitle                   1.0 PageTitle.qml
+OptionsEntry                1.0 OptionsEntry.qml
+Line                        1.0 Line.qml
+LineEdit                    1.0 LineEdit.qml
+TextLineEdit                1.0 TextLineEdit.qml
 
 internal GetTunesDlg    GetTunesDlg.qml
 internal QompAppWindow  QompAppWindow.qml

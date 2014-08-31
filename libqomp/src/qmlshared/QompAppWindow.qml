@@ -9,6 +9,12 @@ ApplicationWindow {
 
 	color: "lightblue"
 
+	Component.onCompleted:  {
+		scaler.scaleX = root.width / 480
+		scaler.scaleY = root.height / 800
+		scaler.scaleFont = (400 + root.width * root.height * 0.00015) / 457
+	}
+
 	Item {
 		anchors.fill: parent
 
@@ -19,7 +25,7 @@ ApplicationWindow {
 					root.removeView();
 				}
 				else {
-					root.clear()
+					//root.clear()
 					contents.sourceComponent = dummy
 					Qt.quit()
 				}

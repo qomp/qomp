@@ -23,9 +23,11 @@
 #include "qompoptionsmain.h"
 #include "options.h"
 #include "qompqmlengine.h"
+#include "defines.h"
 //#include "qompoptionsplugins.h"
 
 #include <QQuickItem>
+#include <QQmlProperty>
 
 class QompOptionsDlg::Private: public QObject
 {
@@ -34,9 +36,10 @@ public:
 	Private(QompOptionsDlg* p) :
 		QObject(p),
 		parentDialog_(p),
-		item_(new QQuickItem)
+		item_(0)
 	{
-
+		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/OptionsDlg.qml"));
+		item_->setProperty("title", QString(APPLICATION_NAME) + " " + QString(APPLICATION_VERSION));
 		QompOptionsMain* om = new QompOptionsMain(this);
 		//QompOptionsPlugins* op = new QompOptionsPlugins(this);
 		pages_ << om;// << op;
@@ -49,19 +52,8 @@ public:
 			addPluginPage(p);
 		}
 
-//		ui->sw_pages->setCurrentIndex(0);
-//		ui->lw_pagesNames->setCurrentRow(0);
-
-//		connect(ui->lw_pagesNames, SIGNAL(currentRowChanged(int)), SLOT(itemChanged(int)));
-//		connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), SLOT(buttonClicked(QAbstractButton*)));
-
-		connect(PluginManager::instance(), SIGNAL(pluginStatusChanged(QString, bool)), parentDialog_, SLOT(pluginLoadingStatusChanged(QString,bool)));
-
-//		dlg_->adjustSize();
-//		ui->lw_pagesNames->setFixedWidth(ui->lw_pagesNames->width());
-//		dlg_->installEventFilter(this);
-
-		connect(item_, SIGNAL(accepted()), parentDialog_, SLOT(applyOptions()));
+		connect(PluginManager::instance(), SIGNAL(pluginStatusChanged(QString, bool)), parentDialog_,
+			SLOT(pluginLoadingStatusChanged(QString,bool)));
 	}
 
 	void addPluginPage(const QString& name)
@@ -73,53 +65,36 @@ public:
 		}
 	}
 
-protected:
-	bool eventFilter(QObject *o, QEvent *e)
-	{
-//		if(o == dlg_ && e->type() == QEvent::LanguageChange) {
-//			ui->retranslateUi(dlg_);
-//			for(int i = 0; i < pages_.count(); i++) {
-//				QompOptionsPage* p = pages_.at(i);
-//				p->retranslate();
-//				QListWidgetItem* it = ui->lw_pagesNames->item(i);
-//				it->setText(p->name());
-//			}
-//		}
-		return QObject::eventFilter(o, e);
-	}
-
 private slots:
-
-	void itemChanged(int row)
-	{
-//		ui->sw_pages->setCurrentIndex(row);
-//		pages_.at(row)->restoreOptions();
-	}
-
 	void pageDestroyed()
 	{
-//		QompOptionsPage* page = static_cast<QompOptionsPage*>(sender());
+		QompOptionsPage* page = static_cast<QompOptionsPage*>(sender());
 //		int ind = pages_.indexOf(page);
 //		QWidget* w = ui->sw_pages->widget(ind);
 //		ui->sw_pages->removeWidget(w);
 //		delete w;
 //		QListWidgetItem* it = ui->lw_pagesNames->item(ind);
 //		ui->lw_pagesNames->removeItemWidget(it);
-//		pages_.removeAll(page);
+		pages_.removeAll(page);
 //		delete it;
 	}
 
 private:
 	void addPage(QompOptionsPage* page)
 	{
-//		page->init(parentDialog_->player_);
-//		QWidget* widget = qobject_cast<QWidget*>(page->page());
-//		Q_ASSERT(widget);
-//		ui->sw_pages->addWidget(widget);
-//		QListWidgetItem* it = new QListWidgetItem(ui->lw_pagesNames);
-//		it->setText(page->name());
-//		ui->lw_pagesNames->addItem(it);
-//		connect(page, SIGNAL(destroyed()), SLOT(pageDestroyed()));
+		page->init(parentDialog_->player_);
+		QQuickItem* item = qobject_cast<QQuickItem*>(page->page());
+		Q_ASSERT(item);
+
+		QObject* p = item_->property("pages").value<QObject*>();
+		Q_ASSERT(p);
+		item->setParent(p);
+
+		QMetaObject::invokeMethod(item_, "addPage",
+					  Q_ARG(QVariant, page->name()),
+					  Q_ARG(QVariant, QVariant::fromValue(item)));
+
+		connect(page, SIGNAL(destroyed()), SLOT(pageDestroyed()));
 	}
 
 public:
@@ -140,13 +115,21 @@ QompOptionsDlg::QompOptionsDlg(QompPlayer *player, QObject *parent) :
 
 QompOptionsDlg::~QompOptionsDlg()
 {
-	QompQmlEngine::instance()->removeItem();
 	//delete d->item_;
 }
 
 void QompOptionsDlg::exec()
 {
+	QEventLoop l;
+	connect(d->item_, SIGNAL(accepted()), &l, SLOT(quit()));
+	connect(d->item_, SIGNAL(destroyed()), &l, SLOT(quit()));
+
 	QompQmlEngine::instance()->addItem(d->item_);
+	l.exec();
+	//if(d->item_->property("status").toBool()) {
+		applyOptions();
+	//}
+	QompQmlEngine::instance()->removeItem();
 }
 
 void QompOptionsDlg::applyOptions()
@@ -160,13 +143,13 @@ void QompOptionsDlg::applyOptions()
 
 void QompOptionsDlg::pluginLoadingStatusChanged(const QString &pluginName, bool status)
 {
-//	if(status)
-//		addPluginPage(pluginName);
+	if(status)
+		addPluginPage(pluginName);
 }
 
 void QompOptionsDlg::addPluginPage(const QString &name)
 {
-	//d->addPluginPage(name);
+	d->addPluginPage(name);
 }
 
 #include "qompoptionsdlg_mobile.moc"

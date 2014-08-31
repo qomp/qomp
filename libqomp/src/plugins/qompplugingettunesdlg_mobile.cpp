@@ -70,7 +70,6 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 
 	connect(item_, SIGNAL(doSearch()), SLOT(search()));
 	connect(item_, SIGNAL(accepted()), loop_, SLOT(quit()));
-	connect(item_, SIGNAL(rejected()), loop_, SLOT(quit()));
 	connect(item_, SIGNAL(destroyed()), loop_, SLOT(quit()));
 	connect(item_, SIGNAL(editTextChanged()), sugTimer_, SLOT(start()));
 	connect(sugTimer_, SIGNAL(timeout()), SLOT(timeout()));
@@ -150,7 +149,7 @@ void QompPluginGettunesDlg::setResultsWidget(QObject *widget)
 	if(w) {
 		QObjectList l;
 		l.append(w);
-		QObject* content = d->item_->property("content").value<QObject*>();
+		QObject* content = d->item_->property("pluginContent").value<QObject*>();
 		Q_ASSERT(content);
 		w->setParent(content);
 		QQmlProperty::write(w, "parent", QVariant::fromValue(content));

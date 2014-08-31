@@ -17,6 +17,7 @@ Rectangle {
 	signal actLoadPlaylist(var str)
 	signal actSavePlaylist(var str)
 	signal actDoOpenMenu()
+	signal actDoOptions()
 
 	signal itemActivated(var index)
 
@@ -175,6 +176,7 @@ Rectangle {
 
 		onOpen: root.actDoOpenMenu()
 		onClear: root.actClearPlaylist()
+		onOptions: root.actDoOptions()
 		onLoadPlaylist: {
 			fileDialog.title = qsTr("Select Playlist")
 			fileDialog.selectFolder = false

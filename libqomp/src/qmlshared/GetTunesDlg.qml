@@ -2,34 +2,31 @@ import QtQuick 2.3
 import QtQuick.Controls 1.2
 import QtQuick.Dialogs 1.2
 
-Item {
+ButtonsPage {
 	id: root
 
 	signal doSearch()
-	signal accepted()
-	signal rejected()
 	signal editTextChanged()
 
 	property string title;
-	property bool status: false
 	property alias model: items.model
 	property alias serchText: items.editText
-	readonly property alias content: placeholder
+	readonly property alias pluginContent: placeholder
 	property bool busy: false
 	property bool waitForSuggestions: false
 
 	Keys.onReleased: {
 		if (event.key === Qt.Key_Back) {
 			event.accepted = true
-			root.rejected()			
+			root.status = false
+			root.accepted()
 		}
 	}
 
-	Rectangle {
+	content: Item {
 		id: mainRect
 
 		anchors.fill: parent
-		color: "lightsteelblue"
 
 		Rectangle {
 			id: toprect
@@ -100,7 +97,7 @@ Item {
 			id: placeholder
 
 			anchors.top: toprect.bottom
-			anchors.bottom: buttonrect.top
+			anchors.bottom: parent.bottom
 			anchors.left: parent.left
 			anchors.right: parent.right
 			onChildrenChanged: {
@@ -110,89 +107,87 @@ Item {
 			}
 		}
 
-		Rectangle {
-			id: buttonrect
+		//		Rectangle {
+		//			id: buttonrect
 
-			anchors.bottom: parent.bottom
-			anchors.left: parent.left
-			anchors.right: parent.right
+		//			anchors.bottom: parent.bottom
+		//			anchors.left: parent.left
+		//			anchors.right: parent.right
 
-			height: 100 * scaler.scaleY
-			color: "transparent"
+		//			height: 100 * scaler.scaleY
+		//			color: "transparent"
 
-			QompButton {
-				id: btnok
+		//			}
 
-				anchors.bottom: parent.bottom
-				anchors.right: parent.right
-				anchors.margins: 15 * scaler.scaleMargins
+		//			BusyIndicator {
+		//				id: busyInd
 
-				text: qsTr("OK")
+		//				anchors.left: parent.left
+		//				anchors.verticalCenter: parent.verticalCenter
+		//				height: Math.min(parent.height * 0.7, btncancel.x - x)
+		//				width: height
 
-				onClicked: {
-					root.status = true
-					root.accepted()
+		//				visible:false
+		//				running: visible
+		//			}
+
+		Menu {
+			id: suggestions
+
+			Instantiator {
+				id: creator
+
+				model:[]
+
+				MenuItem {
+					text: modelData
+					onTriggered: {
+						items.inserting = true
+						items.editText = text
+						items.inserting = false
+					}
 				}
-			}
-
-			QompButton {
-				id: btncancel
-
-				anchors.bottom: parent.bottom
-				anchors.right: btnok.left
-				anchors.margins: 15 * scaler.scaleMargins
-
-				text: qsTr("Cancel")
-
-				onClicked: {
-					root.status = false
-					root.rejected()
-				}
-			}
-
-			BusyIndicator {
-				id: busyInd
-
-				anchors.left: parent.left
-				anchors.verticalCenter: parent.verticalCenter
-				height: Math.min(parent.height * 0.7, btncancel.x - x)
-				width: height
-
-				visible:false
-				running: visible
+				onObjectAdded: suggestions.insertItem(index, object)
+				onObjectRemoved: suggestions.removeItem(object)
 			}
 		}
 
-		Behavior on color {
-			ColorAnimation { duration: 300 }
+		MessageDialog {
+			id: alertDlg
+			visible: false
+			icon: StandardIcon.Warning
 		}
-	}
 
-	Menu {
-		id: suggestions
+		SequentialAnimation {
+			id:colorAnim
 
-		Instantiator {
-			id: creator
+			property color from: "lightsteelblue"
+			property color to: Qt.darker(from)
 
-			model:[]
+			loops: Animation.Infinite
+			running: false
 
-			MenuItem {
-				text: modelData
-				onTriggered: {
-					items.inserting = true
-					items.editText = text
-					items.inserting = false
-				}
+			ColorAnimation {
+				duration: 300
+				running: colorAnim.running
+
+				target: root
+				from: colorAnim.from
+				to: colorAnim.to
 			}
-			onObjectAdded: suggestions.insertItem(index, object)
-			onObjectRemoved: suggestions.removeItem(object)
-		}
-	}
 
-	MessageDialog {
-		id: alertDlg
-		visible: false
-		icon: StandardIcon.Warning
+			ColorAnimation {
+				duration: 300
+				running: colorAnim.running
+
+				target: root
+				property: "color"
+				to: colorAnim.from
+				from: colorAnim.to
+			}
+
+			onRunningChanged: if(!running) root.color = from
+		}
 	}
 
 	function showAlert(title, text) {
@@ -211,20 +206,19 @@ Item {
 		}
 	}
 
-
 	states: [
 		State {
 			name: "busy"
 			when: root.busy === true
 
-			PropertyChanges {
-				target: busyInd
-				visible: true
-			}
+			//			PropertyChanges {
+			//				target: busyInd
+			//				visible: true
+			//			}
 
 			PropertyChanges {
-				target: mainRect
-				color: Qt.darker("lightsteelblue")
+				target: colorAnim
+				running: true
 			}
 		}
 	]

@@ -128,12 +128,11 @@ void QompMainWin::Private::connectActions()
 
 	connect(r, SIGNAL(actClearPlaylist()),		SLOT(actClearActivated()));
 
-	connect(r, SIGNAL(actPlay()), mainWin_,  SIGNAL(actPlayActivated()));
-	connect(r, SIGNAL(actStop()), mainWin_,  SIGNAL(actStopActivated()));	
-	connect(r, SIGNAL(actNext()), mainWin_,  SIGNAL(actNextActivated()));
-	connect(r, SIGNAL(actPrev()), mainWin_,  SIGNAL(actPrevActivated()));
-
-	//connect(ui->tbOptions, SIGNAL(clicked()), mainWin_, SIGNAL(doOptions()));
+	connect(r, SIGNAL(actPlay()),		mainWin_, SIGNAL(actPlayActivated()));
+	connect(r, SIGNAL(actStop()),		mainWin_, SIGNAL(actStopActivated()));
+	connect(r, SIGNAL(actNext()),		mainWin_, SIGNAL(actNextActivated()));
+	connect(r, SIGNAL(actPrev()),		mainWin_, SIGNAL(actPrevActivated()));
+	connect(r, SIGNAL(actDoOptions()),	mainWin_, SIGNAL(doOptions()));
 }
 
 void QompMainWin::Private::setCurrentPosition(quint64 pos)

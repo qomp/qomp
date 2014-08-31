@@ -8,6 +8,7 @@ Menu {
 	signal open()
 	signal loadPlaylist()
 	signal savePlaylist()
+	signal options()
 
 	property alias repeatAll: repAll.checked
 
@@ -34,6 +35,11 @@ Menu {
 //		text: qsTr("Save Playlist")
 //		onTriggered: mainMenu.savePlaylist()
 //	}
+	MenuItem {
+		text: qsTr("Options")
+		onTriggered: mainMenu.options()
+	}
+
 	MenuItem {
 		text: qsTr("Exit")
 		onTriggered: Qt.quit()

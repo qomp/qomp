@@ -22,6 +22,7 @@
 #include "options.h"
 #include "common.h"
 #include "qompplayer.h"
+#include "qompqmlengine.h"
 
 #include <QQuickItem>
 
@@ -32,8 +33,9 @@ class QompOptionsMain::Private
 public:
 	Private(QompOptionsMain* page) :
 		page_(page),
-		item_(new QQuickItem)
+		item_(0)
 	{
+		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/OptionsPageMain.qml"));
 	}
 
 	void applyOptions();
@@ -46,9 +48,9 @@ public:
 
 void QompOptionsMain::Private::applyOptions()
 {
-//	Options* o = Options::instance();
+	Options* o = Options::instance();
 
-//	o->setOption(OPTION_AUTOSTART_PLAYBACK, ui->cb_autostartPlayback->isChecked());
+	o->setOption(OPTION_AUTOSTART_PLAYBACK, item_->property("autoStartPlay").toString());
 //	o->setOption(OPTION_START_MINIMIZED, ui->cb_minimized->isChecked());
 //	o->setOption(OPTION_PROXY_HOST, ui->le_host->text());
 //	o->setOption(OPTION_PROXY_PASS, Qomp::encodePassword(ui->le_pass->text(), DECODE_KEY));
@@ -69,8 +71,8 @@ void QompOptionsMain::Private::applyOptions()
 
 void QompOptionsMain::Private::restoreOptions()
 {
-//	Options* o = Options::instance();
-//	ui->cb_autostartPlayback->setChecked(o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool());
+	Options* o = Options::instance();
+	item_->setProperty("autoStartPlay", o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool());
 //	ui->cb_minimized->setChecked(o->getOption(OPTION_START_MINIMIZED).toBool());
 //	ui->gb_proxy->setChecked(o->getOption(OPTION_PROXY_USE).toBool());
 //	ui->le_host->setText(o->getOption(OPTION_PROXY_HOST).toString());
@@ -132,7 +134,7 @@ QompOptionsMain::QompOptionsMain(QObject *parent) :
 
 QompOptionsMain::~QompOptionsMain()
 {
-	delete d->item_;
+	//delete d->item_;
 	delete d;
 }
 

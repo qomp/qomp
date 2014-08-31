@@ -5,5 +5,8 @@
         <file>qml/MainMenu.qml</file>
         <file>qml/OpenTunesMenu.qml</file>
         <file>qml/TrackMenu.qml</file>
+        <file>qml/OptionsDlg.qml</file>
+        <file>qml/OptionsPageMain.qml</file>
+        <file>qml/AboutDlg.qml</file>
     </qresource>
 </RCC>

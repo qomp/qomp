@@ -8,5 +8,12 @@
         <file>qmlshared/QompImage.qml</file>
         <file>qmlshared/QompCheckBox.qml</file>
         <file>qmlshared/QompPluginsSearchListView.qml</file>
+        <file>qmlshared/BasePage.qml</file>
+        <file>qmlshared/ButtonsPage.qml</file>
+        <file>qmlshared/PageTitle.qml</file>
+        <file>qmlshared/OptionsEntry.qml</file>
+        <file>qmlshared/Line.qml</file>
+        <file>qmlshared/LineEdit.qml</file>
+        <file>qmlshared/TextLineEdit.qml</file>
     </qresource>
 </RCC>

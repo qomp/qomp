@@ -22,6 +22,7 @@
 #include "options.h"
 #include "common.h"
 #include "prostopleerplugindefines.h"
+#include "qompqmlengine.h"
 
 #include <QQuickItem>
 
@@ -30,8 +31,9 @@ class ProstopleerPluginSettings::Private
 public:
 	Private(ProstopleerPluginSettings* p) :
 		page_(p),
-		item_(new QQuickItem)
+		item_(0)
 	{
+		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/ProstoPleerOptions.qml"));
 	}
 
 	ProstopleerPluginSettings* page_;
@@ -47,7 +49,7 @@ ProstopleerPluginSettings::ProstopleerPluginSettings(QObject *parent) :
 
 ProstopleerPluginSettings::~ProstopleerPluginSettings()
 {
-	delete d->item_;
+	//delete d->item_;
 	delete d;
 }
 
@@ -68,13 +70,13 @@ QObject *ProstopleerPluginSettings::page() const
 
 void ProstopleerPluginSettings::applyOptions()
 {
-//	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN, d->ui->le_login->text());
-//	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD, Qomp::encodePassword(d->ui->le_pass->text(), PROSTOPLEER_DECODE_KEY));
+	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN, d->item_->property("login"));
+	Options::instance()->setOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD, Qomp::encodePassword(d->item_->property("password").toString(), PROSTOPLEER_DECODE_KEY));
 }
 
 void ProstopleerPluginSettings::restoreOptions()
 {
-//	d->ui->le_login->setText(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN).toString());
-//	d->ui->le_pass->setText(Qomp::decodePassword(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString(), PROSTOPLEER_DECODE_KEY));
+	d->item_->setProperty("login",Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN));
+	d->item_->setProperty("password",Qomp::decodePassword(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString(), PROSTOPLEER_DECODE_KEY));
 }
 

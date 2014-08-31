@@ -110,10 +110,9 @@ Rectangle {
 
 	MouseArea {
 		anchors.fill: parent
-		onClicked: list.currentIndex = index
+		onPressed: list.currentIndex = index
 		onDoubleClicked: root.activated()
 		onPressAndHold: {
-			list.currentIndex = index
 			root.longTap()
 		}
 	}
