@@ -6,22 +6,16 @@ BasePage {
 	id: root
 
 	property alias pages: placeholder
-	property alias title: aboutdlg.title
+	property alias qompVer: aboutdlg.title
+
+	title: qsTr("Options")
 
 	content:  [
-
-		PageTitle {
-			id: title
-			text: qsTr("Options")
-		},
 
 		Flickable {
 			id: flic
 
-			anchors.top: title.bottom
-			anchors.left: parent.left
-			anchors.right: parent.right
-			anchors.bottom: parent.bottom
+			anchors.fill: parent
 			contentHeight: placeholder.height + edge.height + about.height
 			contentWidth: width
 

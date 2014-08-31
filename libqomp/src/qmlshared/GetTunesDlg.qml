@@ -8,7 +8,6 @@ ButtonsPage {
 	signal doSearch()
 	signal editTextChanged()
 
-	property string title;
 	property alias model: items.model
 	property alias serchText: items.editText
 	readonly property alias pluginContent: placeholder

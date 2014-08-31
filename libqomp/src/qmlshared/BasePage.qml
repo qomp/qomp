@@ -8,6 +8,7 @@ Rectangle {
 	property alias content: contents.children
 	property int bottomOffset: 0
 	readonly property int bottomOffsetMargine: 10 * scaler.Y
+	property alias title: pt.text
 
 	color: "transparent"
 
@@ -19,10 +20,13 @@ Rectangle {
 		}
 	}
 
+	PageTitle { id: pt }
+
 	Item {
 		id: contents
 
 		anchors.fill: parent
+		anchors.topMargin: pt.height
 		anchors.bottomMargin: bottomOffset
 	}
 }

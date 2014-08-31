@@ -39,7 +39,7 @@ public:
 		item_(0)
 	{
 		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/OptionsDlg.qml"));
-		item_->setProperty("title", QString(APPLICATION_NAME) + " " + QString(APPLICATION_VERSION));
+		item_->setProperty("qompVer", QString(APPLICATION_NAME) + " " + QString(APPLICATION_VERSION));
 		QompOptionsMain* om = new QompOptionsMain(this);
 		//QompOptionsPlugins* op = new QompOptionsPlugins(this);
 		pages_ << om;// << op;

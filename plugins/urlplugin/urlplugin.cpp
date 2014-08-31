@@ -48,6 +48,7 @@ QList<Tune*> UrlPlugin::getTunes()
 #else
 	QEventLoop l;
 	QQuickItem *item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/GetUrlDlg.qml"));
+	item->setProperty("title",PLUGIN_NAME);
 	connect(item, SIGNAL(accepted()), &l, SLOT(quit()));
 	connect(item, SIGNAL(destroyed()), &l, SLOT(quit()));
 	QompQmlEngine::instance()->addItem(item);

@@ -23,6 +23,8 @@
 #include "qompplugin.h"
 #include "qomptunepluign.h"
 
+#define PLUGIN_NAME "Url"
+
 class UrlPlugin : public QObject, public QompPlugin, public QompTunePlugin
 {
 	Q_OBJECT
@@ -32,7 +34,7 @@ class UrlPlugin : public QObject, public QompPlugin, public QompTunePlugin
 #endif
 public:
 	UrlPlugin();	
-	virtual QString name() const { return "Url"; }
+	virtual QString name() const { return PLUGIN_NAME; }
 	virtual QString version() const { return "0.1"; }
 	virtual QString description() const { return tr("Open custom URL"); }
 	virtual QompOptionsPage* options();
