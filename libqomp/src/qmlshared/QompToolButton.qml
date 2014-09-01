@@ -23,26 +23,26 @@ Rectangle {
 	}
 
 	gradient: Gradient {
-			GradientStop {
-				id: gradientStop1
-				position: 0
-				color: "#f0f0f0"
+		GradientStop {
+			id: gradientStop1
+			position: 0
+			color: "#f0f0f0"
 
-				Behavior on color {
-					ColorAnimation { duration: 50 }
-				}
-			}
-
-			GradientStop {
-				id: gradientStop2
-				position: 1
-				color: "#d9d9d9"
-
-				Behavior on color {
-					ColorAnimation { duration: 50 }
-				}
+			Behavior on color {
+				ColorAnimation { duration: 50 }
 			}
 		}
+
+		GradientStop {
+			id: gradientStop2
+			position: 1
+			color: "#d9d9d9"
+
+			Behavior on color {
+				ColorAnimation { duration: 50 }
+			}
+		}
+	}
 
 	QompImage {
 		id: image
@@ -51,35 +51,55 @@ Rectangle {
 	}
 
 	states: [
-			State {
-				name: "Pressed"
-				when: ma.pressed === true && root.enabled === true
+		State {
+			name: "normal"
+			when: !ma.pressed
 
-				PropertyChanges {
-					target: gradientStop1
-					color: "#8faed5"
-				}
-
-				PropertyChanges {
-					target: gradientStop2
-					color: "#358bf3"
-				}
-
-				PropertyChanges {
-					target: root
-					scale: 0.98
-				}
-			},
-
-			State {
-				name: "disabled"
-				when: root.enabled === false
-				PropertyChanges {
-					target: root
-					border.color: "gray"
-				}
+			PropertyChanges {
+				target: gradientStop1
+				color: "#f0f0f0"
 			}
-		]
+
+			PropertyChanges {
+				target: gradientStop2
+				color: "#d9d9d9"
+			}
+
+			PropertyChanges {
+				target: root
+				scale: 1
+			}
+		},
+		State {
+			name: "Pressed"
+			when: ma.pressed && root.enabled
+
+			PropertyChanges {
+				target: gradientStop1
+				color: "#8faed5"
+			}
+
+			PropertyChanges {
+				target: gradientStop2
+				color: "#358bf3"
+			}
+
+			PropertyChanges {
+				target: root
+				scale: 0.98
+			}
+		},
+
+		State {
+			name: "disabled"
+			when: root.enabled
+
+			PropertyChanges {
+				target: root
+				border.color: "gray"
+			}
+		}
+	]
 
 	Behavior on scale {
 		NumberAnimation { duration: 50 }

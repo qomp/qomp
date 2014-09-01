@@ -60,6 +60,27 @@ Rectangle {
 
 	states: [
 		State {
+			name: "Normal"
+			when: root.enabled && !ma.pressed
+
+			PropertyChanges {
+				target: gradientStop1
+				color: "#f0f0f0"
+			}
+			PropertyChanges {
+				target: gradientStop2
+				color: "#d9d9d9"
+			}
+			PropertyChanges {
+				target: label
+				color: "DarkBlue"
+			}
+			PropertyChanges {
+				target: root
+				scale: 1
+			}
+		},
+		State {
 			name: "Pressed"
 			when: root.enabled && ma.pressed
 

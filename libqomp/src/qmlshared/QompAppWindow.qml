@@ -25,8 +25,7 @@ ApplicationWindow {
 					root.removeView();
 				}
 				else {
-					//root.clear()
-					contents.sourceComponent = dummy
+					root.clear()
 					Qt.quit()
 				}
 			}
@@ -38,11 +37,6 @@ ApplicationWindow {
 			anchors.fill: parent
 			sourceComponent: stack
 			focus: true
-		}
-
-		Component {
-			id: dummy
-			Item{}
 		}
 
 		Component {

@@ -53,7 +53,7 @@ BasePage {
 				anchors.margins: 10 * scaler.scaleMargins
 				height: 80 * scaler.scaleY
 
-				color: ma.pressed ? "steelblue" : "lightsteelblue"
+				color: ma.pressed ? "lightsteelblue" : "lightblue"
 
 				Behavior on color {
 					ColorAnimation { duration: 100 }
@@ -67,6 +67,10 @@ BasePage {
 					font.pixelSize: height / 3
 					font.bold: true
 					color: ma.pressed ? "white" : "black"
+
+					Behavior on color {
+						ColorAnimation { duration: 100 }
+					}
 				}
 
 				MouseArea {

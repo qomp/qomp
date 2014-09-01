@@ -87,7 +87,7 @@ Rectangle {
 
 		opacity: 0
 		visible: opacity > 0
-		//running: visible
+		running: visible
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		height: root.height * 0.7
@@ -120,7 +120,7 @@ Rectangle {
 	states: [
 		State {
 			name: "playing"
-			when: root.playing == true && root.busy === false
+			when: root.playing && !root.busy
 
 			PropertyChanges {
 				target: image
@@ -135,7 +135,7 @@ Rectangle {
 
 		State {
 			name: "busy"
-			when: root.busy === true
+			when: root.busy
 
 			PropertyChanges {
 				target: image
@@ -150,7 +150,7 @@ Rectangle {
 
 		State {
 			name: "normal"
-			when: root.busy === false && root.playing === false
+			when: !root.busy && !root.playing
 
 			PropertyChanges {
 				target: image

@@ -85,6 +85,7 @@ ButtonsPage {
 					anchors.rightMargin: 50 * scaler.scaleX
 					anchors.verticalCenter: parent.verticalCenter
 					height: parent.height * 0.8
+					width: height
 
 					visible: root.waitForSuggestions
 					running: visible
@@ -208,7 +209,7 @@ ButtonsPage {
 	states: [
 		State {
 			name: "busy"
-			when: root.busy === true
+			when: root.busy
 
 			//			PropertyChanges {
 			//				target: busyInd
