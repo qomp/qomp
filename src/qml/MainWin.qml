@@ -31,7 +31,7 @@ Rectangle {
 	property alias currentPositionText: curPosTxt.text
 	property alias currentFolder:  fileDialog.folder
 	property alias playlistModel: playlist.model
-	property alias pluginsActions: openTunes.model
+	property alias pluginsActions: sideBar.model
 
 	property bool playing: false
 	property bool busy: false
@@ -44,8 +44,24 @@ Rectangle {
 
 	Keys.onReleased: {
 		if (event.key === Qt.Key_Menu) {
-			root.doMainMenu()
 			event.accepted = true
+			menuButton.expanded = true
+		}
+		if (event.key === Qt.Key_Back && menuButton.expanded ) {
+			event.accepted = true
+			menuButton.expanded = false
+		}
+	}
+
+	PageTitle {
+		id: title
+		text: "qomp"
+
+		QompMenuButton {
+			id: menuButton
+			height: title.height
+			anchors.left: title.left
+			anchors.top: title.top
 		}
 	}
 
@@ -54,7 +70,7 @@ Rectangle {
 
 		focus: true
 
-		anchors.top: parent.top
+		anchors.top: title.bottom
 		width: parent.width
 		anchors.bottom: controls.top
 		anchors.horizontalCenter: parent.horizontalCenter
@@ -64,7 +80,7 @@ Rectangle {
 		highlightFollowsCurrentItem: true
 		highlightMoveDuration: 0
 
-		highlight: Rectangle { color: Qt.darker(root.color) }
+		highlight: Rectangle { color: "#68828A" }
 
 		delegate: PlayListDelegate {
 			busy: model.current && root.busy && root.active
@@ -169,60 +185,65 @@ Rectangle {
 		}
 	}
 
-	MainMenu {
-		id: mainMenu
+	MainWinSideBar {
+		id: sideBar
+
+		expanded: menuButton.expanded
+		anchors.top: title.bottom
+		anchors.bottom: parent.bottom
 
 		repeatAll: root.repeat
 
-		onOpen: root.actDoOpenMenu()
+		onOpen:  {
+			menuButton.expanded = false
+		}
 		onClear: root.actClearPlaylist()
-		onOptions: root.actDoOptions()
-		onLoadPlaylist: {
-			fileDialog.title = qsTr("Select Playlist")
-			fileDialog.selectFolder = false
-			fileDialog.selectExisting = true
-			fileDialog.onDialogAccepted = function() {
-				root.actLoadPlaylist(fileDialog.fileUrl)
-			}
-			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
-			fileDialog.open()
+		onOptions: {
+			menuButton.expanded = false
+			root.actDoOptions()
 		}
-		onSavePlaylist: {
-			fileDialog.title = qsTr("Select Playlist")
-			fileDialog.selectFolder = false
-			fileDialog.selectExisting = false
-			fileDialog.onDialogAccepted = function() {
-				root.actSavePlaylist(fileDialog.fileUrl)
-			}
-			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
-			fileDialog.open()
-		}
-
 		onRepeatAllChanged: root.actRepeat(repeatAll)
+
+//		onLoadPlaylist: {
+//			fileDialog.title = qsTr("Select Playlist")
+//			fileDialog.selectFolder = false
+//			fileDialog.selectExisting = true
+//			fileDialog.onDialogAccepted = function() {
+//				root.actLoadPlaylist(fileDialog.fileUrl)
+//			}
+//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
+//			fileDialog.open()
+//		}
+//		onSavePlaylist: {
+//			fileDialog.title = qsTr("Select Playlist")
+//			fileDialog.selectFolder = false
+//			fileDialog.selectExisting = false
+//			fileDialog.onDialogAccepted = function() {
+//				root.actSavePlaylist(fileDialog.fileUrl)
+//			}
+//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
+//			fileDialog.open()
+//		}
 	}
 
-	OpenTunesMenu {
-		id: openTunes
-	}
+//	TrackMenu {
+//		id: trackMenu
 
-	TrackMenu {
-		id: trackMenu
+//		onToggle: root.actToggle(playlist.currentIndex)
+//		onRemove: root.actRemove(playlist.currentIndex)
+//		onDownload: {
+//			fileDialog. forIndex = playlist.currentIndex
+//			fileDialog.title = qsTr("Select directory")
+//			fileDialog.selectFolder = true
+//			fileDialog.selectExisting = true
+//			fileDialog.onDialogAccepted = function() {
+//				root.actDownload(fileDialog.forIndex, fileDialog.folder)
+//			}
+//			fileDialog.nameFilters = []
+//			fileDialog.open()
+//		}
 
-		onToggle: root.actToggle(playlist.currentIndex)
-		onRemove: root.actRemove(playlist.currentIndex)
-		onDownload: {
-			fileDialog. forIndex = playlist.currentIndex
-			fileDialog.title = qsTr("Select directory")
-			fileDialog.selectFolder = true
-			fileDialog.selectExisting = true
-			fileDialog.onDialogAccepted = function() {
-				root.actDownload(fileDialog.forIndex, fileDialog.folder)
-			}
-			fileDialog.nameFilters = []
-			fileDialog.open()
-		}
-
-	}
+//	}
 
 	FileDialog {
 		id: fileDialog
@@ -232,14 +253,6 @@ Rectangle {
 
 		onAccepted: fileDialog.onDialogAccepted()
 		visible: false
-	}
-
-	function doMainMenu() {
-		mainMenu.popup()
-	}
-
-	function doOpenTunesMenu() {
-		openTunes.popup()
 	}
 
 	function enshureItemVisible(index) {

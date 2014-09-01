@@ -11,6 +11,9 @@ OptionsEntry                1.0 OptionsEntry.qml
 Line                        1.0 Line.qml
 LineEdit                    1.0 LineEdit.qml
 TextLineEdit                1.0 TextLineEdit.qml
+QompMenuButton              1.0 QompMenuButton.qml
+QompSideBar                 1.0 QompSideBar.qml
+QompSideBarAction           1.0 QompSideBarAction.qml
 
 internal GetTunesDlg    GetTunesDlg.qml
 internal QompAppWindow  QompAppWindow.qml

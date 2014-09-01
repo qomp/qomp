@@ -2,11 +2,10 @@
     <qresource prefix="/">
         <file>qml/MainWin.qml</file>
         <file>qml/PlayListDelegate.qml</file>
-        <file>qml/MainMenu.qml</file>
-        <file>qml/OpenTunesMenu.qml</file>
         <file>qml/TrackMenu.qml</file>
         <file>qml/OptionsDlg.qml</file>
         <file>qml/OptionsPageMain.qml</file>
         <file>qml/AboutDlg.qml</file>
+        <file>qml/MainWinSideBar.qml</file>
     </qresource>
 </RCC>

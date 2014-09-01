@@ -15,5 +15,8 @@
         <file>qmlshared/Line.qml</file>
         <file>qmlshared/LineEdit.qml</file>
         <file>qmlshared/TextLineEdit.qml</file>
+        <file>qmlshared/QompMenuButton.qml</file>
+        <file>qmlshared/QompSideBar.qml</file>
+        <file>qmlshared/QompSideBarAction.qml</file>
     </qresource>
 </RCC>

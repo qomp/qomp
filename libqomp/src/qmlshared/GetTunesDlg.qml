@@ -162,7 +162,7 @@ ButtonsPage {
 			id:colorAnim
 
 			property color from: "lightsteelblue"
-			property color to: Qt.darker(from)
+			property color to: "#6A7685"
 
 			loops: Animation.Infinite
 			running: false
