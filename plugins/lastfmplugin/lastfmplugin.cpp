@@ -187,7 +187,7 @@ void LastFmPlugin::loginStepTwo()
 		const QString token = elem.firstChildElement("token").text();
 		if(!token.isEmpty()) {
 			LastFmAuthDlg dlg;
-			if(dlg.openUrl(QString("http://www.last.fm/api/auth/?api_key=%1&token=%2").arg(ApiKey, token)) == QDialog::Accepted) {
+			if(dlg.openUrl(QString("http://www.last.fm/api/auth/?api_key=%1&token=%2").arg(ApiKey, token)) == LastFmAuthDlg::Accepted) {
 				QString api_sig = MD5(QString("api_key%1methodauth.getsessiontoken%2%3").
 						      arg(ApiKey, token, SharedSecret));
 				QString	url = QString("%1?method=auth.getsession&api_key=%2&token=%3&api_sig=%4")

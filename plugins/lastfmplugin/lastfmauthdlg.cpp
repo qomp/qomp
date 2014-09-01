@@ -19,37 +19,97 @@
 
 
 #include "lastfmauthdlg.h"
-#include "ui_lastfmauthdlg.h"
+#include "lastfmdefines.h"
+
 
 #include <QDesktopServices>
 #include <QUrl>
 
-LastFmAuthDlg::LastFmAuthDlg(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::LastFmAuthDlg)
-{
-	ui->setupUi(this);
-	ui->stackedWidget->setCurrentIndex(0);
-	ui->busyLabel->changeText(tr("Waiting..."));
+#ifndef Q_OS_ANDROID
+#include "ui_lastfmauthdlg.h"
 
-	connect(ui->buttonBox1, SIGNAL(accepted()), SLOT(openUrl()));
+class LastFmAuthDlg::Private
+{
+public:
+	Private(LastFmAuthDlg* p) :
+		parent_(p),
+		ui(new Ui::LastFmAuthDlg),
+		dialog_(new QDialog)
+	{
+		ui->setupUi(dialog_);
+		ui->stackedWidget->setCurrentIndex(0);
+		ui->busyLabel->changeText(tr("Waiting..."));
+
+		QObject::connect(ui->buttonBox1, SIGNAL(accepted()), p, SLOT(openUrl()));
+	}
+	LastFmAuthDlg* parent_;
+	Ui::LastFmAuthDlg *ui;
+	QDialog* dialog_;
+};
+#else
+#include <QQuickItem>
+#include <QEventLoop>
+#include "qompqmlengine.h"
+class LastFmAuthDlg::Private
+{
+public:
+	Private(LastFmAuthDlg* p) :
+		parent_(p)
+	{
+		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/LastfmAuthDlg.qml"));
+		item_->setProperty("title", LASTFM_NAME);
+
+		QObject::connect(item_, SIGNAL(doAuth()), p, SLOT(openUrl()));
+	}
+	LastFmAuthDlg* parent_;
+	QQuickItem* item_;
+};
+#endif
+
+LastFmAuthDlg::LastFmAuthDlg(QObject *parent) :
+	QObject(parent)
+
+{
+	d = new Private(this);
 }
 
 LastFmAuthDlg::~LastFmAuthDlg()
 {
-	ui->busyLabel->stop();
-	delete ui;
+#ifndef Q_OS_ANDROID
+	d->ui->busyLabel->stop();
+	delete d->ui;
+	delete d->dialog_;
+#endif
+	delete d;
 }
 
-int LastFmAuthDlg::openUrl(const QString &url)
+LastFmAuthDlg::Result LastFmAuthDlg::openUrl(const QString &url)
 {
 	url_ = url;
-	return exec();
+#ifdef Q_OS_ANDROID
+	QompQmlEngine::instance()->addItem(d->item_);
+	QEventLoop l;
+	connect(d->item_, SIGNAL(accepted()),  &l, SLOT(quit()));
+	connect(d->item_, SIGNAL(destroyed()), &l, SLOT(quit()));
+	l.exec();
+	QompQmlEngine::instance()->removeItem();
+	if(d->item_->property("status").toBool())
+		return Accepted;
+#else
+	if(d->dialog_->exec() == QDialog::Accepted)
+		return Accepted;
+#endif
+
+	return Rejected;
 }
 
 void LastFmAuthDlg::openUrl()
 {
-	ui->stackedWidget->setCurrentIndex(1);
+#ifndef Q_OS_ANDROID
+	d->ui->stackedWidget->setCurrentIndex(1);
+#endif
 	QDesktopServices::openUrl(QUrl(url_));
-	ui->busyLabel->start();
+#ifndef Q_OS_ANDROID
+	d->ui->busyLabel->start();
+#endif
 }

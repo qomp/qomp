@@ -14,7 +14,10 @@ FORMS += $$PWD/lastfmsettings.ui \
 
 QT += xml
 
-OTHER_FILES += \
-    $$PWD/metadata.json
+OTHER_FILES += $$PWD/metadata.json
+
+android {
+    RESOURCES += qml.qrc
+}
 
 

@@ -3,7 +3,9 @@ TEMPLATE = subdirs
 android {
 sub_prostopleerplugin.subdir = prostopleerplugin
 sub_urlplugin.subdir = urlplugin
+sub_lastfmplugin.subdir = lastfmplugin
 SUBDIRS +=  sub_prostopleerplugin \
+        sub_lastfmplugin \
         sub_urlplugin
 }
 else {

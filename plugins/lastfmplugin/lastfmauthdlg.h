@@ -21,27 +21,26 @@
 #ifndef LASTFMAUTHDLG_H
 #define LASTFMAUTHDLG_H
 
-#include <QDialog>
+#include <QObject>
 
-namespace Ui {
-class LastFmAuthDlg;
-}
-
-class LastFmAuthDlg : public QDialog
+class LastFmAuthDlg : public QObject
 {
 	Q_OBJECT
 	
 public:
-	explicit LastFmAuthDlg(QWidget *parent = 0);
+	explicit LastFmAuthDlg(QObject *parent = 0);
 	~LastFmAuthDlg();
 
-	int openUrl(const QString& url);
+	enum Result {Accepted = 1, Rejected = 0 };
+	Result openUrl(const QString& url);
 
 private slots:
 	void openUrl();
 	
 private:
-	Ui::LastFmAuthDlg *ui;
+	class Private;
+	friend class Private;
+	Private *d;
 	QString url_;
 };
 

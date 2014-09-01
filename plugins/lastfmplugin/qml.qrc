@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/LastfmOptionsPage.qml</file>
+        <file>qml/LastfmAuthDlg.qml</file>
+    </qresource>
+</RCC>

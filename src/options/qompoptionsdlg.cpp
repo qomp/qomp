@@ -153,6 +153,7 @@ QompOptionsDlg::QompOptionsDlg(QompPlayer *player, QObject *parent) :
 QompOptionsDlg::~QompOptionsDlg()
 {
 	delete d->ui;
+	delete d->dlg_;
 }
 
 void QompOptionsDlg::exec()

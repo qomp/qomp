@@ -18,11 +18,12 @@
  */
 
 #include "lastfmsettings.h"
-#include "ui_lastfmsettings.h"
 #include "options.h"
 #include "common.h"
 #include "lastfmdefines.h"
 
+#ifndef Q_OS_ANDROID
+#include "ui_lastfmsettings.h"
 
 class LastFmSettings::Private
 {
@@ -40,6 +41,24 @@ public:
 	QWidget* widget_;
 	Ui::LastFmSettings* ui;
 };
+#else
+#include "qompqmlengine.h"
+#include <QQuickItem>
+
+class LastFmSettings::Private
+{
+public:
+	Private(LastFmSettings* p) :
+		page_(p)
+	{
+		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/LastfmOptionsPage.qml"));
+		QObject::connect(item_, SIGNAL(clicked()), page_, SIGNAL(doLogin()));
+	}
+
+	LastFmSettings* page_;
+	QQuickItem* item_;
+};
+#endif
 
 LastFmSettings::LastFmSettings(QObject *parent) :
 	QompOptionsPage(parent)
@@ -50,18 +69,26 @@ LastFmSettings::LastFmSettings(QObject *parent) :
 
 LastFmSettings::~LastFmSettings()
 {
+#ifndef Q_OS_ANDROID
 	delete d->ui;
+#endif
 	delete d;
 }
 
 void LastFmSettings::retranslate()
 {
+#ifndef Q_OS_ANDROID
 	d->ui->retranslateUi(d->widget_);
+#endif
 }
 
 QObject *LastFmSettings::page() const
 {
+#ifndef Q_OS_ANDROID
 	return d->widget_;
+#else
+	return d->item_;
+#endif
 }
 
 void LastFmSettings::applyOptions()
@@ -70,5 +97,9 @@ void LastFmSettings::applyOptions()
 
 void LastFmSettings::restoreOptions()
 {
+#ifndef Q_OS_ANDROID
 	d->ui->lb_username->setText(Options::instance()->getOption(LASTFM_OPT_USER).toString());
+#else
+	d->item_->setProperty("login", Options::instance()->getOption(LASTFM_OPT_USER));
+#endif
 }

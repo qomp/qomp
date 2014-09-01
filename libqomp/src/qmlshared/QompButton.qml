@@ -43,7 +43,7 @@ Rectangle {
 		horizontalAlignment: Text.AlignHCenter
 		anchors.centerIn: parent
 		font.pixelSize: root.height / 3
-		color: "DarkBlue"
+		color: "black"
 
 		Behavior on color {
 			ColorAnimation { duration: root.animDuration }
@@ -73,7 +73,7 @@ Rectangle {
 			}
 			PropertyChanges {
 				target: label
-				color: "DarkBlue"
+				color: "black"
 			}
 			PropertyChanges {
 				target: root

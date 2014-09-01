@@ -97,6 +97,7 @@ QompPluginGettunesDlg::Private::~Private()
 	}
 	Options::instance()->setOption(OPTION_SEARCH_HISTORY, searchHistory);
 	delete ui;
+	delete dialog_;
 }
 
 void QompPluginGettunesDlg::Private::suggestionActionTriggered(QAction *a)
