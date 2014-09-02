@@ -27,6 +27,8 @@
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QRegExp>
+#include <QStringList>
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>

@@ -4,9 +4,11 @@ set ( CMAKE_AUTOMOC ON )
 add_definitions ( -Wall -DQT_PLUGIN )
 set ( tunetofileplugin_HDRS
 	tune2fileplugin.h
+	tunetofilesettings.h
 )
 set ( tunetofileplugin_SRCS
 	tune2fileplugin.cpp
+	tunetofilesettings.cpp
 )
 set ( tunetofileplugin_UIS
 	tunetofilesettings.ui
