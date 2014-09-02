@@ -5,7 +5,7 @@ Rectangle {
 
 	property alias text: txt.text
 
-	height: 80 * scaler.scaleY
+	height: 70 * scaler.scaleY
 	width: parent.width
 	anchors.top: parent.top
 	color: "steelblue"

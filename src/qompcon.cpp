@@ -373,6 +373,9 @@ void QompCon::actDownloadTune(Tune *tune, const QString &dir)
 #ifndef Q_OS_ANDROID
 	QompTuneDownloader *td = new QompTuneDownloader(this);
 	td->download(tune, dir);
+#else
+	Q_UNUSED(tune)
+	Q_UNUSED(dir)
 #endif
 }
 

@@ -4,7 +4,10 @@ android {
 sub_prostopleerplugin.subdir = prostopleerplugin
 sub_urlplugin.subdir = urlplugin
 sub_lastfmplugin.subdir = lastfmplugin
+sub_myzukaruplugin.subdir = myzukaruplugin
+
 SUBDIRS +=  sub_prostopleerplugin \
+        sub_myzukaruplugin \
         sub_lastfmplugin \
         sub_urlplugin
 }

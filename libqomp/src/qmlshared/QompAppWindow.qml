@@ -21,11 +21,15 @@ ApplicationWindow {
 		Keys.onReleased: {
 			if (event.key === Qt.Key_Back) {
 				event.accepted = true;
-				if (contents.item.depth > 1) {
+				if (contents.active && contents.item.depth > 1) {
 					root.removeView();
 				}
 				else {
-					root.clear()
+					if(contents.active) {
+						root.clear()
+						contents.active = false
+						image.visible = true
+					}
 					Qt.quit()
 				}
 			}
@@ -37,6 +41,7 @@ ApplicationWindow {
 			anchors.fill: parent
 			sourceComponent: stack
 			focus: true
+			active: false
 		}
 
 		Component {
@@ -71,8 +76,23 @@ ApplicationWindow {
 				}
 			}
 		}
+
+		Image {
+			id: image
+
+			width: parent.width * 0.9
+			height: width
+			anchors.verticalCenter: parent.verticalCenter
+			fillMode: Image.PreserveAspectFit
+			source: "qrc:///icons/icons/qomp.png"
+			visible: false
+		}
+
 	}
 	function addView(item) {
+		if(!contents.active)
+			contents.active = true
+
 		contents.item.push({item: item, destroyOnPop: true/* ,immediate: true*/})
 		contents.item.currentItem.focus = true
 	}

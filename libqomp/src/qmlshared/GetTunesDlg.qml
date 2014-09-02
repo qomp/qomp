@@ -169,7 +169,6 @@ ButtonsPage {
 
 			ColorAnimation {
 				duration: 300
-				running: colorAnim.running
 
 				target: root
 				from: colorAnim.from
@@ -178,7 +177,6 @@ ButtonsPage {
 
 			ColorAnimation {
 				duration: 300
-				running: colorAnim.running
 
 				target: root
 				property: "color"

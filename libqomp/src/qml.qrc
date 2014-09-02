@@ -7,7 +7,7 @@
         <file>qmlshared/QompAppWindow.qml</file>
         <file>qmlshared/QompImage.qml</file>
         <file>qmlshared/QompCheckBox.qml</file>
-        <file>qmlshared/QompPluginsSearchListView.qml</file>
+        <file>qmlshared/QompPluginsSearchView.qml</file>
         <file>qmlshared/BasePage.qml</file>
         <file>qmlshared/ButtonsPage.qml</file>
         <file>qmlshared/PageTitle.qml</file>

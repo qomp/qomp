@@ -71,7 +71,11 @@ public:
 	/**
 	 * Icon for this item (folder icon or file icon etc.)
 	 */
+#ifdef Q_OS_ANDROID
+	virtual QString icon() const = 0;
+#else
 	virtual QIcon icon() const = 0;
+#endif
 
 	/**
 	* Internal pointer to item, depending on music hosting.
@@ -113,7 +117,12 @@ public:
 
 	virtual QString toString() const;
 	virtual QompCon::ModelItemType type() const;
-	QIcon icon() const;
+#ifdef Q_OS_ANDROID
+	QString
+#else
+	QIcon
+#endif
+	icon() const;
 	virtual Tune* toTune() const;
 };
 
@@ -129,7 +138,11 @@ public:
 
 	virtual QString toString() const;
 	virtual QompCon::ModelItemType type() const;
+#ifdef Q_OS_ANDROID
+	QString icon() const;
+#else
 	QIcon icon() const;
+#endif
 };
 
 class LIBQOMPSHARED_EXPORT QompPluginArtist : public QompPluginModelItem
@@ -142,7 +155,11 @@ public:
 
 	virtual QString toString() const;
 	virtual QompCon::ModelItemType type() const;
+#ifdef Q_OS_ANDROID
+	QString icon() const;
+#else
 	QIcon icon() const;
+#endif
 };
 
 #endif // QOMPPLUGINTYPES_H

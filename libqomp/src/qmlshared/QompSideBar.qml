@@ -20,7 +20,7 @@ Item {
 	Rectangle {
 		id: slide
 
-		width: parent.width * 0.75
+		width: parent.width * 0.85
 		height: parent.height
 		color: "#68828A"
 

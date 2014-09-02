@@ -28,11 +28,10 @@
 
 int main(int argc, char *argv[])
 {
-	QGuiApplication* a;
 #ifdef QOMP_MOBILE
-	a = new QGuiApplication(argc, argv);
+	QGuiApplication* a = new QGuiApplication(argc, argv);
 #else
-	a = new QApplication(argc, argv);
+	QApplication* a = new QApplication(argc, argv);
 #endif
 	a->setApplicationName(APPLICATION_NAME);
 	a->setApplicationVersion(APPLICATION_VERSION);

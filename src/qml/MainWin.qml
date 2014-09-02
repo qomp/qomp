@@ -76,6 +76,7 @@ Rectangle {
 		anchors.horizontalCenter: parent.horizontalCenter
 
 		snapMode: ListView.SnapToItem
+		clip: true
 		boundsBehavior: Flickable.StopAtBounds
 		highlightFollowsCurrentItem: true
 		highlightMoveDuration: 0

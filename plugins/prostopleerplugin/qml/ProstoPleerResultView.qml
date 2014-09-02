@@ -14,7 +14,7 @@ Rectangle {
 
 	color: "lightgray"
 
-	QompPluginsSearchListView {
+	QompPluginsSearchView {
 		id: view
 
 		anchors.top: parent.top

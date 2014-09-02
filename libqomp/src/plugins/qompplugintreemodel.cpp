@@ -46,7 +46,7 @@ void QompPluginTreeModel::setItems(const QList<QompPluginModelItem *> &items, Qo
 {
 	//we should use this hack to avoid crashes
 	QModelIndex ind = index(parent);
-	beginRemoveRows(ind, 0, parent->items().size());
+	beginRemoveRows(ind, 0, parent->items().size()-1);
 	foreach(QompPluginModelItem* it, parent->items()) {
 		selected_.remove(index(it));
 	}
@@ -65,7 +65,7 @@ void QompPluginTreeModel::setItems(const QList<QompPluginModelItem *> &items, Qo
 void QompPluginTreeModel::addItems(const QList<QompPluginModelItem *> &items, QompPluginModelItem *parent)
 {
 	QModelIndex ind = index(parent);
-	beginInsertRows(ind, parent->items().size(), parent->items().size() + items.size());
+	beginInsertRows(ind, parent->items().size(), parent->items().size() + items.size()-1);
 	parent->addItems(items);
 //	foreach(QompPluginModelItem* item,  items) {
 //		item->setModel(this);
@@ -126,12 +126,7 @@ QVariant QompPluginTreeModel::data(const QModelIndex &index, int role) const
 		return ((QompPluginModelItem*)index.internalPointer())->toString();
 	}
 	else if(role == Qt::DecorationRole) {
-		QIcon ico = ((QompPluginModelItem*)index.internalPointer())->icon();
-#ifdef Q_OS_ANDROID
-		return ico.cacheKey();
-#else
-		return ico;
-#endif
+		return ((QompPluginModelItem*)index.internalPointer())->icon();
 	}
 	return QVariant();
 }

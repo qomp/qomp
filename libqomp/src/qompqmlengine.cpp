@@ -43,26 +43,26 @@ static void menuKeyDown(JNIEnv */*env*/, jobject /*thiz*/)
 }
 #endif
 
-class QompImageProvider : public QQuickImageProvider
-{
-public:
-	QompImageProvider() : QQuickImageProvider(QQmlImageProviderBase::Pixmap){}
+//class QompImageProvider : public QQuickImageProvider
+//{
+//public:
+//	QompImageProvider() : QQuickImageProvider(QQmlImageProviderBase::Pixmap){}
 
-	virtual QPixmap	requestPixmap(const QString &id, QSize */*size*/, const QSize &/*requestedSize*/)
-	{
-		QPixmap pix;
-		if(QPixmapCache::find(id, &pix))
-			return pix.copy();
+//	virtual QPixmap	requestPixmap(const QString &id, QSize */*size*/, const QSize &/*requestedSize*/)
+//	{
+//		QPixmap pix;
+//		if(QPixmapCache::find(id, &pix))
+//			return pix.copy();
 
-		return QPixmap();
-	}
+//		return QPixmap();
+//	}
 
-	static const QString& name()
-	{
-		static const QString n = QStringLiteral("qomp");
-		return n;
-	}
-};
+//	static const QString& name()
+//	{
+//		static const QString n = QStringLiteral("qomp");
+//		return n;
+//	}
+//};
 
 
 QompQmlEngine *QompQmlEngine::instance()
@@ -77,7 +77,7 @@ QompQmlEngine::~QompQmlEngine()
 {	
 	window_->update();
 	qApp->processEvents();
-	removeImageProvider(QompImageProvider::name());
+	//removeImageProvider(QompImageProvider::name());
 	delete scaler_;
 	clearComponentCache();
 	collectGarbage();
@@ -118,7 +118,7 @@ QompQmlEngine::QompQmlEngine() :
 	window_(0),
 	scaler_(new Scaler)
 {
-	addImageProvider(QompImageProvider::name(), new QompImageProvider);
+	//addImageProvider(QompImageProvider::name(), new QompImageProvider);
 	rootContext()->setContextProperty("scaler", scaler_);
 
 	load(QUrl("qrc:///qmlshared/QompAppWindow.qml"));

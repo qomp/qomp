@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014  Khryukin Evgeny
+ * Copyright (C) 2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,39 +19,43 @@
 
 #include "myzukarugettunesdlg.h"
 #include "myzukarudefines.h"
-#include "qompplugintreeview.h"
-
-#include <QTabWidget>
 
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
 #endif
 
-class MyzukaruGettunesDlg::Private
+#include "qompqmlengine.h"
+#include <QQuickItem>
+#include <QAbstractItemModel>
+
+class MyzukaruGettunesDlg::Private : public QObject
 {
+	Q_OBJECT
 public:
 	Private(MyzukaruGettunesDlg* p) :
-		tabWidget_(new QTabWidget),
-		artistsView_(new QompPluginTreeView(tabWidget_)),
-		albumsView_(new QompPluginTreeView(tabWidget_)),
-		tracksView_(new QompPluginTreeView(tabWidget_))
+		QObject(p),
+		item_(0)
 	{
-		tabWidget_->addTab(artistsView_, tr("Artists"));
-		tabWidget_->addTab(albumsView_, tr("Albums"));
-		tabWidget_->addTab(tracksView_, tr("Tracks"));
+		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/MyzukaRuResultsView.qml"));
+		connect(item_, SIGNAL(itemCheckClick(QJSValue)), SLOT(clicked(QJSValue)));
+		connect(this, SIGNAL(itemClicked(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
 
-		p->setResultsWidget(tabWidget_);
-
-		QList<QompPluginTreeView*> list = QList<QompPluginTreeView*> () << artistsView_ << albumsView_ << tracksView_;
-		foreach(QompPluginTreeView* view, list) {
-			QObject::connect(view, SIGNAL(clicked(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
-			QObject::connect(view, SIGNAL(expanded(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
-		}
-
+		p->setResultsWidget(item_);
 	}
-	QTabWidget* tabWidget_;
-	QompPluginTreeView *artistsView_, *albumsView_, *tracksView_;
+
+signals:
+	void itemClicked(const QModelIndex&);
+
+private slots:
+	void clicked(const QJSValue& val)
+	{
+		QModelIndex i = val.toVariant().value<QModelIndex>();
+		emit itemClicked(i);
+	}
+
+public:
+	QQuickItem* item_;
 };
 
 
@@ -73,18 +77,21 @@ void MyzukaruGettunesDlg::setModel(QAbstractItemModel *model, MyzikaruTabKind ki
 {
 	switch (kind) {
 	case TabAlbums:
-		p->albumsView_->setModel(model);
+		p->item_->setProperty("albumsModel", QVariant::fromValue(model));
 		break;
 	case TabArtists:
-		p->artistsView_->setModel(model);
+		p->item_->setProperty("artistsModel", QVariant::fromValue(model));
 		break;
 	case TabTracks:
-		p->tracksView_->setModel(model);
+		p->item_->setProperty("tracksModel", QVariant::fromValue(model));
 		break;
 	}
 }
 
 void MyzukaruGettunesDlg::setCurrentTab(MyzikaruTabKind kind)
 {
-	p->tabWidget_->setCurrentIndex(int(kind));
+	Q_UNUSED(kind)
 }
+
+
+#include "myzukarugettunesdlg_mobile.moc"

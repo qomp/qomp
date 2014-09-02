@@ -58,9 +58,9 @@ ProstoPleerPluginGetTunesDialog::Private::~Private()
 
 void ProstoPleerPluginGetTunesDialog::Private::itemClicked(const QJSValue &row)
 {
-	QAbstractItemModel *model = item->property("model").value<QAbstractItemModel*>();
-	QModelIndex i = model->index(row.toInt(),0);
-	model->setData(i, QompCon::DataToggle, Qt::CheckStateRole);
+	//QAbstractItemModel *model = item->property("model").value<QAbstractItemModel*>();
+	QModelIndex i = row.toVariant().value<QModelIndex>();
+	//model->setData(i, QompCon::DataToggle, Qt::CheckStateRole);
 	emit itemClicked(i);
 }
 

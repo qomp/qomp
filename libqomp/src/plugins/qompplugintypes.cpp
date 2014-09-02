@@ -24,15 +24,24 @@
 #include <QIcon>
 
 
-static const QIcon& folderIcon()
+static const
+#ifdef Q_OS_ANDROID
+	QString
+#else
+	QIcon
+#endif
+	&folderIcon()
 {
+#ifdef Q_OS_ANDROID
+	static const QString ico("qrc:///icons/folder");
+	return ico;
+#else
 	static QIcon ico;
 	if(ico.isNull()) {
-		QPixmap p(":/icons/folder");
-		ico = QIcon(p);
-		QPixmapCache::insert(QString::number(ico.cacheKey()), p);
+		ico = QIcon(":/icons/folder");
 	}
 	return ico;
+#endif
 }
 
 //-----------------------
@@ -119,21 +128,28 @@ QompCon::ModelItemType QompPluginTune::type() const
 	return QompCon::TypeTune;
 }
 
-QIcon QompPluginTune::icon() const
+#ifdef Q_OS_ANDROID
+QString
+#else
+QIcon
+#endif
+	QompPluginTune::icon() const
 {
+#ifdef Q_OS_ANDROID
+	static const QString icoDis("qrc:///icons/tune_disabled");
+	static const QString icoEn("qrc:///icons/tune");
+	return url.isEmpty() ? icoDis : icoEn;
+#else
 	static QIcon icoDis;
 	if(icoDis.isNull()) {
-		QPixmap p(":/icons/tune_disabled");
-		icoDis = QIcon(p);
-		QPixmapCache::insert(QString::number(icoDis.cacheKey()),p);
+		icoDis = QIcon(":/icons/tune_disabled");
 	}
 	static QIcon icoEn;
 	if(icoEn.isNull()) {
-		QPixmap p(":/icons/tune");
-		icoEn = QIcon(p);
-		QPixmapCache::insert(QString::number(icoEn.cacheKey()),p);
+		icoEn = QIcon(":/icons/tune");
 	}
 	return url.isEmpty() ? icoDis : icoEn;
+#endif
 }
 
 Tune *QompPluginTune::toTune() const
@@ -159,7 +175,7 @@ QompPluginAlbum::QompPluginAlbum(QompPluginModelItem *parent) :
 
 QString QompPluginAlbum::toString() const
 {
-	return	artist + " - " +
+	return	//artist + " - " +
 		album + " - " +
 		year + " [" +
 			QString::number(items().size()) + "]";
@@ -169,8 +185,12 @@ QompCon::ModelItemType QompPluginAlbum::type() const
 {
 	return QompCon::TypeAlbum;
 }
-
-QIcon QompPluginAlbum::icon() const
+#ifdef Q_OS_ANDROID
+	QString
+#else
+	QIcon
+#endif
+	QompPluginAlbum::icon() const
 {
 	return folderIcon();
 }
@@ -196,7 +216,12 @@ QompCon::ModelItemType QompPluginArtist::type() const
 	return QompCon::TypeArtist;
 }
 
-QIcon QompPluginArtist::icon() const
+#ifdef Q_OS_ANDROID
+	QString
+#else
+	QIcon
+#endif
+	QompPluginArtist::icon() const
 {
 	return folderIcon();
 }

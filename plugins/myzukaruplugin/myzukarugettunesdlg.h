@@ -21,11 +21,8 @@
 #define MYZUKARUGETTUNESDLG_H
 
 #include "qompplugingettunesdlg.h"
-#include <QHash>
 
-class QTabWidget;
 class QAbstractItemModel;
-class QompPluginTreeView;
 
 enum MyzikaruTabKind { TabArtists = 0, TabAlbums = 1, TabTracks = 2 };
 
@@ -34,14 +31,16 @@ class MyzukaruGettunesDlg : public QompPluginGettunesDlg
 	Q_OBJECT
 	
 public:
-	explicit MyzukaruGettunesDlg(QWidget *parent = 0);
+	explicit MyzukaruGettunesDlg(QObject *parent = 0);
+	~MyzukaruGettunesDlg();
 
 	void setModel(QAbstractItemModel* model, MyzikaruTabKind kind);
 	void setCurrentTab(MyzikaruTabKind kind);
 
 private:
-	QTabWidget* tabWidget_;
-	QompPluginTreeView *artistsView_, *albumsView_, *tracksView_;
+	class Private;
+	Private* p;
+	friend class Private;
 };
 
 #endif // MYZUKARUGETTUNESDLG_H
