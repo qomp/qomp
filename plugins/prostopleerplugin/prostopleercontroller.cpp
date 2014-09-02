@@ -28,6 +28,8 @@
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QRegExp>
+#include <QStringList>
 
 
 static const QString ProstoPleerUrl = "http://pleer.com";
