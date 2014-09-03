@@ -7,7 +7,7 @@ Rectangle {
 	property alias text: txt.text
 	property bool checkable: false
 	property bool checked: false
-	property int textOffset: 15 * scaler.scaleX
+	property int textOffset: 25 * scaler.scaleX
 
 	height: 80 * scaler.scaleY
 	width: parent.width

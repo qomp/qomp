@@ -31,7 +31,7 @@ QompSideBar {
 				model: root.model
 				QompSideBarAction {
 					property QtObject qompAct: modelData
-					textOffset: 45 * scaler.scaleX
+					textOffset: 55 * scaler.scaleX
 					text: modelData.text
 					onTriggered: {
 						root.open();

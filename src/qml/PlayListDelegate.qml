@@ -26,7 +26,7 @@ Rectangle {
 		anchors.left: parent.left
 		anchors.right: parent.right
 		anchors.margins: 5 * scaler.scaleMargins
-		anchors.leftMargin: 15 * scaler.scaleMargins
+		anchors.leftMargin: 15 * scaler.scaleX
 
 		text: {
 			var txt = model.title

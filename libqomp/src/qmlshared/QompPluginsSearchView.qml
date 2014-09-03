@@ -46,7 +46,7 @@ Rectangle  {
 		Text {
 			id: headerText
 			anchors.fill: parent
-			anchors.leftMargin: backIco.width + 5 * scaler.scaleY
+			anchors.leftMargin: backIco.width + 5 * scaler.scaleX
 			verticalAlignment: Text.AlignVCenter
 			horizontalAlignment: Text.AlignHCenter
 			clip: true

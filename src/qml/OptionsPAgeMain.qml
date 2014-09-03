@@ -32,7 +32,7 @@ Item {
 				anchors.fill: parent
 				anchors.leftMargin: autoplay.checkBoxHeight + 10 * scaler.scaleX
 				text: qsTr("Automatically start playback")
-				font.pixelSize: 22 * scaler.scaleX
+				font.pixelSize: 22 * scaler.scaleFont
 				wrapMode: Text.WordWrap
 				verticalAlignment: Text.AlignVCenter
 			}
