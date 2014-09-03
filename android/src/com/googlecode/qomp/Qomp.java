@@ -20,11 +20,6 @@ import android.view.KeyEvent;
 //import android.content.res.Configuration;
 import android.os.Bundle;
 
-//for registering menu key
-import android.view.ViewConfiguration;
-import android.view.WindowManager;
-import android.os.Build;
-
 //for incomming calls receiving
 import android.telephony.TelephonyManager;
 import android.content.BroadcastReceiver;
@@ -61,7 +56,6 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
         // Log.i("Qomp", "onCreated");
         super.onCreate(savedInstanceState);
         _instance = this;
-        checkMenuKey();
         registerCallReceiver();
         registerNotyfyReceiver();
         showStatusIcon("");
@@ -77,37 +71,6 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
         _instance.unregisterReceiver(_instance.callReceiver_);
         _instance.unregisterReceiver(_instance.notifyReceiver_);
         _instance.getManager().cancel(_instance.NotifRef);
-    }
-
-
-    //http://stackoverflow.com/questions/17667245/how-to-show-option-menu-in-android-4-2
-    //http://stackoverflow.com/questions/14068138/alternate-to-haspermanentmenukey-for-android-2-3-3
-    private void checkMenuKey() {
-        // set option menu if has no hardware menu key
-        int lvl = Integer.valueOf(android.os.Build.VERSION.SDK);
-        boolean hasMenu;
-        if(lvl > 13) {
-            hasMenu = ViewConfiguration.get(this).hasPermanentMenuKey();
-        }
-        else if(lvl < 11) {
-            hasMenu = true;
-        }
-        else {
-            hasMenu = false;
-        }
-
-        if(!hasMenu){
-                //getWindow().setFlags(0x08000000, 0x08000000);
-            try {
-                getWindow().addFlags(WindowManager.LayoutParams.class.getField("FLAG_NEEDS_MENU_KEY").getInt(null));
-            }
-            catch (NoSuchFieldException e) {
-                // Ignore since this field won't exist in most versions of Android
-            }
-            catch (IllegalAccessException e) {
-                Log.w("Qomp", "Could not access FLAG_NEEDS_MENU_KEY in addLegacyOverflowButton()", e);
-            }
-        }
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {

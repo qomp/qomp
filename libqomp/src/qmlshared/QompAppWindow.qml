@@ -14,9 +14,9 @@ ApplicationWindow {
 	onHeightChanged: updateScaler()
 
 	function updateScaler() {
-		scaler.scaleX = mainwindow.width / 480
-		scaler.scaleY = mainwindow.height / 800
-		scaler.scaleFont = (400 + mainwindow.width * mainwindow.height * 0.00015) / 457
+		scaler.scaleX = width / 480
+		scaler.scaleY = height / 800
+		scaler.scaleFont = (400 + width * height * 0.00015) / 457
 	}
 
 
