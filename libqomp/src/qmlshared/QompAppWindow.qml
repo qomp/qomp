@@ -9,11 +9,16 @@ ApplicationWindow {
 
 	color: "lightblue"
 
-	Component.onCompleted:  {
-		scaler.scaleX = root.width / 480
-		scaler.scaleY = root.height / 800
-		scaler.scaleFont = (400 + root.width * root.height * 0.00015) / 457
+	Component.onCompleted: updateScaler()
+	onWidthChanged: updateScaler()
+	onHeightChanged: updateScaler()
+
+	function updateScaler() {
+		scaler.scaleX = mainwindow.width / 480
+		scaler.scaleY = mainwindow.height / 800
+		scaler.scaleFont = (400 + mainwindow.width * mainwindow.height * 0.00015) / 457
 	}
+
 
 	Item {
 		anchors.fill: parent
