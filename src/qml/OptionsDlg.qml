@@ -16,7 +16,7 @@ BasePage {
 			id: flic
 
 			anchors.fill: parent
-			contentHeight: placeholder.height + edge.height + about.height
+			contentHeight: placeholder.height + edge.height + about.height + space.height
 			contentWidth: width
 
 			clip: true
@@ -81,6 +81,10 @@ BasePage {
 					}
 				}
 			}
+			Item {
+				id: space
+				height: 50
+			}
 		}
 	]
 
@@ -111,8 +115,7 @@ BasePage {
 	}
 
 	function addPage(_title, _item) {
-		var i = comp.createObject(placeholder)
-		i.text = _title
+		var i = comp.createObject(placeholder, {"text": _title})
 		_item.parent = placeholder
 		placeholder.height += i.height + _item.height
 	}

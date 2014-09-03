@@ -53,7 +53,7 @@ void QompPluginTreeModel::setItems(const QList<QompPluginModelItem *> &items, Qo
 	parent->setItems(QList<QompPluginModelItem *>());
 	endRemoveRows();
 
-	beginInsertRows(ind, 0, items.size());
+	beginInsertRows(ind, 0, items.size()-1);
 	parent->setItems(items);
 	validateSelection(ind);
 //	foreach(QompPluginModelItem* item,  items) {

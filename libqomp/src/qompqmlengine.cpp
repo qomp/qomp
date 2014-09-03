@@ -75,6 +75,7 @@ QompQmlEngine *QompQmlEngine::instance()
 
 QompQmlEngine::~QompQmlEngine()
 {	
+	QMetaObject::invokeMethod(window_, "beforeClose");
 	window_->update();
 	qApp->processEvents();
 	//removeImageProvider(QompImageProvider::name());

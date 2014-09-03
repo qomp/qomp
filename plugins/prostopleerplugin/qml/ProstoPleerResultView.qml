@@ -1,7 +1,7 @@
 import QtQuick 2.3
 import "qrc:///qmlshared"
 
-Rectangle {
+Item {
 	id: root
 
 	property alias model: view.model
@@ -11,8 +11,6 @@ Rectangle {
 
 	signal itemCheckClick(var index)
 	signal actNext()
-
-	color: "lightgray"
 
 	QompPluginsSearchView {
 		id: view

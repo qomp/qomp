@@ -90,7 +90,7 @@ void MyzukaruGettunesDlg::setModel(QAbstractItemModel *model, MyzikaruTabKind ki
 
 void MyzukaruGettunesDlg::setCurrentTab(MyzikaruTabKind kind)
 {
-	Q_UNUSED(kind)
+	p->item_->setProperty("currentTab", kind);
 }
 
 

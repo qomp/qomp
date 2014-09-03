@@ -1,11 +1,13 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
 
-Item  {
+Rectangle  {
 	id: root
 
 	signal checkBoxClicked(var index)
 	property var model;
+
+	color: "aliceblue"
 
 	Keys.onReleased: {
 		if (event.key === Qt.Key_Back && head.visible) {
@@ -27,13 +29,18 @@ Item  {
 		height: 60 * scaler.scaleY
 		visible: rootView.model.rootIndex !== rootIndex
 
-		Image {
+		Rectangle {
 			id: backIco
 			height: parent.height
 			width: height
-			fillMode: Image.PreserveAspectFit
-			source: "qrc:///icons/arrow-down"
-			rotation: 90
+			color: "lightblue"
+
+			Image {
+				anchors.fill: parent
+				anchors.margins: parent.height * 0.1
+				fillMode: Image.PreserveAspectFit
+				source: "qrc:///icons/arrow-left"
+			}
 		}
 
 		Text {
@@ -65,6 +72,7 @@ Item  {
 		clip: true
 
 		model: VisualDataModel {
+			id: dataModel
 			model: root.model
 
 			delegate: Rectangle {
@@ -77,40 +85,33 @@ Item  {
 
 				color: "transparent"
 
-				Loader {
-					id: checkBoxLoader
+				QompCheckBox {
+					id: chkbx
+
+					readonly property int toggleState: 2
+
+					anchors.verticalCenter: parent.verticalCenter
 					anchors.left: parent.left
 					anchors.leftMargin: 10 * scaler.scaleX
-					height: parent.height
-					sourceComponent: checkBoxComponent
-					active: model.state !== undefined
-				}
 
-				Component {
-					id: checkBoxComponent
+					visible: model.state !== undefined
+					checked: visible ? model.state : false
 
-					QompCheckBox {
-						id: chkbx
-
-						readonly property int toggleState: 2
-						anchors.verticalCenter: parent.verticalCenter
-
-						checked: model.state
-
-						onClicked: {
-							if(!hasModelChildren) {
-								list.currentIndex = index
-								list.positionViewAtIndex(index,ListView.Visible)
-							}
-							root.checkBoxClicked(list.model.modelIndex(index))
-							model.state = chkbx.toggleState
-						}
+					onClicked: {
+						var curRoot = list.model.rootIndex
+						var cur = index
+						root.checkBoxClicked(list.model.modelIndex(index))
+						model.state = chkbx.toggleState //cause changing root index
+						//restore view's position
+						list.model.rootIndex = curRoot
+						list.currentIndex = cur
+						list.positionViewAtIndex(cur, ListView.Visible)
 					}
 				}
 
 				QompImage {
 					id: image
-					anchors.left: checkBoxLoader.active ? checkBoxLoader.right : parent.left
+					anchors.left: chkbx.visible ? chkbx.right : parent.left
 					anchors.leftMargin: 5 * scaler.scaleX
 					anchors.verticalCenter: parent.verticalCenter
 					height: parent.height * 0.9
@@ -134,7 +135,7 @@ Item  {
 
 				MouseArea {
 					anchors.fill: parent
-					anchors.leftMargin: checkBoxLoader.active ? checkBoxLoader.width * 1.5 : 0
+					anchors.leftMargin: chkbx.visible ? chkbx.width * 1.5 : 0
 					enabled: hasModelChildren
 					onClicked: {
 						head.text = model.text

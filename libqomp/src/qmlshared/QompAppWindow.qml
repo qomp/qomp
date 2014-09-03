@@ -25,14 +25,20 @@ ApplicationWindow {
 					root.removeView();
 				}
 				else {
-					if(contents.active) {
-						root.clear()
-						contents.active = false
-						image.visible = true
-					}
 					Qt.quit()
 				}
 			}
+		}
+
+		Image {
+			id: image
+
+			width: parent.width * 0.9
+			height: width
+			anchors.centerIn: parent
+			fillMode: Image.PreserveAspectFit
+			source: "qrc:///icons/icons/qomp.png"
+			visible: true
 		}
 
 		Loader {
@@ -42,6 +48,12 @@ ApplicationWindow {
 			sourceComponent: stack
 			focus: true
 			active: false
+			opacity: active ? 1 : 0
+			visible: opacity > 0
+
+			Behavior on opacity {
+				NumberAnimation {}
+			}
 		}
 
 		Component {
@@ -50,6 +62,8 @@ ApplicationWindow {
 			StackView {
 				id: sv
 				property int animDuration: 200
+
+				anchors.fill: parent
 
 				delegate: StackViewDelegate {
 					function transitionFinished(properties) {
@@ -76,22 +90,13 @@ ApplicationWindow {
 				}
 			}
 		}
-
-		Image {
-			id: image
-
-			width: parent.width * 0.9
-			height: width
-			anchors.verticalCenter: parent.verticalCenter
-			fillMode: Image.PreserveAspectFit
-			source: "qrc:///icons/icons/qomp.png"
-			visible: false
-		}
-
 	}
+
 	function addView(item) {
-		if(!contents.active)
+		if(!contents.active) {
 			contents.active = true
+			image.visible = false
+		}
 
 		contents.item.push({item: item, destroyOnPop: true/* ,immediate: true*/})
 		contents.item.currentItem.focus = true
@@ -104,5 +109,13 @@ ApplicationWindow {
 
 	function clear() {
 		contents.item.clear()
+	}
+
+	function beforeClose() {
+		if(contents.active) {
+			root.clear()
+			image.visible = true
+			contents.active = false
+		}
 	}
 }
