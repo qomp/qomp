@@ -150,45 +150,57 @@ endif ( ${WIN32} )
 if ( ${UNIX} )
 	set ( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}/share )
 	set ( APPDATA_PATH ${DATADIR_PATH}/${PROJECT_NAME} )
-	add_definitions ( -DHAVE_X11 -DQOMP_DATADIR="${APPDATA_PATH}" -DHAVE_PHONON ) 
-	find_package ( Phonon QUIET )
-	set ( qomp_phonon_SRCS
-		src/qompphononplayer.cpp
-		#src/qompphononmetadataresolver.cpp -- disabled in qomp
-	)
-	if ( ${Phonon_FOUND} )
-		message ( "-- Looking for Phonon - found" )
-		include_directories ( ${PHONON_INCLUDES} )
-	else ()
-		message ( "-- Looking for Phonon - not found" )
-		set ( QT_USE_PHONON TRUE )
-		include_directories ( ${QT_PHONON_INCLUDE_DIR} )
-	endif( ${Phonon_FOUND} )
+	add_definitions ( -DHAVE_X11 -DQOMP_DATADIR="${APPDATA_PATH}" )
+	if( NOT ${USE_QT5} )
+		find_package ( Phonon QUIET )
+			set ( qomp_phonon_SRCS
+				src/qompphononplayer.cpp
+				#src/qompphononmetadataresolver.cpp -- disabled in qomp
+			)
+		add_definitions(-DHAVE_PHONON)
+		if ( ${Phonon_FOUND} )
+			message ( "-- Looking for Phonon - found" )
+			include_directories ( ${PHONON_INCLUDES} )
+		else ()
+			message ( "-- Looking for Phonon - not found" )
+			set ( QT_USE_PHONON TRUE )
+			include_directories ( ${QT_PHONON_INCLUDE_DIR} )
+		endif( ${Phonon_FOUND} )
+	endif( NOT ${USE_QT5} )
 	set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
 	set ( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
 	add_executable (
 		${PROJECT_NAME}
 		${qomp_SRCS}
 		${qomp_phonon_SRCS}
+		${qomp_MMEDIA}
 		${main_UIS}
 		${RSCS}
 		${TRS}
 	)
-	if ( ${Phonon_FOUND} )
+	if(${USE_QT5})
 		target_link_libraries (
 			${PROJECT_NAME}
 			${LIBQOMP_LIBRARY}
-			${PHONON_LIBRARY}
 			${QT_DEPLIBS}
 		)
-	else ()
-		target_link_libraries (
-			${PROJECT_NAME}
-			${LIBQOMP_LIBRARY}
-			${QT_PHONON_LIBRARY}
-			${QT_DEPLIBS}
-		)
-	endif ( ${Phonon_FOUND} )
+	else(${USE_QT5})
+		if ( ${Phonon_FOUND} )
+			target_link_libraries (
+				${PROJECT_NAME}
+				${LIBQOMP_LIBRARY}
+				${PHONON_LIBRARY}
+				${QT_DEPLIBS}
+			)
+		else ( ${Phonon_FOUND} )
+			target_link_libraries (
+				${PROJECT_NAME}
+				${LIBQOMP_LIBRARY}
+				${QT_PHONON_LIBRARY}
+				${QT_DEPLIBS}
+			)
+		endif ( ${Phonon_FOUND} )
+	endif(${USE_QT5})
 	add_dependencies( ${PROJECT_NAME} ${LIBQOMP_LIBRARY} )
 	INSTALL ( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 	
