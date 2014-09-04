@@ -34,7 +34,7 @@ BasePage {
 		}
 	}
 
-	BusyIndicator {
+	QompBusyIndicator {
 		id: busyInd
 
 		anchors.left: parent.left
@@ -44,7 +44,7 @@ BasePage {
 		width: height
 
 		visible: false
-		running: visible
+		//running: visible
 	}
 
 	//		SequentialAnimation {

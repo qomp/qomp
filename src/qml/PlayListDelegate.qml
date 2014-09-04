@@ -83,12 +83,12 @@ Rectangle {
 		}
 	}
 
-	BusyIndicator {
+	QompBusyIndicator {
 		id: busy
 
 		opacity: 0
 		visible: opacity > 0
-		running: visible
+		//running: visible
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		height: root.height * 0.7

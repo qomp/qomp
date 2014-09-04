@@ -70,7 +70,7 @@ ButtonsPage {
 
 				onActivated: inserting = true
 
-				BusyIndicator {
+				QompBusyIndicator {
 					id: sugIndicator
 
 					anchors.right: parent.right
@@ -80,7 +80,7 @@ ButtonsPage {
 					width: height
 
 					visible: root.waitForSuggestions
-					running: visible
+					//running: visible
 				}
 			}
 		}
