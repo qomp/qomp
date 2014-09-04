@@ -1,6 +1,6 @@
 import QtQuick 2.3
 
-Rectangle {
+FocusScope {
 	id: root
 
 	signal accepted()
@@ -9,8 +9,6 @@ Rectangle {
 	property int bottomOffset: 0
 	readonly property int bottomOffsetMargine: 10 * scaler.Y
 	property alias title: pt.text
-
-	color: "transparent"
 
 	Keys.onReleased: {
 		if (event.key === Qt.Key_Back) {
@@ -22,8 +20,10 @@ Rectangle {
 
 	PageTitle { id: pt }
 
-	FocusScope {
+	Item {
 		id: contents
+
+		focus: true
 
 		anchors.fill: parent
 		anchors.topMargin: pt.height

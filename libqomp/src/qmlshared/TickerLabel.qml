@@ -3,11 +3,14 @@ import QtQuick 2.3
 Rectangle {
 	id: root
 
-	property int speed: 200
 	property alias text: txt.text
-	property alias font: txt.font
+	property alias font: txt.font	
+	property alias elide: txt.elide
+
 	property bool runnning: false
 	property int textOffset: 0
+	property int speed: 150
+	property int defaultLabelAlingment: Text.AlignHCenter
 
 	clip: true
 
@@ -33,14 +36,14 @@ Rectangle {
 			target: txt
 			property: "x"
 			from: root.textOffset
-			to: -anim.delta
+			to: -(anim.delta - textOffset)
 			duration: anim.duration / 2
 			easing.type: anim.easing
 		}
 		PropertyAnimation {
 			target: txt
 			property: "x"
-			from: -anim.delta
+			from: -(anim.delta - textOffset)
 			to: root.textOffset
 			duration: anim.duration / 2
 			easing.type: anim.easing
@@ -56,16 +59,20 @@ Rectangle {
 	}
 
 	function checkNeedAnim() {
-		var d = txt.width - root.width
+		var d = txt.width - (root.width - textOffset)
 		if(d > 0) {
 			anim.delta = d
 			txt.anchors.horizontalCenter = undefined
 		}
 		else {
 			anim.delta = 0
-			txt.anchors.horizontalCenter = root.horizontalCenter
+			if(defaultLabelAlingment === Text.AlignHCenter)
+				txt.anchors.horizontalCenter = root.horizontalCenter
+			else
+				txt.x = textOffset
 		}
 	}
 
 	onWidthChanged: checkNeedAnim()
+	onTextOffsetChanged: checkNeedAnim()
 }

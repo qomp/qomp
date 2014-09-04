@@ -103,5 +103,7 @@ Item {
 				duration: itemView.highlightMoveDuration
 			}
 		}
+
+		onCurrentItemChanged: if(currentItem) currentItem.forceActiveFocus()
 	}
 }

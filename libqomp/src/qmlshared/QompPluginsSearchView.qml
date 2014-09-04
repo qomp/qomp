@@ -12,7 +12,7 @@ Rectangle  {
 	Keys.onReleased: {
 		if (event.key === Qt.Key_Back && head.visible) {
 			event.accepted = true
-			rootView.model.rootIndex = rootView.model.parentModelIndex()
+			head.back()
 		}
 	}
 
@@ -21,6 +21,7 @@ Rectangle  {
 
 		property alias text: headerText.text
 		property var rootIndex;
+		property int oldIndex: 0;
 
 		color: "steelblue"
 
@@ -43,32 +44,43 @@ Rectangle  {
 			}
 		}
 
-		Text {
+		TickerLabel {
 			id: headerText
 			anchors.fill: parent
 			anchors.leftMargin: backIco.width + 5 * scaler.scaleX
-			verticalAlignment: Text.AlignVCenter
-			horizontalAlignment: Text.AlignHCenter
-			clip: true
 			font.pixelSize: parent.height / 2.5
+			runnning: true
+			color: "transparent"
 		}
 
 		Component.onCompleted: rootIndex = rootView.model.rootIndex
 
 		MouseArea {
 			anchors.fill:parent
-			onClicked: {
-				rootView.model.rootIndex = rootView.model.parentModelIndex()
-			}
+			onClicked: head.back()
+		}
+
+		function back() {
+			rootView.model.rootIndex = rootView.model.parentModelIndex()
+			rootView.currentIndex = oldIndex
+			rootView.positionViewAtIndex(oldIndex, ListView.Visible)
 		}
 	}
 
 	ListView {
 		id: rootView
 
+		property int transDuration: 300
+		property bool transEnabled: true
+
 		anchors.fill: parent
 		anchors.topMargin: head.visible ? head.height : 0
 		boundsBehavior: Flickable.StopAtBounds
+
+		highlightFollowsCurrentItem: true
+		highlightMoveDuration: 0
+		highlight: Rectangle { color: "#68828A" }
+
 		clip: true
 
 		model: VisualDataModel {
@@ -78,7 +90,7 @@ Rectangle  {
 			delegate: Rectangle {
 				id: mainRow
 
-				property QtObject list: ListView.view
+				property var list: ListView.view
 
 				height: 60 * scaler.scaleY
 				width: parent.width
@@ -100,12 +112,14 @@ Rectangle  {
 					onClicked: {
 						var curRoot = list.model.rootIndex
 						var cur = index
+						list.transEnabled = false
 						root.checkBoxClicked(list.model.modelIndex(index))
 						model.state = chkbx.toggleState //cause changing root index
 						//restore view's position
 						list.model.rootIndex = curRoot
 						list.currentIndex = cur
 						list.positionViewAtIndex(cur, ListView.Visible)
+						list.transEnabled = true
 					}
 				}
 
@@ -119,7 +133,7 @@ Rectangle  {
 					source: model.icon
 				}
 
-				Text {
+				TickerLabel {
 					id: txt
 					anchors.left: image.right
 					anchors.leftMargin: 5 * scaler.scaleX
@@ -127,23 +141,39 @@ Rectangle  {
 					anchors.rightMargin: 5 * scaler.scaleX
 					elide: Text.ElideRight
 					height: parent.height
-					clip: true
-					verticalAlignment: Text.AlignVCenter
 					font.pixelSize: parent.height / 2.5
 					text: model.text
+					runnning: index === list.currentIndex
+					color: "transparent"
+					defaultLabelAlingment: Text.AlignLeft
 				}
 
 				MouseArea {
 					anchors.fill: parent
 					anchors.leftMargin: chkbx.visible ? chkbx.width * 1.5 : 0
-					enabled: hasModelChildren
 					onClicked: {
-						head.text = model.text
-						list.model.rootIndex = list.model.modelIndex(index)
-						root.checkBoxClicked(list.model.rootIndex)
+						list.currentIndex = index
+						if(hasModelChildren) {
+							head.oldIndex = index
+							head.text = model.text
+							list.model.rootIndex = list.model.modelIndex(index)
+							root.checkBoxClicked(list.model.rootIndex)
+						}
 					}
 				}
 			}
+		}
+		populate: Transition {
+			enabled: rootView.transEnabled
+			NumberAnimation { properties: "x,y"; duration: rootView.transDuration }
+		}
+		remove: Transition {
+			enabled: rootView.transEnabled
+			NumberAnimation { property: "opacity"; to: 0; duration: rootView.transDuration }
+		}
+		add: Transition {
+			enabled: rootView.transEnabled
+			NumberAnimation { property: "opacity"; from: 0; to: 1; duration: rootView.transDuration }
 		}
 	}
 }

@@ -88,9 +88,9 @@ Rectangle {
 		snapMode: ListView.SnapToItem
 		clip: true
 		boundsBehavior: Flickable.StopAtBounds
+
 		highlightFollowsCurrentItem: true
 		highlightMoveDuration: 0
-
 		highlight: Rectangle { color: "#68828A" }
 
 		delegate: PlayListDelegate {
