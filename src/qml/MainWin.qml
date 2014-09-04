@@ -227,24 +227,23 @@ Rectangle {
 //		}
 	}
 
-//	TrackMenu {
-//		id: trackMenu
+	TrackMenu {
+		id: trackMenu
 
-//		onToggle: root.actToggle(playlist.currentIndex)
-//		onRemove: root.actRemove(playlist.currentIndex)
-//		onDownload: {
-//			fileDialog. forIndex = playlist.currentIndex
-//			fileDialog.title = qsTr("Select directory")
-//			fileDialog.selectFolder = true
-//			fileDialog.selectExisting = true
-//			fileDialog.onDialogAccepted = function() {
-//				root.actDownload(fileDialog.forIndex, fileDialog.folder)
-//			}
-//			fileDialog.nameFilters = []
-//			fileDialog.open()
-//		}
-
-//	}
+		onToggle: root.actToggle(playlist.currentIndex)
+		onRemove: root.actRemove(playlist.currentIndex)
+		onDownload: {
+			fileDialog. forIndex = playlist.currentIndex
+			fileDialog.title = qsTr("Select directory")
+			fileDialog.selectFolder = true
+			fileDialog.selectExisting = true
+			fileDialog.onDialogAccepted = function() {
+				root.actDownload(fileDialog.forIndex, fileDialog.folder)
+			}
+			fileDialog.nameFilters = []
+			fileDialog.open()
+		}
+	}
 
 	FileDialog {
 		id: fileDialog

@@ -6,9 +6,16 @@ HEADERS += $$PWD/yandexmusicplugin.h \
     $$PWD/yandexmusiccontroller.h
 
 SOURCES += $$PWD/yandexmusicplugin.cpp \
-    $$PWD/yandexmusicgettunsdlg.cpp \
     $$PWD/yandexmusicurlresolvestrategy.cpp \
     $$PWD/yandexmusiccontroller.cpp
 
-OTHER_FILES += \
-    $$PWD/metadata.json
+
+OTHER_FILES += $$PWD/metadata.json
+
+android {
+    RESOURCES += $$PWD/qml.qrc
+    SOURCES += $$PWD/yandexmusicgettunsdlg_mobile.cpp
+}
+else {
+    SOURCES += $$PWD/yandexmusicgettunsdlg.cpp
+}

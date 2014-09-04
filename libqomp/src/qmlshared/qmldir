@@ -14,6 +14,7 @@ TextLineEdit                1.0 TextLineEdit.qml
 QompMenuButton              1.0 QompMenuButton.qml
 QompSideBar                 1.0 QompSideBar.qml
 QompSideBarAction           1.0 QompSideBarAction.qml
+QompPluginsSearchTabbedView 1.0 QompPluginsSearchTabbedView.qml
 
 internal GetTunesDlg    GetTunesDlg.qml
 internal QompAppWindow  QompAppWindow.qml

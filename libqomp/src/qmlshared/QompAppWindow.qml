@@ -5,11 +5,11 @@ import QtQuick.Controls 1.2
 ApplicationWindow {
 	id: root
 
-	visible: true
+	visible: false
+	contentOrientation: Qt.PortraitOrientation
 
 	color: "lightblue"
 
-	Component.onCompleted: updateScaler()
 	onWidthChanged: updateScaler()
 	onHeightChanged: updateScaler()
 
@@ -38,7 +38,7 @@ ApplicationWindow {
 		Image {
 			id: image
 
-			width: parent.width * 0.9
+			width: Math.min(parent.width * 0.9, 400);
 			height: width
 			anchors.centerIn: parent
 			fillMode: Image.PreserveAspectFit
@@ -77,14 +77,14 @@ ApplicationWindow {
 
 					pushTransition: StackViewTransition {
 						id: trans
-						PropertyAnimation {
+						NumberAnimation {
 							duration: sv.animDuration
 							target: enterItem
 							property: "opacity"
 							from: 0
 							to: 1
 						}
-						PropertyAnimation {
+						NumberAnimation {
 							duration: sv.animDuration
 							target: exitItem
 							property: "opacity"

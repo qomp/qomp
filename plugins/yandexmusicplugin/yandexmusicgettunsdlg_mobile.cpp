@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014  Khryukin Evgeny
+ * Copyright (C) 2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,39 +18,43 @@
  */
 
 #include "yandexmusicgettunsdlg.h"
-#include "qompplugintreeview.h"
 
-class YandexMusicGettunsDlg::Private
+#include "qompqmlengine.h"
+#include <QQuickItem>
+#include <QAbstractItemModel>
+
+class YandexMusicGettunsDlg::Private : public QObject
 {
+	Q_OBJECT
 public:
 	Private(YandexMusicGettunsDlg* p) :
-		tabWidget_(new QTabWidget(0)),
-		artistsView_(new QompPluginTreeView(tabWidget_)),
-		albumsView_(new QompPluginTreeView(tabWidget_)),
-		tracksView_(new QompPluginTreeView(tabWidget_))
+		QObject(p)
+
 	{
-		tabWidget_->addTab(artistsView_, tr("Artists"));
-		tabWidget_->addTab(albumsView_, tr("Albums"));
-		tabWidget_->addTab(tracksView_, tr("Tracks"));
+		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/YandexMusicResultsView.qml"));
+		connect(item_, SIGNAL(itemCheckClick(QJSValue)), SLOT(clicked(QJSValue)));
+		connect(this, SIGNAL(itemClicked(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
 
-		p->setResultsWidget(tabWidget_);
+		p->setResultsWidget(item_);
+	}
+signals:
+	void itemClicked(const QModelIndex&);
 
-		QList<QompPluginTreeView*> list = QList<QompPluginTreeView*> () << artistsView_ << albumsView_ << tracksView_;
-		foreach(QompPluginTreeView* view, list) {
-			connect(view, SIGNAL(clicked(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
-			connect(view, SIGNAL(expanded(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
-		}
+private slots:
+	void clicked(const QJSValue& val)
+	{
+		QModelIndex i = val.toVariant().value<QModelIndex>();
+		emit itemClicked(i);
 	}
 
-	QTabWidget* tabWidget_;
-	QompPluginTreeView *artistsView_, *albumsView_, *tracksView_;
+public:
+	QQuickItem* item_;
 };
 
 YandexMusicGettunsDlg::YandexMusicGettunsDlg() :
 	QompPluginGettunesDlg()
 {
 	setWindowTitle("Yandex.Music");
-
 	p = new Private(this);
 }
 
@@ -61,25 +65,27 @@ YandexMusicGettunsDlg::~YandexMusicGettunsDlg()
 
 void YandexMusicGettunsDlg::setCuuretnTab(YandexMusicTabKind kind)
 {
-	p->tabWidget_->setCurrentIndex(int(kind));
+	p->item_->setProperty("currentTab", kind);
 }
 
 void YandexMusicGettunsDlg::setModel(QAbstractItemModel *model, YandexMusicTabKind kind)
 {
-	switch(kind) {
+	switch (kind) {
 	case TabAlbum:
-		p->albumsView_->setModel(model);
+		p->item_->setProperty("albumsModel", QVariant::fromValue(model));
 		break;
 	case TabArtist:
-		p->artistsView_->setModel(model);
+		p->item_->setProperty("artistsModel", QVariant::fromValue(model));
 		break;
 	case TabTrack:
-		p->tracksView_->setModel(model);
+		p->item_->setProperty("tracksModel", QVariant::fromValue(model));
 		break;
 	}
 }
 
 int YandexMusicGettunsDlg::currentTabRows() const
 {
-	return static_cast<QompPluginTreeView*>(p->tabWidget_->currentWidget())->model()->rowCount();
+	return static_cast<QAbstractItemModel*>(p->item_->property("currentModel").value<QObject*>())->rowCount();
 }
+
+#include "yandexmusicgettunsdlg_mobile.moc"

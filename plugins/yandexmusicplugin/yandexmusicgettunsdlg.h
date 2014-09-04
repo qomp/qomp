@@ -22,11 +22,7 @@
 
 #include "qompplugingettunesdlg.h"
 
-#include <QHash>
-
-class QTabWidget;
 class QAbstractItemModel;
-class QompPluginTreeView;
 
 enum YandexMusicTabKind { TabArtist = 0, TabAlbum = 1, TabTrack = 2 };
 
@@ -35,6 +31,7 @@ class YandexMusicGettunsDlg : public QompPluginGettunesDlg
 	Q_OBJECT
 public:
 	explicit YandexMusicGettunsDlg();
+	~YandexMusicGettunsDlg();
 
 	void setCuuretnTab(YandexMusicTabKind kind);
 	void setModel(QAbstractItemModel* model, YandexMusicTabKind kind);
@@ -42,9 +39,9 @@ public:
 	
 
 private:
-	QTabWidget* tabWidget_;
-	QompPluginTreeView *artistsView_, *albumsView_, *tracksView_;
-	
+	class Private;
+	Private* p;
+	friend class Private;
 };
 
 #endif // YANDEXMUSICGETTUNSDLG_H

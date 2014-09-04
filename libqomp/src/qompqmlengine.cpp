@@ -134,6 +134,7 @@ QompQmlEngine::QompQmlEngine() :
 	jni->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0]));
 	jni->DeleteLocalRef(clazz);
 #endif
+	window_->showMaximized();
 	window_->update();
 	qApp->processEvents();
 }
