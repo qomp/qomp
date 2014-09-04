@@ -36,14 +36,14 @@ Rectangle {
 			target: txt
 			property: "x"
 			from: root.textOffset
-			to: -(anim.delta - textOffset)
+			to: -(anim.delta - textOffset*2)
 			duration: anim.duration / 2
 			easing.type: anim.easing
 		}
 		PropertyAnimation {
 			target: txt
 			property: "x"
-			from: -(anim.delta - textOffset)
+			from: -(anim.delta - textOffset*2)
 			to: root.textOffset
 			duration: anim.duration / 2
 			easing.type: anim.easing
@@ -59,7 +59,7 @@ Rectangle {
 	}
 
 	function checkNeedAnim() {
-		var d = txt.width - (root.width - textOffset)
+		var d = txt.width - (root.width - textOffset * 2)
 		if(d > 0) {
 			anim.delta = d
 			txt.anchors.horizontalCenter = undefined
