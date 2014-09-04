@@ -157,9 +157,9 @@ if ( ${UNIX} )
 				src/qompphononplayer.cpp
 				#src/qompphononmetadataresolver.cpp -- disabled in qomp
 			)
+    add_definitions(-DHAVE_PHONON)
 		if ( ${Phonon_FOUND} )
 			message ( "-- Looking for Phonon - found" )
-			add_definitions(-DHAVE_PHONON)
 			include_directories ( ${PHONON_INCLUDES} )
 		else ()
 			message ( "-- Looking for Phonon - not found" )
