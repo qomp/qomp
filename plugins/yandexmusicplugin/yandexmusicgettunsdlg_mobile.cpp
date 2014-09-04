@@ -85,7 +85,11 @@ void YandexMusicGettunsDlg::setModel(QAbstractItemModel *model, YandexMusicTabKi
 
 int YandexMusicGettunsDlg::currentTabRows() const
 {
-	return static_cast<QAbstractItemModel*>(p->item_->property("currentModel").value<QObject*>())->rowCount();
+	QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>(p->item_->property("currentModel").value<QObject*>());
+	if(model) {
+		return model->rowCount();
+	}
+	return 0;
 }
 
 #include "yandexmusicgettunsdlg_mobile.moc"

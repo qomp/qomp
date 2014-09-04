@@ -7,7 +7,12 @@ Item {
 	property var albumsModel;
 	property var tracksModel
 	property alias currentTab: itemView.currentIndex
-	property var currentModel: itemView.currentItem.model
+	property var currentModel: {
+						if(itemView && itemView.currentItem) {
+							return itemView.currentItem.model
+						}
+						return undefined
+					}
 
 	signal itemCheckClick(var index)
 
