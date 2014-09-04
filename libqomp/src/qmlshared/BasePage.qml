@@ -22,7 +22,7 @@ Rectangle {
 
 	PageTitle { id: pt }
 
-	Item {
+	FocusScope {
 		id: contents
 
 		anchors.fill: parent

@@ -9,6 +9,7 @@ Rectangle {
 	property bool busy: false
 	property bool playing: false
 	readonly property int animDuration: 100
+	property bool current: model.current === undefined ? false : model.current
 
 	signal activated()
 	signal longTap()
@@ -42,7 +43,7 @@ Rectangle {
 
 		clip: true
 		elide: Text.ElideMiddle
-		font.bold: model.current === undefined ? false : model.current
+		font.bold: root.current
 		font.pixelSize: parent.height / 4
 		horizontalAlignment: Text.AlignLeft
 		verticalAlignment: Text.AlignVCenter

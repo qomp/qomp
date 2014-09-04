@@ -25,6 +25,8 @@ Rectangle {
 	signal actRemove(var index)
 	signal actDownload(var index, var dir)
 
+	property string title: "qomp"
+
 	property alias currentDuration: position.maximumValue
 	property alias currentPosition: position.value
 	property alias currentDurationText: totalDurTxt.text
@@ -55,7 +57,13 @@ Rectangle {
 
 	PageTitle {
 		id: title
-		text: "qomp"
+		text: {
+			if(!root.playing || playlist.currentTrackText.length === 0)
+				return root.title
+			return playlist.currentTrackText
+		}
+		runnning: root.playing
+		textOffset: menuButton.width
 
 		QompMenuButton {
 			id: menuButton
@@ -67,6 +75,8 @@ Rectangle {
 
 	ListView {
 		id: playlist
+
+		property string currentTrackText;
 
 		focus: true
 
@@ -91,6 +101,7 @@ Rectangle {
 				trackMenu.popup()
 			}
 			onActivated: root.itemActivated(index)
+			onCurrentChanged: if(current) playlist.currentTrackText = model.text
 		}
 	}
 

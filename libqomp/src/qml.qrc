@@ -19,5 +19,6 @@
         <file>qmlshared/QompSideBar.qml</file>
         <file>qmlshared/QompSideBarAction.qml</file>
         <file>qmlshared/QompPluginsSearchTabbedView.qml</file>
+        <file>qmlshared/TickerLabel.qml</file>
     </qresource>
 </RCC>

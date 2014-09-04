@@ -103,6 +103,8 @@ ApplicationWindow {
 			image.visible = false
 		}
 
+		item.width = width
+		item.height = height
 		contents.item.push({item: item, destroyOnPop: true/* ,immediate: true*/})
 		contents.item.currentItem.focus = true
 	}

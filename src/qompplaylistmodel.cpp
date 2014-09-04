@@ -332,6 +332,7 @@ void QompPlayListModel::loadTunes(const QString &fileName)
 QHash<int, QByteArray> QompPlayListModel::roleNames() const
 {
 	QHash<int, QByteArray> roles;
+	roles[Qt::DisplayRole] = "text";
 	roles[ArtistRole] = "artist";
 	roles[TitleRole] = "title";
 	roles[TrackRole] = "track";
