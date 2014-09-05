@@ -15,12 +15,16 @@ Item {
 		color: "black"
 		anchors.fill: parent
 		opacity: 0
+
+		MouseArea {
+			anchors.fill: parent
+		}
 	}
 
 	Rectangle {
 		id: slide
 
-		width: parent.width * 0.85
+		width: parent.width * ((parent.width < parent.height) ? 0.85 : 0.6)
 		height: parent.height
 		color: "#68828A"
 
@@ -36,10 +40,6 @@ Item {
 
 			clip: true
 			boundsBehavior: Flickable.StopAtBounds
-
-			MouseArea {
-				anchors.fill: parent
-			}
 
 			Column {
 				id: col

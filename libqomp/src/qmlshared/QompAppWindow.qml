@@ -23,7 +23,6 @@ ApplicationWindow {
 		scaler.scaleFont = (400 + width * height * 0.00015) / 457
 	}
 
-
 	Item {
 		anchors.fill: parent
 
