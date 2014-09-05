@@ -25,7 +25,7 @@ Rectangle {
 	signal actRemove(var index)
 	signal actDownload(var index, var dir)
 
-	property string title: "qomp"
+	property string title: Qt.application.name
 
 	property alias currentDuration: position.maximumValue
 	property alias currentPosition: position.value

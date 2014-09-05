@@ -1,6 +1,6 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
-
+import QtQuick.Window 2.1
 
 ApplicationWindow {
 	id: root
@@ -14,8 +14,12 @@ ApplicationWindow {
 	onHeightChanged: updateScaler()
 
 	function updateScaler() {
-		scaler.scaleX = width / 480
-		scaler.scaleY = height / 800
+		var w = Math.min(width, height)
+		var h = Math.max(width, height)
+		var myDensity = 9.15
+		var curDensity = Screen.pixelDensity
+		scaler.scaleX = (w / curDensity) / (480 / myDensity)
+		scaler.scaleY = (h / curDensity) / (800 / myDensity)
 		scaler.scaleFont = (400 + width * height * 0.00015) / 457
 	}
 

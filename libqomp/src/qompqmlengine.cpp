@@ -114,6 +114,17 @@ void QompQmlEngine::itemDeleted()
 #endif
 }
 
+bool QompQmlEngine::eventFilter(QObject *o, QEvent *e)
+{
+	if(o == qApp) {
+		if(e->type() == QEvent::ApplicationActivate)
+			window_->setProperty("visible", true);
+		else if(e->type() == QEvent::ApplicationDeactivate)
+			window_->setProperty("visible", false);
+	}
+	return QQmlApplicationEngine::eventFilter(o, e);
+}
+
 QompQmlEngine::QompQmlEngine() :
 	QQmlApplicationEngine(qApp),
 	window_(0),
@@ -137,6 +148,7 @@ QompQmlEngine::QompQmlEngine() :
 	window_->showMaximized();
 	window_->update();
 	qApp->processEvents();
+	qApp->installEventFilter(this);
 }
 
 QompQmlEngine* QompQmlEngine::instance_ = 0;

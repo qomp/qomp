@@ -41,6 +41,9 @@ public:
 private slots:
 	void itemDeleted();
 
+protected:
+	bool eventFilter(QObject *o, QEvent *e);
+
 private:
 	static QompQmlEngine *instance_;
 	QompQmlEngine();
