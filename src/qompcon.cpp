@@ -33,18 +33,21 @@
 #include "thememanager.h"
 #include "updateschecker.h"
 #include "qomptunedownloader.h"
+#include <QApplication>
 #else
 #include "qompqmlengine.h"
 
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
 #include <QtAndroid>
+#include <QGuiApplication>
 #endif
 
-#include <QCoreApplication>
 #ifdef HAVE_QT5
 #include <QThread>
 #endif
+
+#include <QTimer>
 
 #ifdef HAVE_PHONON
 #include "qompphononplayer.h"
@@ -111,10 +114,77 @@ QompCon::QompCon(QObject *parent) :
 	jni->DeleteLocalRef(clazz);
 #endif
 	connect(qApp, SIGNAL(aboutToQuit()), SLOT(deInit()));
+	connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), SLOT(applicationStateChanged(Qt::ApplicationState)));
+
+	QTimer::singleShot(0, this, SLOT(init()));
 }
 
 QompCon::~QompCon()
 {
+}
+
+void QompCon::applicationStateChanged(Qt::ApplicationState state)
+{
+#ifdef Q_OS_ANDROID
+	switch(state) {
+	case Qt::ApplicationActive:
+		break;
+	case Qt::ApplicationInactive:
+		break;
+	default:
+		break;
+	}
+#else
+	Q_UNUSED(state);
+#endif
+}
+
+void QompCon::init()
+{
+	checkVersion();
+	updateSettings();
+
+	setupModel();
+	setupPlayer();
+	setupMainWin();
+
+	model_->restoreState();
+
+	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateSettings()));
+
+#ifndef Q_OS_ANDROID
+	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
+		mainWin_->hide();
+	else
+		mainWin_->show();
+#endif
+
+	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
+		actPlay();
+}
+
+void QompCon::deInit()
+{
+	stopPlayer();
+	model_->saveState();
+
+	Options::instance()->setOption(OPTION_VOLUME, player_->volume());
+
+	delete mainWin_;
+	delete player_;
+	delete Tune::emptyTune();
+	delete model_;
+
+	//we do this cleanup here cos sometimes on android
+	//we catch random crashes on exit;
+	delete Options::instance();
+	delete Translator::instance();
+#ifndef Q_OS_ANDROID
+	delete ThemeManager::instance();
+#else
+	deInitActivity();
+	delete QompQmlEngine::instance();
+#endif
 }
 
 void QompCon::checkVersion()
@@ -148,52 +218,6 @@ void QompCon::checkVersion()
 
 		Options::instance()->setOption(OPTION_APPLICATION_VERSION, APPLICATION_VERSION);
 	}
-}
-
-void QompCon::deInit()
-{
-	stopPlayer();
-	model_->saveState();
-
-	Options::instance()->setOption(OPTION_VOLUME, player_->volume());
-
-	delete mainWin_;
-	delete player_;
-	delete Tune::emptyTune();
-	delete model_;
-
-	//we do this cleanup here cos sometimes on android
-	//we catch random crashes on exit;
-	delete Options::instance();
-	delete Translator::instance();
-#ifndef Q_OS_ANDROID
-	delete ThemeManager::instance();
-#else
-	deInitActivity();
-	delete QompQmlEngine::instance();
-#endif
-}
-
-void QompCon::init()
-{
-	checkVersion();
-	updateSettings();
-
-	setupModel();
-	setupPlayer();
-	setupMainWin();
-
-	model_->restoreState();
-
-	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateSettings()));
-
-	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
-		mainWin_->hide();
-	else
-		mainWin_->show();
-
-	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
-		actPlay();
 }
 
 #ifdef Q_OS_ANDROID
@@ -404,6 +428,11 @@ void QompCon::setupMainWin()
 	mainWin_->setCurrentPosition(player_->position());
 	mainWin_->playerStateChanged(player_->state());
 
+	connectMainWin();
+}
+
+void QompCon::connectMainWin()
+{
 	connect(player_, SIGNAL(currentPositionChanged(qint64)),	mainWin_, SLOT(setCurrentPosition(qint64)));
 	connect(player_, SIGNAL(mutedChanged(bool)),			mainWin_, SLOT(setMuteState(bool)));
 	connect(player_, SIGNAL(volumeChanged(qreal)),			mainWin_, SLOT(volumeChanged(qreal)));
@@ -427,6 +456,12 @@ void QompCon::setupMainWin()
 	connect(mainWin_, SIGNAL(removeTune(Tune*)),			SLOT(actRemoveTune(Tune*)));
 	connect(mainWin_, SIGNAL(mediaActivated(QModelIndex)),		SLOT(actMediaActivated(QModelIndex)));
 	connect(mainWin_, SIGNAL(mediaClicked(QModelIndex)),		SLOT(actMediaClicked(QModelIndex)));
+}
+
+void QompCon::disconnectMainWin()
+{
+	mainWin_->disconnect(this);
+	player_->disconnect(mainWin_);
 }
 
 void QompCon::setupPlayer()

@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
 	a->setOrganizationName(APPLICATION_NAME);
 	a->setQuitOnLastWindowClosed(false);
 	QompCon* qomp = new QompCon;
-	qomp->init();
 	int ret = a->exec();
 	delete qomp;
 	delete a;

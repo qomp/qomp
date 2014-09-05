@@ -51,6 +51,8 @@ ButtonsPage {
 
 				property bool inserting: false
 
+				model: []
+
 				anchors.verticalCenter: parent.verticalCenter
 				anchors.left: parent.left
 				anchors.right: search.left

@@ -37,7 +37,6 @@ public:
 	QompCon(QObject *parent = 0);
 	~QompCon();
 
-	void init();
 #ifdef Q_OS_ANDROID
 	void incomingCall(bool begining);
 #endif
@@ -75,12 +74,17 @@ private slots:
 	void playerStateChanged(Qomp::State state);
 	void currentTuneChanged(Tune* t);
 
+	void init();
 	void deInit();
+	void applicationStateChanged(Qt::ApplicationState state);
+
 //protected:
 //	bool eventFilter(QObject *obj, QEvent *e);
 
 private:
 	void setupMainWin();
+	void connectMainWin();
+	void disconnectMainWin();
 	void setupPlayer();
 	void setupModel();
 	void checkVersion();
