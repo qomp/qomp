@@ -9,7 +9,7 @@ Rectangle {
 
 	property bool runnning: false
 	property int textOffset: 0
-	property int speed: 150
+	property int speed: 100
 	property int defaultLabelAlingment: Text.AlignHCenter
 
 	clip: true
@@ -26,7 +26,7 @@ Rectangle {
 		id: anim
 
 		property int delta: 0
-		property int duration: delta * root.speed
+		property int duration: 3000 + delta * root.speed
 		property int easing: Easing.OutQuart
 
 		running: root.runnning && delta > 0

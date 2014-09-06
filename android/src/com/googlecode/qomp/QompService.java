@@ -17,13 +17,16 @@ import android.graphics.Bitmap;
 
 //for Toast
 import android.widget.Toast;
-import java.lang.Thread;
 import java.lang.Runnable;
+import android.os.Handler;
+
+
 
 public class QompService extends Service {
 
     private static final int NotifRef = 1;
     private final IBinder binder = new QompBinder();
+    private final Handler handler = new Handler();
 
     @Override
     public void onCreate() {
@@ -83,19 +86,24 @@ public class QompService extends Service {
          startForeground(NotifRef, not);
     }
 
-    private void showToast(final String text) {
+    private class ToastRunnable implements Runnable {
+        String text_;
+
+        public ToastRunnable(final String text) {
+            text_ = text;
+        }
+
+        @Override
+        public void run(){
+             Toast.makeText(getApplicationContext(), text_, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void showToast(final String text) {
         if(text.length() == 0)
             return;
 
-//        new Thread() {
-//            public void run() {
-//                runOnUiThread(new Runnable() {
-//                    public void run() {
-                        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-//                    }
-//                });
-//            }
-//        }.start();
+        handler.post(new ToastRunnable(text));
     }
 
     public class QompBinder extends Binder {
@@ -104,4 +112,3 @@ public class QompService extends Service {
         }
     }
 }
-

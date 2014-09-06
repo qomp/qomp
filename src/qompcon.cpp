@@ -130,6 +130,7 @@ void QompCon::applicationStateChanged(Qt::ApplicationState state)
 	case Qt::ApplicationActive:
 		break;
 	case Qt::ApplicationInactive:
+		model_->saveState();
 		break;
 	default:
 		break;
