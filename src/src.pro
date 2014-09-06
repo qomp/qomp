@@ -56,7 +56,6 @@ macx {
 
 android {
     QT += xml
-    OTHER_FILES += $$PWD/../android/AndroidManifest.xml
     LIBS += -L$$OUT_PWD/../bin -lqomp-shared
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
     ANDROID_EXTRA_LIBS += $$OUT_PWD/../bin/libqomp-shared.so $$[QT_INSTALL_LIBS]/libtag.so
@@ -68,7 +67,3 @@ android {
 
 INCLUDEPATH += $$PWD/../libqomp/include
 DEPENDPATH += $$PWD/../libqomp/include
-
-OTHER_FILES += \
-    ../android/src/com/googlecode/qomp/Qomp.java \
-    ../android/src/com/googlecode/qomp/CallbackActivity.java
