@@ -23,8 +23,8 @@
 #include <QDBusMetaType>
 #include <QDBusReply>
 #include <QImage>
-#include <QTimer>
 #include <QSize>
+#include <QStringList>
 
 #include "dbusnotifier.h"
 #include "defines.h"

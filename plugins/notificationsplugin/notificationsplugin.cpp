@@ -28,6 +28,7 @@
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
 #elif defined HAVE_X11
+#include <QImage>
 #include "dbusnotifier.h"
 #elif defined Q_OS_WIN
 #include <QApplication>

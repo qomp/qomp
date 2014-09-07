@@ -19,9 +19,8 @@
 #ifndef DBUSNOTIFIER_H
 #define DBUSNOTIFIER_H
 
-class QStringList;
-class QImage;
-class QTimer;
+#include <QStringList>
+#include <QImage>
 
 class DBusNotifier
 {
