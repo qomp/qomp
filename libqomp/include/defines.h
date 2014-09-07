@@ -48,6 +48,7 @@
 #define OPTION_CURRENT_TRACK	"main.current-track"
 #define OPTION_REPEAT_ALL	"main.repeat-all"
 #define OPTION_VOLUME		"main.player-volume"
+#define OPTION_MUTED		"main.player-muted"
 
 #define OPTION_SEARCH_HISTORY	"plugins.search-history"
 #define OPTION_PLUGINS_ORDER	"plugins.order"

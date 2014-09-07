@@ -211,6 +211,7 @@ void QompCon::checkVersion()
 									<< "Pleer.com");
 		hash.insert(OPTION_THEME,		"blue");
 		hash.insert(OPTION_CURRENT_TRANSLATION, QLocale::system().name().split("_").first());
+		hash.insert(OPTION_MUTED, false);
 
 		foreach(const char* key, hash.keys()) {
 			if(Options::instance()->getOption(key) == QVariant::Invalid)
@@ -324,6 +325,7 @@ void QompCon::actMuteToggle(bool mute)
 	if(player_->isMuted() != mute) {
 		player_->setMute(mute);
 		mainWin_->setMuteState(player_->isMuted());
+		Options::instance()->setOption(OPTION_MUTED, mute);
 	}
 }
 
@@ -421,7 +423,7 @@ void QompCon::actRemoveTune(Tune *tune)
 
 void QompCon::setupMainWin()
 {
-	mainWin_ = new QompMainWin();
+	mainWin_ = new QompMainWin(qApp);
 	mainWin_->setModel(model_);
 
 	mainWin_->setMuteState(player_->isMuted());
@@ -478,6 +480,7 @@ void QompCon::setupPlayer()
 #ifndef Q_OS_ANDROID
 	player_->setVolume(Options::instance()->getOption(OPTION_VOLUME, 1).toReal());
 	player_->setAudioOutputDevice(Options::instance()->getOption(OPTION_AUDIO_DEVICE).toString());
+	player_->setMute(Options::instance()->getOption(OPTION_MUTED).toBool());
 #endif
 }
 

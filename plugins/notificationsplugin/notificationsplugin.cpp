@@ -20,6 +20,7 @@
 #include "notificationsplugin.h"
 #include "options.h"
 #include "tune.h"
+#include "defines.h"
 
 #include <QtPlugin>
 #include <QTimer>
@@ -27,6 +28,9 @@
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
 #elif defined HAVE_H11
+#elif defined Q_OS_WIN
+#include <QApplication>
+#include <QSystemTrayIcon>
 #endif
 
 class NotificationsPlugin::Private
@@ -46,6 +50,9 @@ public:
 								"showNotification",
 								"(Ljava/lang/String;)V",
 								str.object<jstring>());
+#elif defined Q_OS_WIN
+		QSystemTrayIcon* ico = qApp->findChild<QSystemTrayIcon*>();
+		ico->showMessage(APPLICATION_NAME, text, QSystemTrayIcon::Information, 5000);
 #else
 		Q_UNUSED(text)
 #endif
