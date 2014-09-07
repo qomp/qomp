@@ -30,7 +30,7 @@ public:
 	bool isAvailable();
 	void doPopup(const QString &title, const QString &message, QImage image);
 private:
-	QStringList &capabilities() const;
+	const QStringList &capabilities() const;
 	bool checkServer();
 	void doCall(const QVariantList &args);
 private:
