@@ -27,7 +27,8 @@
 
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
-#elif defined HAVE_H11
+#elif defined HAVE_X11
+#include "dbusnotifier.h"
 #elif defined Q_OS_WIN
 #include <QApplication>
 #include <QSystemTrayIcon>
@@ -48,12 +49,18 @@ public:
 		growl_ = new GrowlNotifier(QStringList() << notificationName,
 					   QStringList() << notificationName, APPLICATION_NAME);
 #endif
+#ifdef HAVE_X11
+		dbusNotify_ = new DBusNotifier();
+#endif
 	}
 
 	~Private()
 	{
 #ifdef Q_OS_MAC
 		delete growl_;
+#endif
+#if defined HAVE_X11
+		delete dbusNotify_;
 #endif
 	}
 
@@ -70,8 +77,13 @@ public:
 		ico->showMessage(APPLICATION_NAME, text, QSystemTrayIcon::Information, 5000);
 #elif defined Q_OS_MAC
 			growl_->notify(notificationName, APPLICATION_NAME, text, QPixmap("qrc:///icons/icons/qomp.png"));
-#else
-		Q_UNUSED(text)
+#elif defined HAVE_X11
+		if (dbusNotify_->isAvailable()) {
+			QImage appIcon(":/icons/icons/qomp.png");
+			QString title_suffix = QObject::tr(" now playing:");
+			QString title = QString(APPLICATION_NAME).left(1).toUpper() + QString(APPLICATION_NAME).mid(1) + title_suffix;
+			dbusNotify_->doPopup(title, text, appIcon);
+		}
 #endif
 	}
 
@@ -80,6 +92,9 @@ public:
 	Tune* tune_;
 #ifdef Q_OS_MAC
 	GrowlNotifier* growl_;
+#endif
+#ifdef HAVE_X11
+	DBusNotifier* dbusNotify_;
 #endif
 };
 

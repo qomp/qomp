@@ -5,6 +5,7 @@ set ( plugins_list
 	urlplugin
 	prostopleerplugin
 	myzukaruplugin
+	notificationsplugin
 	yandexmusicplugin
 	lastfmplugin
 	tunetofileplugin

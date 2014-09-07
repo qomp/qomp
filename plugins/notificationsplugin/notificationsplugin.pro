@@ -16,6 +16,8 @@ else: mac {
     INCLUDEPATH += $$PWD/growlnotifier
     QMAKE_LFLAGS += -framework Growl
 }
-else: unix {
+else: unix:!mac:!android {
     QT += dbus
+    HEADERS += $$PWD/dbusnotifier.h
+    SOURCES += $$PWD/dbusnotifier.cpp
 }
