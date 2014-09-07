@@ -26,7 +26,7 @@ Rectangle {
 		id: anim
 
 		property int delta: 0
-		property int duration: 3000 + delta * root.speed
+		property int duration: 6000 + delta * root.speed
 		property int easing: Easing.OutQuart
 
 		running: root.runnning && delta > 0
