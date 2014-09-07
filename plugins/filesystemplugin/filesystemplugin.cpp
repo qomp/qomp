@@ -28,9 +28,9 @@
 #include <taglib/tag.h>
 #include <taglib/audioproperties.h>
 #else
-#include <fileref.h>
-#include <tag.h>
-#include <audioproperties.h>
+#include <tag/fileref.h>
+#include <tag/tag.h>
+#include <tag/audioproperties.h>
 #endif
 
 #include <QFileDialog>

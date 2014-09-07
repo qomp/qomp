@@ -12,6 +12,9 @@ android {
 else: windows {
 }
 else: mac {
+    include($$PWD/growlnotifier/growlnotifier.pri)
+    INCLUDEPATH += $$PWD/growlnotifier
+    QMAKE_LFLAGS += -framework Growl
 }
 else: unix {
     QT += dbus

@@ -31,6 +31,10 @@
 #elif defined Q_OS_WIN
 #include <QApplication>
 #include <QSystemTrayIcon>
+#elif defined Q_OS_MAC
+#include"growlnotifier.h"
+
+static const QString notificationName = QObject::tr("New Track");
 #endif
 
 class NotificationsPlugin::Private
@@ -40,6 +44,17 @@ public:
 		plugin_(plugin),
 		tune_(0)
 	{
+#ifdef Q_OS_MAC
+		growl_ = new GrowlNotifier(QStringList() << notificationName,
+					   QStringList() << notificationName, APPLICATION_NAME);
+#endif
+	}
+
+	~Private()
+	{
+#ifdef Q_OS_MAC
+		delete growl_;
+#endif
 	}
 
 	void showNotification(const QString& text)
@@ -53,6 +68,8 @@ public:
 #elif defined Q_OS_WIN
 		QSystemTrayIcon* ico = qApp->findChild<QSystemTrayIcon*>();
 		ico->showMessage(APPLICATION_NAME, text, QSystemTrayIcon::Information, 5000);
+#elif defined Q_OS_MAC
+			growl_->notify(notificationName, APPLICATION_NAME, text, QPixmap("qrc:///icons/icons/qomp.png"));
 #else
 		Q_UNUSED(text)
 #endif
@@ -61,6 +78,9 @@ public:
 public:
 	NotificationsPlugin* plugin_;
 	Tune* tune_;
+#ifdef Q_OS_MAC
+	GrowlNotifier* growl_;
+#endif
 };
 
 
