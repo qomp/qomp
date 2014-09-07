@@ -24,7 +24,7 @@
 #include "options.h"
 #include "qompqmlengine.h"
 #include "defines.h"
-//#include "qompoptionsplugins.h"
+#include "qompoptionsplugins.h"
 
 #include <QQuickItem>
 #include <QQmlProperty>
@@ -41,8 +41,8 @@ public:
 		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/OptionsDlg.qml"));
 		item_->setProperty("qompVer", QString(APPLICATION_NAME) + " " + QString(APPLICATION_VERSION));
 		QompOptionsMain* om = new QompOptionsMain(this);
-		//QompOptionsPlugins* op = new QompOptionsPlugins(this);
-		pages_ << om;// << op;
+		QompOptionsPlugins* op = new QompOptionsPlugins(this);
+		pages_ << om << op;
 
 		foreach(QompOptionsPage* page, pages_) {
 			addPage(page);
@@ -69,14 +69,7 @@ private slots:
 	void pageDestroyed()
 	{
 		QompOptionsPage* page = static_cast<QompOptionsPage*>(sender());
-//		int ind = pages_.indexOf(page);
-//		QWidget* w = ui->sw_pages->widget(ind);
-//		ui->sw_pages->removeWidget(w);
-//		delete w;
-//		QListWidgetItem* it = ui->lw_pagesNames->item(ind);
-//		ui->lw_pagesNames->removeItemWidget(it);
 		pages_.removeAll(page);
-//		delete it;
 	}
 
 private:

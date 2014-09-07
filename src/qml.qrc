@@ -7,5 +7,6 @@
         <file>qml/OptionsPageMain.qml</file>
         <file>qml/AboutDlg.qml</file>
         <file>qml/MainWinSideBar.qml</file>
+        <file>qml/OptionsPagePlugins.qml</file>
     </qresource>
 </RCC>
