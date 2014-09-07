@@ -28,3 +28,4 @@ qomp.app/
 *.dmg
 bin/
 android/assets/
+.DS_Store
