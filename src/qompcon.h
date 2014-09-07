@@ -76,7 +76,9 @@ private slots:
 
 	void init();
 	void deInit();
+#ifdef Q_OS_ANDROID
 	void applicationStateChanged(Qt::ApplicationState state);
+#endif
 
 //protected:
 //	bool eventFilter(QObject *obj, QEvent *e);

@@ -112,9 +112,10 @@ QompCon::QompCon(QObject *parent) :
 		};
 	jni->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0]));
 	jni->DeleteLocalRef(clazz);
+
+	connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), SLOT(applicationStateChanged(Qt::ApplicationState)));
 #endif
 	connect(qApp, SIGNAL(aboutToQuit()), SLOT(deInit()));
-	connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), SLOT(applicationStateChanged(Qt::ApplicationState)));
 
 	QTimer::singleShot(0, this, SLOT(init()));
 }
@@ -122,10 +123,9 @@ QompCon::QompCon(QObject *parent) :
 QompCon::~QompCon()
 {
 }
-
+#ifdef Q_OS_ANDROID
 void QompCon::applicationStateChanged(Qt::ApplicationState state)
 {
-#ifdef Q_OS_ANDROID
 	switch(state) {
 	case Qt::ApplicationActive:
 		break;
@@ -135,10 +135,8 @@ void QompCon::applicationStateChanged(Qt::ApplicationState state)
 	default:
 		break;
 	}
-#else
-	Q_UNUSED(state);
-#endif
 }
+#endif
 
 void QompCon::init()
 {
