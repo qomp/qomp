@@ -118,6 +118,11 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
             _instance.service_.showStatusIcon(text);
     }
 
+    public static void showNotification(final String text) {
+        if(_instance.service_ != null)
+            _instance.service_.showToast(text);
+    }
+
     private static native void menuKeyDown();
     private static native void incomingCallStart();
     private static native void incomingCallFinish();

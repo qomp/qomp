@@ -5,12 +5,14 @@ sub_urlplugin.subdir = urlplugin
 sub_lastfmplugin.subdir = lastfmplugin
 sub_myzukaruplugin.subdir = myzukaruplugin
 sub_yandexmusicplugin.subdir = yandexmusicplugin
+sub_notificationsplugin.subdir = notificationsplugin
 
 SUBDIRS +=  sub_prostopleerplugin \
         sub_myzukaruplugin \
         sub_lastfmplugin \
         sub_yandexmusicplugin \
-        sub_urlplugin
+        sub_urlplugin \
+        sub_notificationsplugin
 
 !android {
     sub_filesystemplugin.subdir = filesystemplugin

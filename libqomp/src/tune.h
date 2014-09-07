@@ -50,6 +50,7 @@ public:
 	QString file;
 	QString bitRate;
 
+	QString displayString() const;
 	QUrl getUrl() const;
 	QString toString() const;
 	bool fromString(const QString& str);

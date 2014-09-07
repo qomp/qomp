@@ -24,6 +24,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QCoreApplication>
+#include <QFileInfo>
 
 static const QString separator = "@qomp@";
 static const QString simpleStrategyName = "SimpleStrategy";
@@ -75,6 +76,35 @@ Tune::Tune(bool canSave) :
 {
 	id_ = lastId_++;
 	setUrlResolveStrategy(SimpleStrategy::instance());
+}
+
+QString Tune::displayString() const
+{
+	QString ret;
+	if(!title.isEmpty()) {
+		if(!trackNumber.isEmpty()) {
+			ret = trackNumber+". ";
+		}
+		if(!artist.isEmpty()) {
+			ret += artist+" - ";
+		}
+		ret += title;
+		if(!duration.isEmpty()) {
+			ret += QString("    [%1]").arg(duration);
+		}
+	}
+	else {
+		if(file.isEmpty())
+			ret = url;
+		else {
+			QFileInfo fi(file);
+			ret = fi.baseName();
+		}
+		if(!duration.isEmpty()) {
+			ret += QString("    [%1]").arg(duration);
+		}
+	}
+	return ret;
 }
 
 QUrl Tune::getUrl() const

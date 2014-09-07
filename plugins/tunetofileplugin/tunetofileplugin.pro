@@ -1,12 +1,11 @@
 include($$PWD/../plugins.pri)
 
 HEADERS += $$PWD/tune2fileplugin.h \
-    tunetofilesettings.h
+    $$PWD/tunetofilesettings.h
 
 SOURCES += $$PWD/tune2fileplugin.cpp \
-    tunetofilesettings.cpp
+    $$PWD/tunetofilesettings.cpp
 
 FORMS += $$PWD/tunetofilesettings.ui
 
-OTHER_FILES += \
-   $$PWD/metadata.json
+OTHER_FILES += $$PWD/metadata.json

@@ -109,32 +109,8 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 
 	const Tune* t = tunes_.at(index.row());
 	if(role == Qt::DisplayRole) {
-		QString ret;
-		if(!t->title.isEmpty()) {
-			if(!t->trackNumber.isEmpty()) {
-				ret = t->trackNumber+". ";
-			}
-			if(!t->artist.isEmpty()) {
-				ret += t->artist+" - ";
-			}
-			ret += t->title;
-			if(!t->duration.isEmpty()) {
-				ret += QString("    [%1]").arg(t->duration);
-			}
-			return QString("%1.%2").arg(QString::number(index.row()+1), ret);
-		}
-
-		QString fn;
-		if(t->file.isEmpty())
-			fn = t->url;
-		else {
-			QFileInfo fi(t->file);
-			fn = fi.baseName();
-		}
-		if(!t->duration.isEmpty()) {
-			fn += QString("    [%1]").arg(t->duration);
-		}
-		return QString("%1.%2").arg(QString::number(index.row()+1), fn);
+		QString ret = t->displayString();
+		return QString("%1.%2").arg(QString::number(index.row()+1), ret);
 	}
 	else if(role == ArtistRole) {
 		return t->artist;
