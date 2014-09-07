@@ -75,7 +75,7 @@ public:
 		QSystemTrayIcon* ico = qApp->findChild<QSystemTrayIcon*>();
 		ico->showMessage(APPLICATION_NAME, text, QSystemTrayIcon::Information, 5000);
 #elif defined Q_OS_MAC
-		static const QPixmap pix("qrc:///icons/icons/qomp.png")
+		static const QPixmap pix("qrc:///icons/icons/qomp.png");
 		growl_->notify(notificationName, APPLICATION_NAME, text, pix);
 #elif defined HAVE_X11
 		if (dbusNotify_->isAvailable()) {
