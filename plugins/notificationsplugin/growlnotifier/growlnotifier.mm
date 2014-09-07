@@ -2,7 +2,7 @@
  * growlnotifier.mm - A simple Qt interface to Growl
  *
  * Copyright (C) 2005  Remko Troncon
- *               2012  Khryukin Evgeny
+ *               2012, 2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

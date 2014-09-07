@@ -4,7 +4,7 @@ HEADERS += $$PWD/notificationsplugin.h
 
 SOURCES += $$PWD/notificationsplugin.cpp 
 
-OTHER_FILES +=  $$PWD/metadata.json
+OTHER_FILES += $$PWD/metadata.json
 
 android {
     QT += androidextras
@@ -16,7 +16,7 @@ else: mac {
     INCLUDEPATH += $$PWD/growlnotifier
     QMAKE_LFLAGS += -framework Growl
 }
-else: unix:!mac:!android {
+else: unix {
     QT += dbus
     HEADERS += $$PWD/dbusnotifier.h
     SOURCES += $$PWD/dbusnotifier.cpp

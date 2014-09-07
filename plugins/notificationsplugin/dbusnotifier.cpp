@@ -154,7 +154,7 @@ bool DBusNotifier::checkServer()
 	return true;
 }
 
-QStringList &DBusNotifier::capabilities()
+QStringList &DBusNotifier::capabilities() const
 {
 	return caps_;
 }
