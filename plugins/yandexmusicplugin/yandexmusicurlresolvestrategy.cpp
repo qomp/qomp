@@ -74,6 +74,7 @@ public:
 		nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
 		QNetworkReply *reply = QompNetworkingFactory::instance()->getNetworkAccessManager()->get(nr);
 		connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepOne()));
+		connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
 		timer_->start();
 		loop_->exec();
 		if(timer_->isActive())
@@ -104,6 +105,7 @@ private slots:
 				nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
 				QNetworkReply *reply = QompNetworkingFactory::instance()->getNetworkAccessManager()->get(nr);
 				connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepTwo()));
+				connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
 			}
 		}
 		else {
@@ -141,6 +143,13 @@ private slots:
 
 			}
 		}
+		loop_->quit();
+	}
+
+	void requestError()
+	{
+		QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
+		reply->deleteLater();
 		loop_->quit();
 	}
 

@@ -77,6 +77,7 @@ public:
 		nr.setRawHeader("Referer", MYZUKA_URL);
 		QNetworkReply *reply = QompNetworkingFactory::instance()->getNetworkAccessManager()->get(nr);
 		connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinished()));
+		connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
 		timer_->start();
 		loop_->exec();
 		if(timer_->isActive())
@@ -103,6 +104,13 @@ private slots:
 				url_.setUrl(re.cap(1).replace("\\u0026", "&"),QUrl::TolerantMode);
 			}
 		}
+		loop_->quit();
+	}
+
+	void requestError()
+	{
+		QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
+		reply->deleteLater();
 		loop_->quit();
 	}
 
