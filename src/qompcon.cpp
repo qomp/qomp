@@ -112,9 +112,12 @@ QompCon::QompCon(QObject *parent) :
 		};
 	jni->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0]));
 	jni->DeleteLocalRef(clazz);
+#endif
 
+#ifdef HAVE_QT5
 	connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), SLOT(applicationStateChanged(Qt::ApplicationState)));
 #endif
+
 	connect(qApp, SIGNAL(aboutToQuit()), SLOT(deInit()));
 
 	QTimer::singleShot(0, this, SLOT(init()));
@@ -123,7 +126,7 @@ QompCon::QompCon(QObject *parent) :
 QompCon::~QompCon()
 {
 }
-#ifdef Q_OS_ANDROID
+#ifdef HAVE_QT5
 void QompCon::applicationStateChanged(Qt::ApplicationState state)
 {
 	switch(state) {

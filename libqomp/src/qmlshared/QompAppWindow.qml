@@ -2,11 +2,11 @@ import QtQuick 2.3
 import QtQuick.Controls 1.2
 import QtQuick.Window 2.1
 
-ApplicationWindow {
+Window {
 	id: root
 
-	visible: false
 	contentOrientation: Qt.PortraitOrientation
+	visibility: Window.Hidden
 
 	color: "lightblue"
 

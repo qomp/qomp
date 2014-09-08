@@ -76,7 +76,7 @@ private slots:
 
 	void init();
 	void deInit();
-#ifdef Q_OS_ANDROID
+#ifdef HAVE_QT5
 	void applicationStateChanged(Qt::ApplicationState state);
 #endif
 

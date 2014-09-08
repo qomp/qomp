@@ -118,9 +118,9 @@ bool QompQmlEngine::eventFilter(QObject *o, QEvent *e)
 {
 	if(o == qApp) {
 		if(e->type() == QEvent::ApplicationActivate)
-			window_->setProperty("visible", true);
+			window_->setProperty("visibility", QWindow::Maximized);
 		else if(e->type() == QEvent::ApplicationDeactivate)
-			window_->setProperty("visible", false);
+			window_->setProperty("visibility", QWindow::Hidden);
 	}
 	return QQmlApplicationEngine::eventFilter(o, e);
 }
