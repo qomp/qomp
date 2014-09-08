@@ -81,7 +81,6 @@ public:
 #elif defined HAVE_X11
 		if (dbusNotify_->isAvailable()) {
 			static const QImage appIcon(":/icons/icons/qomp.png");
-			static const QString title = QString(APPLICATION_NAME).left(1).toUpper() + QString(APPLICATION_NAME).mid(1) + QObject::tr(" now playing:");
 			dbusNotify_->doPopup(title, text, appIcon);
 		}
 #endif
