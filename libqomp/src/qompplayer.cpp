@@ -21,14 +21,9 @@
 #include "qompmetadataresolver.h"
 #include "tune.h"
 
-#include <QCoreApplication>
-#include <QTimer>
-
-QompPlayer* QompPlayer::instance_ = 0;
-
 
 QompPlayer::QompPlayer() :
-	QObject(QCoreApplication::instance())
+	QObject()
 {
 }
 

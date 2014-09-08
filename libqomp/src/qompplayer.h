@@ -81,7 +81,6 @@ protected:
 	virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
 
 private:
-	static QompPlayer* instance_;
 	Tune* currentTune_;
 };
 
