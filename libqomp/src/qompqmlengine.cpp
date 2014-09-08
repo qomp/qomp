@@ -117,10 +117,13 @@ void QompQmlEngine::itemDeleted()
 bool QompQmlEngine::eventFilter(QObject *o, QEvent *e)
 {
 	if(o == qApp) {
-		if(e->type() == QEvent::ApplicationActivate)
+		if(e->type() == QEvent::ApplicationActivate) {
 			window_->setProperty("visibility", QWindow::Maximized);
-		else if(e->type() == QEvent::ApplicationDeactivate)
+			window_->update();
+		}
+		else if(e->type() == QEvent::ApplicationDeactivate) {
 			window_->setProperty("visibility", QWindow::Hidden);
+		}
 	}
 	return QQmlApplicationEngine::eventFilter(o, e);
 }
