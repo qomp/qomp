@@ -28,11 +28,13 @@ set ( qomp_TRS
 )
 set ( options_SRCS
 	src/options/qompoptionsdlg.cpp
+	src/options/qompoptionskeys.cpp
 	src/options/qompoptionsmain.cpp
 	src/options/qompoptionsplugins.cpp
 )
 set ( options_UIS
 	src/options/qompoptionsdlg.ui
+	src/options/qompoptionskeys.ui
 	src/options/qompoptionsmain.ui
 	src/options/qompoptionsplugins.ui
 )
