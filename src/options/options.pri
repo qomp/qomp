@@ -11,11 +11,15 @@ android {
         $$PWD/qompoptionsplugins_mobile.cpp
 }
 else {
+    HEADERS += $$PWD/qompoptionskeys.h
+
     SOURCES += $$PWD/qompoptionsdlg.cpp \
         $$PWD/qompoptionsmain.cpp \
-        $$PWD/qompoptionsplugins.cpp
+        $$PWD/qompoptionsplugins.cpp \
+        $$PWD/qompoptionskeys.cpp
 
     FORMS += $$PWD/qompoptionsdlg.ui \
         $$PWD/qompoptionsmain.ui \
-        $$PWD/qompoptionsplugins.ui
+        $$PWD/qompoptionsplugins.ui \
+        $$PWD/qompoptionskeys.ui
 }

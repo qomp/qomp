@@ -23,10 +23,8 @@
 #include "common.h"
 #include "qompplayer.h"
 #include "translator.h"
-#ifndef Q_OS_ANDROID
 #include "qomptrayicon.h"
 #include "thememanager.h"
-#endif
 #include "ui_qompoptionsmain.h"
 
 static const QString defaultDevice = QObject::tr("default");
@@ -113,7 +111,6 @@ void QompOptionsMain::Private::restoreOptions()
 	else
 		ui->cb_lang->setCurrentIndex(0);
 
-#ifndef Q_OS_ANDROID
 	QStringList actions = QompTrayIcon::availableActions();
 	ui->cb_middleClick->addItems(actions);
 	QompTrayActionType type = o->getOption(OPTION_TRAY_MIDDLE_CLICK).toInt();
@@ -130,7 +127,6 @@ void QompOptionsMain::Private::restoreOptions()
 	const QString them = o->getOption(OPTION_THEME).toString();
 	int i = ui->cb_theme->findText(them);
 	ui->cb_theme->setCurrentIndex(i);
-#endif
 }
 
 QompOptionsMain::QompOptionsMain(QObject *parent) :

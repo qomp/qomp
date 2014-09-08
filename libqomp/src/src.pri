@@ -31,9 +31,11 @@ android {
     RESOURCES += $$PWD/qml.qrc
 }
 else {
-    HEADERS +=  $$PWD/qompbusylabel.h
+    HEADERS += $$PWD/qompbusylabel.h \
+               $$PWD/qompactionslist.h
 
-    SOURCES += $$PWD/qompbusylabel.cpp
+    SOURCES += $$PWD/qompbusylabel.cpp \
+               $$PWD/qompactionslist.cpp
 }
 
 lupdate_only {

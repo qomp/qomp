@@ -25,6 +25,7 @@
 #include "qompplaylistdelegate.h"
 #include "qompmenu.h"
 #include "tune.h"
+#include "qompactionslist.h"
 
 #include "ui_qompmainwin.h"
 
@@ -68,12 +69,15 @@ public slots:
 	void actLoadPlaylist();
 	void actDownloadTune(Tune *tune);
 
+	void updateShortcuts();
+
 public:
 	Ui::QompMainWin *ui;
 	QMainWindow*  mainWin_;
 	QompTrayIcon* trayIcon_;
 	QompMainMenu* mainMenu_;
 	QompMainWin*  parentWin_;
+	QAction* actClearPlaylist_;
 };
 
 QompMainWin::Private::Private(QompMainWin *p) :
@@ -82,12 +86,14 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	mainWin_(new QMainWindow),
 	trayIcon_(new QompTrayIcon(p)),
 	mainMenu_(new QompMainMenu(mainWin_)),
-	parentWin_(p)
+	parentWin_(p),
+	actClearPlaylist_(0)
 {
 	ui->setupUi(mainWin_);
 	connectActions();
 	connectMainMenu();
 	setupPlaylist();
+	updateShortcuts();
 
 	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());
 
@@ -97,6 +103,8 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	connect(ui->volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderMoved(int)));
 	connect(mainWin_, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doMainContextMenu()));
 	connect(trayIcon_, SIGNAL(trayWheeled(int)), SLOT(trayWheeled(int)));
+
+	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateShortcuts()));
 
 	restoreWindowState();
 	totalDurationChanged(0);
@@ -135,6 +143,10 @@ void QompMainWin::Private::connectActions()
 	connect(ui->tb_prev, SIGNAL(clicked()),	    parentWin_, SIGNAL(actPrevActivated()));
 	connect(ui->tb_mute, SIGNAL(clicked(bool)), parentWin_, SIGNAL(actMuteActivated(bool)));
 	connect(ui->tbOptions, SIGNAL(clicked()),   parentWin_, SIGNAL(doOptions()));
+
+	actClearPlaylist_ = new QAction(mainWin_);
+	connect(actClearPlaylist_, SIGNAL(triggered()), parentWin_, SIGNAL(clearPlaylist()));
+	mainWin_->addAction(actClearPlaylist_);
 }
 
 void QompMainWin::Private::setupPlaylist()
@@ -185,7 +197,9 @@ void QompMainWin::Private::actOpenActivated()
 	QompGetTunesMenu m(mainWin_);
 	connect(&m, SIGNAL(tunes(QList<Tune*>)), parentWin_, SIGNAL(tunes(QList<Tune*>)));
 
-	m.exec(QCursor::pos());
+	QPoint p = ui->tb_open->pos();
+	p.setY(p.y() + ui->tb_open->height()/2);
+	m.exec(mainWin_->mapToGlobal(p));
 }
 
 void QompMainWin::Private::actClearActivated()
@@ -194,7 +208,9 @@ void QompMainWin::Private::actClearActivated()
 	connect(&m, SIGNAL(removeAll()), parentWin_, SIGNAL(clearPlaylist()));
 	connect(&m, SIGNAL(removeSelected()), SLOT(removeSelectedIndexes()));
 
-	m.exec(QCursor::pos());
+	QPoint p = ui->tb_clear->pos();
+	p.setY(p.y() + ui->tb_clear->height()/2);
+	m.exec(mainWin_->mapToGlobal(p));
 
 	updateTuneInfo(parentWin_->model_->currentTune());
 }
@@ -337,6 +353,21 @@ void QompMainWin::Private::actDownloadTune(Tune *tune)
 		Options::instance()->setOption(LAST_SAVE_DIR, dir.first());
 		parentWin_->downloadTune(tune, dir.first());
 	}
+}
+
+void QompMainWin::Private::updateShortcuts()
+{
+	QompActionsList* a = QompActionsList::instance();
+
+	ui->tb_play->setShortcut(a->getShortcut(QompActionsList::ActPlay));
+	ui->tb_next->setShortcut(a->getShortcut(QompActionsList::ActNext));
+	ui->tb_prev->setShortcut(a->getShortcut(QompActionsList::ActPrevious));
+	ui->tb_stop->setShortcut(a->getShortcut(QompActionsList::ActStop));
+	ui->tb_open->setShortcut(a->getShortcut(QompActionsList::ActOpen));
+	ui->tb_mute->setShortcut(a->getShortcut(QompActionsList::ActMute));
+	ui->tb_repeatAll->setShortcut(a->getShortcut(QompActionsList::ActRepeatAll));
+	ui->tbOptions->setShortcut(a->getShortcut(QompActionsList::ActSettings));
+	actClearPlaylist_->setShortcut(a->getShortcut(QompActionsList::ActClearPlaylist));
 }
 
 

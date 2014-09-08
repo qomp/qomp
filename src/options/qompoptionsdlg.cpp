@@ -23,6 +23,7 @@
 #include "qompoptionsmain.h"
 #include "options.h"
 #include "qompoptionsplugins.h"
+#include "qompoptionskeys.h"
 
 #include "ui_qompoptionsdlg.h"
 
@@ -44,7 +45,8 @@ public:
 
 		QompOptionsMain* om = new QompOptionsMain(this);
 		QompOptionsPlugins* op = new QompOptionsPlugins(this);
-		pages_ << om << op;
+		QompOptionsKeys *ok = new QompOptionsKeys(this);
+		pages_ << om << op << ok;
 
 		foreach(QompOptionsPage* page, pages_) {
 			addPage(page);
