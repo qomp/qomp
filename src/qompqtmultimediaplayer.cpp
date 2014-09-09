@@ -21,10 +21,8 @@
 //#include "qomptaglibmetadataresolver.h"
 #include "tune.h"
 
-#include <QMediaPlayer>
 #include <QMediaContent>
-#include <QAudioDeviceInfo>
-
+//#include <QAudioDeviceInfo>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
