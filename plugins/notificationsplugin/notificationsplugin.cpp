@@ -65,6 +65,7 @@ public:
 
 	void showNotification(const QString& text)
 	{
+		static const QString title = QString(APPLICATION_NAME).left(1).toUpper() + QString(APPLICATION_NAME).mid(1) + QObject::tr(" now playing:");
 #ifdef Q_OS_ANDROID
 		QAndroidJniObject str = QAndroidJniObject::fromString(text);
 		QAndroidJniObject::callStaticMethod<void>("com/googlecode/qomp/Qomp",
@@ -73,14 +74,13 @@ public:
 								str.object<jstring>());
 #elif defined Q_OS_WIN
 		QSystemTrayIcon* ico = qApp->findChild<QSystemTrayIcon*>();
-		ico->showMessage(APPLICATION_NAME, text, QSystemTrayIcon::Information, 5000);
+		ico->showMessage(title, text, QSystemTrayIcon::Information, 5000);
 #elif defined Q_OS_MAC
 		static const QPixmap pix("qrc:///icons/icons/qomp.png");
 		growl_->notify(notificationName, APPLICATION_NAME, text, pix);
 #elif defined HAVE_X11
 		if (dbusNotify_->isAvailable()) {
 			static const QImage appIcon(":/icons/icons/qomp.png");
-			static const QString title = QString(APPLICATION_NAME).left(1).toUpper() + QString(APPLICATION_NAME).mid(1) + QObject::tr(" now playing:");
 			dbusNotify_->doPopup(title, text, appIcon);
 		}
 #endif

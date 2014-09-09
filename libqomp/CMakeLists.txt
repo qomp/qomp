@@ -24,6 +24,7 @@ set ( libqomp_HDRS
 	src/options.h
 	src/pluginhost.h
 	src/pluginmanager.h
+	src/qompactionslist.h
 	src/qompbusylabel.h
 	src/qompmetadataresolver.h
 	src/qompnetworkingfactory.h
@@ -35,6 +36,7 @@ set ( libqomp_HDRS
 set ( libqomp_SRCS
 	src/common.cpp
 	src/options.cpp
+	src/qompactionslist.cpp
 	src/qompbusylabel.cpp
 	src/qompmetadataresolver.cpp
 	src/qompnetworkingfactory.cpp
