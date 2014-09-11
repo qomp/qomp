@@ -31,8 +31,6 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-#undef DEBUG_OUTPUT
-
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
 #endif
