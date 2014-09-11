@@ -64,7 +64,8 @@ void QompQtMultimediaPlayer::doSetTune()
 	}
 
 	if(watcher_) {
-		delete watcher_;
+		watcher_->disconnect();
+		watcher_->deleteLater();
 	}
 	watcher_ = new QFutureWatcher<QUrl>;
 	connect(watcher_, SIGNAL(finished()), SLOT(tuneUrlReady()));
