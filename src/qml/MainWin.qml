@@ -57,12 +57,16 @@ Rectangle {
 
 	PageTitle {
 		id: title
-		text: {
+
+		property bool shouldAnimate: {
 			if(!root.playing || playlist.currentTrackText.length === 0)
-				return root.title
-			return playlist.currentTrackText
+				return false
+			return true
 		}
-		runnning: root.playing
+
+		text: shouldAnimate ? playlist.currentTrackText : root.title
+		defaultLabelAlingment: shouldAnimate ? Text.AlignLeft : Text.AlignHCenter
+		runnning: shouldAnimate
 		textOffset: menuButton.width
 
 		QompMenuButton {

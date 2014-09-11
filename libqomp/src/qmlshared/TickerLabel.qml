@@ -4,7 +4,7 @@ Rectangle {
 	id: root
 
 	property alias text: txt.text
-	property alias font: txt.font	
+	property alias font: txt.font
 	property alias elide: txt.elide
 
 	property bool runnning: false
@@ -14,43 +14,50 @@ Rectangle {
 
 	clip: true
 
-	Text {
-		id: txt
-		height: parent.height
-		verticalAlignment: Text.AlignVCenter
+	Item {
+		id: box
 
-		onTextChanged: root.checkNeedAnim()
-	}
+		anchors.fill: parent
+		anchors.leftMargin: root.textOffset
 
-	SequentialAnimation {
-		id: anim
+		Text {
+			id: txt
+			height: parent.height
+			verticalAlignment: Text.AlignVCenter
 
-		property int delta: 0
-		property int duration: 6000 + delta * root.speed
-		property int easing: Easing.OutQuart
-
-		running: root.runnning && delta > 0
-		loops: Animation.Infinite
-
-		PropertyAnimation {
-			target: txt
-			property: "x"
-			from: root.textOffset
-			to: -(anim.delta - textOffset*2)
-			duration: anim.duration / 2
-			easing.type: anim.easing
+			onTextChanged: root.checkNeedAnim()
 		}
-		PropertyAnimation {
-			target: txt
-			property: "x"
-			from: -(anim.delta - textOffset*2)
-			to: root.textOffset
-			duration: anim.duration / 2
-			easing.type: anim.easing
-		}
-		onRunningChanged: {
-			if(!running)
-				txt.x = root.textOffset
+
+		SequentialAnimation {
+			id: anim
+
+			property int delta: 0
+			property int duration: 6000 + delta * root.speed
+			property int easing: Easing.OutQuart
+
+			running: root.runnning && delta > 0
+			loops: Animation.Infinite
+
+			PropertyAnimation {
+				target: txt
+				property: "x"
+				from: 0
+				to: -anim.delta
+				duration: anim.duration / 2
+				easing.type: anim.easing
+			}
+			PropertyAnimation {
+				target: txt
+				property: "x"
+				from: -anim.delta
+				to: 0
+				duration: anim.duration / 2
+				easing.type: anim.easing
+			}
+			onRunningChanged: {
+				if(!running)
+					txt.x = 0
+			}
 		}
 	}
 
@@ -59,17 +66,20 @@ Rectangle {
 	}
 
 	function checkNeedAnim() {
-		var d = txt.width - (root.width - textOffset * 2)
+		txt.anchors.horizontalCenter = undefined
+		txt.anchors.horizontalCenterOffset = 0
+		txt.x = 0
+
+		var d = txt.width - box.width
 		if(d > 0) {
 			anim.delta = d
-			txt.anchors.horizontalCenter = undefined
 		}
 		else {
 			anim.delta = 0
-			if(defaultLabelAlingment === Text.AlignHCenter)
-				txt.anchors.horizontalCenter = root.horizontalCenter
-			else
-				txt.x = textOffset
+			if(defaultLabelAlingment === Text.AlignHCenter) {
+				txt.anchors.horizontalCenter = box.horizontalCenter
+				txt.anchors.horizontalCenterOffset = -root.textOffset / 2
+			}
 		}
 	}
 
