@@ -24,11 +24,14 @@
 
 #include "tune.h"
 
+class QMutex;
+
 class MyzukaruResolveStrategy : public TuneURLResolveStrategy
 {
 	Q_OBJECT
 public:
 	static MyzukaruResolveStrategy* instance();
+	~MyzukaruResolveStrategy();
 
 	static void reset();
 
@@ -38,6 +41,7 @@ public:
 private:
 	explicit MyzukaruResolveStrategy();
 	static MyzukaruResolveStrategy* instance_;
+	QMutex* mutex_;
 };
 
 #endif // MYZUKARURESOLVESTRATEGY_H

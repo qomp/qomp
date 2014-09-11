@@ -55,6 +55,7 @@ private slots:
 	void volumeChanged(int);
 	void playerStateChanged(QMediaPlayer::State);
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
+	void tuneUrlReady();
 
 protected:
 	virtual QompMetaDataResolver* metaDataResolver() const;
@@ -62,7 +63,7 @@ protected:
 private:
 	QMediaPlayer* player_;
 	QompMetaDataResolver* resolver_;
-	
+	Qomp::State lastState_;
 };
 
 #endif // QOMPQTMULTIMEDIAPLAYER_H

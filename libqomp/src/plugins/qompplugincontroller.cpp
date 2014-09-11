@@ -27,7 +27,7 @@
 QompPluginController::QompPluginController(QObject *parent) :
 	QObject(parent)
 {
-	nam_ = QompNetworkingFactory::instance()->getNetworkAccessManager();
+	nam_ = QompNetworkingFactory::instance()->getMainNAM();
 }
 
 QompPluginController::~QompPluginController()

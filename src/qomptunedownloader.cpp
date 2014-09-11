@@ -31,7 +31,7 @@ QompTuneDownloader::QompTuneDownloader(QObject *parent) :
 	file_(0),
 	reply_(0)
 {
-	nam_ = QompNetworkingFactory::instance()->getNetworkAccessManager();
+	nam_ = QompNetworkingFactory::instance()->getMainNAM();
 	dialog_ = new QProgressDialog();
 	dialog_->setWindowTitle(tr("Download Progress"));
 	dialog_->setRange(0, 100);

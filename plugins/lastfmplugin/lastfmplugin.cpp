@@ -75,7 +75,7 @@ LastFmPlugin::LastFmPlugin() :
 
 void LastFmPlugin::init()
 {
-	nam_ = QompNetworkingFactory::instance()->getNetworkAccessManager();
+	nam_ = QompNetworkingFactory::instance()->getMainNAM();
 }
 
 QompOptionsPage *LastFmPlugin::options()

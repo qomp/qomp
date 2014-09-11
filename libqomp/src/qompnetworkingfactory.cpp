@@ -53,6 +53,11 @@ public:
 
 	~QompNetworkCookieJar()
 	{
+		saveCookies();
+	}
+
+	void saveCookies()
+	{
 		QFile file(Qomp::cacheDir()+ cookieCache);
 		if(file.open(QFile::WriteOnly | QFile::Truncate)) {
 			foreach(const QNetworkCookie& cookie, allCookies()) {
@@ -68,35 +73,13 @@ QompNetworkingFactory* QompNetworkingFactory::instance_ = 0;
 
 QompNetworkingFactory::QompNetworkingFactory() :
 	QObject(QCoreApplication::instance()),
-	manager_(0)
+	manager_(new QNetworkAccessManager)
 {
+	manager_->setCookieJar(new QompNetworkCookieJar(manager_));
 	updateProxySettings();
 }
 
-void QompNetworkingFactory::checkNAM() const
-{
-	if(!manager_) {
-		manager_ = new QNetworkAccessManager();
-		manager_->setCookieJar(new QompNetworkCookieJar(manager_));
-	}
-}
-
-
-QompNetworkingFactory* QompNetworkingFactory::instance()
-{
-	if(!instance_)
-		instance_ = new QompNetworkingFactory;
-
-	return instance_;
-}
-
-QompNetworkingFactory::~QompNetworkingFactory()
-{
-	if(manager_)
-		delete manager_;
-}
-
-void QompNetworkingFactory::updateProxySettings() const
+QNetworkProxy QompNetworkingFactory::getProxy() const
 {
 	QNetworkProxy proxy;
 	if(Options::instance()->getOption(OPTION_PROXY_USE).toBool()) {
@@ -112,16 +95,41 @@ void QompNetworkingFactory::updateProxySettings() const
 
 
 	}
-
-	checkNAM();
-	manager_->setProxy(proxy);
-	QNetworkProxy::setApplicationProxy(proxy);
+	return proxy;
 }
 
-QNetworkAccessManager *QompNetworkingFactory::getNetworkAccessManager() const
+QompNetworkingFactory* QompNetworkingFactory::instance()
 {
-	updateProxySettings();
+	if(!instance_)
+		instance_ = new QompNetworkingFactory;
+
+	return instance_;
+}
+
+QompNetworkingFactory::~QompNetworkingFactory()
+{
+	delete manager_;
+}
+
+void QompNetworkingFactory::updateProxySettings() const
+{
+	QNetworkProxy p = getProxy();
+	manager_->setProxy(p);
+	QNetworkProxy::setApplicationProxy(p);
+}
+
+QNetworkAccessManager *QompNetworkingFactory::getMainNAM() const
+{
 	return manager_;
+}
+
+QNetworkAccessManager *QompNetworkingFactory::getThreadedNAM()
+{
+	static_cast<QompNetworkCookieJar*>(manager_->cookieJar())->saveCookies();
+	QNetworkAccessManager* m = new QNetworkAccessManager;
+	m->setCookieJar(new QompNetworkCookieJar(m));
+	m->setProxy(getProxy());
+	return m;
 }
 
 bool QompNetworkingFactory::isNetworkAvailable() const

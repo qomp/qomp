@@ -20,10 +20,11 @@
 #ifndef QOMPNETWORKINGFACTORY_H
 #define QOMPNETWORKINGFACTORY_H
 
-#include <QPointer>
+#include <QObject>
 #include "libqomp_global.h"
 
 class QNetworkAccessManager;
+class QNetworkProxy;
 
 class LIBQOMPSHARED_EXPORT QompNetworkingFactory : public QObject
 {
@@ -31,17 +32,32 @@ class LIBQOMPSHARED_EXPORT QompNetworkingFactory : public QObject
 public:
 	static QompNetworkingFactory* instance();
 	~QompNetworkingFactory();
+
 	void updateProxySettings() const;
-	QNetworkAccessManager* getNetworkAccessManager() const;
+
+	/**
+	 * @brief getMainNAM
+	 * @return main application's QNetworkAccessManager
+	 * Clients should never delete it!
+	 */
+	QNetworkAccessManager* getMainNAM() const;
+
+	/**
+	 * @brief getThreadedNAM
+	 * @return QNetworkAccessManager that could be used at threads
+	 * Client should delete it when it's not needed any more
+	 */
+	QNetworkAccessManager* getThreadedNAM();
 
 	bool isNetworkAvailable() const;
 	
 private:
 	QompNetworkingFactory();
-	void checkNAM() const;
+	QNetworkProxy getProxy() const;
+
 	static QompNetworkingFactory* instance_;
 
-	mutable QPointer<QNetworkAccessManager> manager_;
+	QNetworkAccessManager* manager_;
 };
 
 #endif // QOMPNETWORKINGFACTORY_H

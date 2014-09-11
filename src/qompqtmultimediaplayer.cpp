@@ -22,6 +22,8 @@
 #include "tune.h"
 
 #include <QMediaContent>
+#include <QtConcurrent>
+#include <QFutureWatcher>
 //#include <QAudioDeviceInfo>
 
 #ifdef DEBUG_OUTPUT
@@ -31,7 +33,8 @@
 QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	QompPlayer(),
 	player_(new QMediaPlayer(this)),
-	resolver_(0/*new QompTagLibMetaDataResolver(this)*/)
+	resolver_(0/*new QompTagLibMetaDataResolver(this)*/),
+	lastState_(Qomp::StateStopped)
 {
 	connect(player_, SIGNAL(positionChanged(qint64)), SIGNAL(currentPositionChanged(qint64)));
 	connect(player_, SIGNAL(volumeChanged(int)), SLOT(volumeChanged(int)));
@@ -53,9 +56,12 @@ void QompQtMultimediaPlayer::doSetTune()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::doSetTune()";
 #endif
-	//player_->blockSignals(true);
-	player_->setMedia(QMediaContent(currentTune()->getUrl()));
-	//player_->blockSignals(false);
+	player_->setMedia(QMediaContent());
+	QFutureWatcher<QUrl> *w = new QFutureWatcher<QUrl>;
+	connect(w, SIGNAL(finished()), SLOT(tuneUrlReady()));
+	Tune* t = currentTune();
+	QFuture<QUrl> f = QtConcurrent::run(t, &Tune::getUrl);
+	w->setFuture(f);
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const
@@ -123,11 +129,13 @@ void QompQtMultimediaPlayer::play()
 	qDebug() << "QompQtMultimediaPlayer::play()";
 #endif
 	player_->play();
+	lastState_ = Qomp::StatePlaying;
 }
 
 void QompQtMultimediaPlayer::pause()
 {
 	player_->pause();
+	lastState_ = Qomp::StatePaused;
 }
 
 void QompQtMultimediaPlayer::stop()
@@ -136,6 +144,7 @@ void QompQtMultimediaPlayer::stop()
 	qDebug() << "QompQtMultimediaPlayer::stop()";
 #endif
 	player_->stop();
+	lastState_ = Qomp::StateStopped;
 }
 
 qint64 QompQtMultimediaPlayer::currentTuneTotalTime() const
@@ -200,3 +209,18 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 	}
 }
 
+void QompQtMultimediaPlayer::tuneUrlReady()
+{
+	QFutureWatcher<QUrl> * w = static_cast<QFutureWatcher<QUrl>*>(sender());
+	QFuture<QUrl> f = w->future();
+	player_->setMedia(QMediaContent(f.result()));
+	switch (lastState_) {
+	case Qomp::StatePlaying: player_->play();
+		break;
+	case Qomp::StatePaused: player_->pause();
+		break;
+	default: player_->stop();
+		break;
+	}
+	delete w;
+}

@@ -23,11 +23,14 @@
 #include "tune.h"
 #include <QObject>
 
+class QMutex;
+
 class YandexMusicURLResolveStrategy : public TuneURLResolveStrategy
 {
 	Q_OBJECT
 public:
 	static YandexMusicURLResolveStrategy* instance();
+	~YandexMusicURLResolveStrategy();
 
 	static void reset();
 
@@ -37,6 +40,7 @@ public:
 private:
 	explicit YandexMusicURLResolveStrategy();
 	static YandexMusicURLResolveStrategy* instance_;
+	QMutex* mutex_;
 };
 
 #endif // YANDEXMUSICURLRESOLVESTRATEGY_H

@@ -1,7 +1,7 @@
 include($$PWD/../conf.pri)
 
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += multimedia
+    QT += multimedia concurrent
     DEFINES += HAVE_QTMULTIMEDIA
     CONFIG += qtmultimedia_backend
 }

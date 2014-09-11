@@ -39,7 +39,7 @@ static const QString downloadUrl = "http://sourceforge.net/projects/qomp/files/"
 UpdatesChecker::UpdatesChecker(QObject *parent)
 	: QObject(parent)
 {
-	QNetworkAccessManager* manager = QompNetworkingFactory::instance()->getNetworkAccessManager();
+	QNetworkAccessManager* manager = QompNetworkingFactory::instance()->getMainNAM();
 	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 	QNetworkRequest request;
 	request.setUrl(QUrl(url));

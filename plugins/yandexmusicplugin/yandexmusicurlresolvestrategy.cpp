@@ -28,6 +28,8 @@
 #include <QCryptographicHash>
 #include <QCoreApplication>
 #include <QTimer>
+#include <QMutex>
+#include <QMutexLocker>
 
 
 #ifdef DEBUG_OUTPUT
@@ -47,6 +49,7 @@ public:
 		timer_(new QTimer(this)),
 		tune_((Tune*)t)
 	{
+		nam_ = QompNetworkingFactory::instance()->getThreadedNAM();
 		timer_->setSingleShot(true);
 		timer_->setInterval(TimerInterval);
 		connect(timer_, SIGNAL(timeout()), loop_, SLOT(quit()));
@@ -58,6 +61,8 @@ public:
 			timer_->stop();
 		if(loop_->isRunning())
 			loop_->quit();
+
+		delete nam_;
 #ifdef DEBUG_OUTPUT
 		qDebug() << "~YandexMusicURLResolveStrategyPrivate()";
 #endif
@@ -72,7 +77,7 @@ public:
 		QNetworkRequest nr(url);
 		nr.setRawHeader("Accept", "*/*");
 		nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-		QNetworkReply *reply = QompNetworkingFactory::instance()->getNetworkAccessManager()->get(nr);
+		QNetworkReply *reply = nam_->get(nr);
 		connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepOne()));
 		connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
 		timer_->start();
@@ -82,7 +87,6 @@ public:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "YandexMusicURLResolveStrategyPrivate::getUrl()  finished";
 #endif
-		deleteLater();
 		return url_;
 	}
 
@@ -103,7 +107,7 @@ private slots:
 				QNetworkRequest nr(url);
 				nr.setRawHeader("Accept", "*/*");
 				nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-				QNetworkReply *reply = QompNetworkingFactory::instance()->getNetworkAccessManager()->get(nr);
+				QNetworkReply *reply = nam_->get(nr);
 				connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepTwo()));
 				connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
 			}
@@ -158,6 +162,7 @@ private:
 	QEventLoop* loop_;
 	QTimer* timer_;
 	Tune *tune_;
+	QNetworkAccessManager* nam_;
 };
 
 
@@ -170,6 +175,11 @@ YandexMusicURLResolveStrategy *YandexMusicURLResolveStrategy::instance()
 	return instance_;
 }
 
+YandexMusicURLResolveStrategy::~YandexMusicURLResolveStrategy()
+{
+	delete mutex_;
+}
+
 void YandexMusicURLResolveStrategy::reset()
 {
 	delete instance_;
@@ -177,14 +187,16 @@ void YandexMusicURLResolveStrategy::reset()
 }
 
 YandexMusicURLResolveStrategy::YandexMusicURLResolveStrategy() :
-	TuneURLResolveStrategy(QCoreApplication::instance())
+	TuneURLResolveStrategy(QCoreApplication::instance()),
+	mutex_(new QMutex)
 {
 }
 
 QUrl YandexMusicURLResolveStrategy::getUrl(const Tune *t)
 {
-	YandexMusicURLResolveStrategyPrivate* p = new YandexMusicURLResolveStrategyPrivate(t);
-	return p->getUrl();
+	QMutexLocker l(mutex_);
+	YandexMusicURLResolveStrategyPrivate p(t);
+	return p.getUrl();
 }
 
 QString YandexMusicURLResolveStrategy::name() const
