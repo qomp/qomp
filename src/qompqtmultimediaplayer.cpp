@@ -23,7 +23,6 @@
 
 #include <QMediaContent>
 #include <QtConcurrent>
-#include <QFutureWatcher>
 //#include <QAudioDeviceInfo>
 
 #ifdef DEBUG_OUTPUT
@@ -34,7 +33,8 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	QompPlayer(),
 	player_(new QMediaPlayer(this)),
 	resolver_(0/*new QompTagLibMetaDataResolver(this)*/),
-	lastState_(Qomp::StateStopped)
+	lastState_(Qomp::StateStopped),
+	watcher_(0)
 {
 	connect(player_, SIGNAL(positionChanged(qint64)), SIGNAL(currentPositionChanged(qint64)));
 	connect(player_, SIGNAL(volumeChanged(int)), SLOT(volumeChanged(int)));
@@ -49,6 +49,7 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 QompQtMultimediaPlayer::~QompQtMultimediaPlayer()
 {
 	//delete resolver_;
+	delete watcher_;
 }
 
 void QompQtMultimediaPlayer::doSetTune()
@@ -56,12 +57,20 @@ void QompQtMultimediaPlayer::doSetTune()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::doSetTune()";
 #endif
-	player_->setMedia(QMediaContent());
-	QFutureWatcher<QUrl> *w = new QFutureWatcher<QUrl>;
-	connect(w, SIGNAL(finished()), SLOT(tuneUrlReady()));
+	if(!player_->media().isNull()) {
+		player_->blockSignals(true);
+		player_->setMedia(QMediaContent());
+		player_->blockSignals(false);
+	}
+
+	if(watcher_) {
+		delete watcher_;
+	}
+	watcher_ = new QFutureWatcher<QUrl>;
+	connect(watcher_, SIGNAL(finished()), SLOT(tuneUrlReady()));
 	Tune* t = currentTune();
 	QFuture<QUrl> f = QtConcurrent::run(t, &Tune::getUrl);
-	w->setFuture(f);
+	watcher_->setFuture(f);
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const
@@ -128,7 +137,9 @@ void QompQtMultimediaPlayer::play()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::play()";
 #endif
-	player_->play();
+	if(!player_->media().isNull())
+		player_->play();
+
 	lastState_ = Qomp::StatePlaying;
 }
 
@@ -211,9 +222,17 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 
 void QompQtMultimediaPlayer::tuneUrlReady()
 {
-	QFutureWatcher<QUrl> * w = static_cast<QFutureWatcher<QUrl>*>(sender());
-	QFuture<QUrl> f = w->future();
-	player_->setMedia(QMediaContent(f.result()));
+	QFuture<QUrl> f = watcher_->future();
+	delete watcher_;
+	watcher_ = 0;
+	QUrl url = f.result();
+
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompQtMultimediaPlayer::tuneUrlReady()  " << lastState_ << url;
+#endif
+
+	player_->setMedia(QMediaContent(url));
+
 	switch (lastState_) {
 	case Qomp::StatePlaying: player_->play();
 		break;
@@ -221,6 +240,5 @@ void QompQtMultimediaPlayer::tuneUrlReady()
 		break;
 	default: player_->stop();
 		break;
-	}
-	delete w;
+	}	
 }

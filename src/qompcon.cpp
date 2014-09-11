@@ -255,11 +255,13 @@ void QompCon::actPlayNext()
 {
 	QModelIndex index = model_->currentIndex();
 	if(index.isValid() && index.row() < model_->rowCount()-1) {
-		bool play = (player_->state() == Qomp::StatePlaying);
+		Qomp::State state = player_->state();
 		index = model_->index(index.row()+1);
-		model_->setCurrentTune(model_->tune(index));
-		if(play) {
+		if(state != Qomp::StateStopped) {
 			stopPlayer();
+		}
+		model_->setCurrentTune(model_->tune(index));
+		if(state == Qomp::StatePlaying) {
 			actPlay();
 		}
 	}
@@ -269,11 +271,13 @@ void QompCon::actPlayPrev()
 {
 	QModelIndex index = model_->currentIndex();
 	if(index.isValid() && index.row() > 0) {
-		bool play = (player_->state() == Qomp::StatePlaying);
-		index = model_->index(index.row()-1);
+		Qomp::State state = player_->state();
+		index = model_->index(index.row()-1);		
+		if(state != Qomp::StateStopped) {
+			stopPlayer();			
+		}
 		model_->setCurrentTune(model_->tune(index));
-		if(play) {
-			stopPlayer();
+		if(state == Qomp::StatePlaying) {
 			actPlay();
 		}
 	}

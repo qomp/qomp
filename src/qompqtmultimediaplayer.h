@@ -23,6 +23,8 @@
 #include "qompplayer.h"
 
 #include <QMediaPlayer>
+#include <QFutureWatcher>
+
 class QompMetaDataResolver;
 
 class QompQtMultimediaPlayer : public QompPlayer
@@ -64,6 +66,7 @@ private:
 	QMediaPlayer* player_;
 	QompMetaDataResolver* resolver_;
 	Qomp::State lastState_;
+	QFutureWatcher<QUrl>* watcher_;
 };
 
 #endif // QOMPQTMULTIMEDIAPLAYER_H
