@@ -34,43 +34,53 @@ QompPluginTreeModel::~QompPluginTreeModel()
 
 void QompPluginTreeModel::addTopLevelItems(const QList<QompPluginModelItem *> &items)
 {
-	beginInsertRows(QModelIndex(), topLevelItems_.size(), topLevelItems_.size() + items.size()-1);
-	topLevelItems_.append(items);
-	foreach(QompPluginModelItem* item,  items) {
-		item->setModel(this);
+	if(items.size() > 0) {
+		beginInsertRows(QModelIndex(), topLevelItems_.size(), topLevelItems_.size() + items.size()-1);
+		topLevelItems_.append(items);
+		foreach(QompPluginModelItem* item,  items) {
+			item->setModel(this);
+		}
+		endInsertRows();
 	}
-	endInsertRows();
 }
 
 void QompPluginTreeModel::setItems(const QList<QompPluginModelItem *> &items, QompPluginModelItem *parent)
 {
-	//we should use this hack to avoid crashes
 	QModelIndex ind = index(parent);
-	beginRemoveRows(ind, 0, parent->items().size()-1);
-	foreach(QompPluginModelItem* it, parent->items()) {
-		selected_.remove(index(it));
-	}
-	parent->setItems(QList<QompPluginModelItem *>());
-	endRemoveRows();
+	if(!ind.isValid())
+		return;
 
-	beginInsertRows(ind, 0, items.size()-1);
-	parent->setItems(items);
-	validateSelection(ind);
-//	foreach(QompPluginModelItem* item,  items) {
-//		item->setModel(this);
-//	}
-	endInsertRows();
+	if(parent->items().size() > 0) {
+		beginRemoveRows(ind, 0, parent->items().size()-1);
+		foreach(QompPluginModelItem* it, parent->items()) {
+			selected_.remove(index(it));
+		}
+		parent->setItems(QList<QompPluginModelItem *>());
+		endRemoveRows();
+	}
+
+	if(items.size() > 0) {
+		beginInsertRows(ind, 0, items.size()-1);
+		parent->setItems(items);
+		validateSelection(ind);
+		//	foreach(QompPluginModelItem* item,  items) {
+		//		item->setModel(this);
+		//	}
+		endInsertRows();
+	}
 }
 
 void QompPluginTreeModel::addItems(const QList<QompPluginModelItem *> &items, QompPluginModelItem *parent)
 {
 	QModelIndex ind = index(parent);
-	beginInsertRows(ind, parent->items().size(), parent->items().size() + items.size()-1);
-	parent->addItems(items);
-//	foreach(QompPluginModelItem* item,  items) {
-//		item->setModel(this);
-//	}
-	endInsertRows();
+	if(ind.isValid() && items.size() > 0) {
+		beginInsertRows(ind, parent->items().size(), parent->items().size() + items.size()-1);
+		parent->addItems(items);
+		//	foreach(QompPluginModelItem* item,  items) {
+		//		item->setModel(this);
+		//	}
+		endInsertRows();
+	}
 }
 
 QompPluginModelItem *QompPluginTreeModel::itemForId(const QString &id, QompPluginModelItem *parent)
