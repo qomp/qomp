@@ -59,6 +59,7 @@ if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
 	find_package ( Qt5Network REQUIRED )
 	find_package ( Qt5Multimedia REQUIRED )
+	find_package ( Qt5Concurrent REQUIRED )
 	find_package ( Qt5LinguistTools )
 	include_directories (
 		${CMAKE_SOURCE_DIR}
@@ -66,6 +67,7 @@ if ( ${USE_QT5} )
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
 		${Qt5Multimedia_INCLUDES}
+		${Qt5Concurrent_INCLUDES}
 		libqomp/include
 		libqomp/src
 		libqomp/src/options
@@ -85,11 +87,13 @@ if ( ${USE_QT5} )
 		${Qt5Widgets_DEFINITIONS}
 		${Qt5Network_DEFINITIONS}
 		${Qt5Multimedia_DEFINITIONS}
+		${Qt5Concurrent_DEFINITIONS}
 	)
 	set (QT_DEPLIBS
 		Qt5::Widgets
 		Qt5::Network
 		Qt5::Multimedia
+		Qt5::Concurrent
 	)
 	set (qomp_MMEDIA
 		src/qompqtmultimediaplayer.cpp
