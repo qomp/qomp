@@ -73,6 +73,9 @@ signals:
 
 public slots:
 	void tuneDataUpdated(Tune* tune);
+#ifdef QOMP_MOBILE
+	void move(int oldRow, int newRow);
+#endif
 
 private:
 	uint totalTime() const;

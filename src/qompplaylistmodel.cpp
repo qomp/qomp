@@ -325,7 +325,22 @@ void QompPlayListModel::tuneDataUpdated(Tune *tune)
 	emit dataChanged(index(i), index(i));
 	emit totalTimeChanged(totalTime());
 }
+#ifdef QOMP_MOBILE
+void QompPlayListModel::move(int oldRow, int newRow)
+{
+	Q_ASSERT(oldRow != newRow);
+	Q_ASSERT(0 <= oldRow && oldRow < tunes_.size());
+	Q_ASSERT(0 <= newRow && newRow < tunes_.size());
 
+	int tmpRow = newRow;
+	if (oldRow < newRow)
+		++tmpRow;
+	if( beginMoveRows(QModelIndex(), oldRow, oldRow, QModelIndex(), tmpRow) ) {
+		tunes_.swap(oldRow, newRow);
+		endMoveRows();
+	}
+}
+#endif
 uint QompPlayListModel::totalTime() const
 {
 	uint total = 0;

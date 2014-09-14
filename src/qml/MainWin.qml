@@ -1,6 +1,6 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
-import QtQuick.Dialogs 1.2
+//import QtQuick.Dialogs 1.2
 import "qrc:///qmlshared"
 
 Rectangle {
@@ -31,7 +31,7 @@ Rectangle {
 	property alias currentPosition: position.value
 	property alias currentDurationText: totalDurTxt.text
 	property alias currentPositionText: curPosTxt.text
-	property alias currentFolder:  fileDialog.folder
+	//property alias currentFolder:  fileDialog.folder
 	property alias playlistModel: playlist.model
 	property alias pluginsActions: sideBar.model
 
@@ -87,15 +87,14 @@ Rectangle {
 		anchors.top: title.bottom
 		width: parent.width
 		anchors.bottom: controls.top
-		anchors.horizontalCenter: parent.horizontalCenter
 
 		snapMode: ListView.SnapToItem
 		clip: true
 		boundsBehavior: Flickable.StopAtBounds
 
-		highlightFollowsCurrentItem: true
-		highlightMoveDuration: 0
-		highlight: Rectangle { color: "#68828A" }
+		highlightFollowsCurrentItem: false
+
+		model: []
 
 		delegate: PlayListDelegate {
 			busy: model.current && root.busy && root.active
@@ -106,6 +105,48 @@ Rectangle {
 			}
 			onActivated: root.itemActivated(index)
 			onCurrentChanged: if(current) playlist.currentTrackText = model.text
+		}
+
+		move: Transition {
+			SequentialAnimation {
+				NumberAnimation {
+					property: "opacity"
+					from: 1
+					to: 0
+					duration: 100
+				}
+				PropertyAnimation {
+					properties: "x, y"
+					duration: 300
+				}
+				NumberAnimation {
+					property: "opacity"
+					from: 0
+					to: 1
+					duration: 100
+				}
+			}
+		}
+
+		displaced: Transition {
+			SequentialAnimation {
+				NumberAnimation {
+					property: "opacity"
+					from: 1
+					to: 0.5
+					duration: 100
+				}
+				PropertyAnimation {
+					properties: "x, y"
+					duration: 300
+				}
+				NumberAnimation {
+					property: "opacity"
+					from: 0.5
+					to: 1
+					duration: 100
+				}
+			}
 		}
 	}
 
@@ -220,26 +261,26 @@ Rectangle {
 		}
 		onRepeatAllChanged: root.actRepeat(repeatAll)
 
-//		onLoadPlaylist: {
-//			fileDialog.title = qsTr("Select Playlist")
-//			fileDialog.selectFolder = false
-//			fileDialog.selectExisting = true
-//			fileDialog.onDialogAccepted = function() {
-//				root.actLoadPlaylist(fileDialog.fileUrl)
-//			}
-//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
-//			fileDialog.open()
-//		}
-//		onSavePlaylist: {
-//			fileDialog.title = qsTr("Select Playlist")
-//			fileDialog.selectFolder = false
-//			fileDialog.selectExisting = false
-//			fileDialog.onDialogAccepted = function() {
-//				root.actSavePlaylist(fileDialog.fileUrl)
-//			}
-//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
-//			fileDialog.open()
-//		}
+		//		onLoadPlaylist: {
+		//			fileDialog.title = qsTr("Select Playlist")
+		//			fileDialog.selectFolder = false
+		//			fileDialog.selectExisting = true
+		//			fileDialog.onDialogAccepted = function() {
+		//				root.actLoadPlaylist(fileDialog.fileUrl)
+		//			}
+		//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
+		//			fileDialog.open()
+		//		}
+		//		onSavePlaylist: {
+		//			fileDialog.title = qsTr("Select Playlist")
+		//			fileDialog.selectFolder = false
+		//			fileDialog.selectExisting = false
+		//			fileDialog.onDialogAccepted = function() {
+		//				root.actSavePlaylist(fileDialog.fileUrl)
+		//			}
+		//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
+		//			fileDialog.open()
+		//		}
 	}
 
 	TrackMenu {
@@ -247,28 +288,28 @@ Rectangle {
 
 		onToggle: root.actToggle(playlist.currentIndex)
 		onRemove: root.actRemove(playlist.currentIndex)
-		onDownload: {
-			fileDialog. forIndex = playlist.currentIndex
-			fileDialog.title = qsTr("Select directory")
-			fileDialog.selectFolder = true
-			fileDialog.selectExisting = true
-			fileDialog.onDialogAccepted = function() {
-				root.actDownload(fileDialog.forIndex, fileDialog.folder)
-			}
-			fileDialog.nameFilters = []
-			fileDialog.open()
-		}
+		//		onDownload: {
+		//			fileDialog. forIndex = playlist.currentIndex
+		//			fileDialog.title = qsTr("Select directory")
+		//			fileDialog.selectFolder = true
+		//			fileDialog.selectExisting = true
+		//			fileDialog.onDialogAccepted = function() {
+		//				root.actDownload(fileDialog.forIndex, fileDialog.folder)
+		//			}
+		//			fileDialog.nameFilters = []
+		//			fileDialog.open()
+		//		}
 	}
 
-	FileDialog {
-		id: fileDialog
+	//	FileDialog {
+	//		id: fileDialog
 
-		property var onDialogAccepted
-		property int forIndex
+	//		property var onDialogAccepted
+	//		property int forIndex
 
-		onAccepted: fileDialog.onDialogAccepted()
-		visible: false
-	}
+	//		onAccepted: fileDialog.onDialogAccepted()
+	//		visible: false
+	//	}
 
 	function enshureItemVisible(index) {
 		playlist.currentIndex = index
