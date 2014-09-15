@@ -33,7 +33,7 @@ Rectangle {
 	property alias currentPositionText: curPosTxt.text
 	//property alias currentFolder:  fileDialog.folder
 	property alias playlistModel: playlist.model
-	property alias pluginsActions: sideBar.model
+	property var pluginsActions: []
 
 	property bool playing: false
 	property bool busy: false
@@ -74,6 +74,8 @@ Rectangle {
 			height: title.height
 			anchors.left: title.left
 			anchors.top: title.top
+
+			onClicked: if(!sideBarLoader.active) sideBarLoader.active = true
 		}
 	}
 
@@ -97,11 +99,14 @@ Rectangle {
 		model: []
 
 		delegate: PlayListDelegate {
-			busy: model.current && root.busy && root.active
-			playing: model.current && root.playing
+			busy: root.busy && root.active
+			playing: root.playing
 			onLongTap: {
-				trackMenu.canDownload = false //Temporary disable
-				trackMenu.popup()
+				if(!trackMenu.active)
+					trackMenu.active = true
+
+				trackMenu.item.canDownload = false //Temporary disable
+				trackMenu.item.popup()
 			}
 			onActivated: root.itemActivated(index)
 			onCurrentChanged: if(current) playlist.currentTrackText = model.text
@@ -242,63 +247,81 @@ Rectangle {
 		}
 	}
 
-	MainWinSideBar {
-		id: sideBar
+	Loader {
+		id: sideBarLoader
 
-		expanded: menuButton.expanded
 		anchors.top: title.bottom
 		anchors.bottom: parent.bottom
+		width: parent.width
 
-		repeatAll: root.repeat
-
-		onOpen:  {
-			menuButton.expanded = false
-		}
-		onClear: root.actClearPlaylist()
-		onOptions: {
-			menuButton.expanded = false
-			root.actDoOptions()
-		}
-		onRepeatAllChanged: root.actRepeat(repeatAll)
-
-		//		onLoadPlaylist: {
-		//			fileDialog.title = qsTr("Select Playlist")
-		//			fileDialog.selectFolder = false
-		//			fileDialog.selectExisting = true
-		//			fileDialog.onDialogAccepted = function() {
-		//				root.actLoadPlaylist(fileDialog.fileUrl)
-		//			}
-		//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
-		//			fileDialog.open()
-		//		}
-		//		onSavePlaylist: {
-		//			fileDialog.title = qsTr("Select Playlist")
-		//			fileDialog.selectFolder = false
-		//			fileDialog.selectExisting = false
-		//			fileDialog.onDialogAccepted = function() {
-		//				root.actSavePlaylist(fileDialog.fileUrl)
-		//			}
-		//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
-		//			fileDialog.open()
-		//		}
+		sourceComponent: sideBarComp
+		active: false
 	}
 
-	TrackMenu {
+	Component {
+		id: sideBarComp
+
+		MainWinSideBar {
+			model: root.pluginsActions
+			expanded: menuButton.expanded
+			repeatAll: root.repeat
+
+			onOpen: menuButton.expanded = false
+			onClear: root.actClearPlaylist()
+			onOptions: {
+				menuButton.expanded = false
+				root.actDoOptions()
+			}
+			onRepeatAllChanged: root.actRepeat(repeatAll)
+
+			//		onLoadPlaylist: {
+			//			fileDialog.title = qsTr("Select Playlist")
+			//			fileDialog.selectFolder = false
+			//			fileDialog.selectExisting = true
+			//			fileDialog.onDialogAccepted = function() {
+			//				root.actLoadPlaylist(fileDialog.fileUrl)
+			//			}
+			//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
+			//			fileDialog.open()
+			//		}
+			//		onSavePlaylist: {
+			//			fileDialog.title = qsTr("Select Playlist")
+			//			fileDialog.selectFolder = false
+			//			fileDialog.selectExisting = false
+			//			fileDialog.onDialogAccepted = function() {
+			//				root.actSavePlaylist(fileDialog.fileUrl)
+			//			}
+			//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
+			//			fileDialog.open()
+			//		}
+		}
+	}
+
+	Loader {
 		id: trackMenu
 
-		onToggle: root.actToggle(playlist.currentIndex)
-		onRemove: root.actRemove(playlist.currentIndex)
-		//		onDownload: {
-		//			fileDialog. forIndex = playlist.currentIndex
-		//			fileDialog.title = qsTr("Select directory")
-		//			fileDialog.selectFolder = true
-		//			fileDialog.selectExisting = true
-		//			fileDialog.onDialogAccepted = function() {
-		//				root.actDownload(fileDialog.forIndex, fileDialog.folder)
-		//			}
-		//			fileDialog.nameFilters = []
-		//			fileDialog.open()
-		//		}
+		sourceComponent: trackMenuComp
+		active: false
+	}
+
+	Component {
+		id: trackMenuComp
+
+		TrackMenu {
+			onToggle: root.actToggle(playlist.currentIndex)
+			onRemove: root.actRemove(playlist.currentIndex)
+			//		onDownload: {
+			//			fileDialog. forIndex = playlist.currentIndex
+			//			fileDialog.title = qsTr("Select directory")
+			//			fileDialog.selectFolder = true
+			//			fileDialog.selectExisting = true
+			//			fileDialog.onDialogAccepted = function() {
+			//				root.actDownload(fileDialog.forIndex, fileDialog.folder)
+			//			}
+			//			fileDialog.nameFilters = []
+			//			fileDialog.open()
+			//		}
+		}
 	}
 
 	//	FileDialog {

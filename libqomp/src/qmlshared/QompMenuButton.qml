@@ -3,6 +3,8 @@ import QtQuick 2.3
 Rectangle {
 	id: root
 
+	signal clicked()
+
 	property int lineH: root.height * 0.1
 	property bool expanded: false
 
@@ -49,6 +51,9 @@ Rectangle {
 	MouseArea {
 		id: ma
 		anchors.fill: parent
-		onPressed: root.expanded = !root.expanded
+		onPressed: {
+			root.clicked()
+			root.expanded = !root.expanded
+		}
 	}
 }

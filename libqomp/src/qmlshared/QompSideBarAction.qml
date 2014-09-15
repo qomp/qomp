@@ -32,15 +32,24 @@ Rectangle {
 		}
 	}
 
-	QompCheckBox {
-		id: cb
-
-		checkBoxHeight: root.height / 2
+	Loader {
+		id: cbLoader
+		sourceComponent: cbComp
 		anchors.right: parent.right
-		anchors.rightMargin: 15 * scaler.scaleX
-		anchors.verticalCenter: parent.verticalCenter
-		visible: root.checkable
-		checked: root.checked
+		anchors.rightMargin: 5 * scaler.scaleX
+		width: height
+		height: parent.height
+		active: root.checkable
+	}
+
+	Component {
+		id: cbComp
+
+		QompCheckBox {
+			checkBoxHeight: root.height / 2
+			anchors.centerIn: parent
+			checked: root.checked
+		}
 	}
 
 	MouseArea {

@@ -132,7 +132,7 @@ Item {
 
 			anchors.top: content.top
 			anchors.left: drager.right
-			anchors.right: (image.visible || busy.visible) ? image.left : content.right
+			anchors.right: (stateLoader.active) ? stateLoader.left : content.right
 			anchors.bottom: content.bottom
 
 			Text {
@@ -181,31 +181,44 @@ Item {
 			}
 		}
 
-		QompImage {
-			id: image
-
+		Loader {
+			id: stateLoader
+			sourceComponent: statesComp
+			active: root.current
 			anchors.right: parent.right
+
 			anchors.verticalCenter: parent.verticalCenter
 			height: content.height * 0.7
 			width: height
-			source: "qrc:///icons/tune"
-			opacity: 0
-
-			Behavior on opacity { NumberAnimation { duration: root.animDuration } }
 		}
 
-		QompBusyIndicator {
-			id: busy
+		Component {
+			id: statesComp
 
-			opacity: 0
-			visible: opacity > 0
-			//running: visible
-			anchors.right: parent.right
-			anchors.verticalCenter: parent.verticalCenter
-			height: content.height * 0.7
-			width: height
+			Item {
+				property alias image: image
+				property alias busy: busy
 
-			Behavior on opacity { NumberAnimation { duration: root.animDuration } }
+				QompImage {
+					id: image
+
+					source: "qrc:///icons/tune"
+					opacity: 0
+					anchors.fill: parent
+
+					Behavior on opacity { NumberAnimation { duration: root.animDuration } }
+				}
+
+				QompBusyIndicator {
+					id: busy
+
+					opacity: 0
+					visible: opacity > 0
+					anchors.fill: parent
+
+					Behavior on opacity { NumberAnimation { duration: root.animDuration } }
+				}
+			}
 		}
 
 		Line {
@@ -229,40 +242,40 @@ Item {
 	states: [
 		State {
 			name: "playing"
-			when: root.playing && !root.busy
+			when: root.current && root.playing && !root.busy
 
 			PropertyChanges {
-				target: image
+				target: stateLoader.item.image
 				opacity: 1
 			}
 			PropertyChanges {
-				target: busy
+				target: stateLoader.item.busy
 				opacity: 0
 			}
 		},
 		State {
 			name: "busy"
-			when: root.busy
+			when: root.current && root.busy
 
 			PropertyChanges {
-				target: image
+				target: stateLoader.item.image
 				opacity: 0
 			}
 			PropertyChanges {
-				target: busy
+				target: stateLoader.item.busy
 				opacity: 1
 			}
 		},
 		State {
 			name: "normal"
-			when: !root.busy && !root.playing
+			when: root.current && !root.busy && !root.playing
 
 			PropertyChanges {
-				target: image
+				target: stateLoader.item.image
 				opacity: 0
 			}
 			PropertyChanges {
-				target: busy
+				target: stateLoader.item.busy
 				opacity: 0
 			}
 		}
