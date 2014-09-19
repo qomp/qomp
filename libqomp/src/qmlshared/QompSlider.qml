@@ -10,10 +10,6 @@ Item {
 	property alias pressed: ma.pressed
 	readonly property real filled: value / (max - min)
 
-	onMaxChanged: console.log("max: "+max)
-	onValueChanged: console.log("value: "+value)
-	onFilledChanged: console.log("filled: "+filled)
-
 	height: pos.height
 	anchors.verticalCenter: parent.verticalCenter
 

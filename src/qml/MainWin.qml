@@ -1,5 +1,4 @@
 import QtQuick 2.3
-//import QtQuick.Controls 1.2
 //import QtQuick.Dialogs 1.2
 import "qrc:///qmlshared"
 
@@ -194,15 +193,11 @@ Rectangle {
 			QompSlider {
 				id: position
 
-//				anchors.verticalCenter: parent.verticalCenter
 				anchors.left: curPosTxt.right
 				anchors.right: totalDurTxt.left
 				anchors.margins: 10 * scaler.scaleMargins
 
-				onValueChanged: {
-					if (pressed)
-						root.positionChanged(Math.round(value))
-				}
+				onValueChanged: if (pressed) root.positionChanged(Math.round(value))
 			}
 		}
 
