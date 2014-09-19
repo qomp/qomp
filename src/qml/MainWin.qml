@@ -32,8 +32,8 @@ Rectangle {
 	property alias currentPositionText: curPosTxt.text
 	//property alias currentFolder:  fileDialog.folder
 	property alias playlistModel: playlist.model
-	property var pluginsActions: []
 
+	property var  pluginsActions: []
 	property bool playing: false
 	property bool busy: false
 	property bool repeat: false

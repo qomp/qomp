@@ -22,5 +22,6 @@
         <file>qmlshared/TickerLabel.qml</file>
         <file>qmlshared/QompBusyIndicator.qml</file>
         <file>qmlshared/QompSlider.qml</file>
+        <file>qmlshared/QompStackView.qml</file>
     </qresource>
 </RCC>

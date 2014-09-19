@@ -1,5 +1,4 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
 import QtQuick.Window 2.1
 
 Window {
@@ -67,35 +66,9 @@ Window {
 		Component {
 			id: stack
 
-			StackView {
+			QompStackView {
 				id: sv
-				property int animDuration: 200
-
 				anchors.fill: parent
-
-				delegate: StackViewDelegate {
-					function transitionFinished(properties) {
-						properties.exitItem.opacity = 1
-					}
-
-					pushTransition: StackViewTransition {
-						id: trans
-						NumberAnimation {
-							duration: sv.animDuration
-							target: enterItem
-							property: "opacity"
-							from: 0
-							to: 1
-						}
-						NumberAnimation {
-							duration: sv.animDuration
-							target: exitItem
-							property: "opacity"
-							from: 1
-							to: 0
-						}
-					}
-				}
 			}
 		}
 	}
@@ -106,14 +79,12 @@ Window {
 			image.visible = false
 		}
 
-		item.width = width
-		item.height = height
-		contents.item.push({item: item, destroyOnPop: true/* ,immediate: true*/})
+		contents.item.push(item)
 		contents.item.currentItem.focus = true
 	}
 
 	function removeView() {
-		var item = contents.item.pop({/*immediate: true*/})
+		contents.item.pop()
 		contents.item.currentItem.focus = true
 	}
 
