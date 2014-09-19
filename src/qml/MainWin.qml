@@ -1,5 +1,5 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
+//import QtQuick.Controls 1.2
 //import QtQuick.Dialogs 1.2
 import "qrc:///qmlshared"
 
@@ -27,7 +27,7 @@ Rectangle {
 
 	property string title: Qt.application.name
 
-	property alias currentDuration: position.maximumValue
+	property alias currentDuration: position.max
 	property alias currentPosition: position.value
 	property alias currentDurationText: totalDurTxt.text
 	property alias currentPositionText: curPosTxt.text
@@ -39,8 +39,6 @@ Rectangle {
 	property bool busy: false
 	property bool repeat: false
 	property string totalDuration;
-
-	readonly property bool active: Stack.status === Stack.Active
 
 	color: "lightblue"
 
@@ -99,7 +97,7 @@ Rectangle {
 		model: []
 
 		delegate: PlayListDelegate {
-			busy: root.busy && root.active
+			busy: root.busy && root.visible
 			playing: root.playing
 			onLongTap: {
 				if(!trackMenu.active)
@@ -193,10 +191,10 @@ Rectangle {
 				color: "white"
 			}
 
-			Slider {
+			QompSlider {
 				id: position
 
-				anchors.verticalCenter: parent.verticalCenter
+//				anchors.verticalCenter: parent.verticalCenter
 				anchors.left: curPosTxt.right
 				anchors.right: totalDurTxt.left
 				anchors.margins: 10 * scaler.scaleMargins

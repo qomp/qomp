@@ -21,5 +21,6 @@
         <file>qmlshared/QompPluginsSearchTabbedView.qml</file>
         <file>qmlshared/TickerLabel.qml</file>
         <file>qmlshared/QompBusyIndicator.qml</file>
+        <file>qmlshared/QompSlider.qml</file>
     </qresource>
 </RCC>

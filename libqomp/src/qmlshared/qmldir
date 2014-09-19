@@ -17,6 +17,7 @@ QompSideBarAction           1.0 QompSideBarAction.qml
 QompPluginsSearchTabbedView 1.0 QompPluginsSearchTabbedView.qml
 TickerLabel                 1.0 TickerLabel.qml
 QompBusyIndicator           1.0 QompBusyIndicator.qml
+QompSlider                  1.0 QompSlider.qml
 
 internal GetTunesDlg    GetTunesDlg.qml
 internal QompAppWindow  QompAppWindow.qml
