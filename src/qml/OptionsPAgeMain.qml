@@ -20,17 +20,16 @@ Item {
 
 		OptionsEntry {
 
-				QompCheckBox {
-					id: autoplay
+			QompCheckBox {
+				id: autoplay
 
-					checkBoxHeight: parent.height / 2
-					anchors.left: parent.left
-					anchors.verticalCenter: parent.verticalCenter
-				}
+				checkBoxHeight: parent.height / 2
+				anchors.left: parent.left
+			}
 
 			Text {
 				anchors.fill: parent
-				anchors.leftMargin: autoplay.checkBoxHeight + 10 * scaler.scaleX
+				anchors.leftMargin: autoplay.width
 				text: qsTr("Automatically start playback")
 				font.pixelSize: 22 * scaler.scaleFont
 				wrapMode: Text.WordWrap

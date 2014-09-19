@@ -206,7 +206,8 @@ void ProstoPleerController::urlFinished()
 		if(re.indexIn(text) != -1) {
 			ProstopleerTune* pt = static_cast<ProstopleerTune*>(model_->itemForId(id));
 			pt->url = re.cap();
-			model_->emitUpdateSignal();
+			QModelIndex ind = model_->index(pt);
+			model_->emitUpdateSignal(ind);
 		}
 	}
 }

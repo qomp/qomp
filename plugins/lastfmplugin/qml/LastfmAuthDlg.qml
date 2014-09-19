@@ -1,6 +1,5 @@
 import QtQuick 2.3
 import QtQuick.Dialogs 1.2
-import QtQuick.Controls 1.2
 import "qrc:///qmlshared"
 
 ButtonsPage {
@@ -37,13 +36,12 @@ ButtonsPage {
 			visible: false
 		},
 
-		BusyIndicator {
+		QompBusyIndicator {
 			id: busy
 			anchors.bottom: parent.bottom
 			anchors.top: txt.bottom
 			anchors.horizontalCenter: parent.horizontalCenter
 			width: height
-			running: visible
 			visible: false
 		}
 	]

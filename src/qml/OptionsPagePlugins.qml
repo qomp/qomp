@@ -31,13 +31,12 @@ Item {
 
 				checkBoxHeight: parent.height / 2
 				anchors.left: parent.left
-				anchors.verticalCenter: parent.verticalCenter
 			}
 
 			Item {
 				id: txt
 				anchors.fill: parent
-				anchors.leftMargin: enbl.checkBoxHeight + 10 * scaler.scaleX
+				anchors.leftMargin: enbl.width
 				clip: true
 
 				Text {

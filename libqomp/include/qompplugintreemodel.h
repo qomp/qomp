@@ -90,7 +90,7 @@ public:
 	/**
 	 * Notify connected views than some items inside has changed
 	 */
-	void emitUpdateSignal();
+	void emitUpdateSignal(const QModelIndex& index);
 
 	/**
 	* Reimplemented from QAbstractItemModel

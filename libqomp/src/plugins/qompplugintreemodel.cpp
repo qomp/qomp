@@ -168,8 +168,6 @@ bool QompPluginTreeModel::setData(const QModelIndex &index, const QVariant &valu
 	if(!index.isValid() || role != Qt::CheckStateRole || index.column() != 0)
 		return false;
 
-	layoutAboutToBeChanged();
-
 	switch(value.toInt()) {
 	case(QompCon::DataUnselect):
 		if(selected_.contains(index))
@@ -188,8 +186,8 @@ bool QompPluginTreeModel::setData(const QModelIndex &index, const QVariant &valu
 	}
 
 	validateSelection(index);
+	emit dataChanged(index, index, QVector<int>() << Qt::CheckStateRole);
 
-	layoutChanged();
 	return true;
 }
 
@@ -271,6 +269,7 @@ void QompPluginTreeModel::validateSelection(const QModelIndex &parent)
 			selected_.remove(i);
 
 		validateSelection(i);
+		emit dataChanged(i, i, QVector<int>() << Qt::CheckStateRole);
 	}
 }
 
@@ -283,8 +282,7 @@ void QompPluginTreeModel::reset()
 	endResetModel();
 }
 
-void QompPluginTreeModel::emitUpdateSignal()
+void QompPluginTreeModel::emitUpdateSignal(const QModelIndex &index)
 {
-	emit layoutAboutToBeChanged();
-	emit layoutChanged();
+	emit dataChanged(index, index);
 }

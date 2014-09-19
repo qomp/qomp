@@ -1,34 +1,42 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
-import QtQuick.Controls.Styles 1.2
 
-CheckBox {
+Item {
 	id: root
 
-	property int checkBoxHeight: parent.height * 0.8
-	property int spacing: 0
+	property int checkBoxHeight: height * 0.8
+	property bool checked: false
 
-	style: CheckBoxStyle {
-		id: style
-		indicator: Rectangle {
-			id: checkRect
-			color: "white"
+	signal clicked()
 
-			implicitWidth: implicitHeight
-			implicitHeight: root.checkBoxHeight
+	height: parent.height
+	width: height
 
-			border.width: 2
-			border.color: root.checked? "midnightblue" : "black"
-			radius: 4 * scaler.scaleMargins
+	Rectangle {
+		id: checkRect
+		color: "white"
 
-			QompImage {
-				anchors.fill: parent
-				anchors.margins: 5 * scaler.scaleMargins
-				visible: root.checked
-				source: "qrc:///icons/check"
-			}
+		height: root.checkBoxHeight
+		width: height
+		anchors.centerIn: parent
+
+		border.width: 2
+		border.color: root.checked? "midnightblue" : "black"
+		radius: 4 * scaler.scaleMargins
+
+		QompImage {
+			anchors.fill: parent
+			anchors.margins: 5 * scaler.scaleMargins
+			visible: root.checked
+			source: "qrc:///icons/check"
 		}
-
-		spacing: root.spacing
 	}
+
+	MouseArea {
+		id: ma
+
+		anchors.fill: parent
+		onClicked: root.clicked()
+	}
+
+	onClicked: checked = !checked
 }

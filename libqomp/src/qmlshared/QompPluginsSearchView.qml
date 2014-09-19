@@ -1,5 +1,4 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
 
 Rectangle  {
 	id: root
@@ -102,7 +101,6 @@ Rectangle  {
 
 					readonly property int toggleState: 2
 
-					anchors.verticalCenter: parent.verticalCenter
 					anchors.left: parent.left
 					anchors.leftMargin: 10 * scaler.scaleX
 
@@ -110,16 +108,9 @@ Rectangle  {
 					checked: visible ? model.state : false
 
 					onClicked: {
-						var curRoot = list.model.rootIndex
-						var cur = index
-						list.transEnabled = false
 						root.checkBoxClicked(list.model.modelIndex(index))
-						model.state = chkbx.toggleState //cause changing root index
-						//restore view's position
-						list.model.rootIndex = curRoot
-						list.currentIndex = cur
-						list.positionViewAtIndex(cur, ListView.Visible)
-						list.transEnabled = true
+						model.state = chkbx.toggleState
+						list.currentIndex = index
 					}
 				}
 
