@@ -44,8 +44,6 @@ Item {
 
 	function push(item) {
 		item.visible = Qt.binding(function() { return item.opacity > 0 })
-		item.width = width
-		item.height = height
 
 		var doAnim = false
 		var l = content.children.length
@@ -58,6 +56,7 @@ Item {
 		}
 
 		item.parent = content
+		item.anchors.fill = content
 		if(doAnim)
 			anim.start()
 	}
