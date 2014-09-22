@@ -85,4 +85,5 @@ Rectangle {
 
 	onWidthChanged: checkNeedAnim()
 	onTextOffsetChanged: checkNeedAnim()
+	onDefaultLabelAlingmentChanged: checkNeedAnim()
 }
