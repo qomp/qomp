@@ -128,6 +128,15 @@ bool QompQmlEngine::eventFilter(QObject *o, QEvent *e)
 	return QQmlApplicationEngine::eventFilter(o, e);
 }
 
+void QompQmlEngine::showConfirmExitMessage()
+{
+	QAndroidJniObject str = QAndroidJniObject::fromString(tr("Press again to exit"));
+	QAndroidJniObject::callStaticMethod<void>("com/googlecode/qomp/Qomp",
+							"showNotification",
+							"(Ljava/lang/String;)V",
+							str.object<jstring>());
+}
+
 QompQmlEngine::QompQmlEngine() :
 	QQmlApplicationEngine(qApp),
 	window_(0),
@@ -139,6 +148,7 @@ QompQmlEngine::QompQmlEngine() :
 	load(QUrl("qrc:///qmlshared/QompAppWindow.qml"));
 	window_ = static_cast<QQuickWindow*>(rootObjects().first());
 	_instance = window_;
+	connect(window_, SIGNAL(confirmExit()), SLOT(showConfirmExitMessage()));
 
 #ifdef Q_OS_ANDROID
 	QAndroidJniObject act = QtAndroid::androidActivity();

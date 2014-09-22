@@ -44,6 +44,9 @@ private slots:
 protected:
 	bool eventFilter(QObject *o, QEvent *e);
 
+private slots:
+	void showConfirmExitMessage();
+
 private:
 	static QompQmlEngine *instance_;
 	QompQmlEngine();

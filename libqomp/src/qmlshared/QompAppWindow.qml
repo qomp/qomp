@@ -4,6 +4,8 @@ import QtQuick.Window 2.1
 Window {
 	id: root
 
+	signal confirmExit()
+
 	contentOrientation: Qt.PortraitOrientation
 	visibility: Window.Hidden
 
@@ -22,6 +24,14 @@ Window {
 		scaler.scaleFont = (400 + width * height * 0.00015) / 457
 	}
 
+	Timer {
+		id: timer
+
+		running: false
+		repeat: false
+		interval: 2000
+	}
+
 	Item {
 		anchors.fill: parent
 
@@ -32,7 +42,14 @@ Window {
 					root.removeView();
 				}
 				else {
-					Qt.quit()
+					if(timer.running) {
+						timer.stop()
+						Qt.quit()
+					}
+					else {
+						root.confirmExit()
+						timer.start()
+					}
 				}
 			}
 		}
