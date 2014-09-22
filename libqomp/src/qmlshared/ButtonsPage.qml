@@ -43,37 +43,7 @@ BasePage {
 		width: height
 
 		visible: false
-		//running: visible
 	}
-
-	//		SequentialAnimation {
-	//			id:colorAnim
-
-	//			property color from: "lightsteelblue"
-	//			property color to: "#6A7685"
-
-	//			loops: Animation.Infinite
-	//			running: false
-
-	//			ColorAnimation {
-	//				duration: 300
-
-	//				target: root
-	//				from: colorAnim.from
-	//				to: colorAnim.to
-	//			}
-
-	//			ColorAnimation {
-	//				duration: 300
-
-	//				target: root
-	//				property: "color"
-	//				to: colorAnim.from
-	//				from: colorAnim.to
-	//			}
-
-	//			onRunningChanged: if(!running) root.color = from
-	//		}
 
 	states: [
 		State {
@@ -84,11 +54,6 @@ BasePage {
 				target: busyInd
 				visible: true
 			}
-
-//			PropertyChanges {
-//				target: colorAnim
-//				running: true
-//			}
 		},
 		State {
 			name: "normal"

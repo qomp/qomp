@@ -9,7 +9,7 @@ ButtonsPage {
 	signal editTextChanged()
 
 	property alias model: items.model
-	property alias serchText: items.editText
+	property alias serchText: items.text
 	readonly property alias pluginContent: placeholder
 
 	property bool waitForSuggestions: false
@@ -18,6 +18,21 @@ ButtonsPage {
 		id: mainRect
 
 		anchors.fill: parent
+
+		Item {
+			id: placeholder
+
+			anchors.top: toprect.bottom
+			anchors.bottom: parent.bottom
+			anchors.left: parent.left
+			anchors.right: parent.right
+
+			onChildrenChanged: {
+				for(var i=0; i<children.length; ++i) {
+					children[i].anchors.fill = placeholder
+				}
+			}
+		}
 
 		Rectangle {
 			id: toprect
@@ -46,24 +61,20 @@ ButtonsPage {
 				}
 			}
 
-			ComboBox {
+			QompComboBox {
 				id: items
 
 				property bool inserting: false
 
-				model: []
+				availableHeight: mainRect.height
 
-				anchors.verticalCenter: parent.verticalCenter
-				anchors.left: parent.left
-				anchors.right: search.left
+				anchors.fill: parent
 				anchors.margins: 10 * scaler.scaleMargins
+				anchors.rightMargin: search.width + search.anchors.leftMargin + search.anchors.rightMargin
 
-				editable: true
-				clip: true
-
-				onEditTextChanged: {
+				onTextChanged: {
 					if(!inserting) {
-						if(editText.length > 2)
+						if(text.length > 2)
 							root.editTextChanged()
 					}
 					else
@@ -76,28 +87,12 @@ ButtonsPage {
 					id: sugIndicator
 
 					anchors.right: parent.right
-					anchors.rightMargin: 50 * scaler.scaleX
+					anchors.rightMargin: parent.height + 5 * scaler.scaleX
 					anchors.verticalCenter: parent.verticalCenter
 					height: parent.height * 0.8
 					width: height
 
 					visible: root.waitForSuggestions
-					//running: visible
-				}
-			}
-		}
-
-		Item {
-			id: placeholder
-
-			anchors.top: toprect.bottom
-			anchors.bottom: parent.bottom
-			anchors.left: parent.left
-			anchors.right: parent.right
-
-			onChildrenChanged: {
-				for(var i=0; i<children.length; ++i) {
-					children[i].anchors.fill = placeholder
 				}
 			}
 		}

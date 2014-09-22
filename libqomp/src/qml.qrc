@@ -23,5 +23,7 @@
         <file>qmlshared/QompBusyIndicator.qml</file>
         <file>qmlshared/QompSlider.qml</file>
         <file>qmlshared/QompStackView.qml</file>
+        <file>qmlshared/QompMenu.qml</file>
+        <file>qmlshared/QompComboBox.qml</file>
     </qresource>
 </RCC>
