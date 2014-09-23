@@ -18,7 +18,7 @@
             <!-- Run with local libs -->
             <meta-data android:name="android.app.use_local_qt_libs" android:value="-- %%USE_LOCAL_QT_LIBS%% --"/>
             <meta-data android:name="android.app.libs_prefix" android:value="/data/local/tmp/qt/"/>
-            <meta-data android:name="android.app.load_local_libs" android:value="-- %%INSERT_LOCAL_LIBS%% --"/>
+            <meta-data android:name="android.app.load_local_libs" android:value="plugins/platforms/android/libqtforandroid.so:plugins/mediaservice/libqtmedia_android.so"/>
             <meta-data android:name="android.app.load_local_jars" android:value="-- %%INSERT_LOCAL_JARS%% --"/>
             <meta-data android:name="android.app.static_init_classes" android:value="-- %%INSERT_INIT_CLASSES%% --"/>
             <!--  Messages maps -->
@@ -32,7 +32,6 @@
         </activity>
         <service android:name=".QompService" android:enabled="true" android:exported="false" android:label="@string/srv_name" android:icon="@drawable/icon">
         </service>
-       <!-- <activity android:name=".CallbackActivity" /> -->
     </application>
     <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="19"/>
     <supports-screens android:smallScreens="true" android:largeScreens="true" android:normalScreens="true" android:anyDensity="true"/>

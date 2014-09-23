@@ -431,8 +431,10 @@ void QompCon::setupMainWin()
 	mainWin_ = new QompMainWin(qApp);
 	mainWin_->setModel(model_);
 
+#ifndef Q_OS_ANDROID
 	mainWin_->setMuteState(player_->isMuted());
 	mainWin_->volumeChanged(player_->volume());
+#endif
 	mainWin_->setCurrentPosition(player_->position());
 	mainWin_->playerStateChanged(player_->state());
 

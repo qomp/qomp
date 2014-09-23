@@ -10,5 +10,9 @@ else {
     LIBS += -ltag
 }
 
-OTHER_FILES += \
-    $$PWD/metadata.json
+OTHER_FILES += $$PWD/metadata.json
+
+android {
+    ANDROID_EXTRA_LIBS += $$[QT_INSTALL_LIBS]/libtag.so
+    export(ANDROID_EXTRA_LIBS)
+}

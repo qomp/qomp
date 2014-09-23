@@ -109,7 +109,7 @@ ButtonsPage {
 					text: modelData
 					onTriggered: {
 						items.inserting = true
-						items.editText = text
+						items.text = text
 						items.inserting = false
 					}
 				}
