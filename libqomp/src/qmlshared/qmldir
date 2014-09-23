@@ -19,7 +19,6 @@ TickerLabel                 1.0 TickerLabel.qml
 QompBusyIndicator           1.0 QompBusyIndicator.qml
 QompSlider                  1.0 QompSlider.qml
 QompStackView               1.0 QompStackView.qml
-QompMenu                    1.0 QompMenu.qml
 QompComboBox                1.0 QompComboBox.qml
 
 internal GetTunesDlg    GetTunesDlg.qml

@@ -1,7 +1,6 @@
 import QtQuick 2.3
 import QtQuick.Window 2.1
 
-
 Item {
 	id: root
 
@@ -11,6 +10,7 @@ Item {
 	property alias text: line.text
 	property bool expanded: false
 	property int availableHeight: 100
+	readonly property int maxDropHeight: availableHeight - mapToItem(parent, 0, drop.y).y
 
 	Keys.onReleased: {
 		if (event.key === Qt.Key_Back && root.expanded) {
@@ -72,8 +72,11 @@ Item {
 	ListView {
 		id: drop
 
+		readonly property int delegateHeight: 60 * scaler.scaleY
+
 		anchors.top: line.bottom
 		width: line.width
+		height: Math.min(count * delegateHeight, root.maxDropHeight)
 
 		model: []
 
@@ -90,7 +93,7 @@ Item {
 
 			width: parent.width - 2
 			anchors.horizontalCenter: parent.horizontalCenter
-			height: 60
+			height: drop.delegateHeight
 
 			color: selector.pressed ? "cornflowerblue" : "#324A76"
 			Behavior on color { ColorAnimation {} }
@@ -131,8 +134,6 @@ Item {
 			hideArea.y = o.y
 			hideArea.x = o.x
 
-			drop.height = Math.min(drop.contentHeight,
-								   availableHeight - mapToItem(parent, 0, drop.y).y)
 			drop.positionViewAtBeginning()
 		}
 		else {
