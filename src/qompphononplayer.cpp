@@ -140,16 +140,19 @@ void QompPhononPlayer::playerStateChanged(Phonon::State newState, Phonon::State 
 
 void QompPhononPlayer::play()
 {
+	QompPlayer::play();
 	mediaObject_->play();
 }
 
 void QompPhononPlayer::pause()
 {
+	QompPlayer::pause();
 	mediaObject_->pause();
 }
 
 void QompPhononPlayer::stop()
 {
+	QompPlayer::stop();
 	mediaObject_->stop();
 }
 

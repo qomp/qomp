@@ -35,6 +35,7 @@ public:
 	Tune* currentTune() const;
 
 	void resolveMetadata(const QList<Tune*> &tunes);
+	Qomp::State lastAction() const;
 
 	virtual void setVolume(qreal vol) = 0;
 	/**
@@ -50,9 +51,9 @@ public:
 	virtual qint64 position() const = 0;
 
 	virtual Qomp::State state() const = 0;
-	virtual void play() = 0;
-	virtual void pause() = 0;
-	virtual void stop() = 0;
+	virtual void play();
+	virtual void pause();
+	virtual void stop();
 	virtual qint64 currentTuneTotalTime() const = 0;
 
 	virtual QStringList audioOutputDevice() const = 0;
@@ -82,6 +83,7 @@ protected:
 
 private:
 	Tune* currentTune_;
+	Qomp::State lastAction_;
 };
 
 #endif // QOPMPLAYER_H

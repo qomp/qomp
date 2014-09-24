@@ -23,7 +23,8 @@
 
 
 QompPlayer::QompPlayer() :
-	QObject()
+	QObject(),
+	lastAction_(Qomp::StateStopped)
 {
 }
 
@@ -43,4 +44,24 @@ void QompPlayer::resolveMetadata(const QList<Tune*>& tunes)
 {
 	if(metaDataResolver())
 		metaDataResolver()->resolve(tunes);
+}
+
+Qomp::State QompPlayer::lastAction() const
+{
+	return lastAction_;
+}
+
+void QompPlayer::play()
+{
+	lastAction_ = Qomp::StatePlaying;
+}
+
+void QompPlayer::pause()
+{
+	lastAction_ = Qomp::StatePaused;
+}
+
+void QompPlayer::stop()
+{
+	lastAction_ = Qomp::StateStopped;
 }

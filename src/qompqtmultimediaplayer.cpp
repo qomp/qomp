@@ -33,7 +33,6 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	QompPlayer(),
 	player_(new QMediaPlayer(this)),
 	resolver_(0/*new QompTagLibMetaDataResolver(this)*/),
-	lastState_(Qomp::StateStopped),
 	watcher_(0)
 {
 	connect(player_, SIGNAL(positionChanged(qint64)), SIGNAL(currentPositionChanged(qint64)));
@@ -138,16 +137,17 @@ void QompQtMultimediaPlayer::play()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::play()";
 #endif
+	QompPlayer::play();
+
 	if(!player_->media().isNull())
 		player_->play();
-
-	lastState_ = Qomp::StatePlaying;
 }
 
 void QompQtMultimediaPlayer::pause()
 {
+	QompPlayer::pause();
+
 	player_->pause();
-	lastState_ = Qomp::StatePaused;
 }
 
 void QompQtMultimediaPlayer::stop()
@@ -155,8 +155,9 @@ void QompQtMultimediaPlayer::stop()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::stop()";
 #endif
+	QompPlayer::stop();
+
 	player_->stop();
-	lastState_ = Qomp::StateStopped;
 }
 
 qint64 QompQtMultimediaPlayer::currentTuneTotalTime() const
@@ -234,7 +235,7 @@ void QompQtMultimediaPlayer::tuneUrlReady()
 
 	player_->setMedia(QMediaContent(url));
 
-	switch (lastState_) {
+	switch (lastAction()) {
 	case Qomp::StatePlaying: player_->play();
 		break;
 	case Qomp::StatePaused: player_->pause();

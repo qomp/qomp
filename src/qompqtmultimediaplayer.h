@@ -65,7 +65,6 @@ protected:
 private:
 	QMediaPlayer* player_;
 	QompMetaDataResolver* resolver_;
-	Qomp::State lastState_;
 	QFutureWatcher<QUrl>* watcher_;
 };
 

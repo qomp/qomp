@@ -542,7 +542,9 @@ void QompCon::mediaFinished(bool afterError)
 		return;
 
 	if(index.row() == model_->rowCount()-1) {
-		if(!afterError && Options::instance()->getOption(OPTION_REPEAT_ALL).toBool()) {
+		if(!afterError && player_->lastAction() == Qomp::StatePlaying &&
+			Options::instance()->getOption(OPTION_REPEAT_ALL).toBool())
+		{
 			const QModelIndex ind = model_->index(0);
 			playIndex(ind);
 
@@ -553,8 +555,13 @@ void QompCon::mediaFinished(bool afterError)
 		}
 	}
 	else {
-		index = model_->index(index.row()+1);
-		playIndex(index);
+		if(player_->lastAction() == Qomp::StatePlaying) {
+			index = model_->index(index.row()+1);
+			playIndex(index);
+		}
+		else {
+			stopPlayer();
+		}
 	}
 }
 
