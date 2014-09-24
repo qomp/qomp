@@ -2,18 +2,13 @@ CONFIG += release
 CONFIG -= debug
 CONFIG -= debug_and_release debug_and_release_target
 
-unix:!mac:!android:DEFINES += HAVE_X11
-
-debug {
-    DEFINES += DEBUG_OUTPUT
-}
-
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
 UI_DIR = .ui
 RCC_DIR = .rcc
 
 INCLUDEPATH += $$PWD/.ui
+
 
 isEmpty(PREFIX) {
         PREFIX = /usr/local
@@ -22,8 +17,14 @@ isEmpty(PREFIX) {
 BINDIR = $$PREFIX/bin
 DATADIR = $$PREFIX/share/qomp
 
-
 DEFINES += QOMP_DATADIR='\\"$$DATADIR\\"'
+
+
+unix:!mac:!android:DEFINES += HAVE_X11
+
+debug {
+    DEFINES += DEBUG_OUTPUT
+}
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     !android:  QT += widgets

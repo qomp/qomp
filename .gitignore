@@ -29,3 +29,4 @@ qomp.app/
 bin/
 android/assets/
 .DS_Store
+libqomp/include/

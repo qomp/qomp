@@ -20,9 +20,13 @@ unix:!android {
 
 include(src/src.pri)
 
-for(FILE, HEADERS) {
-    DDIR = $$PWD/include
+DDIR = $$system_path($$PWD/include)
 
+!exists($$DDIR) {
+    system( $$QMAKE_MKDIR $$shell_path($$DDIR) )
+}
+
+for(FILE, HEADERS) {
     QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$FILE) $$shell_path($$DDIR) $$escape_expand(\\n\\t)
 }
 
