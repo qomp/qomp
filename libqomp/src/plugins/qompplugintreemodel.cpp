@@ -186,7 +186,11 @@ bool QompPluginTreeModel::setData(const QModelIndex &index, const QVariant &valu
 	}
 
 	validateSelection(index);
-	emit dataChanged(index, index, QVector<int>() << Qt::CheckStateRole);
+	emit dataChanged(index, index
+#ifdef HAVE_QT5
+			, QVector<int>() << Qt::CheckStateRole
+#endif
+			);
 
 	return true;
 }
@@ -269,7 +273,11 @@ void QompPluginTreeModel::validateSelection(const QModelIndex &parent)
 			selected_.remove(i);
 
 		validateSelection(i);
-		emit dataChanged(i, i, QVector<int>() << Qt::CheckStateRole);
+		emit dataChanged(i, i
+#ifdef HAVE_QT5
+				, QVector<int>() << Qt::CheckStateRole
+#endif
+				);
 	}
 }
 
