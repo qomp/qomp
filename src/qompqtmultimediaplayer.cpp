@@ -230,7 +230,7 @@ void QompQtMultimediaPlayer::tuneUrlReady()
 	QUrl url = f.result();
 
 #ifdef DEBUG_OUTPUT
-	qDebug() << "QompQtMultimediaPlayer::tuneUrlReady()  " << lastState_ << url;
+	qDebug() << "QompQtMultimediaPlayer::tuneUrlReady()  " << lastAction() << url;
 #endif
 
 	player_->setMedia(QMediaContent(url));
