@@ -22,6 +22,9 @@
 
 #include <QPainter>
 #include <QFileInfo>
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
 
 QompPlaylistDelegate::QompPlaylistDelegate(QObject *parent) :
 	QItemDelegate(parent)
@@ -45,7 +48,7 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 		grad.setColorAt(0.5, QColor("#F5F5F5"));
 		brush = QBrush(grad);
 		palette.setColor(QPalette::Text, "#4C8DC7");
-		font.setBold(true);
+		font.setWeight(QFont::Bold);
 	}
 	else {
 		palette.setColor(QPalette::Text, "#3244C9");
@@ -72,15 +75,15 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 	painter->setPen(QPen((o.state & QStyle::State_Selected) ? palette.color(QPalette::HighlightedText) : palette.color(QPalette::Text)));
 	painter->setFont(font);
 
+	static const int margine = 5;
 	QRect durRect(rect);
 	QString dur = index.data(QompPlayListModel::DurationRole).toString();
-	QFontMetrics fm(font);
-	int w = fm.width(dur);
-	durRect.setRight(durRect.right() - 5);
-	durRect.setLeft(durRect.right() - w - 1);
+	int w = painter->fontMetrics().width(dur);
+	durRect.setWidth(w + 1);
+	durRect.moveRight(rect.right() - margine);
 	rect.setRight(durRect.left() - 2);
-	rect.setLeft(rect.left() + 5);
-	text = fm.elidedText(text, Qt::ElideRight,rect.width());
+	rect.setLeft(rect.left() + margine);
+	text = painter->fontMetrics().elidedText(text, Qt::ElideRight,rect.width());
 
 	painter->drawText(rect, text);
 	painter->drawText(durRect, dur);
