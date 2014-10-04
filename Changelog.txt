@@ -1,0 +1,87 @@
+Version 0.7 beta
+?.?.?
+ + add QML interface for android
+ + add full android support
+ + add Notifications plugin
+ + add shortcuts support
+ * various UI fixes
+ * fixes for plugins
+ * update translations
+ * various fixes
+
+
+Version 0.6 beta
+23.08.2014
+ * update Yandex.Music plugin
+ * update Myzuka.ru plugin
+ * update filesystem pligon: add resolving tags on loading tunes with taglib
+ * restore OS X builds
+ + add cmake Win32 support
+ - get rid of metadata resolving for online tunes
+ * various fixes and improvements
+
+
+Version 0.5 beta
+02.05.2014
+ * fixes for translations system
+ * improvements for android builds
+ * fix myzuka.ru plugin
+ * update filesystem plugin
+ + add qomp shared library, move to dynamic plugins loading
+ * update russian translation
+ * improvements for plugins system
+ + add cmake build support
+ * some UI improvements
+ * fix MPRIS plugin
+ * fix filesystem plugin
+ + add theme manager
+
+
+Version 0.4 beta
+27.02.2014
+ + add android compilling support
+ * fix myzuka.ru plugin
+ * plugins improvements
+ * improve LastFM plugin
+ * update russian translation
+ * add css theming support
+ * some UI fixes
+ * fixes for MPRIS plugin
+ * some fixes and optiomizations
+
+
+Version 0.3 beta
+09.09.2013
+ * fix prostopleer plugins url after thair moving to another hosting
+ + add drag-and-drop at playlist
+ + add LastFm scrobbling
+ + add tune-to-file plugin
+ + add MPRIS plugin
+ + add repeat all button
+ * fix yandex.music plugin
+ * update russian translation
+ * different fixes and improvements
+
+
+Version 0.2 beta
+15.06.2013
+ + add tray icon
+ + better linux integration
+ + add ability load and save playlist
+ + many UI improvements
+ + plugin system improvements
+ + add ability save tunes
+ * fixes for prostopleer plugin
+ + add myzuka.ru plugin
+ + add tag resolving
+ + add search suggestions
+ + add Qt5 support
+ + add "About qomp" dialog
+ + add localizations support
+ + add OS X support
+ + add Yandex.Music plugin
+
+
+Version 0.1 beta
+21.03.2013
+ * Start work
