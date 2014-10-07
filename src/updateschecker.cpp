@@ -32,7 +32,7 @@
 #include "defines.h"
 #include "qompnetworkingfactory.h"
 
-static const QString url = "http://code.google.com/p/qomp/source/browse/libqomp/include/defines.h";
+static const QString url = "https://raw.githubusercontent.com/qomp/qomp/master/libqomp/src/defines.h";
 static const QString downloadUrl = "http://sourceforge.net/projects/qomp/files/";
 
 
@@ -72,7 +72,7 @@ void UpdatesChecker::replyFinished(QNetworkReply *reply)
 	}
 	else {
 		QString data = QString::fromUtf8(reply->readAll());
-		const QRegExp re("#define APPLICATION_VERSION\\s+&quot;([^&]+)&quot;");
+		const QRegExp re("#define APPLICATION_VERSION\\s+\"([^\"]+)\"");
 		if(re.indexIn(data) != -1) {
 			const QString ver = re.cap(1);
 			const QString curVer = Options::instance()->getOption(OPTION_APPLICATION_VERSION).toString();
