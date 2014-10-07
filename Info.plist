@@ -13,8 +13,8 @@
 	<key>CFBundleExecutable</key>
 	<string>qomp</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.googlecode.qomp</string>
+        <string>net.sourceforge.qomp</string>
 	<key>NOTE</key>
-	<string>http://code.google.com/p/qomp</string>
+        <string>http://qomp.sourceforge.net</string>
 </dict>
 </plist>

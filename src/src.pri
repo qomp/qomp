@@ -24,8 +24,8 @@ android {
     RESOURCES   += $$PWD/qml.qrc
 
 OTHER_FILES += $$PWD/../android/AndroidManifest.xml \
-    $$PWD/../android/src/com/googlecode/qomp/Qomp.java \
-    $$PWD/../android/src/com/googlecode/qomp/QompService.java
+    $$PWD/../android/src/net/sourceforge/qomp/Qomp.java \
+    $$PWD/../android/src/net/sourceforge/qomp/QompService.java
 }
 else {
     SOURCES += $$PWD/qomptrayicon.cpp \

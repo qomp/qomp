@@ -24,7 +24,7 @@
 Scaler::Scaler(QObject *parent) :
 	QObject(parent)
 {
-	qmlRegisterType<Scaler>("com.googlecode.qomp", 1, 0, "Scaler");
+	qmlRegisterType<Scaler>("net.sourceforge.qomp", 1, 0, "Scaler");
 }
 
 double Scaler::scaleX() const

@@ -76,7 +76,7 @@ static void incomingCallFinish(JNIEnv */*env*/, jobject /*thiz*/)
 static void notifyIcon(const QString& text)
 {
 	QAndroidJniObject str = QAndroidJniObject::fromString(text);
-	QAndroidJniObject::callStaticMethod<void>("com/googlecode/qomp/Qomp",
+	QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
 							"showStatusIcon",
 							"(Ljava/lang/String;)V",
 							str.object<jstring>());
@@ -84,7 +84,7 @@ static void notifyIcon(const QString& text)
 
 static void deInitActivity()
 {
-	QAndroidJniObject::callStaticMethod<void>("com/googlecode/qomp/Qomp",
+	QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
 						"deInit", "()V");
 
 }

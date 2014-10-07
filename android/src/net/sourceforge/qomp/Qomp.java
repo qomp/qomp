@@ -1,4 +1,4 @@
-package com.googlecode.qomp;
+package net.sourceforge.qomp;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +29,7 @@ import android.app.Service;
 
 
 public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
-    public static final String NOTIFY = "com.googlecode.qomp.NOTIFY";
+    public static final String NOTIFY = "net.sourceforge.qomp.NOTIFY";
 
     private static Qomp _instance;
     private BroadcastReceiver callReceiver_;

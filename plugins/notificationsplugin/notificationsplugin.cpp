@@ -68,7 +68,7 @@ public:
 		static const QString title = QString(APPLICATION_NAME).left(1).toUpper() + QString(APPLICATION_NAME).mid(1) + QObject::tr(" now playing:");
 #ifdef Q_OS_ANDROID
 		QAndroidJniObject str = QAndroidJniObject::fromString(text);
-		QAndroidJniObject::callStaticMethod<void>("com/googlecode/qomp/Qomp",
+		QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
 								"showNotification",
 								"(Ljava/lang/String;)V",
 								str.object<jstring>());

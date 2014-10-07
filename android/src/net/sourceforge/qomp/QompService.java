@@ -1,4 +1,4 @@
-package com.googlecode.qomp;
+package net.sourceforge.qomp;
 
 import android.app.Service;
 import android.content.Intent;
