@@ -1,6 +1,6 @@
 include(conf.pri)
 
-LANG_PATH = $$PWD/qomp.translations/translations
+LANG_PATH = $$PWD/translations/translations
 
 android {
     TRDESTDIR = $$system_path($$PWD/android/assets/translations)

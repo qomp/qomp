@@ -13,7 +13,7 @@ SUBDIRS += \
 	sub_src \
 	sub_plugins
 
-LANG_PATH = qomp.translations/translations
+LANG_PATH = translations/translations
 TRANSLATIONS = $$LANG_PATH/qomp_ru.ts
 
 
