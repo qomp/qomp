@@ -1,8 +1,8 @@
 set ( PLUGIN urlplugin )
 cmake_minimum_required( VERSION 2.8.11 )
-if( CMAKE_VERSION VERSION_GREATER 3.0.2 )
+if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
-endif( CMAKE_VERSION VERSION_GREATER 3.0.2 )
+endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 add_definitions ( -Wall -DQT_PLUGIN )
 set ( urlplugin_HDRS
 	${PLUGIN}.h
