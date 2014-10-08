@@ -1,5 +1,6 @@
 set ( PLUGIN yandexmusicplugin )
 cmake_minimum_required( VERSION 2.8.11 )
+cmake_policy(SET CMP0028 OLD)
 set ( CMAKE_AUTOMOC ON )
 add_definitions ( -Wall -DQT_PLUGIN )
 set ( yandexmusicplugin_HDRS

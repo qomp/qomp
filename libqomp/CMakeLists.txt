@@ -1,5 +1,6 @@
 set ( QOMP_LIB libqomp )
 cmake_minimum_required( VERSION 2.8.11 )
+cmake_policy(SET CMP0028 OLD)
 set ( CMAKE_AUTOMOC ON )
 add_definitions ( -Wall -DLIBQOMP_LIBRARY )
 set ( plugins_HDRS
