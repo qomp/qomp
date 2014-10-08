@@ -55,14 +55,10 @@ set ( qomp_SRCS
 	src/thememanager.cpp
 	${options_SRCS}
 )
-
 include_directories (
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 	libqomp/include
-	libqomp/src
-	libqomp/src/options
-	libqomp/src/plugins
 	src/options
 	src
 )
