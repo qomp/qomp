@@ -1,7 +1,8 @@
 set ( PLUGIN filesystemplugin )
 cmake_minimum_required( VERSION 2.8.11)
-cmake_policy(SET CMP0028 OLD)
-
+if( CMAKE_VERSION VERSION_GREATER 3.0.2 )
+	cmake_policy(SET CMP0028 OLD)
+endif( CMAKE_VERSION VERSION_GREATER 3.0.2 )
 set ( CMAKE_AUTOMOC ON )
 add_definitions ( -Wall -DQT_PLUGIN )
 set ( filesystemplugin_HDRS
@@ -21,7 +22,6 @@ if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
 	include_directories (
 		${Qt5Widgets_INCLUDES}
-		${TAGLIB_INCLUDE_DIR}
 	)
 	set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 	add_definitions(
@@ -37,7 +37,6 @@ else ( ${USE_QT5} )
 	include_directories (
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
-		${TAGLIB_INCLUDE_DIR}
 	)
 	set (QT_DEPLIBS
 		${QT_QTCORE_LIBRARY}

@@ -1,6 +1,8 @@
 set ( PLUGIN lastfmplugin )
 cmake_minimum_required( VERSION 2.8.11 )
-cmake_policy(SET CMP0028 OLD)
+if( CMAKE_VERSION VERSION_GREATER 3.0.2 )
+	cmake_policy(SET CMP0028 OLD)
+endif( CMAKE_VERSION VERSION_GREATER 3.0.2 )
 set ( CMAKE_AUTOMOC ON )
 add_definitions ( -Wall -DQT_PLUGIN )
 set ( lastfmplugin_HDRS
