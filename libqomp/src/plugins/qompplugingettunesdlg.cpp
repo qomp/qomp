@@ -136,7 +136,11 @@ void QompPluginGettunesDlg::Private::search()
 
 void QompPluginGettunesDlg::Private::timeout()
 {
-	emit mainDlg_->searchTextChanged(mainDlg_->currentSearchText());
+	const QString txt = mainDlg_->currentSearchText();
+	if(txt.length() > 1) {
+		waitForSuggestions_ = true;
+		emit mainDlg_->searchTextChanged(txt);
+	}
 }
 
 bool QompPluginGettunesDlg::Private::eventFilter(QObject *o, QEvent *e)
@@ -223,7 +227,7 @@ void QompPluginGettunesDlg::setResultsWidget(QObject *widget)
 
 QString QompPluginGettunesDlg::currentSearchText() const
 {
-	return d->ui->cb_search->currentText();
+	return d->ui->cb_search->currentText().trimmed();
 }
 
 void QompPluginGettunesDlg::startBusyWidget()
