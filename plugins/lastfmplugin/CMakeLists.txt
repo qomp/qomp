@@ -20,18 +20,19 @@ set ( lastfmplugin_UIS
 	lastfmsettings.ui
 	lastfmauthdlg.ui
 )
-
+include_directories (
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${PROJECT_BINARY_DIR}/libqomp/include
+)
 if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
 	find_package ( Qt5Network REQUIRED )
 	find_package ( Qt5Xml REQUIRED )
 	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
 		${Qt5Xml_INCLUDES}
-		../../libqomp/include
 	)
 	set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 	add_definitions(
@@ -50,13 +51,10 @@ else ( ${USE_QT5} )
 	find_package ( Qt4 REQUIRED )
 	include ( ${QT_USE_FILE} )
 	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
 		${QT_QTXML_INCLUDE_DIR}
 		${QT_QTNETWORK_INCLUDE_DIR}
-		../../libqomp/include
 	)
 	QT4_WRAP_UI(UIS ${lastfmplugin_UIS})
 	set (QT_DEPLIBS

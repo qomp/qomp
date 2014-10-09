@@ -17,6 +17,14 @@ set ( LIBQOMP_LIBRARY libqomp )
 add_subdirectory ( ${LIBQOMP_LIBRARY} )
 add_subdirectory ( plugins )
 
+include_directories (
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${PROJECT_BINARY_DIR}/libqomp/include
+	src/options
+	src
+)
+
 set ( qomp_UIS
 	src/qompmainwin.ui
 	src/aboutdlg.ui
@@ -55,13 +63,6 @@ set ( qomp_SRCS
 	src/qompmenu.cpp
 	src/thememanager.cpp
 	${options_SRCS}
-)
-include_directories (
-	${CMAKE_SOURCE_DIR}
-	${CMAKE_CURRENT_BINARY_DIR}
-	libqomp/include
-	src/options
-	src
 )
 
 if ( ${USE_QT5} )

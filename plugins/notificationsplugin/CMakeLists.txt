@@ -8,7 +8,7 @@ add_definitions( -Wall -DQT_PLUGIN )
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	../../libqomp/include
+	${PROJECT_BINARY_DIR}/libqomp/include
 )
 set( notificationsplugin_HDRS
 	${PLUGIN}.h

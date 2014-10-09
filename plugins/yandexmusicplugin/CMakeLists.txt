@@ -20,7 +20,7 @@ set ( yandexmusicplugin_SRCS
 include_directories (
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	../../libqomp/include
+	${PROJECT_BINARY_DIR}/libqomp/include
 )
 if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )

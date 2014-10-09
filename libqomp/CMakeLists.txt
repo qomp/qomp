@@ -36,6 +36,33 @@ set ( libqomp_HDRS
 	${plugins_HDRS}
 	${options_HDRS}
 )
+
+set ( libqomp_INCLUDE_HDRS 
+	src/common.h
+	src/pluginhost.h
+	src/qompplayer.h
+	src/tune.h
+	src/options/qompoptionspage.h
+	src/pluginmanager.h
+	src/libqomp_global.h
+	src/qompactionslist.h
+	src/scaler.h
+	src/qompbusylabel.h
+	src/qompqmlengine.h
+	src/qompnetworkingfactory.h
+	src/qompmetadataresolver.h
+	src/options.h
+	src/defines.h
+	src/plugins/qompplugingettunesdlg.h
+	src/plugins/qompplayerstatusplugin.h
+	src/plugins/qompplugintypes.h
+	src/plugins/qomptunepluign.h
+	src/plugins/qompplugintreeview.h
+	src/plugins/qompplugincontroller.h
+	src/plugins/qompplugin.h
+	src/plugins/qompplugintreemodel.h
+	src/plugins/qomppluginaction.h
+)
 set ( libqomp_SRCS
 	src/common.cpp
 	src/options.cpp
@@ -53,7 +80,9 @@ set ( libqomp_UIFILES
 	src/plugins/qompplugingettunesdlg.ui
 )
 find_package ( TagLib REQUIRED )
-
+#copy include headers
+file( COPY ${libqomp_INCLUDE_HDRS} DESTINATION include )
+#
 if ( ${UNIX} )
 	set (LIBQOMP_DATADIR ${CMAKE_INSTALL_PREFIX}/share/qomp)
 	add_definitions ( -DQOMP_DATADIR="${LIBQOMP_DATADIR}" )
