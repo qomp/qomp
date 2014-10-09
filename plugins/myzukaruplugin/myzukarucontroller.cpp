@@ -437,8 +437,9 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 
 void MyzukaruController::getSuggestions(const QString &text)
 {
+	static const QRegExp space("\\s+");
 	QUrl url(QString("%1/Search/Suggestions?term=%2")
-		 .arg(MYZUKA_URL,text), QUrl::StrictMode);
+		 .arg(MYZUKA_URL, QString(text).replace(space, "+")), QUrl::StrictMode);
 	QNetworkRequest nr(url);
 	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");

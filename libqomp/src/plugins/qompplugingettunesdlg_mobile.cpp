@@ -158,7 +158,7 @@ void QompPluginGettunesDlg::setResultsWidget(QObject *widget)
 
 QString QompPluginGettunesDlg::currentSearchText() const
 {
-	return d->item_->property("serchText").toString();
+	return d->item_->property("serchText").toString().trimmed();
 }
 
 void QompPluginGettunesDlg::startBusyWidget()
