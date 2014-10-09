@@ -4,20 +4,20 @@ if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
 endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 #common part
-set ( CMAKE_AUTOMOC ON )
-set ( CMAKE_INCLUDE_CURRENT_DIR ON )
-set ( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
-set ( USE_QT5 OFF CACHE BOOL "Use Qt5" )
-if ( ${WIN32} )
-	set ( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
-endif ( ${WIN32} )
-set ( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
+set( CMAKE_AUTOMOC ON )
+set( CMAKE_INCLUDE_CURRENT_DIR ON )
+set( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
+set( USE_QT5 OFF CACHE BOOL "Use Qt5" )
+if( ${WIN32} )
+	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
+endif( ${WIN32} )
+set( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
-set ( LIBQOMP_LIBRARY libqomp )
-add_subdirectory ( ${LIBQOMP_LIBRARY} )
-add_subdirectory ( plugins )
+set( LIBQOMP_LIBRARY libqomp )
+add_subdirectory( ${LIBQOMP_LIBRARY} )
+add_subdirectory( plugins )
 
-include_directories (
+include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PROJECT_BINARY_DIR}/libqomp/include
@@ -25,30 +25,30 @@ include_directories (
 	src
 )
 
-set ( qomp_UIS
+set( qomp_UIS
 	src/qompmainwin.ui
 	src/aboutdlg.ui
 )
-set ( qomp_RSCS
+set( qomp_RSCS
 	src/qomp.qrc
 	src/themes.qrc
 )
-set ( qomp_TRS
+set( qomp_TRS
 	translations/translations/${PROJECT_NAME}_ru.ts
 )
-set ( options_SRCS
+set( options_SRCS
 	src/options/qompoptionsdlg.cpp
 	src/options/qompoptionskeys.cpp
 	src/options/qompoptionsmain.cpp
 	src/options/qompoptionsplugins.cpp
 )
-set ( options_UIS
+set( options_UIS
 	src/options/qompoptionsdlg.ui
 	src/options/qompoptionskeys.ui
 	src/options/qompoptionsmain.ui
 	src/options/qompoptionsplugins.ui
 )
-set ( qomp_SRCS
+set( qomp_SRCS
 	src/main.cpp
 	src/qompmainwin.cpp
 	src/qompcon.cpp
@@ -65,13 +65,13 @@ set ( qomp_SRCS
 	${options_SRCS}
 )
 
-if ( ${USE_QT5} )
-	find_package ( Qt5Widgets REQUIRED )
-	find_package ( Qt5Network REQUIRED )
-	find_package ( Qt5Multimedia REQUIRED )
-	find_package ( Qt5Concurrent REQUIRED )
-	find_package ( Qt5LinguistTools )
-	include_directories (
+if( ${USE_QT5} )
+	find_package( Qt5Widgets REQUIRED )
+	find_package( Qt5Network REQUIRED )
+	find_package( Qt5Multimedia REQUIRED )
+	find_package( Qt5Concurrent REQUIRED )
+	find_package( Qt5LinguistTools )
+	include_directories(
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
 		${Qt5Multimedia_INCLUDES}
@@ -92,19 +92,19 @@ if ( ${USE_QT5} )
 		${Qt5Multimedia_DEFINITIONS}
 		${Qt5Concurrent_DEFINITIONS}
 	)
-	set (QT_DEPLIBS
+	set(QT_DEPLIBS
 		Qt5::Widgets
 		Qt5::Network
 		Qt5::Multimedia
 		Qt5::Concurrent
 	)
-	set (qomp_MMEDIA
+	set(qomp_MMEDIA
 		src/qompqtmultimediaplayer.cpp
 	)
-else ( ${USE_QT5} )
-	find_package ( Qt4 REQUIRED )
-	include ( ${QT_USE_FILE} )
-	include_directories (
+else( ${USE_QT5} )
+	find_package( Qt4 REQUIRED )
+	include( ${QT_USE_FILE} )
+	include_directories(
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
 		${QT_QTNETWORK_INCLUDE_DIR}
@@ -115,19 +115,18 @@ else ( ${USE_QT5} )
 		${qomp_UIS}
 		${options_UIS}
 	)
-	set (QT_DEPLIBS
+	set(QT_DEPLIBS
 		${QT_QTCORE_LIBRARY}
 		${QT_QTGUI_LIBRARY}
 		${QT_QTMULTIMEDIA_LIBRARY}
 		${QT_QTNETWORK_LIBRARY}
 	)
-endif ( ${USE_QT5} )
+endif( ${USE_QT5} )
 
-
-if ( ${WIN32} )
-	set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-	set ( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
-	add_executable (
+if( ${WIN32} )
+	set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+	set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
+	add_executable(
 		${PROJECT_NAME}
 		WIN32
 		${qomp_SRCS}
@@ -137,41 +136,44 @@ if ( ${WIN32} )
 		${TRS}
 		qomp.rc
 	)
-	target_link_libraries (
+	target_link_libraries(
 			${PROJECT_NAME}
 			${LIBQOMP_LIBRARY}
 			${QT_DEPLIBS}
 	)
 	add_dependencies( ${PROJECT_NAME} ${LIBQOMP_LIBRARY} )
-	INSTALL ( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} )
-	set ( TRS_PATH ${CMAKE_INSTALL_PREFIX}/translations )
-	INSTALL ( FILES ${TRS} DESTINATION ${TRS_PATH} )
-	INSTALL ( FILES LICENSE.txt DESTINATION ${CMAKE_INSTALL_PREFIX} )
-endif ( ${WIN32} )
+	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} )
+	set( TRS_PATH ${CMAKE_INSTALL_PREFIX}/translations )
+	INSTALL( FILES ${TRS} DESTINATION ${TRS_PATH} )
+	INSTALL( FILES LICENSE.txt DESTINATION ${CMAKE_INSTALL_PREFIX} )
+endif( ${WIN32} )
 
-if ( ${UNIX} )
-	set ( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}/share )
-	set ( APPDATA_PATH ${DATADIR_PATH}/${PROJECT_NAME} )
-	add_definitions ( -DHAVE_X11 -DQOMP_DATADIR="${APPDATA_PATH}" )
+if( ${UNIX} )
+	set( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}/share )
+	set( APPDATA_PATH ${DATADIR_PATH}/${PROJECT_NAME} )
+	add_definitions( -DHAVE_X11 -DQOMP_DATADIR="${APPDATA_PATH}" )
 	if( NOT ${USE_QT5} )
-		find_package ( Phonon QUIET )
-			set ( qomp_phonon_SRCS
+		find_package( Phonon QUIET )
+			set( qomp_phonon_SRCS
 				src/qompphononplayer.cpp
-				#src/qompphononmetadataresolver.cpp -- disabled in qomp
 			)
 		add_definitions(-DHAVE_PHONON)
-		if ( ${Phonon_FOUND} )
-			message ( "-- Looking for Phonon - found" )
-			include_directories ( ${PHONON_INCLUDES} )
-		else ()
-			message ( "-- Looking for Phonon - not found" )
-			set ( QT_USE_PHONON TRUE )
-			include_directories ( ${QT_PHONON_INCLUDE_DIR} )
+		if( ${Phonon_FOUND} )
+			message( "-- Looking for Phonon - found" )
+			foreach( inc_path ${PHONON_INCLUDES};/usr/include/phonon )
+				if( EXISTS "${inc_path}/Phonon/MediaObject" )
+					include_directories(${inc_path})
+				endif( EXISTS "${inc_path}/Phonon/MediaObject" )
+			endforeach( inc_path )
+		else( ${Phonon_FOUND} )
+			message( "-- Looking for Phonon - not found" )
+			set( QT_USE_PHONON TRUE )
+			include_directories( ${QT_PHONON_INCLUDE_DIR} )
 		endif( ${Phonon_FOUND} )
 	endif( NOT ${USE_QT5} )
-	set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-	set ( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
-	add_executable (
+	set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+	set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
+	add_executable(
 		${PROJECT_NAME}
 		${qomp_SRCS}
 		${qomp_phonon_SRCS}
@@ -181,50 +183,50 @@ if ( ${UNIX} )
 		${TRS}
 	)
 	if(${USE_QT5})
-		target_link_libraries (
+		target_link_libraries(
 			${PROJECT_NAME}
 			${LIBQOMP_LIBRARY}
 			${QT_DEPLIBS}
 		)
 	else(${USE_QT5})
-		if ( ${Phonon_FOUND} )
-			target_link_libraries (
+		if( ${Phonon_FOUND} )
+			target_link_libraries(
 				${PROJECT_NAME}
 				${LIBQOMP_LIBRARY}
 				${PHONON_LIBRARY}
 				${QT_DEPLIBS}
 			)
-		else ( ${Phonon_FOUND} )
+		else( ${Phonon_FOUND} )
 			target_link_libraries (
 				${PROJECT_NAME}
 				${LIBQOMP_LIBRARY}
 				${QT_PHONON_LIBRARY}
 				${QT_DEPLIBS}
 			)
-		endif ( ${Phonon_FOUND} )
+		endif( ${Phonon_FOUND} )
 	endif(${USE_QT5})
 	add_dependencies( ${PROJECT_NAME} ${LIBQOMP_LIBRARY} )
-	INSTALL ( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
+	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 	
-	set ( DESKTOP_PATH ${DATADIR_PATH}/applications )
-	set ( DESKTOPFILES ${PROJECT_NAME}.desktop )
-	set ( ICONS_PREFIX ${DATADIR_PATH}/icons/hicolor )
-	set ( ICON_16 src/icons/qomp_16.png )
-	set ( ICON_24 src/icons/qomp_24.png )
-	set ( ICON_32 src/icons/qomp_32.png )
-	set ( ICON_48 src/icons/qomp_48.png )
-	set ( ICON_64 src/icons/qomp_64.png )
-	set ( ICON_128 src/icons/qomp.png )
-	set ( TRS_PATH ${APPDATA_PATH}/translations )
+	set( DESKTOP_PATH ${DATADIR_PATH}/applications )
+	set( DESKTOPFILES ${PROJECT_NAME}.desktop )
+	set( ICONS_PREFIX ${DATADIR_PATH}/icons/hicolor )
+	set( ICON_16 src/icons/qomp_16.png )
+	set( ICON_24 src/icons/qomp_24.png )
+	set( ICON_32 src/icons/qomp_32.png )
+	set( ICON_48 src/icons/qomp_48.png )
+	set( ICON_64 src/icons/qomp_64.png )
+	set( ICON_128 src/icons/qomp.png )
+	set( TRS_PATH ${APPDATA_PATH}/translations )
 
-	INSTALL ( FILES ${ICON_16} DESTINATION ${ICONS_PREFIX}/16x16/apps RENAME qomp.png )
-	INSTALL ( FILES ${ICON_128} DESTINATION ${ICONS_PREFIX}/128x128/apps RENAME qomp.png )
-	INSTALL ( FILES ${ICON_24} DESTINATION ${ICONS_PREFIX}/24x24/apps RENAME qomp.png )
-	INSTALL ( FILES ${ICON_32} DESTINATION ${ICONS_PREFIX}/32x32/apps RENAME qomp.png )
-	INSTALL ( FILES ${ICON_48} DESTINATION ${ICONS_PREFIX}/48x48/apps RENAME qomp.png )
-	INSTALL ( FILES ${ICON_64} DESTINATION ${ICONS_PREFIX}/64x64/apps RENAME qomp.png )
-	INSTALL ( FILES ${TRS} DESTINATION ${TRS_PATH} )
-	INSTALL ( FILES ${DESKTOPFILES} DESTINATION ${DESKTOP_PATH} )
+	INSTALL( FILES ${ICON_16} DESTINATION ${ICONS_PREFIX}/16x16/apps RENAME qomp.png )
+	INSTALL( FILES ${ICON_128} DESTINATION ${ICONS_PREFIX}/128x128/apps RENAME qomp.png )
+	INSTALL( FILES ${ICON_24} DESTINATION ${ICONS_PREFIX}/24x24/apps RENAME qomp.png )
+	INSTALL( FILES ${ICON_32} DESTINATION ${ICONS_PREFIX}/32x32/apps RENAME qomp.png )
+	INSTALL( FILES ${ICON_48} DESTINATION ${ICONS_PREFIX}/48x48/apps RENAME qomp.png )
+	INSTALL( FILES ${ICON_64} DESTINATION ${ICONS_PREFIX}/64x64/apps RENAME qomp.png )
+	INSTALL( FILES ${TRS} DESTINATION ${TRS_PATH} )
+	INSTALL( FILES ${DESKTOPFILES} DESTINATION ${DESKTOP_PATH} )
 	
-endif ( ${UNIX} )
+endif( ${UNIX} )
 unset( BUILD_PLUGINS CACHE )
