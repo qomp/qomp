@@ -4,6 +4,8 @@ if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
 endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 set ( CMAKE_AUTOMOC ON )
+set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
+set(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where lib will install")
 add_definitions ( -Wall -DLIBQOMP_LIBRARY )
 set ( plugins_HDRS
 	src/plugins/qompplugingettunesdlg.h
@@ -154,7 +156,7 @@ if ( ${UNIX} )
 		TARGETS
 		${QOMP_LIB}
 		LIBRARY DESTINATION
-		${CMAKE_INSTALL_PREFIX}/lib
+		${LIB_INSTALL_DIR}
 	)
 endif( ${UNIX} )
 
