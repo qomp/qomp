@@ -1,5 +1,8 @@
 set ( PLUGIN mprisplugin )
 cmake_minimum_required( VERSION 2.8.11 )
+if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
+	cmake_policy(SET CMP0028 OLD)
+endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 if ( ${UNIX} )
 	set ( CMAKE_AUTOMOC TRUE )
 	add_definitions ( -Wall -DQT_PLUGIN -DHAVE_DBUS )

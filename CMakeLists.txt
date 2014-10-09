@@ -1,6 +1,8 @@
 project( qomp )
 cmake_minimum_required( VERSION 2.8.11 )
-
+if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
+	cmake_policy(SET CMP0028 OLD)
+endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 #common part
 set ( CMAKE_AUTOMOC ON )
 set ( CMAKE_INCLUDE_CURRENT_DIR ON )
@@ -24,7 +26,7 @@ set ( qomp_RSCS
 	src/themes.qrc
 )
 set ( qomp_TRS
-	${PROJECT_NAME}.translations/translations/${PROJECT_NAME}_ru.ts
+	translations/translations/${PROJECT_NAME}_ru.ts
 )
 set ( options_SRCS
 	src/options/qompoptionsdlg.cpp
@@ -54,6 +56,13 @@ set ( qomp_SRCS
 	src/thememanager.cpp
 	${options_SRCS}
 )
+include_directories (
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}
+	libqomp/include
+	src/options
+	src
+)
 
 if ( ${USE_QT5} )
 	find_package ( Qt5Widgets REQUIRED )
@@ -62,17 +71,10 @@ if ( ${USE_QT5} )
 	find_package ( Qt5Concurrent REQUIRED )
 	find_package ( Qt5LinguistTools )
 	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
 		${Qt5Multimedia_INCLUDES}
 		${Qt5Concurrent_INCLUDES}
-		libqomp/include
-		libqomp/src
-		libqomp/src/options
-		src/options
-		src
 	)
 	qt5_add_resources( RSCS ${qomp_RSCS} )
 	qt5_add_translation( TRS ${qomp_TRS} )
@@ -102,16 +104,9 @@ else ( ${USE_QT5} )
 	find_package ( Qt4 REQUIRED )
 	include ( ${QT_USE_FILE} )
 	include_directories (
-		${CMAKE_SOURCE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
 		${QT_QTNETWORK_INCLUDE_DIR}
-		libqomp/include
-		libqomp/src
-		libqomp/src/options
-		src/options
-		src
 	)
 	QT4_ADD_RESOURCES( RSCS ${qomp_RSCS} )
 	QT4_ADD_TRANSLATION( TRS ${qomp_TRS} )
