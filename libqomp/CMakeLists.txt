@@ -1,18 +1,20 @@
-set ( QOMP_LIB libqomp )
+set( QOMP_LIB libqomp )
 cmake_minimum_required( VERSION 2.8.11 )
 if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
 endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
-set ( CMAKE_AUTOMOC ON )
-add_definitions ( -Wall -DLIBQOMP_LIBRARY )
-set ( plugins_HDRS
+set( CMAKE_AUTOMOC ON )
+set( LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
+set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where lib will install" )
+add_definitions( -Wall -DLIBQOMP_LIBRARY )
+set( plugins_HDRS
 	src/plugins/qompplugingettunesdlg.h
 	src/plugins/qompplugintreeview.h
 	src/plugins/qompplugintreemodel.h
 	src/plugins/qompplugincontroller.h
 	src/plugins/qomppluginaction.h
 )
-set ( plugins_SRCS
+set( plugins_SRCS
 	src/plugins/qompplugingettunesdlg.cpp
 	src/plugins/qompplugintreeview.cpp
 	src/plugins/qompplugintreemodel.cpp
@@ -20,10 +22,10 @@ set ( plugins_SRCS
 	src/plugins/qompplugincontroller.cpp
 	src/plugins/qomppluginaction.cpp
 )
-set ( options_HDRS
+set( options_HDRS
 	src/options/qompoptionspage.h
 )
-set ( libqomp_HDRS
+set( libqomp_HDRS
 	src/options.h
 	src/pluginhost.h
 	src/pluginmanager.h
@@ -36,7 +38,34 @@ set ( libqomp_HDRS
 	${plugins_HDRS}
 	${options_HDRS}
 )
-set ( libqomp_SRCS
+
+set( libqomp_INCLUDE_HDRS
+	src/common.h
+	src/pluginhost.h
+	src/qompplayer.h
+	src/tune.h
+	src/options/qompoptionspage.h
+	src/pluginmanager.h
+	src/libqomp_global.h
+	src/qompactionslist.h
+	src/scaler.h
+	src/qompbusylabel.h
+	src/qompqmlengine.h
+	src/qompnetworkingfactory.h
+	src/qompmetadataresolver.h
+	src/options.h
+	src/defines.h
+	src/plugins/qompplugingettunesdlg.h
+	src/plugins/qompplayerstatusplugin.h
+	src/plugins/qompplugintypes.h
+	src/plugins/qomptunepluign.h
+	src/plugins/qompplugintreeview.h
+	src/plugins/qompplugincontroller.h
+	src/plugins/qompplugin.h
+	src/plugins/qompplugintreemodel.h
+	src/plugins/qomppluginaction.h
+)
+set( libqomp_SRCS
 	src/common.cpp
 	src/options.cpp
 	src/qompactionslist.cpp
@@ -49,16 +78,18 @@ set ( libqomp_SRCS
 	src/pluginmanager.cpp
 	${plugins_SRCS}
 )
-set ( libqomp_UIFILES
+set( libqomp_UIFILES
 	src/plugins/qompplugingettunesdlg.ui
 )
-find_package ( TagLib REQUIRED )
-
-if ( ${UNIX} )
-	set (LIBQOMP_DATADIR ${CMAKE_INSTALL_PREFIX}/share/qomp)
-	add_definitions ( -DQOMP_DATADIR="${LIBQOMP_DATADIR}" )
-endif ( ${UNIX} )
-include_directories (
+find_package( TagLib REQUIRED )
+#copy include headers
+file( COPY ${libqomp_INCLUDE_HDRS} DESTINATION include )
+#
+if( ${UNIX} )
+	set( LIBQOMP_DATADIR ${CMAKE_INSTALL_PREFIX}/share/qomp )
+	add_definitions( -DQOMP_DATADIR="${LIBQOMP_DATADIR}" )
+endif( ${UNIX} )
+include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${TAGLIB_INCLUDE_DIR}
@@ -67,70 +98,70 @@ include_directories (
 	src/plugins
 	src/options
 )
-if ( ${USE_QT5} )
-	find_package ( Qt5Widgets REQUIRED )
-	find_package ( Qt5Network REQUIRED )
-	include_directories (
+if( ${USE_QT5} )
+	find_package( Qt5Widgets REQUIRED )
+	find_package( Qt5Network REQUIRED )
+	include_directories(
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
 	)
-	qt5_wrap_ui(libqomp_UIS ${libqomp_UIFILES})
-	set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+	qt5_wrap_ui( libqomp_UIS ${libqomp_UIFILES} )
+	set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
 	add_definitions(
 		${Qt5Widgets_DEFINITIONS}
 		${Qt5Network_DEFINITIONS}
 		-DHAVE_QT5
 	)
-	set (QT_DEPLIBS
+	set( QT_DEPLIBS
 		Qt5::Widgets
 		Qt5::Network
 	)
-else ( ${USE_QT5} )
-	find_package ( Qt4 REQUIRED )
-	include ( ${QT_USE_FILE} )
-	include_directories (
+else( ${USE_QT5} )
+	find_package( Qt4 REQUIRED )
+	include( ${QT_USE_FILE} )
+	include_directories(
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
 		${QT_QTNETWORK_INCLUDE_DIR}
 	)
-	QT4_WRAP_UI(libqomp_UIS ${libqomp_UIFILES})
-	set (QT_DEPLIBS
+	QT4_WRAP_UI( libqomp_UIS ${libqomp_UIFILES} )
+	set( QT_DEPLIBS
 		${QT_QTCORE_LIBRARY}
 		${QT_QTGUI_LIBRARY}
 		${QT_QTNETWORK_LIBRARY}
 	)
-endif ( ${USE_QT5} )
+endif( ${USE_QT5} )
 
-add_library (
+add_library(
 	${QOMP_LIB}
 	SHARED
 	${libqomp_SRCS}
 	${libqomp_UIS}
 	${options_HDRS}
 )
-set_target_properties (
+set_target_properties(
 	${QOMP_LIB}
 	PROPERTIES 
 	OUTPUT_NAME qomp
 	CLEAN_DIRECT_OUTPUT 1
 )
-target_link_libraries (
+target_link_libraries(
 	${QOMP_LIB}
 	${QT_DEPLIBS}
 	${TAGLIB_LIBRARY}
 )
 
-if ( ${UNIX} )
-	install (
+if( ${UNIX} )
+	install(
 		TARGETS
 		${QOMP_LIB}
 		LIBRARY DESTINATION
-		${CMAKE_INSTALL_PREFIX}/lib
+		${LIB_INSTALL_DIR}
 	)
 endif( ${UNIX} )
 
-if ( ${WIN32} )
-	install (
+if( ${WIN32} )
+	install(
 		TARGETS
 		${QOMP_LIB}
 		LIBRARY
@@ -139,4 +170,4 @@ if ( ${WIN32} )
 		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}
 		#ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}
 	)
-endif ( ${WIN32} )
+endif( ${WIN32} )
