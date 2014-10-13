@@ -25,6 +25,8 @@
 #include "yandexmusicurlresolvestrategy.h"
 
 #include <QNetworkAccessManager>
+#include <QNetworkCookieJar>
+#include <QNetworkCookie>
 #include <QNetworkReply>
 #include <QRegExp>
 #include <QStringList>
@@ -178,6 +180,10 @@ void YandexMusicController::init()
 	dlg_->setModel(albumsModel_, TabAlbum);
 	dlg_->setModel(artistsModel_, TabArtist);
 	dlg_->setCuuretnTab(TabArtist);
+	QNetworkCookie c("makeyourownkindofmusic", "optin");
+	QList<QNetworkCookie> l;
+	l.append(c);
+	nam()->cookieJar()->setCookiesFromUrl(l, YA_MUSIC_URL);
 }
 
 QList<Tune*> YandexMusicController::prepareTunes() const

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -176,8 +176,8 @@ QompPluginAlbum::QompPluginAlbum(QompPluginModelItem *parent) :
 QString QompPluginAlbum::toString() const
 {
 	QString ret = "";
-//	if(!artist.isEmpty())
-//		ret += artist + " - ";
+	if(!artist.isEmpty() && (!parent() || static_cast<QompPluginArtist*>(parent())->artist != artist))
+		ret += artist + " - ";
 	ret += album + " - " +
 		year + " [" + QString::number(items().size()) + "]";
 	return ret;
