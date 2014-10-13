@@ -9,14 +9,12 @@ set( myzukaruplugin_HDRS
 	${PLUGIN}.h
 	myzukarudefines.h
 	myzukarugettunesdlg.h
-	myzukarumodels.h
 	myzukarucontroller.h
 	myzukaruresolvestrategy.h
 )
 set( myzukaruplugin_SRCS
 	${PLUGIN}.cpp
 	myzukarugettunesdlg.cpp
-	myzukarumodels.cpp
 	myzukarucontroller.cpp
 	myzukaruresolvestrategy.cpp
 )
