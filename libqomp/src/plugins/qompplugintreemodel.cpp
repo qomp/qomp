@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -129,7 +129,7 @@ QVariant QompPluginTreeModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 
-	if(role == Qt::CheckStateRole) {
+	if(role == Qt::CheckStateRole && index.flags() & Qt::ItemIsUserCheckable) {
 		return QVariant(selected_.contains(index) ? 2 : 0);
 	}
 	else if(role == Qt::DisplayRole) {
@@ -160,12 +160,18 @@ Qt::ItemFlags QompPluginTreeModel::flags(const QModelIndex &index) const
 	if(!index.isValid())
 		return Qt::NoItemFlags;
 
-	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
+	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+
+	if(item(index)->type() != QompCon::TypeArtist)
+		flags |= Qt::ItemIsUserCheckable;
+
+	return  flags;
 }
 
 bool QompPluginTreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-	if(!index.isValid() || role != Qt::CheckStateRole || index.column() != 0)
+	if(!index.isValid() || role != Qt::CheckStateRole
+		|| index.column() != 0 || !(index.flags() & Qt::ItemIsUserCheckable))
 		return false;
 
 	switch(value.toInt()) {

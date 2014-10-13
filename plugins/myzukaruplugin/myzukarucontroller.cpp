@@ -21,8 +21,8 @@
 #include "myzukarugettunesdlg.h"
 #include "qompplugintypes.h"
 #include "common.h"
-#include "myzukarumodels.h"
 #include "myzukarudefines.h"
+#include "qompplugintreemodel.h"
 #include "myzukaruresolvestrategy.h"
 
 #include <QNetworkAccessManager>
@@ -256,7 +256,7 @@ MyzukaruController::MyzukaruController(QObject *parent) :
 	QompPluginController(parent),
 	tracksModel_(new QompPluginTreeModel(this)),
 	albumsModel_(new QompPluginTreeModel(this)),
-	artistsModel_(new MyzukaruArtistsModel(this)),
+	artistsModel_(new QompPluginTreeModel(this)),
 	dlg_(new MyzukaruGettunesDlg())
 {
 	init();

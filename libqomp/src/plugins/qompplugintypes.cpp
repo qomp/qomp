@@ -175,10 +175,12 @@ QompPluginAlbum::QompPluginAlbum(QompPluginModelItem *parent) :
 
 QString QompPluginAlbum::toString() const
 {
-	return	//artist + " - " +
-		album + " - " +
-		year + " [" +
-			QString::number(items().size()) + "]";
+	QString ret = "";
+//	if(!artist.isEmpty())
+//		ret += artist + " - ";
+	ret += album + " - " +
+		year + " [" + QString::number(items().size()) + "]";
+	return ret;
 }
 
 QompCon::ModelItemType QompPluginAlbum::type() const

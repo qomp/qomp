@@ -29,44 +29,53 @@
 #include <QRegExp>
 #include <QStringList>
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
 #endif
 
-// cap(1) - song title
-// cap(2) - song id
-// cap(3) - storage dir
-// cap(4) - artist
-// cap(5) - album
-// cap(6) - song duration
-// cap(7) - cover
-static const QString trackReString = "<div class=\"b-track .*title=\"([^\"]+)\" .*onclick=[\'\"]return "
-		"\\{\"id\":\"([^\"]*)\", \"storage_dir\":\"([^\"]*)\", \"title\":\"[^\"]*\", \"artist\":\"([^\"]*)\", \"artist_id\":\"[^\"]*\","
-		" \"artist_var\":\"[^\"]*\", \"album\":\"([^\"]*)\", \"album_id\":\"[^\"]*\", \"duration\":\"([^\"]*)\","
-		" \"cover\":\"([^\"]*)\"\\}";
+static const QString YA_MUSIC_URL("http://music.yandex.ru/");
+static const QString ARTISTS_NAME("artists");
+static const QString ALBUMS_NAME("albums");
+static const QString TRACKS_NAME("tracks");
 
+static QString safeJSONValue2String(const QJsonValue& val)
+{
+	switch (val.type()) {
+	case QJsonValue::String:
+		return val.toString();
+	case QJsonValue::Double:
+		return QString::number(val.toInt());
+	default:
+		break;
+	}
+	return QString();
+}
 
-// cap(1) - album title
-// cap(2) - album id
-// cap(3) - tracks count
-static const QString albumReString = "<div class=\"b-albums\" title=\"([^\"]+)\">.+"
-		"onclick=[\'\"]return \\{'id':\"([^&]*)\", 'title':\"[^&]*\", 'track_count':([^,]+),";
+static QNetworkRequest creatNetworkRequest(const QUrl& url)
+{
+	QNetworkRequest nr(url);
+	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+	nr.setRawHeader("Referer", YA_MUSIC_URL.toLatin1());
+	return nr;
+}
 
+static QJsonArray ByteArrayToJsonArray(const QString& type, const QByteArray& ba)
+{
+	QJsonDocument doc = QJsonDocument::fromJson(ba);
+	QJsonObject jo = doc.object();
+	QJsonObject art = jo.value(type).toObject();
+	QJsonArray arr = art.value("items").toArray();
+	return arr;
+}
 
-// cap(1) - artist id
-// cap(2) - artist
-static const QString artistReString = "<div class=\"b-list__item-inner\"><div class=\"b-artist-group \">"
-		"<a href=\"([^\"]+)\" class=\"b-link\">([^<]+)</a></div>";
-
-
-static const QString currentPageReString = "<b class=\"b-pager__current\">([^<]*)</b>";
-
-
-// cap(1) - serch text
-// cap(2) - page number
-static const QString pageReString = "<a class=\"b-pager__page\" href=\"#!/search\\?text=([^&]+)&[^\"]+\">(\\d*)</a>";
-
-
+//----------------------------------------
+//---------YandexMusicTune----------------
+//----------------------------------------
 class YandexMusicTune : public QompPluginTune
 {
 public:
@@ -87,7 +96,66 @@ public:
 };
 
 
+static QList<QompPluginModelItem*> parseAlbums(const QJsonArray& arr)
+{
+	QList<QompPluginModelItem*> albums;
+	for(int i = 0; i < arr.count(); ++i) {
+		QompPluginAlbum* album = new QompPluginAlbum;
+		QJsonObject cur = arr.at(i).toObject();
+		album->album = cur.value("title").toString();
+		album->internalId = safeJSONValue2String(cur.value("id"));
+		if(cur.contains("year"))
+			album->year = safeJSONValue2String(cur.value("year"));
+		if(cur.contains(ARTISTS_NAME)){
+			QJsonArray ja = cur.value(ARTISTS_NAME).toArray();
+			if(!ja.isEmpty())
+				album->artist = ja.first().toObject().value("name").toString();
+		}
+		int count = 1;
+		if(cur.contains("trackCount"))
+			count = cur.value("trackCount").toInt();
+		QList<QompPluginModelItem*> fakeItems;
+		do {
+			fakeItems << new QompPluginTune(); //add fake item
+		} while(--count > 1);
 
+		album->setItems(fakeItems);
+		albums.append(album);
+	}
+	return albums;
+}
+
+static QList<QompPluginModelItem*> parseTunes(const QJsonArray& arr)
+{
+	QList<QompPluginModelItem*> tracks;
+	for(int i = 0; i < arr.count(); ++i) {
+		YandexMusicTune* tune = new YandexMusicTune;
+		QJsonObject cur = arr.at(i).toObject();
+		tune->title = cur.value("title").toString();
+		if(cur.contains(ARTISTS_NAME)){
+			QJsonArray ja = cur.value(ARTISTS_NAME).toArray();
+			if(!ja.isEmpty())
+				tune->artist = ja.first().toObject().value("name").toString();
+		}
+		if(cur.contains(ALBUMS_NAME)){
+			QJsonArray ja = cur.value(ALBUMS_NAME).toArray();
+			if(!ja.isEmpty())
+				tune->artist = ja.first().toObject().value("title").toString();
+		}
+		tune->duration = safeJSONValue2String(cur.value("durationMs"));
+		tune->internalId = safeJSONValue2String(cur.value("id"));
+		tune->url = cur.value("storageDir").toString();
+		tracks.append(tune);
+	}
+	return tracks;
+}
+
+
+
+
+//----------------------------------------
+//--------YandexMusicController-----------
+//----------------------------------------
 YandexMusicController::YandexMusicController(QObject *parent) :
 	QompPluginController(parent),
 	tracksModel_(new QompPluginTreeModel(this)),
@@ -150,9 +218,9 @@ void YandexMusicController::doSearch(const QString& txt)
 	tracksModel_->reset();
 
 	QHash<QString, const char*> req;
-	req.insert("artists", SLOT(artistsSearchFinished()));
-	req.insert("albums", SLOT(albumsSearchFinished()));
-	req.insert("tracks", SLOT(tracksSearchFinished()));
+	req.insert(ARTISTS_NAME, SLOT(artistsSearchFinished()));
+	req.insert(ALBUMS_NAME, SLOT(albumsSearchFinished()));
+	req.insert(TRACKS_NAME, SLOT(tracksSearchFinished()));
 	foreach(const QString& key, req.keys()) {
 		search(txt, key, req.value(key));
 	}
@@ -165,31 +233,30 @@ QompPluginGettunesDlg *YandexMusicController::view() const
 
 void YandexMusicController::search(const QString& text, const QString &type, const char *slot, int page)
 {
-	static const QString urlStr = "http://music.yandex.ru/fragment/search?text=%1&&type=%2";
+	static const QString urlStr = YA_MUSIC_URL + QString("handlers/search.jsx?text=%1&type=%2");
 	QString url = urlStr.arg(text, type);
-	if(page > 1) {
+	if(page > 0) {
 		url += "&page=" + QString::number(page);
 	}
-	QNetworkRequest nr(url);
-	QNetworkReply* reply = nam()->get(nr);
+	QNetworkReply* reply = nam()->get(creatNetworkRequest(QUrl(url)));
 	connect(reply, SIGNAL(finished()), slot);
 	requests_.insert(reply, 0);
 	dlg_->startBusyWidget();
 }
 
-void YandexMusicController::searchNextPage(const QString &reply, const QString &type, const char *slot)
+void YandexMusicController::searchNextPage(const QByteArray &reply, const QString &type, const char *slot)
 {
-	QRegExp currentPageRe(currentPageReString);
-	if(currentPageRe.indexIn(reply) != -1) {
-		int curPage = currentPageRe.cap(1).toInt();
-		QRegExp pageRe(pageReString);
-		if(pageRe.lastIndexIn(reply) != -1) {
-			int lastPage = pageRe.cap(2).toInt();
-			if(lastPage > curPage) {
-				search(pageRe.cap(1), type, slot, ++curPage);
-			}
-		}
-	}
+	QJsonDocument doc = QJsonDocument::fromJson(reply);
+	QJsonObject root = doc.object();
+	if(!root.contains("pager"))
+		return;
+
+	QJsonObject pages = root.value("pager").toObject();
+	int curPage = pages.value("page").toInt();
+	int total = pages.value("total").toInt();
+	int perPage = pages.value("perPage").toInt();
+	if (total / perPage >= curPage)
+		search(root.value("text").toString(), type, slot, ++curPage);
 }
 
 void YandexMusicController::artistsSearchFinished()
@@ -200,21 +267,19 @@ void YandexMusicController::artistsSearchFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
-		QString replyStr = QString::fromUtf8(reply->readAll());
-
+		QByteArray ba = reply->readAll();
 #ifdef DEBUG_OUTPUT
-		qDebug() << replyStr;
+		qDebug() << ba;
 #endif
 
-		QRegExp artistRe(artistReString);
-		artistRe.setMinimal(true);
-		int off = 0;
+		QJsonArray arr = ByteArrayToJsonArray(ARTISTS_NAME, ba);
 		QList<QompPluginModelItem*> artists;
-		while((off = artistRe.indexIn(replyStr, off)) != -1) {
-			off += artistRe.matchedLength();
+
+		for(int i = 0; i < arr.count(); ++i) {
 			QompPluginArtist* artist = new QompPluginArtist;
-			artist->artist = Qomp::unescape(artistRe.cap(2));
-			artist->internalId = artistRe.cap(1).replace("#!", "fragment");
+			QJsonObject cur = arr.at(i).toObject();
+			artist->artist = Qomp::unescape(cur.value("name").toString());
+			artist->internalId = safeJSONValue2String(cur.value("id"));
 			artist->setItems(QList<QompPluginModelItem*>() << new QompPluginTune()); //add fake item
 			artists.append(artist);
 		}
@@ -222,56 +287,8 @@ void YandexMusicController::artistsSearchFinished()
 			artistsModel_->addTopLevelItems(artists);
 		}
 
-		searchNextPage(replyStr, "artists", SLOT(artistsSearchFinished()));
+		searchNextPage(ba, ARTISTS_NAME, SLOT(artistsSearchFinished()));
 	}
-}
-
-static QList<QompPluginModelItem*> parseAlbums(const QString& str)
-{
-	QRegExp albumRe(albumReString);
-	albumRe.setMinimal(true);
-	QString string = str;
-	string.replace("&quot;", "\"");
-	int off = 0;
-	QList<QompPluginModelItem*> albums;
-	while((off = albumRe.indexIn(string, off)) != -1) {
-		off += albumRe.matchedLength();
-		QompPluginAlbum* album = new QompPluginAlbum;
-		album->album = albumRe.cap(1);
-		album->internalId = albumRe.cap(2);
-		bool ok = false;
-		int count = albumRe.cap(3).toInt(&ok);
-		QList<QompPluginModelItem*> fakeItems;
-		do {
-			fakeItems << new QompPluginTune(); //add fake item
-		} while(ok && --count > 1);
-
-		album->setItems(fakeItems);
-		albums.append(album);
-	}
-	return albums;
-}
-
-static QList<QompPluginModelItem*> parseTunes(const QString& str)
-{
-	QRegExp tuneRe(trackReString);
-	tuneRe.setMinimal(true);
-	QString string = str;
-	string.replace("&quot;", "\"");
-	int off = 0;
-	QList<QompPluginModelItem*> tracks;
-	while((off = tuneRe.indexIn(string, off)) != -1) {
-		off += tuneRe.matchedLength();
-		YandexMusicTune* tune = new YandexMusicTune;
-		tune->title = Qomp::unescape(tuneRe.cap(1));
-		tune->artist = Qomp::unescape(tuneRe.cap(4));
-		tune->album = Qomp::unescape(tuneRe.cap(5));
-		tune->duration = tuneRe.cap(6);
-		tune->internalId = tuneRe.cap(2);
-		tune->url = tuneRe.cap(3);
-		tracks.append(tune);
-	}
-	return tracks;
 }
 
 void YandexMusicController::albumsSearchFinished()
@@ -282,10 +299,11 @@ void YandexMusicController::albumsSearchFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
-		const QString replyStr = QString::fromUtf8(reply->readAll());
-		albumsModel_->addTopLevelItems(parseAlbums(replyStr));
+		const QByteArray ba = reply->readAll();
+		QJsonArray arr = ByteArrayToJsonArray(ALBUMS_NAME, ba);
+		albumsModel_->addTopLevelItems(parseAlbums(arr));
 
-		searchNextPage(replyStr, "albums", SLOT(albumsSearchFinished()));
+		searchNextPage(ba, ALBUMS_NAME, SLOT(albumsSearchFinished()));
 	}
 }
 
@@ -297,10 +315,42 @@ void YandexMusicController::tracksSearchFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
-		const QString replyStr = QString::fromUtf8(reply->readAll());
-		tracksModel_->addTopLevelItems(parseTunes(replyStr));
+		const QByteArray ba = reply->readAll();
+		QJsonArray arr = ByteArrayToJsonArray(TRACKS_NAME, ba);
+		tracksModel_->addTopLevelItems(parseTunes(arr));
 
-		searchNextPage(replyStr, "tracks", SLOT(tracksSearchFinished()));
+		searchNextPage(ba, TRACKS_NAME, SLOT(tracksSearchFinished()));
+	}
+}
+
+void YandexMusicController::artistUrlFinished()
+{
+	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
+	reply->deleteLater();
+	requests_.remove(reply);
+	checkAndStopBusyWidget();
+	if(reply->error() == QNetworkReply::NoError) {
+		const QByteArray replyStr = reply->readAll();
+#ifdef DEBUG_OUTPUT
+		qDebug() << replyStr;
+#endif
+		QJsonDocument doc = QJsonDocument::fromJson(replyStr);
+#ifdef DEBUG_OUTPUT
+		qDebug() << doc.toJson(QJsonDocument::Indented);
+#endif
+		QJsonObject jo = doc.object();
+		QJsonArray arr = jo.value(ALBUMS_NAME).toArray();
+		QJsonArray also = jo.value("alsoAlbums").toArray();
+
+		QList<QompPluginModelItem*> list;
+		list = parseAlbums(arr);
+		list += parseAlbums(also);
+		if(!list.isEmpty()) {
+			QompPluginModelItem* it = artistsModel_->itemForId(reply->property("id").toString());
+			artistsModel_->setItems(list, it);
+			QompPluginArtist* pa = static_cast<QompPluginArtist*>(it);
+			pa->tunesReceived = true;
+		}
 	}
 }
 
@@ -313,32 +363,30 @@ void YandexMusicController::albumUrlFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
-		const QString replyStr = QString::fromUtf8(reply->readAll());
-		QList<QompPluginModelItem*> list = parseTunes(replyStr);
+		const QByteArray replyStr = reply->readAll();
+		QJsonDocument doc = QJsonDocument::fromJson(replyStr);
+#ifdef DEBUG_OUTPUT
+		qDebug() << doc.toJson(QJsonDocument::Indented);
+#endif
+		QJsonObject jo = doc.object();
+		QJsonArray arr = jo.value("volumes").toArray();
+		QList<QompPluginModelItem*> list;
+		while(!arr.isEmpty())
+			list += parseTunes(arr.takeAt(0).toArray());
+
 		if(!list.isEmpty()) {
+			QJsonArray art = jo.value(ARTISTS_NAME).toArray();
+			if(!art.isEmpty()) {
+				QString artist = art.first().toObject().value("name").toString();
+				foreach (QompPluginModelItem* it, list) {
+					static_cast<QompPluginTune*>(it)->artist = artist;
+				}
+			}
 			QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
 			QompPluginModelItem* it = model_->itemForId(reply->property("id").toString());
 			model_->setItems(list, it);
 
 			QompPluginAlbum* pa = static_cast<QompPluginAlbum*>(it);
-			pa->tunesReceived = true;
-		}
-	}
-}
-
-void YandexMusicController::artistUrlFinished()
-{
-	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
-	reply->deleteLater();
-	requests_.remove(reply);
-	checkAndStopBusyWidget();
-	if(reply->error() == QNetworkReply::NoError) {
-		const QString replyStr = QString::fromUtf8(reply->readAll());
-		QList<QompPluginModelItem*> list = parseAlbums(replyStr);
-		if(!list.isEmpty()) {
-			QompPluginModelItem* it = artistsModel_->itemForId(reply->property("id").toString());
-			artistsModel_->setItems(list, it);
-			QompPluginArtist* pa = static_cast<QompPluginArtist*>(it);
 			pa->tunesReceived = true;
 		}
 	}
@@ -354,21 +402,13 @@ void YandexMusicController::itemSelected(QompPluginModelItem *item)
 	QString path;
 	const char* slot = 0;
 	switch(item->type()) {
-	case QompCon::TypeTune:
-	{
-//		YandexMusicTune *tune = static_cast<YandexMusicTune *>(item);
-//		if(!tune->url.isEmpty())
-//			return;
-//		url = QUrl(QString("http://storage.music.yandex.ru/get/%1/2.xml").arg(tune->storageDir), QUrl::StrictMode);
-//		slot = SLOT(tuneUrlFinishedStepOne());
-		return;
-	}
 	case QompCon::TypeAlbum:
 	{
 		QompPluginAlbum *album = static_cast<QompPluginAlbum *>(item);
 		if(album->tunesReceived)
 			return;
-		path = QUrl::fromPercentEncoding("fragment/album/" + album->internalId.toLatin1());
+		path = QUrl::fromPercentEncoding(QString("handlers/album.jsx?album=%1")
+						 .arg(album->internalId).toLatin1());
 		slot = SLOT(albumUrlFinished());
 		break;
 	}
@@ -377,7 +417,8 @@ void YandexMusicController::itemSelected(QompPluginModelItem *item)
 		QompPluginArtist *artist = static_cast<QompPluginArtist *>(item);
 		if(artist->tunesReceived)
 			return;
-		path = QUrl::fromPercentEncoding(QString("%1/albums").arg(item->internalId).toLatin1());
+		path = QUrl::fromPercentEncoding(QString("handlers/artist.jsx?artist=%1&what=albums&sort=year")
+						 .arg(item->internalId).toLatin1());
 		slot = SLOT(artistUrlFinished());
 		break;
 	}
@@ -385,11 +426,8 @@ void YandexMusicController::itemSelected(QompPluginModelItem *item)
 		return;
 	}
 
-	QUrl url("http://music.yandex.ru/" + path, QUrl::StrictMode);
-	QNetworkRequest nr(url);
-	nr.setRawHeader("Accept", "*/*");
-	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-	QNetworkReply *reply = nam()->get(nr);
+	QUrl url(YA_MUSIC_URL + path, QUrl::StrictMode);
+	QNetworkReply *reply = nam()->get(creatNetworkRequest(url));
 	reply->setProperty("id", item->internalId);
 
 	requests_.insert(reply, model);
@@ -399,8 +437,8 @@ void YandexMusicController::itemSelected(QompPluginModelItem *item)
 
 void YandexMusicController::getSuggestions(const QString &text)
 {
-	static const QString urlStr = "http://suggest-music.yandex.ru/suggest-ya.cgi?v=3&part=%1";
-	QNetworkRequest nr(urlStr.arg(text));
+	static const QString urlStr = "http://suggest-music.yandex.ru/suggest-ya.cgi?v=4&part=%1";
+	QNetworkRequest nr = creatNetworkRequest(urlStr.arg(text));
 	QNetworkReply* reply = nam()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(suggestionsFinished()));
 }
@@ -411,6 +449,9 @@ void YandexMusicController::suggestionsFinished()
 	reply->deleteLater();
 	if(reply->error() == QNetworkReply::NoError) {
 		QString replyStr = QString::fromUtf8(reply->readAll());
+#ifdef DEBUG_OUTPUT
+		qDebug() << replyStr;
+#endif
 		QRegExp sugRx("\\[([^\\]]+)\\]");
 		if(sugRx.indexIn(replyStr) != -1 ) {
 			QStringList sugs = sugRx.cap(1).split(",");
@@ -431,7 +472,7 @@ void YandexMusicController::checkAndStopBusyWidget()
 
 	dlg_->stopBusyWidget();
 
-	//this is not the best plase for this, but....
+	//this is not the best place for this, but....
 	if(dlg_->currentTabRows() != 0)
 		return;
 
