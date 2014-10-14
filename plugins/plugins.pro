@@ -8,12 +8,12 @@ sub_notificationsplugin.subdir = notificationsplugin
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     sub_yandexmusicplugin.subdir = yandexmusicplugin
+    SUBDIRS += sub_yandexmusicplugin
 }
 
 SUBDIRS +=  sub_prostopleerplugin \
         sub_myzukaruplugin \
         sub_lastfmplugin \
-        sub_yandexmusicplugin \
         sub_urlplugin \
         sub_notificationsplugin
 
