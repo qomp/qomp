@@ -43,17 +43,23 @@ if( ${USE_QT5} )
 	)
 else( ${USE_QT5} )
 	find_package( Qt4 REQUIRED )
+	find_package( QJSON REQUIRED )
 	include( ${QT_USE_FILE} )
 	include_directories(
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
 		${QT_QTNETWORK_INCLUDE_DIR}
+		${QJSON_INCLUDE_DIR}
 	)
 	QT4_WRAP_UI( UIS ${lastfmplugin_UIS} )
 	set( QT_DEPLIBS
 		${QT_QTCORE_LIBRARY}
 		${QT_QTGUI_LIBRARY}
 		${QT_QTNETWORK_LIBRARY}
+		${QJSON_LIBRARY}
+	)
+	add_definitions(
+		${QJSON_DEFINITIONS}
 	)
 endif( ${USE_QT5} )
 
