@@ -26,7 +26,7 @@
 
 namespace QompCon {
 enum DataSelection { DataUnselect = 0, DataSelect = 1, DataToggle = 2 };
-enum ModelItemType { NoType = 0, TypeTune, TypeAlbum, TypeArtist };
+enum ModelItemType { NoType = 0, TypeTune = 1, TypeAlbum = 2, TypeArtist = 3 };
 }
 class QIcon;
 class Tune;
@@ -97,6 +97,8 @@ public:
 
 	QAbstractItemModel* model() const;
 	void setModel(QAbstractItemModel* model);
+
+	virtual void sortChildren();
 
 private:
 	QompPluginModelItem* parent_;

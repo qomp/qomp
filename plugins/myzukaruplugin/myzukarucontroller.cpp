@@ -68,15 +68,15 @@ static const QString albumsRegExp = QString(
 		);
 
 static const QString albumsRegExp2 = QString::fromUtf8(
-			"<div data-type=[^>]+>\\s+"
-			"<div>\\s+"
-			"<a.+href=\"(/Album/[^\"]+)\">\\s+"					//cap(1) - internalId
-			"([^<]+)"								//cap(2) - album
+			"<div data-type=\"([\\d]+)\"[^>]+>\\s+"					//cap(1) - album type
+			"<div>\\s+"								//(2,3,4,6 - direct albums, other - compilations)
+			"<a.+href=\"(/Album/[^\"]+)\">\\s+"					//cap(2) - internalId
+			"([^<]+)"								//cap(3) - album
 			"</a>.+"
 			"<a.+"
 			"</a>\\s+"
 			"</div>.+"
-			"Год релиза:\\s+(\\d+)?.+"						//cap(3) - year
+			"Год релиза:\\s+(\\d+)?.+"						//cap(4) - year
 			"</div>"
 			);
 
@@ -234,10 +234,10 @@ static QList<QompPluginModelItem*> parseAlbums2(const QString& replyStr, int alb
 		while((albumsIndex = albumRx.indexIn(replyStr, albumsIndex)) != -1) {
 			albumsIndex += albumRx.matchedLength();
 			QompPluginAlbum* album = new QompPluginAlbum();
-			//album->artist = Qomp::unescape(albumRx.cap(3).trimmed());
-			album->album = Qomp::unescape(albumRx.cap(2).trimmed());
-			album->year = albumRx.cap(3).trimmed();
-			album->internalId = albumRx.cap(1).trimmed();
+			album->artist = albumRx.cap(1); // actually contains album type (digital)
+			album->album = Qomp::unescape(albumRx.cap(3).trimmed());
+			album->year = albumRx.cap(4).trimmed();
+			album->internalId = albumRx.cap(2).trimmed();
 
 			//add fake empty item
 			QList<QompPluginModelItem*> list;
@@ -529,7 +529,12 @@ void MyzukaruController::artistUrlFinished()
 			if(it && it->type() == QompCon::TypeArtist) {
 				QompPluginArtist* pa = static_cast<QompPluginArtist*>(it);
 				foreach(QompPluginModelItem* t, albums) {
-					static_cast<QompPluginAlbum*>(t)->artist = pa->artist;
+					QompPluginAlbum* album = static_cast<QompPluginAlbum*>(t);
+					QStringList directAlbums = QStringList() << "2" << "3" << "4" << "6";
+					if(directAlbums.contains(album->artist))
+						album->artist = pa->artist;
+					else
+						album->artist.clear();
 				}
 				pa->tunesReceived = true;
 			}
