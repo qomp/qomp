@@ -124,12 +124,6 @@ NSData *qPixmap2NSData(const QPixmap& p)
 	return nil;
 }
 
--(void) growlNotificationWasClicked:(id)clickContext {
-}
-
--(void) growlNotificationTimedOut:(id)clickContext {
-}
-
 @end
 
 //------------------------------------------------------------------------------ 
