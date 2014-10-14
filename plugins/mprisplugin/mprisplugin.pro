@@ -1,6 +1,6 @@
 include($$PWD/../plugins.pri)
 
-unix:!macx:!android {
+unix:!mac:!android {
     QT += dbus
     DEFINES += HAVE_DBUS
 
@@ -13,6 +13,5 @@ unix:!macx:!android {
            $$PWD/mprisplugin.cpp
 }
 
-OTHER_FILES += \
-    $$PWD/metadata.json
+OTHER_FILES += $$PWD/metadata.json
 

@@ -4,8 +4,11 @@ sub_prostopleerplugin.subdir = prostopleerplugin
 sub_urlplugin.subdir = urlplugin
 sub_lastfmplugin.subdir = lastfmplugin
 sub_myzukaruplugin.subdir = myzukaruplugin
-sub_yandexmusicplugin.subdir = yandexmusicplugin
 sub_notificationsplugin.subdir = notificationsplugin
+
+greaterThan(QT_MAJOR_VERSION, 4) {
+    sub_yandexmusicplugin.subdir = yandexmusicplugin
+}
 
 SUBDIRS +=  sub_prostopleerplugin \
         sub_myzukaruplugin \

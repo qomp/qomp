@@ -31,9 +31,11 @@
 #include <QRegExp>
 #include <QStringList>
 
+#ifdef HAVE_QT5
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#endif
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
