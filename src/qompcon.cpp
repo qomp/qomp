@@ -210,7 +210,13 @@ void QompCon::checkVersion()
 		hash.insert(OPTION_PLUGINS_ORDER,	QStringList()	<< "Myzuka.ru"
 									<< "Yandex.Music"
 									<< "Pleer.com");
-		hash.insert(OPTION_THEME,		"blue");
+		hash.insert(OPTION_THEME,
+#ifdef Q_OS_MAC
+					"default"
+#else
+					"blue"
+#endif
+						);
 		hash.insert(OPTION_CURRENT_TRANSLATION, QLocale::system().name().split("_").first());
 		hash.insert(OPTION_MUTED, false);
 
