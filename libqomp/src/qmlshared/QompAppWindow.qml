@@ -111,7 +111,7 @@ Window {
 
 	function beforeClose() {
 		if(contents.active) {
-			root.clear()
+			clear()
 			image.visible = true
 			contents.active = false
 		}

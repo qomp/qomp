@@ -56,7 +56,7 @@ Item {
 		}
 
 		item.parent = content
-		item.anchors.fill = content
+		item.anchors.fill = Qt.binding(function() { return content })
 		if(doAnim)
 			anim.start()
 	}
