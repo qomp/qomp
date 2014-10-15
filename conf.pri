@@ -1,5 +1,3 @@
-CONFIG += release
-CONFIG -= debug
 CONFIG -= debug_and_release debug_and_release_target
 
 MOC_DIR = .moc
@@ -22,7 +20,7 @@ DEFINES += QOMP_DATADIR='\\"$$DATADIR\\"'
 
 unix:!mac:!android:DEFINES += HAVE_X11
 
-debug {
+CONFIG(debug, debug|release) {
     DEFINES += DEBUG_OUTPUT
 }
 
