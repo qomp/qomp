@@ -98,8 +98,6 @@ public:
 	QAbstractItemModel* model() const;
 	void setModel(QAbstractItemModel* model);
 
-	virtual void sortChildren();
-
 private:
 	QompPluginModelItem* parent_;
 	QList<QompPluginModelItem*> items_;

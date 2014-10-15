@@ -30,6 +30,8 @@
 #include <QRegExp>
 #include <QStringList>
 
+#include <algorithm>
+
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
 #endif
@@ -129,6 +131,43 @@ static const QString songsRegExp3 = QString(
 		"</td>"
 		);
 
+static bool lessThen(QompPluginModelItem* it1, QompPluginModelItem* it2)
+{
+	if(it1->type() == QompCon::TypeAlbum) {
+		QompPluginAlbum* a1 = static_cast<QompPluginAlbum*>(it1);
+		QompPluginAlbum* a2 = static_cast<QompPluginAlbum*>(it2);
+
+//		if(a1->parent() && a2->parent()) {
+//			QompPluginArtist* ar1 = static_cast<QompPluginArtist*>(a1->parent());
+//			QompPluginArtist* ar2 = static_cast<QompPluginArtist*>(a2->parent());
+
+//			if(a1->artist != ar1->artist && a2->artist == ar2->artist)
+//				return false;
+
+//			if(a1->artist == ar1->artist && a2->artist != ar2->artist)
+//				return true;
+//		}
+
+		if(a1->artist.isEmpty() && !a2->artist.isEmpty())
+			return false;
+
+		if(!a1->artist.isEmpty() && a2->artist.isEmpty())
+			return true;
+
+		if(a1->year != a2->year)
+			return a1->year.toInt() > a2->year.toInt();
+
+		return a1->album < a2->album;
+	}
+
+	return it1->toString() < it2->toString();
+}
+
+static void sortAlbums(QList<QompPluginModelItem *> *items)
+{
+	if(items->size() > 1)
+		std::sort(items->begin(), items->end(), lessThen);
+}
 
 static QList<QompPluginModelItem*> parseTunes(const QString& replyStr, int songIndex)
 {
@@ -348,6 +387,7 @@ void MyzukaruController::searchFinished()
 		int albumsIndex = replyStr.indexOf("<a name=\"albums\"></a>");
 		QList<QompPluginModelItem*> albums = parseAlbums(replyStr, albumsIndex);
 		if(!albums.isEmpty()) {
+			sortAlbums(&albums);
 			albumsModel_->addTopLevelItems(albums);
 		}
 
@@ -538,6 +578,7 @@ void MyzukaruController::artistUrlFinished()
 				}
 				pa->tunesReceived = true;
 			}
+			sortAlbums(&albums);
 			artistsModel_->addItems(albums, it);
 		}
 

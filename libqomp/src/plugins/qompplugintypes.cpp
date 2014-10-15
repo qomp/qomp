@@ -23,8 +23,6 @@
 #include <QPixmapCache>
 #include <QIcon>
 
-#include <algorithm>
-
 static const
 #ifdef Q_OS_ANDROID
 	QString
@@ -45,35 +43,6 @@ static const
 #endif
 }
 
-static bool lessThen(QompPluginModelItem* it1, QompPluginModelItem* it2)
-{
-	if(it1->type() != it2->type())
-		return it1->type() > it2->type();
-
-	if(it1->type() == QompCon::TypeAlbum) {
-		QompPluginAlbum* a1 = static_cast<QompPluginAlbum*>(it1);
-		QompPluginAlbum* a2 = static_cast<QompPluginAlbum*>(it2);
-
-		if(a1->parent() && a2->parent()) {
-			QompPluginArtist* ar1 = static_cast<QompPluginArtist*>(a1->parent());
-			QompPluginArtist* ar2 = static_cast<QompPluginArtist*>(a2->parent());
-
-			if(a1->artist != ar1->artist && a2->artist == ar2->artist)
-				return false;
-
-			if(a1->artist == ar1->artist && a2->artist != ar2->artist)
-				return true;
-		}
-
-
-		if(a1->year != a2->year)
-			return a1->year.toInt() > a2->year.toInt();
-
-		return a1->album < a2->album;
-	}
-
-	return it1->toString() < it2->toString();
-}
 
 //-----------------------
 //----QompPluginItem-----
@@ -107,9 +76,6 @@ void QompPluginModelItem::setItems(QList<QompPluginModelItem *> items)
 	foreach(QompPluginModelItem *it, items)
 		it->setParent(this);
 	items_ = items;
-
-	if(items_.size() > 1)
-		sortChildren();
 }
 
 void QompPluginModelItem::addItems(QList<QompPluginModelItem *> items)
@@ -117,9 +83,6 @@ void QompPluginModelItem::addItems(QList<QompPluginModelItem *> items)
 	foreach(QompPluginModelItem *it, items)
 		it->setParent(this);
 	items_.append(items);
-
-	if(items_.size() > 1)
-		sortChildren();
 }
 
 QAbstractItemModel *QompPluginModelItem::model() const
@@ -141,11 +104,6 @@ void QompPluginModelItem::setModel(QAbstractItemModel *model)
 QList<QompPluginModelItem *> QompPluginModelItem::items() const
 {
 	return items_;
-}
-
-void QompPluginModelItem::sortChildren()
-{
-	std::sort(items_.begin(), items_.end(), lessThen);
 }
 
 
