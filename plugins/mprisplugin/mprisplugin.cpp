@@ -38,9 +38,18 @@ MprisPlugin::MprisPlugin() :
 
 void MprisPlugin::qompPlayerChanged(QompPlayer *player)
 {
-	player_ = player;
-	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
-	connect(player_, SIGNAL(tuneDataUpdated(Tune*)), SLOT(tuneInfoLoaded(Tune*)));
+	if(player_ != player) {
+		if(player_) {
+			disconnect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
+			disconnect(player_, SIGNAL(tuneDataUpdated(Tune*)), SLOT(tuneInfoLoaded(Tune*)));
+		}
+
+		player_ = player;
+		if(player_) {
+			connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
+			connect(player_, SIGNAL(tuneDataUpdated(Tune*)), SLOT(tuneInfoLoaded(Tune*)));
+		}
+	}
 }
 
 void MprisPlugin::setEnabled(bool enabled)
@@ -62,7 +71,7 @@ void MprisPlugin::unload()
 
 void MprisPlugin::playerStatusChanged()
 {
-	if(!enabled_ || !mpris_)
+	if(!enabled_ || !mpris_ || !player_)
 		return;
 
 	switch(player_->state()) {
@@ -84,7 +93,7 @@ void MprisPlugin::playerStatusChanged()
 void MprisPlugin::tuneInfoLoaded(Tune *tuneInfo)
 {
 	Q_UNUSED(tuneInfo);
-	if(!enabled_ || !mpris_)
+	if(!enabled_ || !mpris_ || !player_)
 		return;
 
 	if (player_->state() == Qomp::StatePlaying) {

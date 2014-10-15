@@ -255,6 +255,9 @@ void QompCon::updateSettings()
 	ThemeManager::instance()->setTheme(Options::instance()->getOption(OPTION_THEME).toString());
 #endif
 	Translator::instance()->retranslate(Options::instance()->getOption(OPTION_CURRENT_TRANSLATION).toString());
+
+	//if some plugins were enabled - set player for them
+	PluginManager::instance()->qompPlayerChanged(player_);
 }
 
 void QompCon::actPlayNext()
