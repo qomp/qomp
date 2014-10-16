@@ -99,7 +99,7 @@ public:
 
 
 
-NotificationsPlugin::NotificationsPlugin() : enabled_(false)
+NotificationsPlugin::NotificationsPlugin() : player_(0), enabled_(false)
 {
 	d = new Private(this);
 	QTimer::singleShot(0, this, SLOT(init()));
@@ -117,8 +117,14 @@ QompOptionsPage *NotificationsPlugin::options()
 
 void NotificationsPlugin::qompPlayerChanged(QompPlayer *player)
 {
-	player_ = player;
-	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged(Qomp::State)));
+	if(player_ != player) {
+		if(player_)
+			disconnect(player_, SIGNAL(stateChanged(Qomp::State)), this, SLOT(playerStatusChanged(Qomp::State)));
+
+		player_ = player;
+		if(player_)
+			connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged(Qomp::State)));
+	}
 }
 
 void NotificationsPlugin::setEnabled(bool enabled)
@@ -132,7 +138,7 @@ void NotificationsPlugin::unload()
 
 void NotificationsPlugin::playerStatusChanged(Qomp::State state)
 {
-	if(!enabled_)
+	if(!enabled_ || !player_)
 		return;
 
 	if(state == Qomp::StatePlaying) {

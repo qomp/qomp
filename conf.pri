@@ -1,5 +1,3 @@
-CONFIG += release
-CONFIG -= debug
 CONFIG -= debug_and_release debug_and_release_target
 
 MOC_DIR = .moc
@@ -26,7 +24,7 @@ mac {
 #    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.8
 }
 
-debug {
+CONFIG(debug, debug|release) {
     DEFINES += DEBUG_OUTPUT
 }
 

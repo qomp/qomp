@@ -60,6 +60,8 @@ static QString MD5(const QString str)
 
 
 LastFmPlugin::LastFmPlugin() :
+	player_(0),
+	currentTune_(0),
 	scrobbleTimer_(new QTimer(this)),
 	nowPlayingTimer_(new QTimer(this)),
 	enabled_(false)
@@ -90,9 +92,18 @@ QompOptionsPage *LastFmPlugin::options()
 
 void LastFmPlugin::qompPlayerChanged(QompPlayer *player)
 {
-	player_ = player;
-	connect(player_, SIGNAL(tuneChanged(Tune*)), SLOT(tuneChanged(Tune*)));
-	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
+	if(player_ != player) {
+		if(player_) {
+			disconnect(player_, SIGNAL(tuneChanged(Tune*)), this, SLOT(tuneChanged(Tune*)));
+			disconnect(player_, SIGNAL(stateChanged(Qomp::State)), this, SLOT(playerStatusChanged()));
+		}
+
+		player_ = player;
+		if(player_) {
+			connect(player_, SIGNAL(tuneChanged(Tune*)), SLOT(tuneChanged(Tune*)));
+			connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
+		}
+	}
 }
 
 void LastFmPlugin::setEnabled(bool enabled)
@@ -108,7 +119,7 @@ void LastFmPlugin::unload()
 
 void LastFmPlugin::playerStatusChanged()
 {
-	if(!enabled_)
+	if(!enabled_ || !player_)
 		return;
 
 	scrobbleTimer_->stop();
@@ -127,6 +138,9 @@ void LastFmPlugin::postFinished()
 
 void LastFmPlugin::updateNowPlaying()
 {
+	if(!currentTune_)
+		return;
+
 	QString sk = Options::instance()->getOption(LASTFM_SESS_KEY).toString();
 	if(sk.isEmpty())
 		return;
@@ -149,6 +163,9 @@ void LastFmPlugin::updateNowPlaying()
 
 void LastFmPlugin::scrobble()
 {
+	if(!currentTune_)
+		return;
+
 	QTime time = QTime::fromString(currentTune_->duration, "mm:ss");
 	QString dur = QString::number(time.minute()*60 + time.second());
 	QString timestamp = QString::number(QDateTime::currentDateTimeUtc().toMSecsSinceEpoch()/1000 - scrobbleTimer_->interval()/1000);
