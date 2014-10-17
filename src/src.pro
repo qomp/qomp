@@ -75,8 +75,14 @@ android {
         lib/libQt5Multimedia.so \
         lib/libQt5Xml.so
 
+    greaterThan(QT_MINOR_VERSION, 3) {
+        ANDROID_DEPLOYMENT_DEPENDENCIES += plugins/bearer/libqandroidbearer.so
+    }
+    else {
+        ANDROID_DEPLOYMENT_DEPENDENCIES += plugins/bearer/libqgenericbearer.so
+    }
+
     ANDROID_DEPLOYMENT_DEPENDENCIES += \
-        plugins/bearer/libqgenericbearer.so \
         plugins/platforms/android/libqtforandroid.so \
         plugins/mediaservice/libqtmedia_android.so \
         plugins/audio/libqtaudio_opensles.so
