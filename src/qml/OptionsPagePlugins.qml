@@ -4,7 +4,7 @@ import "qrc:///qmlshared"
 Item {
 	id: root
 
-	height: col.height + info.height
+	height: col.height
 	Column {
 		id: col
 		spacing: 0
@@ -65,16 +65,6 @@ Item {
 				}
 			}
 		}
-	}
-
-	Text {
-		id: info
-		text: qsTr("*Enabling/Disabling plugins may need restart")
-		anchors.top: col.bottom
-		width: parent.width
-		wrapMode: Text.WordWrap
-		height: 60 * scaler.scaleY
-		font.pixelSize: height / 3.5
 	}
 
 	function addPlugin(name, descr, version, enabled) {
