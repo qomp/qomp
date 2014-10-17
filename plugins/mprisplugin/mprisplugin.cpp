@@ -40,8 +40,8 @@ void MprisPlugin::qompPlayerChanged(QompPlayer *player)
 {
 	if(player_ != player) {
 		if(player_) {
-			disconnect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
-			disconnect(player_, SIGNAL(tuneDataUpdated(Tune*)), SLOT(tuneInfoLoaded(Tune*)));
+			player_->disconnect(SIGNAL(stateChanged(Qomp::State)));
+			player_->disconnect(SIGNAL(tuneDataUpdated(Tune*)));
 		}
 
 		player_ = player;
