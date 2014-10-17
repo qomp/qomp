@@ -97,12 +97,10 @@ Window {
 		}
 
 		contents.item.push(item)
-		contents.item.currentItem.focus = true
 	}
 
 	function removeView() {
 		contents.item.pop()
-		contents.item.currentItem.focus = true
 	}
 
 	function clear() {

@@ -3,6 +3,7 @@ import QtQuick 2.3
 Item {
 	id: root
 
+	property int depth: content.children.length
 	property QtObject currentItem: content.children.length > 0 ?
 						content.children[content.children.length - 1] : null
 
@@ -59,6 +60,8 @@ Item {
 		item.anchors.fill = Qt.binding(function() { return content })
 		if(doAnim)
 			anim.start()
+
+		item.focus = true
 	}
 
 	function pop() {
@@ -70,6 +73,7 @@ Item {
 		anim.exitItem = content.children[l - 1]
 		anim.deleteExit = true
 		anim.start()
+		anim.enterItem.focus = true
 	}
 
 	function clear() {
