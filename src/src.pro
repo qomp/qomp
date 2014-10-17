@@ -61,7 +61,7 @@ android {
 
     ANDROID_DEPLOYMENT_DEPENDENCIES = \
         jar/QtAndroid-bundled.jar \
-#        jar/QtAndroidAccessibility-bundled.jar \
+        jar/QtAndroidAccessibility-bundled.jar \
         jar/QtMultimedia-bundled.jar
 
     ANDROID_DEPLOYMENT_DEPENDENCIES += \
