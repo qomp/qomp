@@ -79,7 +79,9 @@ android {
         ANDROID_DEPLOYMENT_DEPENDENCIES += plugins/bearer/libqandroidbearer.so
     }
     else {
-        ANDROID_DEPLOYMENT_DEPENDENCIES += plugins/bearer/libqgenericbearer.so
+        ANDROID_DEPLOYMENT_DEPENDENCIES += \
+            plugins/accessible/libqtaccessiblequick.so \
+            plugins/bearer/libqgenericbearer.so
     }
 
     ANDROID_DEPLOYMENT_DEPENDENCIES += \

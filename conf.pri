@@ -19,10 +19,10 @@ DEFINES += QOMP_DATADIR='\\"$$DATADIR\\"'
 
 
 unix:!mac:!android:DEFINES += HAVE_X11
-mac {
+#mac {
 #    QMAKE_MAC_SDK = macosx10.8
 #    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.8
-}
+#}
 
 CONFIG(debug, debug|release) {
     DEFINES += DEBUG_OUTPUT
