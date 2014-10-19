@@ -33,5 +33,6 @@
         <file alias="tune_disabled">icons/tune_disabled.png</file>
         <file alias="check">icons/Check.png</file>
         <file alias="arrow-left">icons/buttons/arrow-left.png</file>
+        <file alias="bugreport">icons/buttons/Bugreport.png</file>
     </qresource>
 </RCC>

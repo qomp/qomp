@@ -127,6 +127,7 @@ void QompMainWin::Private::connectMainMenu()
 	connect(mainMenu_, SIGNAL(actDoOptions()), parentWin_, SIGNAL(doOptions()));
 	connect(mainMenu_, SIGNAL(tunes(QList<Tune*>)), parentWin_, SIGNAL(tunes(QList<Tune*>)));
 	connect(mainMenu_, SIGNAL(actExit()), qApp, SLOT(quit()));
+	connect(mainMenu_, SIGNAL(actReportBug()), parentWin_, SIGNAL(bugReport()));
 }
 
 void QompMainWin::Private::connectActions()

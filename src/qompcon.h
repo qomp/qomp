@@ -65,6 +65,7 @@ private slots:
 	void actDoSettings();
 	void actCheckForUpdates();
 	void actAboutQomp();
+	void actBugReport();
 
 	void actDownloadTune(Tune* tune, const QString& dir);
 	void actToggleTuneState(Tune* tune);

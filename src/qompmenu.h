@@ -68,6 +68,7 @@ signals:
 	void actDoOptions();
 	void actExit();
 	void actAbout();
+	void actReportBug();
 	void tunes(const QList<Tune*>&);
 
 private:

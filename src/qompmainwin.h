@@ -54,6 +54,7 @@ signals:
 	void downloadTune(Tune* tune, const QString& dir);
 	void doOptions();
 	void aboutQomp();
+	void bugReport();
 	void checkForUpdates();
 	void actMuteActivated(bool);
 	void volumeSliderMoved(qreal);

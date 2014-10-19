@@ -116,6 +116,8 @@ void QompMainMenu::buildMenu()
 	act->setParent(helpMenu);
 	act = helpMenu->addAction(QIcon(":/icons/info"), tr("About Qt"), qApp, SLOT(aboutQt()));
 	act->setParent(helpMenu);
+	act = helpMenu->addAction(QIcon(":/icons/bugreport"), tr("Report a bug"), this, SIGNAL(actReportBug()));
+	act->setParent(helpMenu);
 	act = helpMenu->addAction(QIcon(":/icons/updates"), tr("Check for updates"), this, SIGNAL(actCheckUpdates()));
 	act->setParent(helpMenu);
 	addMenu(helpMenu);

@@ -48,6 +48,7 @@
 #endif
 
 #include <QTimer>
+#include <QDesktopServices>
 
 #ifdef HAVE_PHONON
 #include "qompphononplayer.h"
@@ -409,6 +410,12 @@ void QompCon::actAboutQomp()
 #endif
 }
 
+void QompCon::actBugReport()
+{
+	static const QUrl bugUrl("https://sourceforge.net/p/qomp/tickets");
+	QDesktopServices::openUrl(bugUrl);
+}
+
 void QompCon::actDownloadTune(Tune *tune, const QString &dir)
 {
 #ifndef Q_OS_ANDROID
@@ -458,6 +465,7 @@ void QompCon::connectMainWin()
 	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)),	mainWin_, SLOT(currentTotalTimeChanged(qint64)));
 
 	connect(mainWin_, SIGNAL(aboutQomp()),				SLOT(actAboutQomp()));
+	connect(mainWin_, SIGNAL(bugReport()),				SLOT(actBugReport()));
 	connect(mainWin_, SIGNAL(checkForUpdates()),			SLOT(actCheckForUpdates()));
 	connect(mainWin_, SIGNAL(doOptions()),				SLOT(actDoSettings()));
 	connect(mainWin_, SIGNAL(downloadTune(Tune*,QString)),		SLOT(actDownloadTune(Tune*,QString)));
