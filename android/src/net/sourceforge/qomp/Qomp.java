@@ -37,6 +37,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     private ServiceConnection sConn_ = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 service_ = ((QompService.QompBinder)binder).getService();
+                _instance.showStatusIcon("");
             }
 
             public void onServiceDisconnected(ComponentName name) {
@@ -51,7 +52,6 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
         _instance = this;
         registerCallReceiver();
         bindToService();
-        showStatusIcon("");
     }
 
     @Override

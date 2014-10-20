@@ -64,8 +64,9 @@ public class QompService extends Service {
     }
 
     public void showStatusIcon(final String text) {
+//        Log.i("QompService", "showStatusIcon  "+text);
         String app = getResources().getString(R.string.app_name) + " - " +
-                     getResources().getString(R.string.icon_info);;
+                     getResources().getString(R.string.icon_info);
         Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
                                                    R.drawable.notification);
         NotificationCompat.Builder b = new NotificationCompat.Builder(this)
