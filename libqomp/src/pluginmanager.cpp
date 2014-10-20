@@ -33,7 +33,7 @@
 
 #ifdef Q_OS_UNIX
 #  ifndef QOMP_PLUGSDIR
-#    if defined( __x86_64__ || __amd64__)
+#    if defined( __x86_64__) || defined(__amd64__)
 #      define QOMP_PLUGSDIR "/usr/local/lib64/qomp/plugins"
 #    else
 #      define QOMP_PLUGSDIR "/usr/local/lib/qomp/plugins"
