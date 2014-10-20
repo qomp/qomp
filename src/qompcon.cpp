@@ -416,7 +416,7 @@ void QompCon::actAboutQomp()
 
 void QompCon::actBugReport()
 {
-	static const QUrl bugUrl("https://sourceforge.net/p/qomp/tickets");
+	static const QUrl bugUrl("https://sourceforge.net/p/qomp/tickets/new/");
 	QDesktopServices::openUrl(bugUrl);
 }
 
