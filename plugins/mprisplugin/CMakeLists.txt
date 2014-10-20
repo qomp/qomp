@@ -60,7 +60,7 @@ if( ${UNIX} )
 	target_link_libraries(
 		${PLUGIN}
 		${QT_DEPLIBS}
-
+		libqomp
 	)
 	add_dependencies( ${PLUGIN} libqomp qomp )
 	install(

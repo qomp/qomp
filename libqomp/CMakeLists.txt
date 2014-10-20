@@ -92,7 +92,11 @@ file( COPY ${libqomp_INCLUDE_HDRS} DESTINATION include )
 #
 if( ${UNIX} )
 	set( LIBQOMP_DATADIR ${CMAKE_INSTALL_PREFIX}/share/qomp )
-	add_definitions( -DQOMP_DATADIR="${LIBQOMP_DATADIR}" )
+	set( LIBQOMP_PLUGSDIR ${LIB_INSTALL_DIR}/qomp/plugins )
+	add_definitions(
+		-DQOMP_DATADIR="${LIBQOMP_DATADIR}"
+		-DQOMP_PLUGSDIR="${LIBQOMP_PLUGSDIR}"
+	 )
 endif( ${UNIX} )
 include_directories(
 	${CMAKE_SOURCE_DIR}
