@@ -8,6 +8,7 @@ Version 0.7 beta
  * fixes for plugins
  * update translations
  * various fixes
+ * new homepage at http://qomp.sourceforge.net/
 
 
 Version 0.6 beta
