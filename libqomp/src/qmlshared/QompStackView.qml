@@ -57,7 +57,8 @@ Item {
 		}
 
 		item.parent = content
-		item.anchors.fill = Qt.binding(function() { return content })
+		item.height = Qt.binding(function() { return content.height })
+		item.width = Qt.binding(function() { return content.width })
 		if(doAnim)
 			anim.start()
 
@@ -79,7 +80,9 @@ Item {
 	function clear() {
 		for(var i = content.children.length - 1; i >= 0; --i) {
 			var it = content.children[i]
-			it.parent = null
+			it.width = 0
+			it.height = 0
+			it.visible = false
 			it.destroy()
 		}
 	}
