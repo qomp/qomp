@@ -53,7 +53,6 @@ set( libqomp_INCLUDE_HDRS
 	src/pluginmanager.h
 	src/libqomp_global.h
 	src/qompactionslist.h
-	src/scaler.h
 	src/qompbusylabel.h
 	src/qompqmlengine.h
 	src/qompnetworkingfactory.h
@@ -73,14 +72,15 @@ set( libqomp_INCLUDE_HDRS
 set( libqomp_SRCS
 	src/common.cpp
 	src/options.cpp
+	src/pluginhost.cpp
+	src/pluginmanager.cpp
 	src/qompactionslist.cpp
 	src/qompbusylabel.cpp
 	src/qompmetadataresolver.cpp
 	src/qompnetworkingfactory.cpp
 	src/qompplayer.cpp
 	src/tune.cpp
-	src/pluginhost.cpp
-	src/pluginmanager.cpp
+	src/tuneurlchecker.cpp
 	${plugins_SRCS}
 )
 set( libqomp_UIFILES
