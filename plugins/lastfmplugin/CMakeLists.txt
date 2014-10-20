@@ -89,6 +89,6 @@ if( ${UNIX} )
 		${PLUGIN}
 		LIBRARY
 		DESTINATION
-		${CMAKE_INSTALL_PREFIX}/share/qomp/plugins
+		${LIB_INSTALL_DIR}/qomp/plugins
 	)
 endif( ${UNIX} )

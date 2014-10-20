@@ -4,9 +4,13 @@ if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
 endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 set( CMAKE_AUTOMOC ON )
-set( LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
-set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where lib will install" )
 add_definitions( -Wall -DLIBQOMP_LIBRARY )
+set( QOMP_LIB_VERSION_MAJOR 1 )
+set( QOMP_LIB_VERSION_MINOR 0 )
+set( QOMP_LIB_VERSION_PATCH 0 )
+set( QOMP_LIB_VERSION_STRING
+	${QOMP_LIB_VERSION_MAJOR}.${QOMP_LIB_VERSION_MINOR}.${QOMP_LIB_VERSION_PATCH}
+)
 set( plugins_HDRS
 	src/plugins/qompplugingettunesdlg.h
 	src/plugins/qompplugintreeview.h
@@ -44,6 +48,7 @@ set( libqomp_INCLUDE_HDRS
 	src/pluginhost.h
 	src/qompplayer.h
 	src/tune.h
+	src/tuneurlchecker.h
 	src/options/qompoptionspage.h
 	src/pluginmanager.h
 	src/libqomp_global.h
@@ -144,6 +149,8 @@ set_target_properties(
 	PROPERTIES 
 	OUTPUT_NAME qomp
 	CLEAN_DIRECT_OUTPUT 1
+	VERSION
+	${QOMP_LIB_VERSION_STRING}
 )
 target_link_libraries(
 	${QOMP_LIB}

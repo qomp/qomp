@@ -31,6 +31,15 @@
 #include <QtPlugin>
 #include <QDir>
 
+#ifdef Q_OS_UNIX
+#  ifndef QOMP_PLUGSDIR
+#    if defined( __x86_64__ || __amd64__)
+#      define QOMP_PLUGSDIR "/usr/local/lib64/qomp/plugins"
+#    else
+#      define QOMP_PLUGSDIR "/usr/local/lib/qomp/plugins"
+#    endif
+#  endif
+#endif
 
 static const QString PLUGINS_OPTIONS_PREFIX = "plugins.is-enabled.";
 
@@ -119,7 +128,7 @@ QStringList PluginManager::pluginsDirs()
 #elif defined (Q_OS_MAC)
 	dirs << QString ("%1/../Resources/plugins").arg(qApp->applicationDirPath());
 #elif defined (Q_OS_UNIX)
-	dirs << QString("%1/%2").arg(QOMP_DATADIR).arg("plugins");
+	dirs << QString("%1").arg(QOMP_PLUGSDIR);
 #endif
 	return dirs;
 }

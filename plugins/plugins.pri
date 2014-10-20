@@ -22,6 +22,7 @@ android {
 
 unix:!android {
     target.path = $$DATADIR/plugins
+    !mac:target.path = $$PLUGSDIR
     INSTALLS += target
 }
 

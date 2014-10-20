@@ -17,8 +17,13 @@ DATADIR = $$PREFIX/share/qomp
 
 DEFINES += QOMP_DATADIR='\\"$$DATADIR\\"'
 
+unix:!android {
+    !mac:DEFINES += HAVE_X11
+    !mac:contains(QMAKE_HOST.arch, x86_64):LIB_SUFFIX = 64
+    PLUGSDIR = $$PREFIX/lib$$LIB_SUFFIX/qomp/plugins
+    DEFINES += QOMP_PLUGSDIR='\\"$$PLUGSDIR\\"'
+}
 
-unix:!mac:!android:DEFINES += HAVE_X11
 #mac {
 #    QMAKE_MAC_SDK = macosx10.8
 #    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.8
