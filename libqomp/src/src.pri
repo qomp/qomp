@@ -7,7 +7,8 @@ SOURCES += $$PWD/common.cpp \
         $$PWD/qompplayer.cpp \
         $$PWD/tune.cpp \
         $$PWD/pluginmanager.cpp \
-        $$PWD/pluginhost.cpp
+        $$PWD/pluginhost.cpp \
+        $$PWD/tuneurlchecker.cpp
 
 HEADERS += $$PWD/libqomp_global.h \
         $$PWD/common.h \
@@ -18,7 +19,8 @@ HEADERS += $$PWD/libqomp_global.h \
         $$PWD/tune.h \
         $$PWD/defines.h \
         $$PWD/pluginmanager.h \
-        $$PWD/pluginhost.h
+        $$PWD/pluginhost.h \
+        $$PWD/tuneurlchecker.h
 
 
 android {

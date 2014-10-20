@@ -20,6 +20,7 @@
 #include "myzukaruresolvestrategy.h"
 #include "qompnetworkingfactory.h"
 #include "myzukarudefines.h"
+#include "tuneurlchecker.h"
 
 #include <QEventLoop>
 #include <QNetworkAccessManager>
@@ -90,7 +91,11 @@ public:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "MyzukaruResolveStrategyPrivate::getUrl()  finished";
 #endif
-		return url_;
+		TuneUrlChecker uc(nam_, url_, this);
+		if(uc.result())
+			return url_;
+
+		return(QUrl());
 	}
 
 private slots:
