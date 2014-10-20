@@ -70,6 +70,11 @@ qtmultimedia_backend {
        # $$PWD/qompqtmultimediametadataresolver.cpp
 }
 
+mac {
+    HEADERS += $$PWD/CocoaTrayClick.h
+
+    OBJECTIVE_SOURCES += $$PWD/CocoaTrayClick.mm
+}
 lupdate_only {
     SOURCES += $$PWD/qml/*.qml
 }

@@ -56,6 +56,10 @@
 #include "qompqtmultimediaplayer.h"
 #endif
 
+#ifdef Q_OS_MAC
+#include "CocoaTrayClick.h"
+#endif
+
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
 #endif
@@ -483,6 +487,10 @@ void QompCon::connectMainWin()
 	connect(mainWin_, SIGNAL(removeTune(Tune*)),			SLOT(actRemoveTune(Tune*)));
 	connect(mainWin_, SIGNAL(mediaActivated(QModelIndex)),		SLOT(actMediaActivated(QModelIndex)));
 	connect(mainWin_, SIGNAL(mediaClicked(QModelIndex)),		SLOT(actMediaClicked(QModelIndex)));
+
+#ifdef Q_OS_MAC
+	connect(CocoaTrayClick::instance(), SIGNAL(trayClicked()), mainWin_, SLOT(toggleVisibility()));
+#endif
 }
 
 void QompCon::disconnectMainWin()
