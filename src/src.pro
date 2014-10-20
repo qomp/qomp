@@ -20,6 +20,9 @@ TEMPLATE = app
 
 QT += network
 
+CONFIG(debug, debug|release) {
+    win32: CONFIG += console
+}
 
 include(src.pri)
 include($$PWD/../translations.pri)
