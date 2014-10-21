@@ -205,6 +205,7 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 #endif
 	switch(status) {
 	case QMediaPlayer::LoadingMedia:
+	case QMediaPlayer::StalledMedia:
 		emit stateChanged(Qomp::StateLoading);
 		break;
 	case QMediaPlayer::BufferingMedia:
