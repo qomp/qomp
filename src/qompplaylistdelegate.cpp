@@ -40,19 +40,17 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 	QRect rect = o.rect;
 	QPalette palette = o.palette;
 	QFont font = o.font;
-	QBrush brush(palette.color(QPalette::Base));
+	QBrush brush = o.backgroundBrush;
 	if(index.data(QompPlayListModel::IsCurrentTuneRole).toBool()) {
 		QLinearGradient grad(rect.left(), 0, rect.right(), 0);
 		grad.setColorAt(0, palette.color(QPalette::Base));
 		grad.setColorAt(1, palette.color(QPalette::Base));
-		grad.setColorAt(0.5, QColor("#F5F5F5"));
+		grad.setColorAt(0.5, palette.color(QPalette::Base).lighter(110));
 		brush = QBrush(grad);
-		palette.setColor(QPalette::Text, "#4C8DC7");
+		palette.setColor(QPalette::Text, palette.color(QPalette::Text).darker(110));
 		font.setWeight(QFont::Bold);
 	}
-	else {
-		palette.setColor(QPalette::Text, "#3244C9");
-	}
+
 	QString text;
 	QString title = index.data(QompPlayListModel::TitleRole).toString();
 	if(!title.isEmpty()) {
@@ -70,9 +68,11 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 		text = QFileInfo(text).fileName();
 	}
 
-	painter->fillRect(rect, (o.state & QStyle::State_Selected) ? palette.color(QPalette::Highlight) : brush);
+	painter->fillRect(rect, (o.state & QStyle::State_Selected) ?
+				  palette.color(QPalette::Highlight) : brush);
 
-	painter->setPen(QPen((o.state & QStyle::State_Selected) ? palette.color(QPalette::HighlightedText) : palette.color(QPalette::Text)));
+	painter->setPen(QPen((o.state & QStyle::State_Selected) ?
+				     palette.color(QPalette::HighlightedText) : palette.color(QPalette::Text)));
 	painter->setFont(font);
 
 	static const int margine = 5;

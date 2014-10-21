@@ -1,0 +1,5 @@
+QompPlaylistView {
+    color: #3244C9;
+    font-size: 14px;
+    font-family: "Sans Serif";
+}

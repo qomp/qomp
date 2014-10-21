@@ -19,6 +19,7 @@ QDialog {
 
 QompPlaylistView {
     background-color: #DFE1F5;
+    color: #3244C9;
     border-radius: 5px;
 }
 
@@ -184,6 +185,11 @@ QPushButton:pressed {
      border-color: #717171;
 }
 
+QPushButton:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                            stop: 0 #f0f0f0, stop: 1 #DFE1F5);
+}
+
 QTreeView, QListView, QListWidget {
     background-color: #DFE1F5;
     border-radius: 5px;
@@ -246,7 +252,7 @@ QHeaderView::section {
     rgba(223, 225, 245, 255), stop:0.39196 rgba(207, 209, 245, 255),
     stop:0.859296 rgba(109, 160, 219, 255), stop:1 rgba(62, 85, 221, 255));
     color: blue;
-    padding: 3px 6px;;
+    padding: 3px 6px;
     border: 2px solid #799fd8;
     border-radius: 5px;
 }

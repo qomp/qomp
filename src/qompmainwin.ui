@@ -17,7 +17,7 @@
    <string>qomp</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="qomp.qrc">
     <normaloff>:/icons/icons/qomp.png</normaloff>:/icons/icons/qomp.png</iconset>
   </property>
   <property name="styleSheet">
@@ -120,7 +120,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/volume</normaloff>:/icons/volume</iconset>
         </property>
         <property name="iconSize">
@@ -188,7 +188,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/prev</normaloff>:/icons/prev</iconset>
         </property>
         <property name="iconSize">
@@ -208,7 +208,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/play</normaloff>:/icons/play</iconset>
         </property>
         <property name="iconSize">
@@ -228,7 +228,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/stop</normaloff>:/icons/stop</iconset>
         </property>
         <property name="iconSize">
@@ -248,7 +248,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/next</normaloff>:/icons/next</iconset>
         </property>
         <property name="iconSize">
@@ -281,7 +281,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/repeat</normaloff>:/icons/repeat</iconset>
         </property>
         <property name="iconSize">
@@ -315,7 +315,7 @@
        <enum>Qt::MoveAction</enum>
       </property>
       <property name="alternatingRowColors">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="selectionMode">
        <enum>QAbstractItemView::ExtendedSelection</enum>
@@ -333,7 +333,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
         </property>
         <property name="iconSize">
@@ -353,7 +353,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/load</normaloff>:/icons/load</iconset>
         </property>
         <property name="iconSize">
@@ -373,7 +373,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/save</normaloff>:/icons/save</iconset>
         </property>
         <property name="iconSize">
@@ -393,7 +393,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/delete</normaloff>:/icons/delete</iconset>
         </property>
         <property name="iconSize">
@@ -467,7 +467,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="qomp.qrc">
           <normaloff>:/icons/options</normaloff>:/icons/options</iconset>
         </property>
         <property name="iconSize">
@@ -496,6 +496,8 @@
    <header>qompplaylistview.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="qomp.qrc"/>
+ </resources>
  <connections/>
 </ui>
