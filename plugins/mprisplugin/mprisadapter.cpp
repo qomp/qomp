@@ -45,27 +45,22 @@ void MprisAdapter::setStatus(const QString &status)
 
 void MprisAdapter::setMetadata(const QompMetaData &tune)
 {
-	QVariantMap map;
-	if (!tune.album.isEmpty()) {
-		map["xesam:album"] = tune.album;
-	}
-	if (!tune.artist.isEmpty()) {
-		map["xesam:artist"] = QStringList() << tune.artist;
-	}
+	metaDataMap_.clear();
 	if (!tune.title.isEmpty()) {
-		map["xesam:title"] = QStringList() << tune.title;
-	}
-	map["xesam:url"] = tune.url;
-	map["xesam:trackNumber"] = tune.trackNumber;
-
-	if (map != metaDataMap_) {
-		metaDataMap_ = map;
-		metadataChanged_ = true;
+		metaDataMap_["xesam:title"] = QStringList() << tune.title;
 	}
 	else {
-		metadataChanged_ = false;
+		return;
 	}
-
+	if (!tune.album.isEmpty()) {
+		metaDataMap_["xesam:album"] = tune.album;
+	}
+	if (!tune.artist.isEmpty()) {
+		metaDataMap_["xesam:artist"] = QStringList() << tune.artist;
+	}
+	metaDataMap_["xesam:url"] = tune.url;
+	metaDataMap_["xesam:trackNumber"] = tune.trackNumber;
+	metadataChanged_ = true;
 }
 
 QVariantMap MprisAdapter::metadata() const
@@ -86,6 +81,7 @@ void MprisAdapter::updateProperties()
 	}
 	if (!metadata().isEmpty() && metadataChanged_) {
 		map.insert("Metadata", metadata());
+		metadataChanged_ = false;
 	}
 	if (map.isEmpty()) {
 		return;

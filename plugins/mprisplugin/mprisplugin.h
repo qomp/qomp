@@ -24,6 +24,7 @@
 #include "qompplayerstatusplugin.h"
 #include "mpriscontroller.h"
 #include "tune.h"
+#include "common.h"
 
 class MprisPlugin : public QObject, public QompPlugin, public QompPlayerStatusPlugin
 {
@@ -44,12 +45,12 @@ public:
 	virtual void unload();
 
 private slots:
-	void playerStatusChanged();
+	void playerStatusChanged(Qomp::State state);
 	void tuneInfoLoaded(Tune *tuneInfo);
 
 private:
 	void disableMpris();
-	void getMetaData();
+	void getMetaData(Tune *tune);
 	void sendMetadata(const QString &status);
 
 private:
@@ -57,6 +58,7 @@ private:
 	bool enabled_;
 	MprisController* mpris_;
 	QompMetaData *tune_;
+	Tune *lastTune_;
 };
 
 #endif // MPRISPLUGIN_H

@@ -21,10 +21,11 @@
 
 #include <QtDBus/QDBusConnection>
 
-MprisController::MprisController(QObject *parent) :
-	QObject(parent)
+MprisController::MprisController(QObject *parent)
+: QObject(parent),
+  mprisAdapter_(new MprisAdapter(this))
 {
-	mprisAdapter_ = new MprisAdapter(this);
+
 	QDBusConnection qompConnection = QDBusConnection::sessionBus();
 	qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
 	qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
