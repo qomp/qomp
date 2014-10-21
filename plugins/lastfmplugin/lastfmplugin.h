@@ -25,6 +25,7 @@
 #include "lastfmdefines.h"
 
 #include <QPointer>
+#include "qompplayer.h"
 
 class Tune;
 class QNetworkAccessManager;
@@ -50,7 +51,7 @@ public:
 	virtual void unload();
 
 private slots:
-	void playerStatusChanged();
+	void playerStatusChanged(Qomp::State state);
 	void tuneChanged(Tune* t);
 	void login();
 	void loginStepTwo();

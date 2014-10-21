@@ -19,7 +19,6 @@
 
 #include "lastfmplugin.h"
 #include "lastfmsettings.h"
-#include "qompplayer.h"
 #include "options.h"
 #include "common.h"
 #include "qompnetworkingfactory.h"
@@ -95,13 +94,13 @@ void LastFmPlugin::qompPlayerChanged(QompPlayer *player)
 	if(player_ != player) {
 		if(player_) {
 			disconnect(player_, SIGNAL(tuneChanged(Tune*)), this, SLOT(tuneChanged(Tune*)));
-			disconnect(player_, SIGNAL(stateChanged(Qomp::State)), this, SLOT(playerStatusChanged()));
+			disconnect(player_, SIGNAL(stateChanged(Qomp::State)), this, SLOT(playerStatusChanged(Qomp::State)));
 		}
 
 		player_ = player;
 		if(player_) {
 			connect(player_, SIGNAL(tuneChanged(Tune*)), SLOT(tuneChanged(Tune*)));
-			connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
+			connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged(Qomp::State)));
 		}
 	}
 }
@@ -117,14 +116,14 @@ void LastFmPlugin::unload()
 		delete settings_;
 }
 
-void LastFmPlugin::playerStatusChanged()
+void LastFmPlugin::playerStatusChanged(Qomp::State state)
 {
 	if(!enabled_ || !player_)
 		return;
 
 	scrobbleTimer_->stop();
 	nowPlayingTimer_->stop();
-	if(player_->state() == Qomp::StatePlaying) {
+	if(state == Qomp::StatePlaying) {
 		nowPlayingTimer_->start(3000);
 	}
 }
