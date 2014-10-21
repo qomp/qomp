@@ -1,6 +1,6 @@
 /*
  * updateschecker.cpp
- * Copyright (C) 2011-2013  Khryukin Evgeny
+ * Copyright (C) 2011-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,69 +36,132 @@ static const QString url = "https://raw.githubusercontent.com/qomp/qomp/master/l
 static const QString downloadUrl = "http://sourceforge.net/projects/qomp/files/";
 
 
-UpdatesChecker::UpdatesChecker(QObject *parent)
-	: QObject(parent)
+class UpdatesChecker::Private : public QObject
 {
-	QNetworkAccessManager* manager = QompNetworkingFactory::instance()->getMainNAM();
-	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-	QNetworkRequest request;
-	request.setUrl(QUrl(url));
-
-	QWidget *p = dynamic_cast<QWidget*>(parent);
-	progressDialog_ = new QProgressDialog(p);
-	progressDialog_->setWindowTitle(APPLICATION_NAME);
-	progressDialog_->setWindowModality(Qt::WindowModal);
-	progressDialog_->show();
-	QNetworkReply* reply = manager->get(request);
-	connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateProgress(qint64,qint64)));
-}
-UpdatesChecker::~UpdatesChecker()
-{
-	delete progressDialog_;
-	progressDialog_ = 0;
-}
-
-void UpdatesChecker::updateProgress(qint64 bytesReceived, qint64 bytesTotal)
-{
-	progressDialog_->setMaximum(bytesTotal);
-	progressDialog_->setValue(bytesReceived);
-}
-
-void UpdatesChecker::replyFinished(QNetworkReply *reply)
-{
-	progressDialog_->hide();
-	if(reply->error() != QNetworkReply::NoError) {
-		showError(tr("Error while checking for updates: %1").arg(reply->errorString()));
+	Q_OBJECT
+public:
+	Private(UpdatesChecker* p) :
+		QObject(p),
+		progressDialog_(0),
+		interactive_(true)
+	{
 	}
-	else {
-		QString data = QString::fromUtf8(reply->readAll());
-		const QRegExp re("#define APPLICATION_VERSION\\s+\"([^\"]+)\"");
-		if(re.indexIn(data) != -1) {
-			const QString ver = re.cap(1);
-			const QString curVer = Options::instance()->getOption(OPTION_APPLICATION_VERSION).toString();
-			if(ver != curVer) {
-				int rez = QMessageBox::question(0, tr("New version is available"),
-								tr("Do you want to go to the download page?"),
-								QMessageBox::Yes | QMessageBox::No);
-				if(rez == QMessageBox::Yes) {
-					QDesktopServices::openUrl(QUrl(downloadUrl));
+
+	~Private()
+	{
+		delete progressDialog_;
+	}
+
+	void start()
+	{
+		QNetworkAccessManager* manager = QompNetworkingFactory::instance()->getMainNAM();
+		connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+		QNetworkRequest request;
+		request.setUrl(QUrl(url));
+
+		if(interactive_) {
+			progressDialog_ = new QProgressDialog();
+			progressDialog_->setWindowTitle(APPLICATION_NAME);
+			progressDialog_->setWindowModality(Qt::ApplicationModal);
+			progressDialog_->show();
+		}
+
+		QNetworkReply* reply = manager->get(request);
+		if(interactive_)
+			connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateProgress(qint64,qint64)));
+	}
+
+	void showError(const QString& error)
+	{
+		if(interactive_)
+			QMessageBox::warning(0, APPLICATION_NAME, error, QMessageBox::Ok);
+	}
+
+	void showInfo(const QString& info)
+	{
+		if(interactive_)
+			QMessageBox::information(0, APPLICATION_NAME, info, QMessageBox::Ok);
+	}
+
+	UpdatesChecker* uc() const
+	{
+		return static_cast<UpdatesChecker*>(parent());
+	}
+
+public slots:
+	void replyFinished(QNetworkReply* reply)
+	{
+		if(progressDialog_)
+			progressDialog_->hide();
+		if(reply->error() != QNetworkReply::NoError) {
+			showError(tr("Error while checking for updates: %1").arg(reply->errorString()));
+		}
+		else {
+			QString data = QString::fromUtf8(reply->readAll());
+			const QRegExp re("#define APPLICATION_VERSION\\s+\"([^\"]+)\"");
+			if(re.indexIn(data) != -1) {
+				const QString ver = re.cap(1);
+				const QString curVer = Options::instance()->getOption(OPTION_APPLICATION_VERSION).toString();
+				if(ver != curVer) {
+					uc()->hasUpdate_ = true;
+					if(interactive_) {
+						int rez = QMessageBox::question(0, tr("New version is available"),
+									tr("Do you want to go to the download page?"),
+									QMessageBox::Yes | QMessageBox::No);
+						if(rez == QMessageBox::Yes) {
+							QDesktopServices::openUrl(QUrl(downloadUrl));
+						}
+					}
+				}
+				else {
+					showInfo(tr("There is no updates found."));
 				}
 			}
 			else {
-				QMessageBox::information(0, APPLICATION_NAME, tr("There is no updates found."), QMessageBox::Ok);
+				showError(tr("Can't find information about version."));
 			}
 		}
-		else {
-			showError(tr("Can't find information about version."));
+
+		reply->close();
+		reply->deleteLater();
+		deleteLater();
+	}
+
+	void updateProgress(qint64 bytesReceived, qint64 bytesTotal)
+	{
+		if(progressDialog_) {
+			progressDialog_->setMaximum(bytesTotal);
+			progressDialog_->setValue(bytesReceived);
 		}
 	}
 
-	reply->close();
-	reply->deleteLater();
-	this->deleteLater();
+public:
+	QProgressDialog* progressDialog_;
+	bool interactive_;
+};
+
+
+
+UpdatesChecker::UpdatesChecker(QObject *parent)
+	: QObject(parent),
+	  d(new Private(this)),
+	  hasUpdate_(false)
+{	
 }
 
-void UpdatesChecker::showError(const QString &error)
+UpdatesChecker::~UpdatesChecker()
 {
-	QMessageBox::warning(0, APPLICATION_NAME, error, QMessageBox::Ok);
 }
+
+void UpdatesChecker::startCheck(bool interactive)
+{
+	d->interactive_ = interactive;
+	d->start();
+}
+
+bool UpdatesChecker::hasUpdate() const
+{
+	return hasUpdate_;
+}
+
+#include "updateschecker.moc"

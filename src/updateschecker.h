@@ -1,6 +1,6 @@
 /*
  * updateschecker.h
- * Copyright (C) 2011  Khryukin Evgeny
+ * Copyright (C) 2011-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,9 +23,6 @@
 
 #include <QObject>
 
-class QNetworkReply;
-class QProgressDialog;
-
 class UpdatesChecker : public QObject
 {
 	Q_OBJECT
@@ -33,15 +30,14 @@ public:
 	explicit UpdatesChecker(QObject *parent = 0);
 	~UpdatesChecker();
 
-private:
-	void showError(const QString& error);
-
-private slots:
-	void replyFinished(QNetworkReply*);
-	void updateProgress(qint64,qint64);
+	void startCheck(bool interactive = true);
+	bool hasUpdate() const;
 
 private:
-	QProgressDialog* progressDialog_;
+	class Private;
+	Private* d;
+	friend class Private;
+	bool hasUpdate_;
 };
 
 #endif // UPDATESCHECKER_H

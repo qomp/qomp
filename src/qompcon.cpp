@@ -403,7 +403,8 @@ void QompCon::actDoSettings()
 void QompCon::actCheckForUpdates()
 {
 #ifndef Q_OS_ANDROID
-	new UpdatesChecker(this);
+	UpdatesChecker* uc = new UpdatesChecker(this);
+	uc->startCheck();
 #endif
 }
 
