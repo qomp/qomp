@@ -106,7 +106,7 @@ Rectangle {
 				trackMenu.item.popup()
 			}
 			onActivated: root.itemActivated(index)
-			onCurrentChanged: if(current) playlist.currentTrackText = model.text
+			onCurrentChanged: if(current) playlist.currentTrackText = Qt.binding(function(){ return model.text })
 		}
 
 		move: Transition {

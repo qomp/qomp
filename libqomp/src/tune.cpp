@@ -83,7 +83,7 @@ QString Tune::displayString() const
 	QString ret;
 	if(!title.isEmpty()) {
 		if(!trackNumber.isEmpty()) {
-			ret = trackNumber+". ";
+			ret = trackNumber+".";
 		}
 		if(!artist.isEmpty()) {
 			ret += artist+" - ";

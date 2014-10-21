@@ -79,6 +79,7 @@ public slots:
 
 private:
 	uint totalTime() const;
+	void updateTuneTracks();
 
 private:
 	QList<Tune*> tunes_;

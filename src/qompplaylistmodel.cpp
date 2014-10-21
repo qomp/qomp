@@ -44,6 +44,7 @@ void QompPlayListModel::addTunes(const QList<Tune*> &tunes)
 	emit beginInsertRows(QModelIndex(), tunes_.size(), tunes_.size()+tunes.size()-1);
 	tunes_.append(tunes);
 	emit endInsertRows();
+	updateTuneTracks();
 	emit totalTimeChanged(totalTime());
 }
 
@@ -88,6 +89,7 @@ void QompPlayListModel::removeTune(Tune *tune)
 		tunes_.removeAt(i);
 		delete tune;
 		endRemoveRows();
+		updateTuneTracks();
 		emit totalTimeChanged(totalTime());
 	}
 }
@@ -109,8 +111,7 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 
 	const Tune* t = tunes_.at(index.row());
 	if(role == Qt::DisplayRole) {
-		QString ret = t->displayString();
-		return QString("%1.%2").arg(QString::number(index.row()+1), ret);
+		return  t->displayString();
 	}
 	else if(role == ArtistRole) {
 		return t->artist;
@@ -247,6 +248,7 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 		tunes_.insert(tuneIndex++, t);
 	}
 	emit layoutChanged();
+	updateTuneTracks();
 	return true;
 }
 
@@ -338,6 +340,7 @@ void QompPlayListModel::move(int oldRow, int newRow)
 	if( beginMoveRows(QModelIndex(), oldRow, oldRow, QModelIndex(), tmpRow) ) {
 		tunes_.swap(oldRow, newRow);
 		endMoveRows();
+		updateTuneTracks();
 	}
 }
 #endif
@@ -348,4 +351,15 @@ uint QompPlayListModel::totalTime() const
 		total += Qomp::durationStringToSeconds(t->duration);
 	}
 	return total;
+}
+
+void QompPlayListModel::updateTuneTracks()
+{
+	if(rowCount() == 0)
+		return;
+
+	for(int i = 0; i < rowCount(); ++i) {
+		tunes_.at(i)->trackNumber = QString::number(i+1);
+	}
+	emit dataChanged(indexForTune(tunes_.at(0)), indexForTune(tunes_.at(rowCount() - 1)));
 }
