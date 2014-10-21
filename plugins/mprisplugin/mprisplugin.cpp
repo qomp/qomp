@@ -32,7 +32,8 @@ MprisPlugin::MprisPlugin() :
 	player_(0),
 	enabled_(true),
 	mpris_(0),
-	tune_(0)
+	tune_(0),
+	lastTune_(0)
 {
 }
 
@@ -46,8 +47,7 @@ void MprisPlugin::qompPlayerChanged(QompPlayer *player)
 
 		player_ = player;
 		if(player_) {
-			connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged()));
-			connect(player_, SIGNAL(tuneDataUpdated(Tune*)), SLOT(tuneInfoLoaded(Tune*)));
+			connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStatusChanged(Qomp::State)));
 		}
 	}
 }
@@ -69,14 +69,14 @@ void MprisPlugin::unload()
 	disableMpris();
 }
 
-void MprisPlugin::playerStatusChanged()
+void MprisPlugin::playerStatusChanged(Qomp::State state)
 {
 	if(!enabled_ || !mpris_ || !player_)
 		return;
 
-	switch(player_->state()) {
+	switch(state) {
 		case Qomp::StatePlaying:
-			getMetaData();
+			getMetaData(player_->currentTune());
 			sendMetadata(PLAYING);
 			break;
 		case Qomp::StateStopped:
@@ -90,27 +90,16 @@ void MprisPlugin::playerStatusChanged()
 	}
 }
 
-void MprisPlugin::tuneInfoLoaded(Tune *tuneInfo)
+void MprisPlugin::getMetaData(Tune *tune)
 {
-	Q_UNUSED(tuneInfo);
-	if(!enabled_ || !mpris_ || !player_)
-		return;
-
-	if (player_->state() == Qomp::StatePlaying) {
-		getMetaData();
-		sendMetadata(PLAYING);
-	}
-}
-
-void MprisPlugin::getMetaData()
-{
-	Tune* t = player_->currentTune();
-	if (t) {
-		int num = t->trackNumber.isEmpty() ? 0 : t->trackNumber.toInt();
-		tune_->artist = t->artist;
-		tune_->title= t->title;
-		tune_->album = t->album;
+	if (tune && lastTune_ != tune) {
+		lastTune_ = tune;
+		const int num = tune->trackNumber.isEmpty() ? 0 : tune->trackNumber.toInt();
+		tune_->artist = tune->artist;
+		tune_->title= tune->title;
+		tune_->album = tune->album;
 		tune_->trackNumber = num;
+		tune_->url = tune->getUrl().toString();
 	}
 }
 
@@ -130,6 +119,8 @@ void MprisPlugin::disableMpris()
 	mpris_ = 0;
 	delete tune_;
 	tune_ = 0;
+	delete lastTune_;
+	lastTune_ = 0;
 }
 
 #ifndef HAVE_QT5
