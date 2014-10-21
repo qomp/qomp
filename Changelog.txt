@@ -4,6 +4,8 @@ Version 0.7 beta
  + add full android support
  + add Notifications plugin
  + add shortcuts support
+ + new black theme
+ * better OS X integration
  * various UI fixes
  * fixes for plugins
  * update translations
