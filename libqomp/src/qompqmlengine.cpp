@@ -142,6 +142,7 @@ QompQmlEngine::QompQmlEngine() :
 	window_(0),
 	scaler_(new Scaler)
 {
+	qmlRegisterType<Scaler>("net.sourceforge.qomp", 1, 0, "Scaler");
 	//addImageProvider(QompImageProvider::name(), new QompImageProvider);
 	rootContext()->setContextProperty("scaler", scaler_);
 

@@ -23,8 +23,10 @@
 #include <QNetworkProxy>
 #include <QNetworkRequest>
 #include <QRegExp>
+#ifndef QOMP_MOBILE
 #include <QMessageBox>
 #include <QProgressDialog>
+#endif
 #include <QDesktopServices>
 
 #include "updateschecker.h"
@@ -42,14 +44,20 @@ class UpdatesChecker::Private : public QObject
 public:
 	Private(UpdatesChecker* p) :
 		QObject(p),
+#ifndef QOMP_MOBILE
 		progressDialog_(0),
 		interactive_(true)
+#else
+		interactive_(false)
+#endif
 	{
 	}
 
 	~Private()
 	{
+#ifndef QOMP_MOBILE
 		delete progressDialog_;
+#endif
 	}
 
 	void start()
@@ -60,10 +68,12 @@ public:
 		request.setUrl(QUrl(url));
 
 		if(interactive_) {
+#ifndef QOMP_MOBILE
 			progressDialog_ = new QProgressDialog();
 			progressDialog_->setWindowTitle(APPLICATION_NAME);
 			progressDialog_->setWindowModality(Qt::ApplicationModal);
 			progressDialog_->show();
+#endif
 		}
 
 		QNetworkReply* reply = manager->get(request);
@@ -73,14 +83,22 @@ public:
 
 	void showError(const QString& error)
 	{
-		if(interactive_)
+		Q_UNUSED(error)
+		if(interactive_) {
+#ifndef QOMP_MOBILE
 			QMessageBox::warning(0, APPLICATION_NAME, error, QMessageBox::Ok);
+#endif
+		}
 	}
 
 	void showInfo(const QString& info)
 	{
-		if(interactive_)
+		Q_UNUSED(info)
+		if(interactive_) {
+#ifndef QOMP_MOBILE
 			QMessageBox::information(0, APPLICATION_NAME, info, QMessageBox::Ok);
+#endif
+		}
 	}
 
 	UpdatesChecker* uc() const
@@ -91,8 +109,10 @@ public:
 public slots:
 	void replyFinished(QNetworkReply* reply)
 	{
+#ifndef QOMP_MOBILE
 		if(progressDialog_)
 			progressDialog_->hide();
+#endif
 		if(reply->error() != QNetworkReply::NoError) {
 			showError(tr("Error while checking for updates: %1").arg(reply->errorString()));
 		}
@@ -104,13 +124,16 @@ public slots:
 				const QString curVer = Options::instance()->getOption(OPTION_APPLICATION_VERSION).toString();
 				if(ver != curVer) {
 					uc()->hasUpdate_ = true;
+					emit uc()->hasUpdateChanged(true);
 					if(interactive_) {
+#ifndef QOMP_MOBILE
 						int rez = QMessageBox::question(0, tr("New version is available"),
 									tr("Do you want to go to the download page?"),
 									QMessageBox::Yes | QMessageBox::No);
 						if(rez == QMessageBox::Yes) {
 							QDesktopServices::openUrl(QUrl(downloadUrl));
 						}
+#endif
 					}
 				}
 				else {
@@ -124,19 +147,25 @@ public slots:
 
 		reply->close();
 		reply->deleteLater();
-		deleteLater();
+		emit uc()->finished();
 	}
 
 	void updateProgress(qint64 bytesReceived, qint64 bytesTotal)
 	{
+		Q_UNUSED(bytesReceived)
+		Q_UNUSED(bytesTotal)
+#ifndef QOMP_MOBILE
 		if(progressDialog_) {
 			progressDialog_->setMaximum(bytesTotal);
 			progressDialog_->setValue(bytesReceived);
 		}
+#endif
 	}
 
 public:
+#ifndef QOMP_MOBILE
 	QProgressDialog* progressDialog_;
+#endif
 	bool interactive_;
 };
 

@@ -26,12 +26,19 @@
 class UpdatesChecker : public QObject
 {
 	Q_OBJECT
+	Q_PROPERTY(bool hasUpdate READ hasUpdate  NOTIFY hasUpdateChanged)
 public:
 	explicit UpdatesChecker(QObject *parent = 0);
 	~UpdatesChecker();
 
-	void startCheck(bool interactive = true);
 	bool hasUpdate() const;
+
+public slots:
+	void startCheck(bool interactive = true);
+
+signals:
+	void hasUpdateChanged(bool);
+	void finished();
 
 private:
 	class Private;

@@ -28,15 +28,16 @@
 #include "pluginmanager.h"
 #include "qompplayer.h"
 #include "tune.h"
+#include "updateschecker.h"
 #ifndef Q_OS_ANDROID
 #include "aboutdlg.h"
 #include "thememanager.h"
-#include "updateschecker.h"
 #include "qomptunedownloader.h"
 #include <QApplication>
 #else
 #include "qompqmlengine.h"
 
+#include <qqml.h>
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
 #include <QtAndroid>
@@ -117,6 +118,8 @@ QompCon::QompCon(QObject *parent) :
 		};
 	jni->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0]));
 	jni->DeleteLocalRef(clazz);
+
+	qmlRegisterType<UpdatesChecker>("net.sourceforge.qomp", 1, 0, "UpdatesChecker");
 #endif
 
 #ifdef HAVE_QT5
@@ -404,6 +407,7 @@ void QompCon::actCheckForUpdates()
 {
 #ifndef Q_OS_ANDROID
 	UpdatesChecker* uc = new UpdatesChecker(this);
+	connect(uc, SIGNAL(finished()), uc, SLOT(deleteLater()));
 	uc->startCheck();
 #endif
 }
