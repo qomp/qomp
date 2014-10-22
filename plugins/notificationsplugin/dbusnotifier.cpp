@@ -105,9 +105,9 @@ void DBusNotifier::doPopup(const QString &title, const QString &message, QImage 
 		hints.insert("icon_data", QVariant(iiibiiay::id, &i));
 	}
 	int lifeTime = minLifeTime;
-	if (capabilities().contains(markupCaps)) {
+	/*if (capabilities().contains(markupCaps)) {
 		summary = TITLE_BEGIN + summary + TITLE_END;
-	}
+	}*/
 	QVariantList args;
 	args << QString(APPLICATION_NAME);
 	args << QVariant(QVariant::UInt);
