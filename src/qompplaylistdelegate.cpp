@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 	QRect rect = o.rect;
 	QPalette palette = o.palette;
 	QFont font = o.font;
-	QBrush brush = o.backgroundBrush;
+	QBrush brush(o.palette.color(QPalette::Base));
 	if(index.data(QompPlayListModel::IsCurrentTuneRole).toBool()) {
 		QLinearGradient grad(rect.left(), 0, rect.right(), 0);
 		grad.setColorAt(0, palette.color(QPalette::Base));
