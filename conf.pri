@@ -9,7 +9,7 @@ INCLUDEPATH += $$PWD/.ui
 
 
 isEmpty(PREFIX) {
-        PREFIX = /usr/local
+    PREFIX = /usr/local
 }
 
 BINDIR = $$PREFIX/bin
@@ -19,8 +19,9 @@ DEFINES += QOMP_DATADIR='\\"$$DATADIR\\"'
 
 unix:!android {
     !mac:DEFINES += HAVE_X11
-    !mac:contains(QMAKE_HOST.arch, x86_64):LIB_SUFFIX = 64
-    PLUGSDIR = $$PREFIX/lib$$LIB_SUFFIX/qomp/plugins
+    contains(QMAKE_HOST.arch, x86_64):LIB_SUFFIX = 64
+    LIBSDIR = $$PREFIX/lib$$LIB_SUFFIX
+    PLUGSDIR = $$LIBSDIR/qomp/plugins
     DEFINES += QOMP_PLUGSDIR='\\"$$PLUGSDIR\\"'
 }
 
