@@ -80,7 +80,15 @@ android {
         lib/libQt5Xml.so
 
     greaterThan(QT_MINOR_VERSION, 3) {
-        ANDROID_DEPLOYMENT_DEPENDENCIES += plugins/bearer/libqandroidbearer.so
+        ANDROID_DEPLOYMENT_DEPENDENCIES += \
+            plugins/bearer/libqandroidbearer.so \
+            jar/QtAndroidBearer-bundled.jar \
+            qml/QtQuick/Controls/Styles/qmldir \
+            qml/QtQuick/Controls/Styles/Android/qmldir \
+            qml/QtQuick/Controls/Styles/Android/libqtquickcontrolsandroidstyleplugin.so \
+            qml/QtQml/StateMachine/qmldir \
+            qml/QtQml/StateMachine/plugins.qmltypes \
+            qml/QtQml/StateMachine/libqtqmlstatemachine.so
     }
     else {
         ANDROID_DEPLOYMENT_DEPENDENCIES += \
@@ -129,23 +137,22 @@ android {
 #        qml/Qt/labs/folderlistmodel/qmldir \
 #        qml/Qt/labs/folderlistmodel/libqmlfolderlistmodelplugin.so \
 #        qml/Qt/labs/folderlistmodel/plugins.qmltypes \
+#        qml/QtQml/Models.2/qmldir \
+#        qml/QtQml/Models.2/libmodelsplugin.so \
 #        qml/Qt/labs/settings/qmldir \
 #        qml/Qt/labs/settings/libqmlsettingsplugin.so \
-#        qml/Qt/labs/settings/plugins.qmltypes
+#        qml/Qt/labs/settings/plugins.qmltypes \
+#        qml/QtQuick/Layouts/libqquicklayoutsplugin.so \
+#        qml/QtQuick/Layouts/qmldir \
+#        qml/QtQuick/Layouts/plugins.qmltypes
 
 #    ANDROID_DEPLOYMENT_DEPENDENCIES += \
 #        qml/QtMultimedia/libdeclarative_multimedia.so \
 #        qml/QtMultimedia/plugins.qmltypes \
 #        qml/QtMultimedia/qmldir \
 #        qml/QtMultimedia/Video.qml \
-#        qml/QtQml/Models.2/qmldir \
-#        qml/QtQml/Models.2/libmodelsplugin.so \
-#        qml/QtQuick/Layouts/libqquicklayoutsplugin.so \
-#        qml/QtQuick/Layouts/qmldir \
-#        qml/QtQuick/Layouts/plugins.qmltypes \
 
 #    ANDROID_DEPLOYMENT_DEPENDENCIES += \
-#        plugins/accessible/libqtaccessiblequick.so \
 #        plugins/video/videonode/libqtsgvideonode_android.so \
 #        plugins/playlistformats/libqtmultimedia_m3u.so \
 #        plugins/platforms/libqminimal.so \

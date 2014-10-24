@@ -55,27 +55,27 @@ public:
 public slots:
 	void actOpenActivated();
 	void actClearActivated();
-	void indexActivate(const QJSValue& val);
-	void doToggle(const QJSValue& val);
-	void removeTune(const QJSValue& val);
-	void downloadTune(const QJSValue& index, const QJSValue &dir);
-	void loadPlaylistActivate(const QJSValue& file);
-	void savePlaylistActivate(const QJSValue& file);
+	void indexActivate(int val);
+	void doToggle(int val);
+	void removeTune(int val);
+	void downloadTune(int index, const QString &dir);
+	void loadPlaylistActivate(const QString& file);
+	void savePlaylistActivate(const QString& file);
 
 	void updateTuneInfo(Tune *tune);
 	void updateState(Qomp::State state);
 
-	void updateOptions(const QJSValue &val);
+	void updateRepeatState(bool val);
 	void totalDurationChanged(uint time);
 
 
 private slots:
-	void sliderMoved(const QJSValue &val);
+	void sliderMoved(int val);
 	void actionTriggered();
 	void buildOpenTunesMenu();
 
 private:
-	QModelIndex jsValueToIndex(const QJSValue &val);
+	QModelIndex intToIndex(int val);
 
 public:
 	QompMainWin* mainWin_;
@@ -106,7 +106,7 @@ void QompMainWin::Private::setUp()
 	QQmlProperty::write(root(), "repeat", Options::instance()->getOption(OPTION_REPEAT_ALL));
 	QQmlProperty::write(root(), "currentFolder", QUrl::fromLocalFile(Options::instance()->getOption(LAST_DIR).toString()));
 
-	connect(root(), SIGNAL(positionChanged(QJSValue)), SLOT(sliderMoved(QJSValue)));
+	connect(root(), SIGNAL(positionChanged(int)), SLOT(sliderMoved(int)));
 	connectActions();
 	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(buildOpenTunesMenu()));
 
@@ -116,15 +116,15 @@ void QompMainWin::Private::setUp()
 void QompMainWin::Private::connectActions()
 {
 	QQuickItem* r = root();
-	connect(r, SIGNAL(actRepeat(QJSValue)),		SLOT(updateOptions(QJSValue)));
+	connect(r, SIGNAL(actRepeat(bool)),		SLOT(updateRepeatState(bool)));
 	connect(r, SIGNAL(actDoOpenMenu()),		SLOT(actOpenActivated()));
-	connect(r, SIGNAL(itemActivated(QJSValue)),	SLOT(indexActivate(QJSValue)));
-	connect(r, SIGNAL(actToggle(QJSValue)),		SLOT(doToggle(QJSValue)));
-	connect(r, SIGNAL(actDownload(QJSValue,QJSValue)),	SLOT(downloadTune(QJSValue,QJSValue)));
-	connect(r, SIGNAL(actRemove(QJSValue)),		SLOT(removeTune(QJSValue)));
+	connect(r, SIGNAL(itemActivated(int)),		SLOT(indexActivate(int)));
+	connect(r, SIGNAL(actToggle(int)),		SLOT(doToggle(int)));
+	connect(r, SIGNAL(actDownload(int,QString)),	SLOT(downloadTune(int,QString)));
+	connect(r, SIGNAL(actRemove(int)),		SLOT(removeTune(int)));
 
-	connect(r, SIGNAL(actLoadPlaylist(QJSValue)),	SLOT(loadPlaylistActivate(QJSValue)));
-	connect(r, SIGNAL(actSavePlaylist(QJSValue)),	SLOT(savePlaylistActivate(QJSValue)));
+	connect(r, SIGNAL(actLoadPlaylist(QString)),	SLOT(loadPlaylistActivate(QString)));
+	connect(r, SIGNAL(actSavePlaylist(QString)),	SLOT(savePlaylistActivate(QString)));
 
 	connect(r, SIGNAL(actClearPlaylist()),		SLOT(actClearActivated()));
 
@@ -152,9 +152,9 @@ QQuickItem *QompMainWin::Private::root() const
 	return root_;
 }
 
-void QompMainWin::Private::sliderMoved(const QJSValue &val)
+void QompMainWin::Private::sliderMoved(int val)
 {
-	mainWin_->seekSliderMoved(val.toUInt());
+	mainWin_->seekSliderMoved(val);
 }
 
 void QompMainWin::Private::actionTriggered()
@@ -179,9 +179,9 @@ void QompMainWin::Private::buildOpenTunesMenu()
 	QQmlProperty::write(root(), "pluginsActions", QVariant::fromValue(l));
 }
 
-QModelIndex QompMainWin::Private::jsValueToIndex(const QJSValue &val)
+QModelIndex QompMainWin::Private::intToIndex(int val)
 {
-	return mainWin_->model_->index(val.toInt());
+	return mainWin_->model_->index(val);
 }
 
 void QompMainWin::Private::actOpenActivated()
@@ -196,34 +196,34 @@ void QompMainWin::Private::actClearActivated()
 	updateTuneInfo(mainWin_->model_->currentTune());
 }
 
-void QompMainWin::Private::indexActivate(const QJSValue &val)
+void QompMainWin::Private::indexActivate(int val)
 {
-	emit mainWin_->mediaActivated(jsValueToIndex(val));
+	emit mainWin_->mediaActivated(intToIndex(val));
 }
 
-void QompMainWin::Private::doToggle(const QJSValue& val)
+void QompMainWin::Private::doToggle(int val)
 {
-	emit mainWin_->toggleTuneState(mainWin_->model_->tune(jsValueToIndex(val)));
+	emit mainWin_->toggleTuneState(mainWin_->model_->tune(intToIndex(val)));
 }
 
-void QompMainWin::Private::removeTune(const QJSValue &val)
+void QompMainWin::Private::removeTune(int val)
 {
-	emit mainWin_->removeTune(mainWin_->model_->tune(jsValueToIndex(val)));
+	emit mainWin_->removeTune(mainWin_->model_->tune(intToIndex(val)));
 }
 
-void QompMainWin::Private::downloadTune(const QJSValue &row, const QJSValue &dir)
+void QompMainWin::Private::downloadTune(int row, const QString &dir)
 {
-	emit mainWin_->downloadTune(mainWin_->model_->tune(jsValueToIndex(row)), dir.toString());
+	emit mainWin_->downloadTune(mainWin_->model_->tune(intToIndex(row)), dir);
 }
 
-void QompMainWin::Private::loadPlaylistActivate(const QJSValue &file)
+void QompMainWin::Private::loadPlaylistActivate(const QString &file)
 {
-	mainWin_->loadPlaylist(file.toVariant().toUrl().toLocalFile());
+	mainWin_->loadPlaylist(file);
 }
 
-void QompMainWin::Private::savePlaylistActivate(const QJSValue &file)
+void QompMainWin::Private::savePlaylistActivate(const QString &file)
 {
-	mainWin_->savePlaylist(file.toVariant().toUrl().toLocalFile());
+	mainWin_->savePlaylist(file);
 }
 
 void QompMainWin::Private::updateTuneInfo(Tune* tune)
@@ -257,9 +257,9 @@ void QompMainWin::Private::updateState(Qomp::State state)
 	}
 }
 
-void QompMainWin::Private::updateOptions(const QJSValue& val)
+void QompMainWin::Private::updateRepeatState(bool val)
 {
-	Options::instance()->setOption(OPTION_REPEAT_ALL, val.toBool());
+	Options::instance()->setOption(OPTION_REPEAT_ALL, val);
 }
 
 void QompMainWin::Private::totalDurationChanged(uint time)

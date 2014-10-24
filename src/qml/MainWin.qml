@@ -9,20 +9,20 @@ Rectangle {
 	signal actPrev()
 	signal actStop()
 	signal actPlay()
-	signal actRepeat(var rep)
-	signal positionChanged(var pos)
+	signal actRepeat(bool rep)
+	signal positionChanged(int pos)
 
 	signal actClearPlaylist()
-	signal actLoadPlaylist(var str)
-	signal actSavePlaylist(var str)
+	signal actLoadPlaylist(string str)
+	signal actSavePlaylist(string str)
 	signal actDoOpenMenu()
 	signal actDoOptions()
 
-	signal itemActivated(var index)
+	signal itemActivated(int index)
 
-	signal actToggle(var index)
-	signal actRemove(var index)
-	signal actDownload(var index, var dir)
+	signal actToggle(int index)
+	signal actRemove(int index)
+	signal actDownload(int index, string dir)
 
 	property string title: Qt.application.name
 
@@ -30,7 +30,7 @@ Rectangle {
 	property alias currentPosition: position.value
 	property alias currentDurationText: totalDurTxt.text
 	property alias currentPositionText: curPosTxt.text
-	//property alias currentFolder:  fileDialog.folder
+//	property alias currentFolder:  fileDialog.folder
 	property alias playlistModel: playlist.model
 
 	property var  pluginsActions: []
@@ -267,26 +267,26 @@ Rectangle {
 			}
 			onRepeatAllChanged: root.actRepeat(repeatAll)
 
-			//		onLoadPlaylist: {
-			//			fileDialog.title = qsTr("Select Playlist")
-			//			fileDialog.selectFolder = false
-			//			fileDialog.selectExisting = true
-			//			fileDialog.onDialogAccepted = function() {
-			//				root.actLoadPlaylist(fileDialog.fileUrl)
-			//			}
-			//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
-			//			fileDialog.open()
-			//		}
-			//		onSavePlaylist: {
-			//			fileDialog.title = qsTr("Select Playlist")
-			//			fileDialog.selectFolder = false
-			//			fileDialog.selectExisting = false
-			//			fileDialog.onDialogAccepted = function() {
-			//				root.actSavePlaylist(fileDialog.fileUrl)
-			//			}
-			//			fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
-			//			fileDialog.open()
-			//		}
+//			onLoadPlaylist: {
+//				fileDialog.title = qsTr("Select Playlist")
+//				fileDialog.selectFolder = false
+//				fileDialog.selectExisting = true
+//				fileDialog.onDialogAccepted = function() {
+//					root.actLoadPlaylist(fileDialog.fileUrl)
+//				}
+//				fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
+//				fileDialog.open()
+//			}
+//			onSavePlaylist: {
+//				fileDialog.title = qsTr("Select Playlist")
+//				fileDialog.selectFolder = false
+//				fileDialog.selectExisting = false
+//				fileDialog.onDialogAccepted = function() {
+//					root.actSavePlaylist(fileDialog.fileUrl)
+//				}
+//				fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
+//				fileDialog.open()
+//			}
 		}
 	}
 
@@ -317,15 +317,15 @@ Rectangle {
 		}
 	}
 
-	//	FileDialog {
-	//		id: fileDialog
+//	FileDialog {
+//		id: fileDialog
 
-	//		property var onDialogAccepted
-	//		property int forIndex
+//		property var onDialogAccepted
+//		property int forIndex
 
-	//		onAccepted: fileDialog.onDialogAccepted()
-	//		visible: false
-	//	}
+////		onAccepted: fileDialog.onDialogAccepted()
+//		visible: false
+//	}
 
 	function enshureItemVisible(index) {
 		playlist.currentIndex = index

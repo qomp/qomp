@@ -61,14 +61,14 @@ QompSideBar {
 			onTriggered: root.clear()
 		},
 		Line{ height: 2 },
-		//	QompSideBarAction {
-		//		text: qsTr("Load Playlist")
-		//		onTriggered: root.loadPlaylist()
-		//	},Line{ height: 2 },
-		//	QompSideBarAction {
-		//		text: qsTr("Save Playlist")
-		//		onTriggered: root.savePlaylist()
-		//	},Line{ height: 2 },
+//		QompSideBarAction {
+//			text: qsTr("Load Playlist")
+//			onTriggered: root.loadPlaylist()
+//		},Line{ height: 2 },
+//		QompSideBarAction {
+//			text: qsTr("Save Playlist")
+//			onTriggered: root.savePlaylist()
+//		},Line{ height: 2 },
 		QompSideBarAction {
 			text: qsTr("Options")
 			onTriggered: root.options()
