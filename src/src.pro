@@ -29,6 +29,7 @@ include($$PWD/../translations.pri)
 
 unix:!android {
 	INCLUDEPATH += /usr/include/KDE/
+        QMAKE_RPATHDIR += $$LIBSDIR $$OUT_PWD/../bin
 	
 	target.path = $$BINDIR
 	INSTALLS += target

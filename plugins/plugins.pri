@@ -21,12 +21,10 @@ android {
 }
 
 unix:!android {
-    target.path = $$DATADIR/plugins
-    !mac:target.path = $$PLUGSDIR
+    target.path = $$PLUGSDIR
     INSTALLS += target
 }
 
 lupdate_only {
     SOURCES += $$_PRO_FILE_PWD_/qml/*.qml
 }
-

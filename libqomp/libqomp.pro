@@ -14,8 +14,7 @@ DESTDIR = $$OUT_PWD/../bin
 DEFINES += LIBQOMP_LIBRARY
 
 unix:!android {
-    contains(QMAKE_HOST.arch, x86_64): LIB_SUFFIX = 64
-    target.path = $$PREFIX/lib$$LIB_SUFFIX
+    target.path = $$LIBSDIR
     INSTALLS += target
 }
 
