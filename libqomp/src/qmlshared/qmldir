@@ -20,6 +20,7 @@ QompBusyIndicator           1.0 QompBusyIndicator.qml
 QompSlider                  1.0 QompSlider.qml
 QompStackView               1.0 QompStackView.qml
 QompComboBox                1.0 QompComboBox.qml
+QompFileDlg                 1.0 QompFileDlg.qml
 
 internal GetTunesDlg    GetTunesDlg.qml
 internal QompAppWindow  QompAppWindow.qml

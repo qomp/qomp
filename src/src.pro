@@ -133,10 +133,12 @@ android {
             plugins/qmltooling/libqmldbg_tcp.so
     }
 
+    ANDROID_DEPLOYMENT_DEPENDENCIES += \
+        qml/Qt/labs/folderlistmodel/qmldir \
+        qml/Qt/labs/folderlistmodel/libqmlfolderlistmodelplugin.so \
+        qml/Qt/labs/folderlistmodel/plugins.qmltypes
+
 #    ANDROID_DEPLOYMENT_DEPENDENCIES += \
-#        qml/Qt/labs/folderlistmodel/qmldir \
-#        qml/Qt/labs/folderlistmodel/libqmlfolderlistmodelplugin.so \
-#        qml/Qt/labs/folderlistmodel/plugins.qmltypes \
 #        qml/QtQml/Models.2/qmldir \
 #        qml/QtQml/Models.2/libmodelsplugin.so \
 #        qml/Qt/labs/settings/qmldir \

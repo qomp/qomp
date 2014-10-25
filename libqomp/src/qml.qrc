@@ -24,5 +24,6 @@
         <file>qmlshared/QompSlider.qml</file>
         <file>qmlshared/QompStackView.qml</file>
         <file>qmlshared/QompComboBox.qml</file>
+        <file>qmlshared/QompFileDlg.qml</file>
     </qresource>
 </RCC>

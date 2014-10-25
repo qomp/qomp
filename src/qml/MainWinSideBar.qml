@@ -12,6 +12,7 @@ QompSideBar {
 
 	property alias repeatAll: repAll.checked
 	property var model: []
+	readonly property int subActionOffset: 55 * scaler.scaleX
 
 	contents: [
 		QompSideBarAction {
@@ -31,7 +32,7 @@ QompSideBar {
 				model: root.model
 				QompSideBarAction {
 					property QtObject qompAct: modelData
-					textOffset: 55 * scaler.scaleX
+					textOffset: subActionOffset
 					text: modelData.text
 					onTriggered: {
 						root.open();
@@ -51,24 +52,31 @@ QompSideBar {
 			}
 		},Line{ height: 2 },
 		QompSideBarAction {
-			id: repAll
-			text: qsTr("Repeat All")
-			checkable: true
+			text: qsTr("Playlist")
+			enabled: false
 		},
 		Line{ height: 2 },
 		QompSideBarAction {
-			text: qsTr("Clear Playlist")
+			text: qsTr("Clear")
+			textOffset: subActionOffset
 			onTriggered: root.clear()
 		},
-		Line{ height: 2 },
-//		QompSideBarAction {
-//			text: qsTr("Load Playlist")
-//			onTriggered: root.loadPlaylist()
-//		},Line{ height: 2 },
-//		QompSideBarAction {
-//			text: qsTr("Save Playlist")
-//			onTriggered: root.savePlaylist()
-//		},Line{ height: 2 },
+		Line{ },
+		QompSideBarAction {
+			text: qsTr("Load")
+			textOffset: subActionOffset
+			onTriggered: root.loadPlaylist()
+		},Line{ },
+		QompSideBarAction {
+			text: qsTr("Save")
+			textOffset: subActionOffset
+			onTriggered: root.savePlaylist()
+		},Line{ height: 2 },
+		QompSideBarAction {
+			id: repAll
+			text: qsTr("Repeat All")
+			checkable: true
+		},Line{ height: 2 },
 		QompSideBarAction {
 			text: qsTr("Options")
 			onTriggered: root.options()

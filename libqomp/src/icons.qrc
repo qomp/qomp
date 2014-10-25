@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="filedialog-file">icons/filedlg/file.png</file>
+        <file alias="filedialog-folder">icons/filedlg/folder.png</file>
+        <file alias="filedialog-playlist">icons/filedlg/playlist.png</file>
+    </qresource>
+</RCC>

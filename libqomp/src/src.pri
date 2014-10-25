@@ -30,7 +30,8 @@ android {
     SOURCES += $$PWD/qompqmlengine.cpp  \
          $$PWD/scaler.cpp
 
-    RESOURCES += $$PWD/qml.qrc
+    RESOURCES += $$PWD/qml.qrc \
+             $$PWD/icons.qrc
 }
 else {
     HEADERS += $$PWD/qompbusylabel.h \

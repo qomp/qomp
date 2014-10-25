@@ -1,5 +1,4 @@
 import QtQuick 2.3
-//import QtQuick.Dialogs 1.2
 import "qrc:///qmlshared"
 
 Rectangle {
@@ -30,7 +29,6 @@ Rectangle {
 	property alias currentPosition: position.value
 	property alias currentDurationText: totalDurTxt.text
 	property alias currentPositionText: curPosTxt.text
-//	property alias currentFolder:  fileDialog.folder
 	property alias playlistModel: playlist.model
 
 	property var  pluginsActions: []
@@ -38,6 +36,7 @@ Rectangle {
 	property bool busy: false
 	property bool repeat: false
 	property string totalDuration;
+	property string currentFolder
 
 	color: "lightblue"
 
@@ -267,26 +266,32 @@ Rectangle {
 			}
 			onRepeatAllChanged: root.actRepeat(repeatAll)
 
-//			onLoadPlaylist: {
-//				fileDialog.title = qsTr("Select Playlist")
-//				fileDialog.selectFolder = false
-//				fileDialog.selectExisting = true
-//				fileDialog.onDialogAccepted = function() {
-//					root.actLoadPlaylist(fileDialog.fileUrl)
-//				}
-//				fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
-//				fileDialog.open()
-//			}
-//			onSavePlaylist: {
-//				fileDialog.title = qsTr("Select Playlist")
-//				fileDialog.selectFolder = false
-//				fileDialog.selectExisting = false
-//				fileDialog.onDialogAccepted = function() {
-//					root.actSavePlaylist(fileDialog.fileUrl)
-//				}
-//				fileDialog.nameFilters = [(qsTr("qomp playlist (*.qomp)"))]
-//				fileDialog.open()
-//			}
+			onLoadPlaylist: {
+				menuButton.expanded = false
+				fileDialog.active = true
+				fileDialog.item.focus = true
+				fileDialog.item.selectExisting = true
+				fileDialog.item.title = qsTr("Select Playlist")
+				fileDialog.item.selectFolders = false
+				fileDialog.item.onDialogAccepted = function() {
+					root.actLoadPlaylist(fileDialog.item.file)
+				}
+				fileDialog.item.filter = [(qsTr("qomp playlist (*.qomp)"))]
+				fileDialog.item.visible = true
+			}
+			onSavePlaylist: {
+				menuButton.expanded = false
+				fileDialog.active = true
+				fileDialog.item.selectExisting = false
+				fileDialog.item.focus = true
+				fileDialog.item.title = qsTr("Select Playlist")
+				fileDialog.item.selectFolders = false
+				fileDialog.item.onDialogAccepted = function() {
+					root.actSavePlaylist(fileDialog.item.file)
+				}
+				fileDialog.item.filter = [(qsTr("qomp playlist (*.qomp)"))]
+				fileDialog.item.visible = true
+			}
 		}
 	}
 
@@ -304,28 +309,44 @@ Rectangle {
 			onToggle: root.actToggle(playlist.currentIndex)
 			onRemove: root.actRemove(playlist.currentIndex)
 			//		onDownload: {
-			//			fileDialog. forIndex = playlist.currentIndex
+			//			fileDialog.forIndex = playlist.currentIndex
 			//			fileDialog.title = qsTr("Select directory")
-			//			fileDialog.selectFolder = true
-			//			fileDialog.selectExisting = true
+			//			fileDialog.selectFolders = true
 			//			fileDialog.onDialogAccepted = function() {
 			//				root.actDownload(fileDialog.forIndex, fileDialog.folder)
 			//			}
-			//			fileDialog.nameFilters = []
-			//			fileDialog.open()
+			//			fileDialog.filter = []
 			//		}
 		}
 	}
 
-//	FileDialog {
-//		id: fileDialog
+	Loader {
+		id: fileDialog
 
-//		property var onDialogAccepted
-//		property int forIndex
+		anchors.fill: parent
+		sourceComponent: fileDialogComp
+		active: false
+	}
 
-////		onAccepted: fileDialog.onDialogAccepted()
-//		visible: false
-//	}
+	Component {
+		id: fileDialogComp
+
+		QompFileDlg {
+			property var onDialogAccepted
+			property int forIndex
+
+			anchors.fill: parent
+			folder: root.currentFolder
+			singleSelect: true
+			visible: false
+
+			onRejected: fileDialog.active = false
+			onAccepted: {
+				onDialogAccepted()
+				fileDialog.active = false
+			}
+		}
+	}
 
 	function enshureItemVisible(index) {
 		playlist.currentIndex = index

@@ -287,6 +287,9 @@ void QompPlayListModel::restoreState()
 
 void QompPlayListModel::saveTunes(const QString &fileName)
 {
+	if(fileName.isEmpty())
+		return;
+
 	QString f(fileName);
 	if(!f.endsWith(".qomp"))
 		f += ".qomp";
@@ -303,6 +306,9 @@ void QompPlayListModel::saveTunes(const QString &fileName)
 
 void QompPlayListModel::loadTunes(const QString &fileName)
 {
+	if(fileName.isEmpty())
+		return;
+
 	QList<Tune*> tl = Tune::tunesFromFile(fileName);
 	addTunes(tl);
 }

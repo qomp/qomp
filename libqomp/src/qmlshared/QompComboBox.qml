@@ -6,6 +6,7 @@ Item {
 
 	signal activated()
 
+	property bool readOnly: false
 	property alias model: drop.model
 	property alias text: line.text
 	property bool expanded: false
@@ -23,6 +24,7 @@ Item {
 		id: line
 
 		anchors.fill: parent
+		input.readOnly: root.readOnly
 
 		Item {
 			anchors.right: parent.right
