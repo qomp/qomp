@@ -29,10 +29,10 @@
 #include "qompplayer.h"
 #include "tune.h"
 #include "updateschecker.h"
+#include "qomptunedownloader.h"
 #ifndef Q_OS_ANDROID
 #include "aboutdlg.h"
 #include "thememanager.h"
-#include "qomptunedownloader.h"
 #include <QApplication>
 #else
 #include "qompqmlengine.h"
@@ -427,13 +427,8 @@ void QompCon::actBugReport()
 
 void QompCon::actDownloadTune(Tune *tune, const QString &dir)
 {
-#ifndef Q_OS_ANDROID
 	QompTuneDownloader *td = new QompTuneDownloader(this);
 	td->download(tune, dir);
-#else
-	Q_UNUSED(tune)
-	Q_UNUSED(dir)
-#endif
 }
 
 void QompCon::actToggleTuneState(Tune *tune)

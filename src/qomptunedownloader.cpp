@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,32 +17,93 @@
  *
  */
 
-
 #include "qomptunedownloader.h"
 #include "qompnetworkingfactory.h"
 #include "tune.h"
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QProgressDialog>
 #include <QFile>
+#ifdef QOMP_MOBILE
+#include <QAndroidJniObject>
+#else
+#include <QProgressDialog>
+#endif
+
+class QompTuneDownloader::Private : public QObject
+{
+	Q_OBJECT
+public:
+	Private(QompTuneDownloader* p) : QObject(p),
+		nam_(QompNetworkingFactory::instance()->getMainNAM()),
+		file_(0),
+		reply_(0)
+	{
+#ifndef QOMP_MOBILE
+		dialog_ = new QProgressDialog();
+		dialog_->setWindowTitle(tr("Download Progress"));
+		dialog_->setRange(0, 100);
+		connect(dialog_, SIGNAL(canceled()), p, SLOT(abort()));
+#endif
+	}
+
+	~Private()
+	{
+		delete file_;
+#ifdef QOMP_MOBILE
+		QAndroidJniObject str = QAndroidJniObject::fromString(tr("Download finished"));
+		QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
+								"showNotification",
+								"(Ljava/lang/String;)V",
+								str.object<jstring>());
+#else
+		dialog_->accept();
+		dialog_->deleteLater();
+#endif
+	}
+
+	void start()
+	{
+#ifdef QOMP_MOBILE
+		QAndroidJniObject str = QAndroidJniObject::fromString(tr("Download started"));
+		QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
+								"showNotification",
+								"(Ljava/lang/String;)V",
+								str.object<jstring>());
+#else
+		dialog_->show();
+#endif
+	}
+
+public slots:
+	void downloadProgress(qint64 received, qint64 total)
+	{
+#ifdef QOMP_MOBILE
+		Q_UNUSED(received)
+		Q_UNUSED(total)
+#else
+		dialog_->setLabelText(tr("Total bytes:%1\nDownloaded bytes:%2")
+				      .arg(QString::number(total), QString::number(received)));
+		dialog_->setValue(received*100/total);
+#endif
+	}
+
+public:
+#ifndef QOMP_MOBILE
+	QProgressDialog* dialog_;
+#endif
+	QNetworkAccessManager* nam_;
+	QFile* file_;
+	QNetworkReply* reply_;
+};
 
 QompTuneDownloader::QompTuneDownloader(QObject *parent) :
 	QObject(parent),
-	file_(0),
-	reply_(0)
+	d(new Private(this))
 {
-	nam_ = QompNetworkingFactory::instance()->getMainNAM();
-	dialog_ = new QProgressDialog();
-	dialog_->setWindowTitle(tr("Download Progress"));
-	dialog_->setRange(0, 100);
-	connect(dialog_, SIGNAL(canceled()), SLOT(abort()));
 }
 
 QompTuneDownloader::~QompTuneDownloader()
 {
-	dialog_->accept();
-	dialog_->deleteLater();
-	delete file_;
 }
 
 void QompTuneDownloader::download(Tune *tune, const QString &dir)
@@ -51,43 +112,38 @@ void QompTuneDownloader::download(Tune *tune, const QString &dir)
 	if(url.isEmpty())
 		return;
 
-	file_ = new QFile(QString("%1/%2-%3.mp3").arg(dir, tune->artist, tune->title));
-	if(!file_->open(QFile::WriteOnly))
+	d->file_ = new QFile(QString("%1/%2-%3.mp3").arg(dir, tune->artist, tune->title));
+	if(!d->file_->open(QFile::WriteOnly))
 		return;
 
 	QNetworkRequest nr(url);
-	reply_ = nam_->get(nr);
-	connect(reply_, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
-	connect(reply_, SIGNAL(readyRead()), SLOT(readyRead()));
-	connect(reply_, SIGNAL(finished()), SLOT(finished()));
-	dialog_->show();
-}
-
-void QompTuneDownloader::downloadProgress(qint64 received, qint64 total)
-{
-	dialog_->setLabelText(tr("Total bytes:%1\nDownloaded bytes:%2")
-			      .arg(QString::number(total), QString::number(received)));
-	dialog_->setValue(received*100/total);
+	d->reply_ = d->nam_->get(nr);
+	connect(d->reply_, SIGNAL(downloadProgress(qint64,qint64)), d, SLOT(downloadProgress(qint64,qint64)));
+	connect(d->reply_, SIGNAL(readyRead()), SLOT(readyRead()));
+	connect(d->reply_, SIGNAL(finished()), SLOT(finished()));
+	d->start();
 }
 
 void QompTuneDownloader::finished()
 {
-	file_->close();
-	reply_->deleteLater();
+	d->file_->close();
+	d->reply_->deleteLater();
 	deleteLater();
 }
 
 void QompTuneDownloader::readyRead()
 {
-	qint64 bytes =  reply_->bytesAvailable();
-	QByteArray ba = reply_->read(bytes);
-	file_->write(ba);
+	qint64  bytes = d->reply_->bytesAvailable();
+	QByteArray ba = d->reply_->read(bytes);
+	d->file_->write(ba);
 }
 
 void QompTuneDownloader::abort()
 {
-	reply_->abort();
-	reply_->deleteLater();
-	file_->remove();
+	d->reply_->abort();
+	d->reply_->deleteLater();
+	d->file_->remove();
 	deleteLater();
 }
+
+#include "qomptunedownloader.moc"

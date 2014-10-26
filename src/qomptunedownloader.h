@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,17 +17,12 @@
  *
  */
 
-
 #ifndef QOMPTUNEDOWNLOADER_H
 #define QOMPTUNEDOWNLOADER_H
 
 #include <QObject>
 
-class QNetworkAccessManager;
-class QNetworkReply;
 class Tune;
-class QProgressDialog;
-class QFile;
 
 class QompTuneDownloader : public QObject
 {
@@ -35,22 +30,18 @@ class QompTuneDownloader : public QObject
 public:
 	explicit QompTuneDownloader(QObject *parent = 0);
 	~QompTuneDownloader();
+
 	void download(Tune* tune, const QString& dir);
 	
-signals:
-	
 private slots:
-	void downloadProgress(qint64 received, qint64 total);
 	void finished();
 	void readyRead();
 	void abort();
 
-
 private:
-	QNetworkAccessManager* nam_;
-	QProgressDialog* dialog_;
-	QFile* file_;
-	QNetworkReply* reply_;
+	class Private;
+	Private* d;
+	friend class Private;
 };
 
 #endif // QOMPTUNEDOWNLOADER_H

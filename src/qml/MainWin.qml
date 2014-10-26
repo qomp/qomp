@@ -101,7 +101,7 @@ Rectangle {
 				if(!trackMenu.active)
 					trackMenu.active = true
 
-				trackMenu.item.canDownload = false //Temporary disable
+				trackMenu.item.canDownload = model.canDownload
 				trackMenu.item.popup()
 			}
 			onActivated: root.itemActivated(index)
@@ -308,15 +308,18 @@ Rectangle {
 		TrackMenu {
 			onToggle: root.actToggle(playlist.currentIndex)
 			onRemove: root.actRemove(playlist.currentIndex)
-			//		onDownload: {
-			//			fileDialog.forIndex = playlist.currentIndex
-			//			fileDialog.title = qsTr("Select directory")
-			//			fileDialog.selectFolders = true
-			//			fileDialog.onDialogAccepted = function() {
-			//				root.actDownload(fileDialog.forIndex, fileDialog.folder)
-			//			}
-			//			fileDialog.filter = []
-			//		}
+			onDownload: {
+				fileDialog.active = true
+				fileDialog.item.forIndex = playlist.currentIndex
+				fileDialog.item.title = qsTr("Select directory")
+				fileDialog.item.selectFolders = true
+				fileDialog.item.onDialogAccepted = function() {
+					root.actDownload(fileDialog.item.forIndex, fileDialog.item.folder)
+				}
+				fileDialog.item.filter = []
+				fileDialog.item.visible = true
+				fileDialog.item.forceActiveFocus()
+			}
 		}
 	}
 

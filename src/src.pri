@@ -5,6 +5,7 @@ SOURCES += $$PWD/main.cpp \
     $$PWD/qompcon.cpp \
     $$PWD/qompplaylistmodel.cpp \
     $$PWD/updateschecker.cpp \
+    $$PWD/qomptunedownloader.cpp \
     $$PWD/translator.cpp
 #    $$PWD/qomptaglibmetadataresolver.cpp \
 
@@ -13,6 +14,7 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/qompcon.h \
     $$PWD/qompplaylistmodel.h \   
     $$PWD/updateschecker.h \
+    $$PWD/qomptunedownloader.h \
     $$PWD/translator.h
 #    $$PWD/qomptaglibmetadataresolver.h \
 
@@ -36,7 +38,6 @@ else {
         $$PWD/qompplaylistdelegate.cpp \
         $$PWD/qompplaylistview.cpp \
         $$PWD/qompmenu.cpp \
-        $$PWD/qomptunedownloader.cpp \
         $$PWD/thememanager.cpp
 
     HEADERS += $$PWD/qomptrayicon.h \
@@ -44,7 +45,6 @@ else {
         $$PWD/qompplaylistdelegate.h \
         $$PWD/qompplaylistview.h \
         $$PWD/qompmenu.h \
-        $$PWD/qomptunedownloader.h \
         $$PWD/thememanager.h
 
     FORMS   += \

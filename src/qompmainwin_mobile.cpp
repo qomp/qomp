@@ -213,7 +213,7 @@ void QompMainWin::Private::removeTune(int val)
 
 void QompMainWin::Private::downloadTune(int row, const QString &dir)
 {
-	emit mainWin_->downloadTune(mainWin_->model_->tune(intToIndex(row)), dir);
+	emit mainWin_->downloadTune(mainWin_->model_->tune(intToIndex(row)), QUrl(dir).toLocalFile());
 }
 
 void QompMainWin::Private::loadPlaylistActivate(const QString &file)
