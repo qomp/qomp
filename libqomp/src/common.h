@@ -43,6 +43,10 @@ LIBQOMPSHARED_EXPORT QString unescape(const QString& escaped);
 LIBQOMPSHARED_EXPORT QString cacheDir();
 LIBQOMPSHARED_EXPORT QString dataDir();
 
+#ifdef QOMP_MOBILE
+LIBQOMPSHARED_EXPORT QString safeDir(const QString& dir);
+#endif
+
 enum /*LIBQOMPSHARED_EXPORT*/ State { StateUnknown,StateStopped,StatePaused,StatePlaying,StateError,StateLoading,StateBuffering };
 
 } //namespace Qomp

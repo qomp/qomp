@@ -176,6 +176,19 @@ QString dataDir()
 	return dir;
 }
 
+#ifdef QOMP_MOBILE
+QString safeDir(const QString& dir)
+{
+	QFileInfo info(dir);
+	if(!dir.isEmpty() && info.exists() && info.isDir())
+		return info.absolutePath();
+
+	static const QString defDir("/sdcard/");
+	return defDir;
+}
+
+#endif
+
 //QString fixEncoding(const TagLib::String& encoded)
 //{
 //	QString ret = QString::fromStdWString(encoded.toWString());

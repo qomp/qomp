@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,9 +41,9 @@ public:
 	virtual void unload(){}
 	virtual QList<QompPluginAction*> getTunesActions();
 
-private slots:
-	QList<Tune*> getTunes();
-	QList<Tune*> getFolders();
+private:
+	class Private;
+	Private* d;
 };
 
 #endif // FILESYSTEMPLUGIN_H

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,9 +33,17 @@
 #include <tag/audioproperties.h>
 #endif
 
+#ifdef QOMP_MOBILE
+#include <QDir>
+#include <QQuickItem>
+#include <QEventLoop>
+#include "qompqmlengine.h"
+#else
 #include <QFileDialog>
-#include <QtPlugin>
 #include <QMenu>
+#endif
+
+#include <QtPlugin>
 
 static Tune* tuneFromFile(const QString& file)
 {
@@ -83,23 +91,72 @@ static QList<Tune*> getTunesRecursive(const QString& folder)
 }
 
 
-
-FilesystemPlugin::FilesystemPlugin()
+class FilesystemPlugin::Private : public QObject
 {
-}
+	Q_OBJECT
+public:
+	Private(QObject* p = 0) : QObject(p)
+#ifdef QOMP_MOBILE
+		,loop_(new QEventLoop(this))
+		,item_(0)
+#endif
+	{
+	}
 
-QList<Tune*> FilesystemPlugin::getTunes()
+public slots:
+	QList<Tune*> getTunes();
+	QList<Tune*> getFolders();
+#ifdef QOMP_MOBILE
+	void exitLoop()
+	{
+		loop_->exit(-1);
+	}
+
+private:
+	QEventLoop* loop_;
+	QQuickItem* item_;
+#endif
+};
+
+QList<Tune*> FilesystemPlugin::Private::getTunes()
 {
+	QList<Tune*> list;
+#ifdef QOMP_MOBILE
+	item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/QompFileDlg.qml"));
+	item_->setProperty("selectFolders", false);
+	item_->setProperty("singleSelect", false);
+	item_->setProperty("selectExisting", true);
+	item_->setProperty("title", tr("Select file(s)"));
+	item_->setProperty("folder", QUrl::fromLocalFile(
+				   Qomp::safeDir(Options::instance()->getOption("filesystemplugin.lastdir").toString())
+						));
+	item_->setProperty("filter", QStringList()
+				<< tr("Audio files (*.mp3, *.ogg, *.wav, *.flac)")
+				<< tr("All files (*.*)") );
+	QompQmlEngine::instance()->addItem(item_);
+	connect(item_, SIGNAL(accepted()), loop_, SLOT(quit()));
+	connect(item_, SIGNAL(rejected()), SLOT(exitLoop()));
+	connect(item_, SIGNAL(destroyed()), SLOT(exitLoop()));
+
+	int res = loop_->exec();
+	if(!res) {
+		const QString folder = item_->property("folder").toUrl().toLocalFile();
+		Options::instance()->setOption("filesystemplugin.lastdir", folder);
+		QVariant varFiles = item_->property("files");
+		foreach(const QVariant& var, varFiles.value<QVariantMap>().keys()) {
+			const QString str = var.toUrl().toLocalFile();
+			if(!str.isEmpty())
+				list.append(tuneFromFile(str));
+		}
+	}
+	QompQmlEngine::instance()->removeItem();
+#else
 	QFileDialog f(0, tr("Select file(s)"),
 		      Options::instance()->getOption("filesystemplugin.lastdir", QDir::homePath()).toString(),
 		      tr("Audio files(*.mp3 *.ogg *.wav *.flac);;All files(*)"));
 	f.setFileMode(QFileDialog::ExistingFiles);
 	f.setViewMode(QFileDialog::List);
 	f.setAcceptMode(QFileDialog::AcceptOpen);
-#if defined HAVE_QT5 && defined Q_OS_ANDROID
-	f.setWindowState(Qt::WindowMaximized);
-#endif
-	QList<Tune*> list;
 
 	if(f.exec() == QFileDialog::Accepted) {
 		QStringList files = f.selectedFiles();
@@ -113,11 +170,36 @@ QList<Tune*> FilesystemPlugin::getTunes()
 			list.append(tuneFromFile(file));
 		}
 	}
+#endif
 	return list;
 }
 
-QList<Tune *> FilesystemPlugin::getFolders()
+QList<Tune *> FilesystemPlugin::Private::getFolders()
 {
+	QList<Tune*> list;
+#ifdef QOMP_MOBILE
+	item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/QompFileDlg.qml"));
+	item_->setProperty("selectFolders", true);
+	item_->setProperty("singleSelect", true);
+	item_->setProperty("selectExisting", true);
+	item_->setProperty("title", tr("Select folder"));
+	item_->setProperty("folder", QUrl::fromLocalFile(
+				  Qomp::safeDir(Options::instance()->getOption("filesystemplugin.lastdir").toString())
+						));
+	item_->setProperty("filter", QStringList() << tr("All files (*.*)") );
+	QompQmlEngine::instance()->addItem(item_);
+	connect(item_, SIGNAL(accepted()), loop_, SLOT(quit()));
+	connect(item_, SIGNAL(rejected()), SLOT(exitLoop()));
+	connect(item_, SIGNAL(destroyed()), SLOT(exitLoop()));
+
+	int res = loop_->exec();
+	if(!res) {
+		const QString folder = item_->property("folder").toUrl().toLocalFile();
+		Options::instance()->setOption("filesystemplugin.lastdir", folder);
+		list = getTunesRecursive(folder);
+	}
+	QompQmlEngine::instance()->removeItem();
+#else
 	QFileDialog f(0, tr("Select folder"),
 			Options::instance()->getOption("filesystemplugin.lastdir",QDir::homePath()).toString()
 		      );
@@ -125,10 +207,6 @@ QList<Tune *> FilesystemPlugin::getFolders()
 	f.setOption(QFileDialog::ShowDirsOnly, false);
 	f.setViewMode(QFileDialog::List);
 	f.setAcceptMode(QFileDialog::AcceptOpen);
-#if defined HAVE_QT5 && defined Q_OS_ANDROID
-	f.setWindowState(Qt::WindowMaximized);
-#endif
-	QList<Tune*> list;
 
 	if(f.exec() == QFileDialog::Accepted) {
 		QStringList files = f.selectedFiles();
@@ -145,7 +223,16 @@ QList<Tune *> FilesystemPlugin::getFolders()
 			}
 		}
 	}
+#endif
 	return list;
+}
+
+
+
+
+FilesystemPlugin::FilesystemPlugin() : QObject()
+{
+	d = new Private(this);
 }
 
 QompOptionsPage *FilesystemPlugin::options()
@@ -157,18 +244,31 @@ QList<QompPluginAction *> FilesystemPlugin::getTunesActions()
 {
 	QList<QompPluginAction *> l;
 
+	QompPluginAction *act = 0;
+	QObject* parentObj = this;
+#ifndef QOMP_MOBILE
 	//Menu will be deleted at parent menu's destructor
 	QMenu *m = new QMenu;
 
-	QompPluginAction *act = new QompPluginAction(QIcon(), tr("File System"), 0, "", this);
+	act = new QompPluginAction(QIcon(), tr("File System"), 0, "", parentObj);
 	act->action()->setMenu(m);
 	l.append(act);
+	parentObj = act;
+#endif
 
-	act = new QompPluginAction(QIcon(), tr("Select Files"), this, "getTunes", act);
+	act = new QompPluginAction(QIcon(), tr("Select Files"), d, "getTunes", parentObj);
+#ifdef QOMP_MOBILE
+	l.append(act);
+#else
 	m->addAction(act->action());
+#endif
 
-	act = new QompPluginAction(QIcon(), tr("Select Folders"), this, "getFolders", act);
+	act = new QompPluginAction(QIcon(), tr("Select Folders"), d, "getFolders", parentObj);
+#ifdef QOMP_MOBILE
+	l.append(act);
+#else
 	m->addAction(act->action());
+#endif
 
 	return l;
 }
@@ -177,3 +277,5 @@ QList<QompPluginAction *> FilesystemPlugin::getTunesActions()
 #ifndef HAVE_QT5
 Q_EXPORT_PLUGIN2(filesystemplugin, FilesystemPlugin)
 #endif
+
+#include "filesystemplugin.moc"
