@@ -125,6 +125,7 @@ FocusScope {
 
 					readonly property int toggleState: 2
 					anchors.centerIn: parent
+					checked: model.fileURL in root.files
 
 					onCheckedChanged: {
 						list.currentIndex = index

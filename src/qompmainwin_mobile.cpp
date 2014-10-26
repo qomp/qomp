@@ -235,26 +235,25 @@ void QompMainWin::Private::updateTuneInfo(Tune* tune)
 
 void QompMainWin::Private::updateState(Qomp::State state)
 {
+	bool play = false;
+	bool busy = false;
+
 	switch (state) {
 	case Qomp::StatePlaying:
-		QQmlProperty::write(root(), "playing", true);
+	case Qomp::StateBuffering:
+		play = true;
 		break;
-
 	case Qomp::StateLoading:
-	//case Qomp::StateBuffering:
-		QQmlProperty::write(root(), "busy", true);
+		busy = true;
 		break;
-
 	case Qomp::StatePaused:
 	case Qomp::StateStopped:
-		QQmlProperty::write(root(), "playing", false);
-		QQmlProperty::write(root(), "busy", false);
-		break;
-//	case Qomp::StateError:
 	default:
-		QQmlProperty::write(root(), "busy", false);
 		break;
 	}
+
+	QQmlProperty::write(root(), "playing", play);
+	QQmlProperty::write(root(), "busy", busy);
 }
 
 void QompMainWin::Private::updateRepeatState(bool val)
