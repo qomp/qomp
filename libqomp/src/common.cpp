@@ -181,7 +181,7 @@ QString safeDir(const QString& dir)
 {
 	QFileInfo info(dir);
 	if(!dir.isEmpty() && info.exists() && info.isDir())
-		return info.absolutePath();
+		return info.absoluteFilePath();
 
 	static const QString defDir("/sdcard/");
 	return defDir;
