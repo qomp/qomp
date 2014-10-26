@@ -269,7 +269,6 @@ Rectangle {
 			onLoadPlaylist: {
 				menuButton.expanded = false
 				fileDialog.active = true
-				fileDialog.item.focus = true
 				fileDialog.item.selectExisting = true
 				fileDialog.item.title = qsTr("Select Playlist")
 				fileDialog.item.selectFolders = false
@@ -278,12 +277,12 @@ Rectangle {
 				}
 				fileDialog.item.filter = [(qsTr("qomp playlist (*.qomp)"))]
 				fileDialog.item.visible = true
+				fileDialog.item.forceActiveFocus()
 			}
 			onSavePlaylist: {
 				menuButton.expanded = false
 				fileDialog.active = true
 				fileDialog.item.selectExisting = false
-				fileDialog.item.focus = true
 				fileDialog.item.title = qsTr("Select Playlist")
 				fileDialog.item.selectFolders = false
 				fileDialog.item.onDialogAccepted = function() {
@@ -291,6 +290,7 @@ Rectangle {
 				}
 				fileDialog.item.filter = [(qsTr("qomp playlist (*.qomp)"))]
 				fileDialog.item.visible = true
+				fileDialog.item.forceActiveFocus()
 			}
 		}
 	}
@@ -342,6 +342,7 @@ Rectangle {
 
 			onRejected: fileDialog.active = false
 			onAccepted: {
+				root.currentFolder = folder
 				onDialogAccepted()
 				fileDialog.active = false
 			}

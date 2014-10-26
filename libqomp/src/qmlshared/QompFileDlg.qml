@@ -18,9 +18,12 @@ FocusScope {
 	property string file: ""
 
 	Keys.onReleased: {
-		if (visible && event.key === Qt.Key_Back) {
+		if (event.key === Qt.Key_Back) {
 			event.accepted = true
-			root.rejected()
+			if(rootView.header !== null)
+				__back()
+			else
+				root.rejected()
 		}
 	}
 
@@ -30,7 +33,6 @@ FocusScope {
 		showDirsFirst: true
 		showFiles: !root.selectFolders
 		sortField: FolderListModel.Name
-		folder: "file:///sdcard/"
 	}
 
 	Timer {
@@ -65,6 +67,8 @@ FocusScope {
 		Keys.onReturnPressed: root.__checkAndAccept()
 		onTextChanged: root.file = le.text.length > 0 ? __ensureTrailingSlash(fullPath.text) + le.text : ""
 	}
+
+	Line { anchors.bottom: rootView.top }
 
 	ListView {
 		id: rootView
@@ -176,8 +180,6 @@ FocusScope {
 				anchors.leftMargin: checkBocxLoader.active ? checkBocxLoader.width * 1.5 : 0
 				onClicked: {
 					list.currentIndex = index
-				}
-				onDoubleClicked: {
 					if(fileIsDir) {
 						var l = list.lastIndex.length
 						list.lastIndex[l] = index
@@ -238,37 +240,24 @@ FocusScope {
 			color: backer.pressed ? "cornflowerblue" : background.color
 			Behavior on color { ColorAnimation { duration: 200 } }
 
-			Text {
-				id: headerText
-
-				text: ".."
-				anchors.fill: parent
-				anchors.bottomMargin: parent.height / 3
+			QompImage {
+				id: img
+				source: "qrc:///filedialog-up"
+				anchors.left: parent.left
 				anchors.leftMargin: 15 * scaler.scaleX
-				verticalAlignment: Text.AlignVCenter
-				font.pixelSize: parent.height
-				font.underline: true
+				height: parent.height
+				width: height
+
+				scale: backer.pressed ? 0.9 : 1
+				Behavior on scale { NumberAnimation { duration: 200 } }
 			}
+
+			Line { anchors.bottom: parent.bottom }
 
 			MouseArea {
 				id: backer
 				anchors.fill:parent
-				onClicked: head.back()
-			}
-
-			function back() {
-				rootView.model.folder = rootView.model.parentFolder
-				var l = rootView.lastIndex.length
-				if(l > 0) {
-					rootView.currentIndex = rootView.lastIndex[l-1]
-					rootView.lastIndex.length = l-1
-					rootView.positionViewAtIndex(rootView.currentIndex, ListView.Contain)
-				}
-				else {
-					rootView.currentIndex = 0
-				}
-
-				rootView.updateCurrentFile()
+				onClicked: root.__back()
 			}
 		}
 	}
@@ -356,5 +345,20 @@ FocusScope {
 			confirm.open()
 		else
 			root.accepted()
+	}
+
+	function __back() {
+		rootView.model.folder = rootView.model.parentFolder
+		var l = rootView.lastIndex.length
+		if(l > 0) {
+			rootView.currentIndex = rootView.lastIndex[l-1]
+			rootView.lastIndex.length = l-1
+			rootView.positionViewAtIndex(rootView.currentIndex, ListView.Contain)
+		}
+		else {
+			rootView.currentIndex = 0
+		}
+
+		rootView.updateCurrentFile()
 	}
 }

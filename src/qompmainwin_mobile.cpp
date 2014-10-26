@@ -104,7 +104,7 @@ void QompMainWin::Private::setUp()
 	buildOpenTunesMenu();
 
 	QQmlProperty::write(root(), "repeat", Options::instance()->getOption(OPTION_REPEAT_ALL));
-	QQmlProperty::write(root(), "currentFolder", QUrl::fromLocalFile(Options::instance()->getOption(LAST_DIR).toString()));
+	QQmlProperty::write(root(), "currentFolder", QUrl::fromLocalFile(Options::instance()->getOption(LAST_DIR, "/sdcard/").toString()));
 
 	connect(root(), SIGNAL(positionChanged(int)), SLOT(sliderMoved(int)));
 	connectActions();
