@@ -125,7 +125,7 @@ android {
         qml/QtQuick/Controls/qmldir \
         qml/QtQuick/Controls/plugins.qmltypes
 
-    debug {
+    CONFIG(debug, debug|release) {
         ANDROID_DEPLOYMENT_DEPENDENCIES += \
             plugins/generic/libqevdevkeyboardplugin.so \
             plugins/generic/libqevdevmouseplugin.so \
