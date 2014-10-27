@@ -35,6 +35,8 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#else
+#include <qjson/parser.h>
 #endif
 
 #ifdef DEBUG_OUTPUT
@@ -46,8 +48,18 @@ static const QString ARTISTS_NAME("artists");
 static const QString ALBUMS_NAME("albums");
 static const QString TRACKS_NAME("tracks");
 
+#ifndef HAVE_QT5
+typedef QVariant QJsonValue;
+typedef QVariantList QJsonArray;
+typedef QVariantMap QJsonObject;
+
+#define toObject() toMap()
+#define toArray() toList()
+#endif
+
 static QString safeJSONValue2String(const QJsonValue& val)
 {
+#ifdef HAVE_QT5
 	switch (val.type()) {
 	case QJsonValue::String:
 		return val.toString();
@@ -56,6 +68,9 @@ static QString safeJSONValue2String(const QJsonValue& val)
 	default:
 		break;
 	}
+#else
+	return val.toString();
+#endif
 	return QString();
 }
 
@@ -70,11 +85,23 @@ static QNetworkRequest creatNetworkRequest(const QUrl& url)
 
 static QJsonArray ByteArrayToJsonArray(const QString& type, const QByteArray& ba)
 {
+#ifdef HAVE_QT5
 	QJsonDocument doc = QJsonDocument::fromJson(ba);
 	QJsonObject jo = doc.object();
 	QJsonObject art = jo.value(type).toObject();
 	QJsonArray arr = art.value("items").toArray();
 	return arr;
+#else
+	QJson::Parser parser;
+	bool ok;
+	QJsonArray arr;
+	QJsonObject result = parser.parse(ba, &ok).toMap();
+	if (ok) {
+		QJsonObject t = result[type].toMap();
+		arr = t["items"].toList();
+	}
+	return arr;
+#endif
 }
 
 //----------------------------------------
@@ -254,11 +281,19 @@ void YandexMusicController::search(const QString& text, const QString &type, con
 
 void YandexMusicController::searchNextPage(const QByteArray &reply, const QString &type, const char *slot)
 {
+#ifdef HAVE_QT5
 	QJsonDocument doc = QJsonDocument::fromJson(reply);
 	QJsonObject root = doc.object();
 	if(!root.contains("pager"))
 		return;
-
+#else
+	QJson::Parser parser;
+	bool ok;
+	QJsonObject root = parser.parse(reply, &ok).toMap();
+	if (!ok || root.contains("pager")) {
+		return;
+	}
+#endif
 	QJsonObject pages = root.value("pager").toObject();
 	int curPage = pages.value("page").toInt();
 	int total = pages.value("total").toInt();
@@ -342,11 +377,20 @@ void YandexMusicController::artistUrlFinished()
 #ifdef DEBUG_OUTPUT
 		qDebug() << replyStr;
 #endif
+#ifdef HAVE_QT5
 		QJsonDocument doc = QJsonDocument::fromJson(replyStr);
-#ifdef DEBUG_OUTPUT
-		qDebug() << doc.toJson(QJsonDocument::Indented);
-#endif
 		QJsonObject jo = doc.object();
+	#ifdef DEBUG_OUTPUT
+		qDebug() << doc.toJson(QJsonDocument::Indented);
+	#endif
+#else
+		QJson::Parser parser;
+		bool ok;
+		QJsonObject jo = parser.parse(replyStr, &ok).toMap();
+		if (!ok) {
+			return;
+		}
+#endif
 		QJsonArray arr = jo.value(ALBUMS_NAME).toArray();
 		QJsonArray also = jo.value("alsoAlbums").toArray();
 
@@ -372,11 +416,20 @@ void YandexMusicController::albumUrlFinished()
 
 	if(reply->error() == QNetworkReply::NoError) {
 		const QByteArray replyStr = reply->readAll();
+#ifdef HAVE_QT5
 		QJsonDocument doc = QJsonDocument::fromJson(replyStr);
-#ifdef DEBUG_OUTPUT
-		qDebug() << doc.toJson(QJsonDocument::Indented);
-#endif
 		QJsonObject jo = doc.object();
+	#ifdef DEBUG_OUTPUT
+		qDebug() << doc.toJson(QJsonDocument::Indented);
+	#endif
+#else
+		QJson::Parser parser;
+		bool ok;
+		QJsonObject jo = parser.parse(replyStr, &ok).toMap();
+		if (!ok) {
+			return;
+		}
+#endif
 		QJsonArray arr = jo.value("volumes").toArray();
 		QList<QompPluginModelItem*> list;
 		while(!arr.isEmpty())

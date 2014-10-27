@@ -19,3 +19,7 @@ android {
 else {
     SOURCES += $$PWD/yandexmusicgettunsdlg.cpp
 }
+
+!greaterThan(QT_MAJOR_VERSION, 4) {
+    LIBS += -lqjson
+}
