@@ -30,6 +30,11 @@ for(FILE, HEADERS) {
     QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$FILE) $$shell_path($$DDIR) $$escape_expand(\\n\\t)
 }
 
-#LIBS += -ltag
+mac {
+    QMAKE_LFLAGS += -framework tag
+}
+else {
+    LIBS += -ltag
+}
 
 

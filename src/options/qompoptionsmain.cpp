@@ -40,8 +40,8 @@ public:
 		ui->setupUi(widget_);
 
 		ui->cb_metaData->hide();
-		ui->label_8->hide();
-		ui->le_encoding->hide();
+//		ui->label_8->hide();
+//		ui->le_encoding->hide();
 	}
 
 	void applyOptions();

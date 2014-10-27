@@ -34,7 +34,11 @@
 #include <QCoreApplication>
 #endif
 
-//#include <taglib/tstring.h>
+#ifndef Q_OS_MAC
+#include <taglib/tstring.h>
+#else
+#include <tag/tstring.h>
+#endif
 
 namespace Qomp {
 
@@ -189,17 +193,29 @@ QString safeDir(const QString& dir)
 
 #endif
 
-//QString fixEncoding(const TagLib::String& encoded)
-//{
-//	QString ret = QString::fromStdWString(encoded.toWString());
+QString safeTagLibString2QString(const TagLib::String& string)
+{
+	QString ret;
 
-//	const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray();
-//	QTextCodec *tc = QTextCodec::codecForName(decoding);
-//	if(tc) {
-//		ret = tc->toUnicode(encoded.to8Bit().data());
-//	}
-//	return ret;
-//}
+	if(string.isAscii()) {
+		ret = QString::fromLatin1(string.toCString(false));
+	}
+	else if(!string.isLatin1()) {
+		ret = QString::fromUtf8(string.toCString(true));
+	}
+	else {
+		QByteArray ba(string.toCString(false));
+		ret = QString(ba);
+
+		const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray();
+		QTextCodec *tc = QTextCodec::codecForName(decoding);
+		if(tc) {
+			ret = tc->toUnicode(ba);
+		}
+	}
+
+	return ret;
+}
 
 } //namespace Qomp
 

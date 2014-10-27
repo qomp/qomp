@@ -49,13 +49,19 @@ static Tune* tuneFromFile(const QString& file)
 {
 	Tune* tune = new Tune(false);
 	tune->file = file;
-	TagLib::FileRef ref(file.toStdString().data());
+	TagLib::String str( file.toUtf8().constData(), TagLib::String::UTF8 );
+#ifdef Q_OS_WIN
+	TagLib::FileName fname(str.toCWString());
+#else
+	TagLib::FileName fname(str.toCString(true));
+#endif
+	TagLib::FileRef ref(fname, true, TagLib::AudioProperties::Accurate);
 	if(!ref.isNull()) {
 		if(ref.tag()) {
 			TagLib::Tag* tag = ref.tag();
-			tune->artist = QString::fromStdWString( tag->artist().toWString() );
-			tune->album = QString::fromStdWString( tag->album().toWString() );
-			tune->title = QString::fromStdWString( tag->title().toWString() );
+			tune->artist = Qomp::safeTagLibString2QString( tag->artist() );
+			tune->album = Qomp::safeTagLibString2QString( tag->album() );
+			tune->title = Qomp::safeTagLibString2QString( tag->title() );
 			tune->trackNumber = QString::number( tag->track() );
 		}
 

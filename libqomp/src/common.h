@@ -24,9 +24,9 @@
 
 #include "libqomp_global.h"
 
-//namespace TagLib {
-//class String;
-//}
+namespace TagLib {
+class String;
+}
 
 namespace Qomp {
 
@@ -38,7 +38,7 @@ LIBQOMPSHARED_EXPORT QString durationMiliSecondsToString(qint64 ms);
 LIBQOMPSHARED_EXPORT uint durationStringToSeconds(const QString& dur);
 
 LIBQOMPSHARED_EXPORT QString unescape(const QString& escaped);
-//LIBQOMPSHARED_EXPORT QString fixEncoding(const TagLib::String& encoded);
+LIBQOMPSHARED_EXPORT QString safeTagLibString2QString(const TagLib::String& string);
 
 LIBQOMPSHARED_EXPORT QString cacheDir();
 LIBQOMPSHARED_EXPORT QString dataDir();
