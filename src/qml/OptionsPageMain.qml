@@ -7,6 +7,9 @@ Item {
 	id: root
 
 	property alias autoStartPlay: autoplay.checked
+	property alias metadataEncoding: encoding.value
+	property alias langs: lang.model
+	property alias curLang: lang.text
 
 	height: col.height
 	Column {
@@ -36,6 +39,45 @@ Item {
 				font.pixelSize: 22 * scaler.scaleFont
 				wrapMode: Text.WordWrap
 				verticalAlignment: Text.AlignVCenter
+			}
+		}
+
+		OptionsEntry {
+
+			TextLineEdit {
+				id: encoding
+
+				anchors.verticalCenter: parent.verticalCenter
+				text: qsTr("Default Metadata Encoding:")
+				input.inputMethodHints: Qt.ImhPreferUppercase | Qt.ImhNoPredictiveText
+				textRatio: 2 / 3
+			}
+		}
+
+		OptionsEntry {
+
+			z: 1000 //combobox dropdown should be on top
+
+			Text {
+				id: langTxt
+
+				text: qsTr("Language:")
+				width: parent.width * 2 / 3
+				height: parent.height
+				verticalAlignment: Text.AlignVCenter
+				horizontalAlignment: Text.AlignRight
+				font.pixelSize: 22 * scaler.scaleFont
+			}
+
+			QompComboBox {
+				id: lang
+				anchors.fill: parent
+				anchors.margins: 20 * scaler.scaleY
+				anchors.leftMargin: langTxt.width + 16 * scaler.scaleMargins
+				anchors.rightMargin: 8 * scaler.scaleMargins
+				availableHeight: 250 * scaler.scaleY
+				model: []
+				readOnly: true
 			}
 		}
 

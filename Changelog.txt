@@ -17,7 +17,7 @@ Version 0.6 beta
 23.08.2014
  * update Yandex.Music plugin
  * update Myzuka.ru plugin
- * update filesystem pligon: add resolving tags on loading tunes with taglib
+ * update filesystem plugin: add resolving tags on loading tunes with taglib
  * restore OS X builds
  + add cmake Win32 support
  - get rid of metadata resolving for online tunes
