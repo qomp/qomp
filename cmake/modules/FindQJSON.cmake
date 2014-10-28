@@ -40,7 +40,7 @@ find_library(
 )
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
-				TagLib
+				QJson
 				DEFAULT_MSG
 				QJSON_LIBRARY
 				QJSON_INCLUDE_DIR
