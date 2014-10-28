@@ -100,6 +100,8 @@ void QompQmlEngine::addItem(QQuickItem *item)
 	setObjectOwnership(item, QQmlEngine::JavaScriptOwnership);
 	QMetaObject::invokeMethod(window_, "addView", Qt::DirectConnection,
 				  Q_ARG(QVariant, QVariant::fromValue(item)));
+	window_->update();
+	qApp->processEvents();
 }
 
 void QompQmlEngine::removeItem()
