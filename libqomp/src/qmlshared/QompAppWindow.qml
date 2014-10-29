@@ -94,6 +94,7 @@ Window {
 		if(!contents.active) {
 			contents.active = true
 			image.visible = false
+			contents.update()
 		}
 
 		contents.item.push(item)

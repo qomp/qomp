@@ -115,7 +115,7 @@ QUrl Tune::getUrl() const
 QString Tune::toString() const
 {
 	QStringList list;
-	list << artist << title << trackNumber << album << duration << url << file << strategy()->name() << (canSave_ ? "true" : "false");
+	list << artist << title << trackNumber << album << duration << url << file << strategy()->name() << (canSave_ ? "true" : "false") << bitRate;
 	return list.join(separator);
 }
 
@@ -142,6 +142,8 @@ bool Tune::fromString(const QString &str)
 
 	if(!list.isEmpty())
 		canSave_ = (list.takeFirst() == "true");
+	if(!list.isEmpty())
+		bitRate = list.takeFirst();
 
 	return true;
 }
