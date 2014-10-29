@@ -98,7 +98,7 @@ void MprisPlugin::getMetaData(Tune *tune)
 		tune_->title= tune->title;
 		tune_->album = tune->album;
 		tune_->trackNumber = num;
-		tune_->url = tune->getUrl().toString();
+		tune_->url = "";// tune->getUrl().toString();
 	}
 }
 
