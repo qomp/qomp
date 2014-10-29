@@ -28,6 +28,12 @@
 #else
 #include <QProgressDialog>
 #endif
+#ifdef HAVE_QT5
+#include <QtConcurrent>
+#else
+#include <QFutureWatcher>
+#include <QtConcurrentRun>
+#endif
 
 class QompTuneDownloader::Private : public QObject
 {
@@ -42,7 +48,7 @@ public:
 		dialog_ = new QProgressDialog();
 		dialog_->setWindowTitle(tr("Download Progress"));
 		dialog_->setRange(0, 100);
-		connect(dialog_, SIGNAL(canceled()), p, SLOT(abort()));
+		connect(dialog_, SIGNAL(canceled()), SLOT(abort()));
 #endif
 	}
 
@@ -87,6 +93,51 @@ public slots:
 #endif
 	}
 
+	void urlFinished()
+	{
+		QFutureWatcher<QUrl>* watcher = static_cast<QFutureWatcher<QUrl>*>(sender());
+		QFuture<QUrl> f = watcher->future();
+		watcher->deleteLater();
+		QUrl url = f.result();
+		if(url.isEmpty()) {
+			parent()->deleteLater();
+			return;
+		}
+
+		file_ = new QFile(QString("%1/%2-%3.mp3").arg(dir_, tune_->artist, tune_->title));
+		if(!file_->open(QFile::WriteOnly))
+			return;
+
+		QNetworkRequest nr(url);
+		reply_ = nam_->get(nr);
+		connect(reply_, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
+		connect(reply_, SIGNAL(readyRead()), SLOT(readyRead()));
+		connect(reply_, SIGNAL(finished()), SLOT(finished()));
+		start();
+	}
+
+	void readyRead()
+	{
+		qint64  bytes = reply_->bytesAvailable();
+		QByteArray ba = reply_->read(bytes);
+		file_->write(ba);
+	}
+
+	void abort()
+	{
+		reply_->abort();
+		reply_->deleteLater();
+		file_->remove();
+		parent()->deleteLater();
+	}
+
+	void finished()
+	{
+		file_->close();
+		reply_->deleteLater();
+		parent()->deleteLater();
+	}
+
 public:
 #ifndef QOMP_MOBILE
 	QProgressDialog* dialog_;
@@ -94,6 +145,8 @@ public:
 	QNetworkAccessManager* nam_;
 	QFile* file_;
 	QNetworkReply* reply_;
+	QString dir_;
+	Tune* tune_;
 };
 
 QompTuneDownloader::QompTuneDownloader(QObject *parent) :
@@ -108,42 +161,17 @@ QompTuneDownloader::~QompTuneDownloader()
 
 void QompTuneDownloader::download(Tune *tune, const QString &dir)
 {
-	QUrl url(tune->getUrl());
-	if(url.isEmpty())
-		return;
+	d->dir_ = dir;
+	d->tune_ = tune;
 
-	d->file_ = new QFile(QString("%1/%2-%3.mp3").arg(dir, tune->artist, tune->title));
-	if(!d->file_->open(QFile::WriteOnly))
-		return;
-
-	QNetworkRequest nr(url);
-	d->reply_ = d->nam_->get(nr);
-	connect(d->reply_, SIGNAL(downloadProgress(qint64,qint64)), d, SLOT(downloadProgress(qint64,qint64)));
-	connect(d->reply_, SIGNAL(readyRead()), SLOT(readyRead()));
-	connect(d->reply_, SIGNAL(finished()), SLOT(finished()));
-	d->start();
-}
-
-void QompTuneDownloader::finished()
-{
-	d->file_->close();
-	d->reply_->deleteLater();
-	deleteLater();
-}
-
-void QompTuneDownloader::readyRead()
-{
-	qint64  bytes = d->reply_->bytesAvailable();
-	QByteArray ba = d->reply_->read(bytes);
-	d->file_->write(ba);
-}
-
-void QompTuneDownloader::abort()
-{
-	d->reply_->abort();
-	d->reply_->deleteLater();
-	d->file_->remove();
-	deleteLater();
+	QFutureWatcher<QUrl>* watcher = new QFutureWatcher<QUrl>(this);
+	connect(watcher, SIGNAL(finished()), d, SLOT(urlFinished()));
+#ifdef HAVE_QT5
+	QFuture<QUrl> f = QtConcurrent::run(tune, &Tune::getUrl);
+#else
+	QFuture<QUrl> f = QtConcurrent::run(tune, &Tune::getUrl);
+#endif
+	watcher->setFuture(f);
 }
 
 #include "qomptunedownloader.moc"

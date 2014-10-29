@@ -33,11 +33,6 @@ public:
 
 	void download(Tune* tune, const QString& dir);
 	
-private slots:
-	void finished();
-	void readyRead();
-	void abort();
-
 private:
 	class Private;
 	Private* d;
