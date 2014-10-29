@@ -100,7 +100,7 @@
      </property>
      <property name="text">
       <string>Quick(Qt) Online Music Player
-Listening to the music from different music hostings</string>
+one player for different online music hostings</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
