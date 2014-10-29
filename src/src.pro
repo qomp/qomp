@@ -21,7 +21,7 @@ TEMPLATE = app
 QT += network
 
 CONFIG(debug, debug|release) {
-    win32: CONFIG += console
+    greaterThan(QT_MAJOR_VERSION, 4):win32: CONFIG += console
 }
 
 include(src.pri)
