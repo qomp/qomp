@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +26,7 @@
 #include <Phonon/SeekSlider>
 #include <Phonon/VolumeSlider>
 #include <phonon/backendcapabilities.h>
+#include <QtConcurrentRun>
 
 
 #ifdef DEBUG_OUTPUT
@@ -34,7 +35,8 @@
 
 QompPhononPlayer::QompPhononPlayer() :
 	QompPlayer(),
-	resolver_(0/*new QompTagLibMetaDataResolver(this)*/)
+	resolver_(0/*new QompTagLibMetaDataResolver(this)*/),
+	watcher_(0)
 {
 	mediaObject_ = new Phonon::MediaObject(this);
 	audioOutput_ = new Phonon::AudioOutput(Phonon::MusicCategory, this);
@@ -58,6 +60,7 @@ QompPhononPlayer::QompPhononPlayer() :
 QompPhononPlayer::~QompPhononPlayer()
 {
 	stop();
+	delete watcher_;
 }
 
 void QompPhononPlayer::setVolume(qreal vol)
@@ -122,9 +125,24 @@ Qomp::State QompPhononPlayer::state() const
 
 void QompPhononPlayer::doSetTune()
 {
-	QUrl url = currentTune()->getUrl();
-	Phonon::MediaSource ms = url.isEmpty() ? Phonon::MediaSource() : Phonon::MediaSource(url);
-	mediaObject_->setCurrentSource(ms);
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompPhononPlayer::doSetTune()";
+#endif
+	if(mediaObject_->currentSource().type() != Phonon::MediaSource::Invalid) {
+		mediaObject_->blockSignals(true);
+		mediaObject_->setCurrentSource(Phonon::MediaSource());
+		mediaObject_->blockSignals(false);
+	}
+
+	if(watcher_) {
+		watcher_->disconnect();
+		watcher_->deleteLater();
+	}
+	watcher_ = new QFutureWatcher<QUrl>;
+	connect(watcher_, SIGNAL(finished()), SLOT(tuneUrlReady()));
+	Tune* t = currentTune();
+	QFuture<QUrl> f = QtConcurrent::run(t, &Tune::getUrl);
+	watcher_->setFuture(f);
 }
 
 void QompPhononPlayer::playerStateChanged(Phonon::State newState, Phonon::State oldState)
@@ -138,10 +156,38 @@ void QompPhononPlayer::playerStateChanged(Phonon::State newState, Phonon::State 
 	emit stateChanged(PhononState2QompState(newState));
 }
 
+void QompPhononPlayer::tuneUrlReady()
+{
+	QFuture<QUrl> f = watcher_->future();
+	delete watcher_;
+	watcher_ = 0;
+	QUrl url = f.result();
+
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompPhononPlayer::tuneUrlReady()  " << lastAction() << url;
+#endif
+
+	Phonon::MediaSource ms = url.isEmpty() ? Phonon::MediaSource() : Phonon::MediaSource(url);
+	mediaObject_->setCurrentSource(ms);
+
+	switch (lastAction()) {
+	case Qomp::StatePlaying: mediaObject_->play();
+		break;
+	case Qomp::StatePaused: mediaObject_->pause();
+		break;
+	default: mediaObject_->stop();
+		break;
+	}
+}
+
 void QompPhononPlayer::play()
 {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompPhononPlayer::play()";
+#endif
 	QompPlayer::play();
-	mediaObject_->play();
+	if(mediaObject_->currentSource().type() != Phonon::MediaSource::Invalid)
+		mediaObject_->play();
 }
 
 void QompPhononPlayer::pause()
@@ -152,6 +198,9 @@ void QompPhononPlayer::pause()
 
 void QompPhononPlayer::stop()
 {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompPhononPlayer::stop()";
+#endif
 	QompPlayer::stop();
 	mediaObject_->stop();
 }

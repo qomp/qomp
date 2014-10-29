@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@
 
 #include "qompplayer.h"
 #include <Phonon/MediaObject>
+#include <QFutureWatcher>
 
 namespace Phonon {
 class AudioOutput;
@@ -59,12 +60,14 @@ protected slots:
 
 private slots:
 	void playerStateChanged(Phonon::State newState,Phonon::State oldState);
+	void tuneUrlReady();
 
 private:
 	Phonon::MediaObject* mediaObject_;
 	Phonon::AudioOutput* audioOutput_;
 	Phonon::AudioOutputDevice defaultDevice_;
 	QompMetaDataResolver* resolver_;
+	QFutureWatcher<QUrl>* watcher_;
 };
 
 #endif // QOMPPHONONPLAYER_H
