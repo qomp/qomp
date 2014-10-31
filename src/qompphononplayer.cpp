@@ -21,13 +21,12 @@
 //#include "qompphononmetadataresolver.h"
 //#include "qomptaglibmetadataresolver.h"
 #include "tune.h"
+#include "gettuneurlhelper.h"
 
 #include <Phonon/AudioOutput>
 #include <Phonon/SeekSlider>
 #include <Phonon/VolumeSlider>
 #include <phonon/backendcapabilities.h>
-#include <QtConcurrentRun>
-
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
@@ -60,7 +59,6 @@ QompPhononPlayer::QompPhononPlayer() :
 QompPhononPlayer::~QompPhononPlayer()
 {
 	stop();
-	delete watcher_;
 }
 
 void QompPhononPlayer::setVolume(qreal vol)
@@ -135,14 +133,11 @@ void QompPhononPlayer::doSetTune()
 	}
 
 	if(watcher_) {
-		watcher_->disconnect();
-		watcher_->deleteLater();
+		watcher_->parent()->setProperty("blocked", true);
 	}
-	watcher_ = new QFutureWatcher<QUrl>;
-	connect(watcher_, SIGNAL(finished()), SLOT(tuneUrlReady()));
-	Tune* t = currentTune();
-	QFuture<QUrl> f = QtConcurrent::run(t, &Tune::getUrl);
-	watcher_->setFuture(f);
+
+	GetTuneUrlHelper* helper = new GetTuneUrlHelper(this, "tuneUrlReady", this);
+	watcher_ = helper->getTuneUrlAsynchronously(currentTune());
 }
 
 void QompPhononPlayer::playerStateChanged(Phonon::State newState, Phonon::State oldState)
@@ -156,13 +151,8 @@ void QompPhononPlayer::playerStateChanged(Phonon::State newState, Phonon::State 
 	emit stateChanged(PhononState2QompState(newState));
 }
 
-void QompPhononPlayer::tuneUrlReady()
+void QompPhononPlayer::tuneUrlReady(const QUrl &url)
 {
-	QFuture<QUrl> f = watcher_->future();
-	delete watcher_;
-	watcher_ = 0;
-	QUrl url = f.result();
-
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompPhononPlayer::tuneUrlReady()  " << lastAction() << url;
 #endif

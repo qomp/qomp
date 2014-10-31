@@ -65,6 +65,7 @@ signals:
 	void toggleTuneState(Tune* tune);
 	void removeTune(Tune* tune);
 	void tunes(const QList<Tune*> &list);
+	void copyUrl(Tune* tune);
 
 	void actPlayActivated();
 	void actPrevActivated();

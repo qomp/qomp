@@ -23,6 +23,7 @@
 #include "qompplayer.h"
 #include <Phonon/MediaObject>
 #include <QFutureWatcher>
+#include <QPointer>
 
 namespace Phonon {
 class AudioOutput;
@@ -60,14 +61,14 @@ protected slots:
 
 private slots:
 	void playerStateChanged(Phonon::State newState,Phonon::State oldState);
-	void tuneUrlReady();
+	void tuneUrlReady(const QUrl& url);
 
 private:
 	Phonon::MediaObject* mediaObject_;
 	Phonon::AudioOutput* audioOutput_;
 	Phonon::AudioOutputDevice defaultDevice_;
 	QompMetaDataResolver* resolver_;
-	QFutureWatcher<QUrl>* watcher_;
+	QPointer< QFutureWatcher<QUrl> > watcher_;
 };
 
 #endif // QOMPPHONONPLAYER_H

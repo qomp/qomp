@@ -20,6 +20,7 @@
 #include "qomptunedownloader.h"
 #include "qompnetworkingfactory.h"
 #include "tune.h"
+#include "gettuneurlhelper.h"
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QFile>
@@ -28,12 +29,7 @@
 #else
 #include <QProgressDialog>
 #endif
-#ifdef HAVE_QT5
-#include <QtConcurrent>
-#else
-#include <QFutureWatcher>
-#include <QtConcurrentRun>
-#endif
+
 
 class QompTuneDownloader::Private : public QObject
 {
@@ -93,12 +89,8 @@ public slots:
 #endif
 	}
 
-	void urlFinished()
+	void urlFinished(const QUrl& url)
 	{
-		QFutureWatcher<QUrl>* watcher = static_cast<QFutureWatcher<QUrl>*>(sender());
-		QFuture<QUrl> f = watcher->future();
-		watcher->deleteLater();
-		QUrl url = f.result();
 		if(url.isEmpty()) {
 			parent()->deleteLater();
 			return;
@@ -164,14 +156,8 @@ void QompTuneDownloader::download(Tune *tune, const QString &dir)
 	d->dir_ = dir;
 	d->tune_ = tune;
 
-	QFutureWatcher<QUrl>* watcher = new QFutureWatcher<QUrl>(this);
-	connect(watcher, SIGNAL(finished()), d, SLOT(urlFinished()));
-#ifdef HAVE_QT5
-	QFuture<QUrl> f = QtConcurrent::run(tune, &Tune::getUrl);
-#else
-	QFuture<QUrl> f = QtConcurrent::run(tune, &Tune::getUrl);
-#endif
-	watcher->setFuture(f);
+	GetTuneUrlHelper* helper = new GetTuneUrlHelper(d, "urlFinished", this);
+	helper->getTuneUrlAsynchronously(tune);
 }
 
 #include "qomptunedownloader.moc"

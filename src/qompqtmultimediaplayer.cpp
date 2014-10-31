@@ -20,9 +20,9 @@
 #include "qompqtmultimediaplayer.h"
 //#include "qomptaglibmetadataresolver.h"
 #include "tune.h"
+#include "gettuneurlhelper.h"
 
 #include <QMediaContent>
-#include <QtConcurrent>
 //#include <QAudioDeviceInfo>
 
 #ifdef DEBUG_OUTPUT
@@ -48,7 +48,6 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 QompQtMultimediaPlayer::~QompQtMultimediaPlayer()
 {
 	//delete resolver_;
-	delete watcher_;
 }
 
 void QompQtMultimediaPlayer::doSetTune()
@@ -63,14 +62,11 @@ void QompQtMultimediaPlayer::doSetTune()
 	}
 
 	if(watcher_) {
-		watcher_->disconnect();
-		watcher_->deleteLater();
+		watcher_->parent()->setProperty("blocked", true);
 	}
-	watcher_ = new QFutureWatcher<QUrl>;
-	connect(watcher_, SIGNAL(finished()), SLOT(tuneUrlReady()));
-	Tune* t = currentTune();
-	QFuture<QUrl> f = QtConcurrent::run(t, &Tune::getUrl);
-	watcher_->setFuture(f);
+
+	GetTuneUrlHelper* helper = new GetTuneUrlHelper(this, "tuneUrlReady", this);
+	watcher_ = helper->getTuneUrlAsynchronously(currentTune());
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const
@@ -223,13 +219,8 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 	}
 }
 
-void QompQtMultimediaPlayer::tuneUrlReady()
+void QompQtMultimediaPlayer::tuneUrlReady(const QUrl &url)
 {
-	QFuture<QUrl> f = watcher_->future();
-	delete watcher_;
-	watcher_ = 0;
-	QUrl url = f.result();
-
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::tuneUrlReady()  " << lastAction() << url;
 #endif

@@ -85,6 +85,7 @@ signals:
 	void togglePlayState(Tune*);
 	void removeTune(Tune*);
 	void saveTune(Tune*);
+	void copyUrl(Tune*);
 
 private slots:
 	void actRemoveActivated();

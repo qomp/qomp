@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -70,6 +70,8 @@ private slots:
 	void actDownloadTune(Tune* tune, const QString& dir);
 	void actToggleTuneState(Tune* tune);
 	void actRemoveTune(Tune* tune);
+	void actCopyUrl(Tune* tune);
+	void tuneUrlFinished(const QUrl& url);
 
 	void mediaFinished(bool afterError = false);
 	void playerStateChanged(Qomp::State state);

@@ -238,8 +238,9 @@ void QompMainWin::Private::doTrackContextMenu(const QPoint& val)
 	Tune* tune = parentWin_->model_->tune(index);
 	QompTrackMenu menu(tune, mainWin_);
 	connect(&menu, SIGNAL(saveTune(Tune*)), SLOT(actDownloadTune(Tune*)));
-	connect(&menu, SIGNAL(togglePlayState(Tune*)), parentWin_, SIGNAL(toggleTuneState(Tune*)));
-	connect(&menu, SIGNAL(removeTune(Tune*)), parentWin_, SIGNAL(removeTune(Tune*)));
+	connect(&menu, SIGNAL(togglePlayState(Tune*)),	parentWin_, SIGNAL(toggleTuneState(Tune*)));
+	connect(&menu, SIGNAL(removeTune(Tune*)),	parentWin_, SIGNAL(removeTune(Tune*)));
+	connect(&menu, SIGNAL(copyUrl(Tune*)),		parentWin_, SIGNAL(copyUrl(Tune*)));
 
 	menu.exec(QCursor::pos());
 }

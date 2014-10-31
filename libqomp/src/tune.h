@@ -51,7 +51,14 @@ public:
 	QString bitRate;
 
 	QString displayString() const;
+	/**
+	 * Synchronously get tune url
+	 * This may call some network requests
+	 * Blocks caller thread
+	 * If possible, use GetTuneUrlHelper instead
+	 */
 	QUrl getUrl() const;
+
 	QString toString() const;
 	bool fromString(const QString& str);
 	int id() const;

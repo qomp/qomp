@@ -1,6 +1,9 @@
 include($$PWD/../conf.pri)
 
 QT += network
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += concurrent
+}
 
 android {
     TARGET = qomp-shared

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2014  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@
 #include "tune.h"
 #include "updateschecker.h"
 #include "qomptunedownloader.h"
+#include "gettuneurlhelper.h"
 #ifndef Q_OS_ANDROID
 #include "aboutdlg.h"
 #include "thememanager.h"
@@ -50,6 +51,7 @@
 
 #include <QTimer>
 #include <QDesktopServices>
+#include <QClipboard>
 
 #ifdef HAVE_PHONON
 #include "qompphononplayer.h"
@@ -446,6 +448,17 @@ void QompCon::actRemoveTune(Tune *tune)
 	model_->removeTune(tune);
 }
 
+void QompCon::actCopyUrl(Tune *tune)
+{
+	GetTuneUrlHelper* helper = new GetTuneUrlHelper(this, "tuneUrlFinished", this);
+	helper->getTuneUrlAsynchronously(tune);
+}
+
+void QompCon::tuneUrlFinished(const QUrl &url)
+{
+	qApp->clipboard()->setText(url.toString());
+}
+
 void QompCon::setupMainWin()
 {
 	mainWin_ = new QompMainWin(qApp);
@@ -473,6 +486,7 @@ void QompCon::connectMainWin()
 	connect(mainWin_, SIGNAL(checkForUpdates()),			SLOT(actCheckForUpdates()));
 	connect(mainWin_, SIGNAL(doOptions()),				SLOT(actDoSettings()));
 	connect(mainWin_, SIGNAL(downloadTune(Tune*,QString)),		SLOT(actDownloadTune(Tune*,QString)));
+	connect(mainWin_, SIGNAL(copyUrl(Tune*)),			SLOT(actCopyUrl(Tune*)));
 	connect(mainWin_, SIGNAL(actMuteActivated(bool)),		SLOT(actMuteToggle(bool)));
 	connect(mainWin_, SIGNAL(volumeSliderMoved(qreal)),		SLOT(actSetVolume(qreal)));
 	connect(mainWin_, SIGNAL(seekSliderMoved(int)),			SLOT(actSeek(int)));

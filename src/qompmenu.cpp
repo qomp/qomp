@@ -23,7 +23,6 @@
 #include "qomppluginaction.h"
 
 #include <QApplication>
-#include <QClipboard>
 
 QompMenu::QompMenu(QWidget *parent) :
 	QMenu(parent)
@@ -140,7 +139,7 @@ void QompTrackMenu::actRemoveActivated()
 
 void QompTrackMenu::actCopyUrlActivated()
 {
-	qApp->clipboard()->setText(tune_->getUrl().toString());
+	emit copyUrl(tune_);
 }
 
 void QompTrackMenu::actSaveActivated()

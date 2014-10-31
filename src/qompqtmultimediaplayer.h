@@ -24,6 +24,7 @@
 
 #include <QMediaPlayer>
 #include <QFutureWatcher>
+#include <QPointer>
 
 class QompMetaDataResolver;
 
@@ -57,7 +58,7 @@ private slots:
 	void volumeChanged(int);
 	void playerStateChanged(QMediaPlayer::State);
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
-	void tuneUrlReady();
+	void tuneUrlReady(const QUrl& url);
 
 protected:
 	virtual QompMetaDataResolver* metaDataResolver() const;
@@ -65,7 +66,7 @@ protected:
 private:
 	QMediaPlayer* player_;
 	QompMetaDataResolver* resolver_;
-	QFutureWatcher<QUrl>* watcher_;
+	QPointer< QFutureWatcher<QUrl> > watcher_;
 };
 
 #endif // QOMPQTMULTIMEDIAPLAYER_H
