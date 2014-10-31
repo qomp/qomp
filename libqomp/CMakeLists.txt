@@ -48,13 +48,13 @@ set( libqomp_INCLUDE_HDRS
 	src/pluginhost.h
 	src/qompplayer.h
 	src/tune.h
-	src/tuneurlchecker.h
+	src/gettuneurlhelper.h
 	src/options/qompoptionspage.h
 	src/pluginmanager.h
 	src/libqomp_global.h
 	src/qompactionslist.h
+	src/tuneurlchecker.h
 	src/qompbusylabel.h
-	src/qompqmlengine.h
 	src/qompnetworkingfactory.h
 	src/qompmetadataresolver.h
 	src/options.h
@@ -71,6 +71,7 @@ set( libqomp_INCLUDE_HDRS
 )
 set( libqomp_SRCS
 	src/common.cpp
+	src/gettuneurlhelper.cpp
 	src/options.cpp
 	src/pluginhost.cpp
 	src/pluginmanager.cpp
@@ -110,20 +111,24 @@ include_directories(
 if( ${USE_QT5} )
 	find_package( Qt5Widgets REQUIRED )
 	find_package( Qt5Network REQUIRED )
+	find_package( Qt5Concurrent REQUIRED )
 	include_directories(
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
+		${Qt5Concurrent_INCLUDES}
 	)
 	qt5_wrap_ui( libqomp_UIS ${libqomp_UIFILES} )
 	set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
 	add_definitions(
 		${Qt5Widgets_DEFINITIONS}
 		${Qt5Network_DEFINITIONS}
+		${Qt5Concurrent_DEFINITIONS}
 		-DHAVE_QT5
 	)
 	set( QT_DEPLIBS
 		Qt5::Widgets
 		Qt5::Network
+		Qt5::Concurrent
 	)
 else( ${USE_QT5} )
 	find_package( Qt4 REQUIRED )
