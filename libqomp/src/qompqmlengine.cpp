@@ -20,7 +20,7 @@
 #include "qompqmlengine.h"
 #include "scaler.h"
 
-#include <QCoreApplication>
+#include <QGuiApplication>
 #include <QQuickItem>
 #include <QQmlComponent>
 #include <QQmlContext>
@@ -117,12 +117,18 @@ void QompQmlEngine::itemDeleted()
 bool QompQmlEngine::eventFilter(QObject *o, QEvent *e)
 {
 	if(o == qApp) {
-		if(e->type() == QEvent::ApplicationActivate) {
-			window_->setProperty("visibility", QWindow::Maximized);
-			window_->update();
-		}
-		else if(e->type() == QEvent::ApplicationDeactivate) {
-			window_->setProperty("visibility", QWindow::Hidden);
+		if(e->type() == QEvent::ApplicationStateChange) {
+			Qt::ApplicationState state = qApp->applicationState();
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompQmlEngine::eventFilter() " << state;
+#endif
+			if(state == Qt::ApplicationActive) {
+				window_->setProperty("visibility", QWindow::Maximized);
+				window_->update();
+			}
+			else if(state == Qt::ApplicationInactive) {
+				window_->setProperty("visibility", QWindow::Hidden);
+			}
 		}
 	}
 	return QQmlApplicationEngine::eventFilter(o, e);
