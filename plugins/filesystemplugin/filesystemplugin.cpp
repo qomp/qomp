@@ -86,7 +86,7 @@ static QList<Tune*> getTunesRecursive(const QString& folder)
 			list.append(getTunesRecursive(fi.absoluteFilePath()));
 		}
 		else  {
-			static const QRegExp songRe("\\.mp3|ogg|flac|wav|ape|mp4$");
+			static const QRegExp songRe("\\.(mp3|ogg|flac|wav|mp4)$");
 			QString song = fi.absoluteFilePath();
 			if(songRe.indexIn(song) != -1)
 				list.append(tuneFromFile(song));
