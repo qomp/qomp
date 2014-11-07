@@ -103,9 +103,9 @@ void QompPluginGettunesDlg::Private::search()
 
 void QompPluginGettunesDlg::Private::timeout()
 {
-	QString text = mainDlg_->currentSearchText();
-	if(text.length() > 2) {
-		emit mainDlg_->searchTextChanged(mainDlg_->currentSearchText());
+	QString text = item_->property("serchText").toString();
+	if(text.length() > 2 && text.lastIndexOf(" ") != text.length()-1) {
+		emit mainDlg_->searchTextChanged(text.trimmed());
 		QQmlProperty::write(item_, "waitForSuggestions", true);
 	}
 }
