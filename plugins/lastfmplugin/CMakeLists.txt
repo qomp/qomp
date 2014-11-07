@@ -78,7 +78,7 @@ if( ${WIN32} )
 		${PLUGIN}
 		LIBRARY
 		DESTINATION
-		${CMAKE_INSTALL_PREFIX}
+		${CMAKE_INSTALL_PREFIX}/plugins
 		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/plugins
 	)
 endif( ${WIN32} )
@@ -89,6 +89,8 @@ if( ${UNIX} )
 		${PLUGIN}
 		LIBRARY
 		DESTINATION
+		${LIB_INSTALL_DIR}/qomp/plugins
+		RUNTIME DESTINATION
 		${LIB_INSTALL_DIR}/qomp/plugins
 	)
 endif( ${UNIX} )

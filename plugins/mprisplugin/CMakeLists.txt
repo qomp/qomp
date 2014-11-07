@@ -69,5 +69,7 @@ if( ${UNIX} )
 		LIBRARY
 		DESTINATION
 		${LIB_INSTALL_DIR}/qomp/plugins
+		RUNTIME DESTINATION
+		${LIB_INSTALL_DIR}/qomp/plugins
 	)
 endif( ${UNIX} )

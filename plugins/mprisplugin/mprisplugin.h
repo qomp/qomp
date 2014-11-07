@@ -46,7 +46,6 @@ public:
 
 private slots:
 	void playerStatusChanged(Qomp::State state);
-	void tuneInfoLoaded(Tune *tuneInfo);
 
 private:
 	void disableMpris();
