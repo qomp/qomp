@@ -36,7 +36,7 @@ QString YandexMusicPlugin::name() const
 
 QString YandexMusicPlugin::version() const
 {
-	return "0.1.2";
+	return "0.7.1";
 }
 
 QString YandexMusicPlugin::description() const
