@@ -42,7 +42,7 @@ static const QString artistsRegExp = QString(
 		"<td .+"
 		"</td>\\s+"
 		"<td>\\s+"
-		"<a (Class=\"darkorange\")? href=\"(/Artist/[^\"]+)\">([^<]+)</a>\\s+"		//cap(2) - internalID, cap(3) - Artist
+		"<a\\s+(Class=\"darkorange\"\\s+)?href=\"(/Artist/[^\"]+)\">([^<]+)</a>\\s+"		//cap(2) - internalID, cap(3) - Artist
 		"</td>\\s+"
 		"<td>\\s+"
 		"(\\d+)\\s+"									//cap(4) - albums count
@@ -53,10 +53,10 @@ static const QString albumsRegExp = QString(
 		"<td .+"
 		"</td>\\s+"
 		"<td>\\s+"
-		"<a (Class=\"darkorange\")? href=\"(/Artist/[^\"]+)\">([^<]+)</a>\\s+"		//cap(3) - Artist
+		"<a\\s+(Class=\"darkorange\"\\s+)?href=\"(/Artist/[^\"]+)\">([^<]+)</a>\\s+"		//cap(3) - Artist
 		"</td>\\s+"
 		"<td>\\s+"
-		"<a (class=\"darkorange\")? href=\"(/Album/[^\"]+)\">"				//cap(5) - internalId
+		"<a\\s+(class=\"darkorange\"\\s+)?href=\"(/Album/[^\"]+)\">"				//cap(5) - internalId
 		"([^<]+)"									//cap(6) - Album
 		"</a>\\s+"
 		"</td>\\s+"
@@ -70,66 +70,64 @@ static const QString albumsRegExp = QString(
 		);
 
 static const QString albumsRegExp2 = QString::fromUtf8(
-			"<div data-type=\"([\\d]+)\"[^>]+>\\s+"					//cap(1) - album type
-			"<div>\\s+"								//(2,3,4,6 - direct albums, other - compilations)
-			"<a.+href=\"(/Album/[^\"]+)\">\\s+"					//cap(2) - internalId
-			"([^<]+)"								//cap(3) - album
-			"</a>.+"
-			"<a.+"
-			"</a>\\s+"
-			"</div>.+"
-			"Год релиза:\\s+(\\d+)?.+"						//cap(4) - year
-			"</div>"
+			"<div\\s+data-type=\"([\\d]+)\"[^>]+>\\s+"				//cap(1) - album type
+			"<div[^>]*>\\s+"							//(2,3,4,6 - direct albums, other - compilations)
+			"<a[^>]+>.+</a>\\s+"
+			"<div[^>]*>\\s+"
+			"<ul>\\s+"
+			"<li>Год релиза:([^<]+)</li>.+"						//cap(2) - year
+			"</ul>\\s+"
+			"</div>\\s+"
+			"</div>\\s+"
+			"<div[^>]*>\\s+"
+			"<div[^>]*>\\s*<a\\s+href=\"([^\"]+)\">([^<]+)</a>"			//cap(3) - internalId; cap(4) - title
 			);
 
 static const QString songsRegExp = QString(
 		"<tr>\\s+"
 		"<td .+"
-		"<a (Class=\"darkorange\")? href=\"(/Artist/[^\"]+)\">([^<]+)</a>\\s+"		//cap(3) - artist
+		"<a\\s+(Class=\"darkorange\"\\s+)?href=\"(/Artist/[^\"]+)\">([^<]+)</a>\\s+"		//cap(3) - artist
 		"</td>\\s+"
 		"<td>\\s+"
-		"<a (Class=\"darkorange\")? href=\"/Song/([^/]+)/[^\"]+\">([^<]+)</a>\\s+"	//cap(5) - internalID, cap(6) - Title
+		"<a\\s+(Class=\"darkorange\"\\s+)?href=\"/Song/([^/]+)/[^\"]+\">([^<]+)</a>\\s+"	//cap(5) - internalID, cap(6) - Title
 		"</td>\\s+"
 		"<td>\\s+"
 		"([^<]+)\\s+"									//cap(7) - size
 		"</td>\\s+</tr>");
 
 static const QString songsRegExp2 = QString(
-		"<tr id=\"trSong_[^>]+>\\s+"
-		"<td .+"
-		"</td>\\s+"
-		"<td class=\"tdNum\">\\s+"
-		"(\\d+)\\s+"									//cap(1) - track number
-		"</td>\\s+"
-		"<td .+"
-		"<div>\\s+"
-		"<a href=\"/Artist/[^\"]+\">([^<]+)</a>.+"					//cap(2) - artist
-		"<a href=\"/Song/([^/]+)/[^\"]+\">([^<]+)</a>.+"				//cap(3) - internalId, cap(4) - title
-		"</div>\\s+"
-		"</td>\\s+"
-		"<td class=\"tdOst\">\\s+"
-		"(\\S+)\\s+"									//cap(5) - duration
-		"</td>"
+	"<div\\s+id=\"playerDiv([^\"]+)\"[^>]+>\\s+"					//cap(1) - internalId
+	"<div[^>]+>.+"
+	"</div>\\s+"
+	"<div[^>]+>([^<]+)</div>.+"							//cap(2) - position
+	"<div\\s+class=\"data\">([^<]+)<.+</div>\\s+"					//cap(3) - duration
+	"</div>\\s+"
+	"<div[^>]+>.+"
+	"<a[^>]+>([^<]+)</a>.+"								//cap(4) - artist
+	"<a[^>]+>([^<]+)</a>.+"								//cap(5) - title
 		);
 
 
 static const QString songsRegExp3 = QString(
-		"<tr id=\"trSong_[^>]+>\\s+"
-		"<td .+"
-		"</td>\\s+"
-		"<td class=\"tdNum\">\\s+"
-		"</td>\\s+"
-		"<td .+"
-		"<div>\\s+"
-		"<a href=\"/Song/([^/]+)/[^\"]+\">([^<]+)</a>.+"				//cap(1) - internalId, cap(2) - title
+		"<div\\s+id=\"playerDiv([^\"]+)\"[^>]+>\\s+"					//cap(1) - internalId
+		"<div[^>]+>.+"
+//		"</div>\\s+"
+//		"<div[^>]+>\\s+"
+//		"<div[^>]+>\\s+"
+//		"<span.+</span>\\s+"
+//		"<a[^>]+></a>\\s+"
+//		"</div>\\s+"
+		"<div\\s+class=\"data\">([^<]+)<.+</div>\\s+"					//cap(2) - duration
 		"</div>\\s+"
-		"</td>\\s+"
-		"<td .+"
-		"<a href=\"/(Album/[^\"]+)\">([^<]+)</a>.+"					//cap(4) - album
-		"<td class=\"tdOst\">\\s+"
-		"(\\S+)\\s+"									//cap(5) - duration
-		"</td>"
-		);
+		"<div[^>]+>\\s+"
+		"<div[^<]+</div>\\s+"
+		"<p>\\s+"
+		"<a[^>]+>([^<]+)</a>\\s+"							//cap(3) - title
+		"</p>\\s+"
+		"<strong>\\s*<span[^>]+>\\s*</span>[^<]*"
+		"<a[^>]+>([^<]+)</a>\\s*</strong>"						//cap(4) - album
+
+				);
 
 static bool lessThen(QompPluginModelItem* it1, QompPluginModelItem* it2)
 {
@@ -194,6 +192,9 @@ static QList<QompPluginModelItem*> parseTunes(const QString& replyStr, int songI
 
 static QList<QompPluginModelItem*> parseTunes2(const QString& replyStr, int songIndex)
 {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QList<QompPluginModelItem*> parseTunes2" << replyStr;
+#endif
 	QList<QompPluginModelItem*> tunes;
 	if(songIndex != -1) {
 		QRegExp songRx(songsRegExp2, Qt::CaseInsensitive);
@@ -201,10 +202,10 @@ static QList<QompPluginModelItem*> parseTunes2(const QString& replyStr, int song
 		while((songIndex = songRx.indexIn(replyStr, songIndex)) != -1) {
 			songIndex += songRx.matchedLength();
 			QompPluginTune* t = new QompPluginTune();
-			t->/*internalId*/url = songRx.cap(3);
-			t->artist = Qomp::unescape(songRx.cap(2));
-			t->title = Qomp::unescape(songRx.cap(4));
-			t->duration = Qomp::unescape(songRx.cap(5));
+			t->/*internalId*/url = songRx.cap(1);
+			t->artist = Qomp::unescape(songRx.cap(4));
+			t->title = Qomp::unescape(songRx.cap(5));
+			t->duration = Qomp::unescape(songRx.cap(3).trimmed());
 
 			tunes.append(t);
 		}
@@ -214,6 +215,9 @@ static QList<QompPluginModelItem*> parseTunes2(const QString& replyStr, int song
 
 static QList<QompPluginModelItem*> parseTunes3(const QString& replyStr, int songIndex)
 {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QList<QompPluginModelItem*> parseTunes3" << replyStr;
+#endif
 	QList<QompPluginModelItem*> tunes;
 	if(songIndex != -1) {
 		QRegExp songRx(songsRegExp3, Qt::CaseInsensitive);
@@ -223,8 +227,8 @@ static QList<QompPluginModelItem*> parseTunes3(const QString& replyStr, int song
 			QompPluginTune* t = new QompPluginTune();
 			t->/*internalId*/url = songRx.cap(1);
 			t->album = Qomp::unescape(songRx.cap(4));
-			t->title = Qomp::unescape(songRx.cap(2));
-			t->duration = Qomp::unescape(songRx.cap(5));
+			t->title = Qomp::unescape(songRx.cap(3));
+			t->duration = Qomp::unescape(songRx.cap(2).trimmed());
 
 			tunes.append(t);
 		}
@@ -274,9 +278,9 @@ static QList<QompPluginModelItem*> parseAlbums2(const QString& replyStr, int alb
 			albumsIndex += albumRx.matchedLength();
 			QompPluginAlbum* album = new QompPluginAlbum();
 			album->artist = albumRx.cap(1); // actually contains album type (digital)
-			album->album = Qomp::unescape(albumRx.cap(3).trimmed());
-			album->year = albumRx.cap(4).trimmed();
-			album->internalId = albumRx.cap(2).trimmed();
+			album->album = Qomp::unescape(albumRx.cap(4).trimmed());
+			album->year = albumRx.cap(2).trimmed();
+			album->internalId = albumRx.cap(3).trimmed();
 
 			//add fake empty item
 			QList<QompPluginModelItem*> list;
