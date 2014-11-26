@@ -74,13 +74,13 @@ static const QString albumsRegExp2 = QString::fromUtf8(
 			"<div[^>]*>\\s+"							//(2,3,4,6 - direct albums, other - compilations)
 			"<a[^>]+>.+</a>\\s+"
 			"<div[^>]*>\\s+"
-			"<ul>\\s+"
-			"<li>Год релиза:([^<]+)</li>.+"						//cap(2) - year
+			"<ul>.+"
 			"</ul>\\s+"
 			"</div>\\s+"
 			"</div>\\s+"
 			"<div[^>]*>\\s+"
-			"<div[^>]*>\\s*<a\\s+href=\"([^\"]+)\">([^<]+)</a>"			//cap(3) - internalId; cap(4) - title
+			"<div[^>]*>\\s*<a\\s+href=\"([^\"]+)\">([^<]+)</a>.+"			//cap(2) - internalId; cap(3) - title
+			"<div class=\"tags\">Год релиза:\\s*<a[^>]+>([^<]+)</a>"		//cap(4) - year
 			);
 
 static const QString songsRegExp = QString(
@@ -89,15 +89,16 @@ static const QString songsRegExp = QString(
 		"<a\\s+(Class=\"darkorange\"\\s+)?href=\"(/Artist/[^\"]+)\">([^<]+)</a>\\s+"		//cap(3) - artist
 		"</td>\\s+"
 		"<td>\\s+"
-		"<a\\s+(Class=\"darkorange\"\\s+)?href=\"/Song/([^/]+)/[^\"]+\">([^<]+)</a>\\s+"	//cap(5) - internalID, cap(6) - Title
+		"<a\\s+(Class=\"darkorange\"\\s+)?href=\"(/Song/[^\"]+)\">([^<]+)</a>\\s+"	//cap(5) - internalID, cap(6) - Title
 		"</td>\\s+"
 		"<td>\\s+"
 		"([^<]+)\\s+"									//cap(7) - size
 		"</td>\\s+</tr>");
 
 static const QString songsRegExp2 = QString(
-	"<div\\s+id=\"playerDiv([^\"]+)\"[^>]+>\\s+"					//cap(1) - internalId
-	"<div[^>]+>.+"
+	"<div[^>]+>\\s+"
+	"<div[^>]+>\\s+"
+	"<span\\s+class=\"[^\"]+\"\\s+data-url=\"/Song/Play/([^\"]+)\".+"					//cap(1) - internalId
 	"</div>\\s+"
 	"<div[^>]+>([^<]+)</div>.+"							//cap(2) - position
 	"<div\\s+class=\"data\">([^<]+)<.+</div>\\s+"					//cap(3) - duration
@@ -108,26 +109,31 @@ static const QString songsRegExp2 = QString(
 		);
 
 
-static const QString songsRegExp3 = QString(
-		"<div\\s+id=\"playerDiv([^\"]+)\"[^>]+>\\s+"					//cap(1) - internalId
-		"<div[^>]+>.+"
+//static const QString songsRegExp3 = QString(
+//		"<div\\s+id=\"playerDiv[^>]+>\\s+"
+//		"<div\\s+id=\"play[^>]+>\\s+"
+//		"<span\\s+class=\"[^\"]+\"\\s+data-url=\"/Song/Play/([^\"]+)\".+</span>\\s+"					//cap(1) - internalId
 //		"</div>\\s+"
 //		"<div[^>]+>\\s+"
 //		"<div[^>]+>\\s+"
 //		"<span.+</span>\\s+"
-//		"<a[^>]+></a>\\s+"
+//		"<a[^>]+>[^<]*</a>\\s+"
 //		"</div>\\s+"
-		"<div\\s+class=\"data\">([^<]+)<.+</div>\\s+"					//cap(2) - duration
-		"</div>\\s+"
-		"<div[^>]+>\\s+"
-		"<div[^<]+</div>\\s+"
-		"<p>\\s+"
-		"<a[^>]+>([^<]+)</a>\\s+"							//cap(3) - title
-		"</p>\\s+"
-		"<strong>\\s*<span[^>]+>\\s*</span>[^<]*"
-		"<a[^>]+>([^<]+)</a>\\s*</strong>"						//cap(4) - album
+//		"<div\\s+class=\"data\">([^<]+)<.+</div>\\s+"					//cap(2) - duration
+//		"</div>\\s+"
+//		"<div[^>]+>\\s+"
+//		"<div[^<]+</div>\\s+"
+//		"<p>\\s+<strong>\\s+"
+//		"<a[^>]+>([^<]+)</a>\\s+"								//cap(3) - title
+//		"</strong>\\s+</p>.+"
+//		"<a[^>]+>([^<]+)</a>"									//cap(4) - album
+//		);
 
-				);
+static const QString songsRegExp4 = QString(
+			"<div\\s+id=\"playerDiv[^>]+>\\s+"
+			"<div\\s+id=\"[^\"]+\"\\s+class=\"play[^>]+>\\s+"
+			"<span\\s+class=\"[^\"]+\"\\s+data-url=\"/Song/Play/([^\"]+)\""				//cap(1) - internalId
+			);
 
 static bool lessThen(QompPluginModelItem* it1, QompPluginModelItem* it2)
 {
@@ -179,7 +185,7 @@ static QList<QompPluginModelItem*> parseTunes(const QString& replyStr, int songI
 		while((songIndex = songRx.indexIn(replyStr, songIndex)) != -1) {
 			songIndex += songRx.matchedLength();
 			QompPluginTune* t = new QompPluginTune();
-			t->/*internalId*/url = songRx.cap(5);
+			t->internalId = songRx.cap(5);
 			t->artist = Qomp::unescape(songRx.cap(3));
 			t->title = Qomp::unescape(songRx.cap(6));
 			//t->album = unescape(songRx.cap(9));
@@ -202,7 +208,7 @@ static QList<QompPluginModelItem*> parseTunes2(const QString& replyStr, int song
 		while((songIndex = songRx.indexIn(replyStr, songIndex)) != -1) {
 			songIndex += songRx.matchedLength();
 			QompPluginTune* t = new QompPluginTune();
-			t->/*internalId*/url = songRx.cap(1);
+			t->/*internalId*/url = Qomp::unescape(songRx.cap(1));
 			t->artist = Qomp::unescape(songRx.cap(4));
 			t->title = Qomp::unescape(songRx.cap(5));
 			t->duration = Qomp::unescape(songRx.cap(3).trimmed());
@@ -213,28 +219,28 @@ static QList<QompPluginModelItem*> parseTunes2(const QString& replyStr, int song
 	return tunes;
 }
 
-static QList<QompPluginModelItem*> parseTunes3(const QString& replyStr, int songIndex)
-{
-#ifdef DEBUG_OUTPUT
-	qDebug() << "QList<QompPluginModelItem*> parseTunes3" << replyStr;
-#endif
-	QList<QompPluginModelItem*> tunes;
-	if(songIndex != -1) {
-		QRegExp songRx(songsRegExp3, Qt::CaseInsensitive);
-		songRx.setMinimal(true);
-		while((songIndex = songRx.indexIn(replyStr, songIndex)) != -1) {
-			songIndex += songRx.matchedLength();
-			QompPluginTune* t = new QompPluginTune();
-			t->/*internalId*/url = songRx.cap(1);
-			t->album = Qomp::unescape(songRx.cap(4));
-			t->title = Qomp::unescape(songRx.cap(3));
-			t->duration = Qomp::unescape(songRx.cap(2).trimmed());
+//static QList<QompPluginModelItem*> parseTunes3(const QString& replyStr, int songIndex)
+//{
+//#ifdef DEBUG_OUTPUT
+//	qDebug() << "QList<QompPluginModelItem*> parseTunes3" << replyStr;
+//#endif
+//	QList<QompPluginModelItem*> tunes;
+//	if(songIndex != -1) {
+//		QRegExp songRx(songsRegExp3, Qt::CaseInsensitive);
+//		songRx.setMinimal(true);
+//		while((songIndex = songRx.indexIn(replyStr, songIndex)) != -1) {
+//			songIndex += songRx.matchedLength();
+//			QompPluginTune* t = new QompPluginTune();
+//			t->/*internalId*/url = Qomp::unescape(songRx.cap(1));
+//			t->album = Qomp::unescape(songRx.cap(4));
+//			t->title = Qomp::unescape(songRx.cap(3));
+//			t->duration = Qomp::unescape(songRx.cap(2).trimmed());
 
-			tunes.append(t);
-		}
-	}
-	return tunes;
-}
+//			tunes.append(t);
+//		}
+//	}
+//	return tunes;
+//}
 
 static QList<QompPluginModelItem*> parseAlbums(const QString& replyStr, int albumsIndex)
 {
@@ -278,9 +284,9 @@ static QList<QompPluginModelItem*> parseAlbums2(const QString& replyStr, int alb
 			albumsIndex += albumRx.matchedLength();
 			QompPluginAlbum* album = new QompPluginAlbum();
 			album->artist = albumRx.cap(1); // actually contains album type (digital)
-			album->album = Qomp::unescape(albumRx.cap(4).trimmed());
-			album->year = albumRx.cap(2).trimmed();
-			album->internalId = albumRx.cap(3).trimmed();
+			album->album = Qomp::unescape(albumRx.cap(3).trimmed());
+			album->year = albumRx.cap(4).trimmed();
+			album->internalId = albumRx.cap(2).trimmed();
 
 			//add fake empty item
 			QList<QompPluginModelItem*> list;
@@ -444,7 +450,12 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 	switch(item->type()) {
 	case QompCon::TypeTune:
 	{
-		return;
+		QompPluginTune* tune = static_cast<QompPluginTune *>(item);
+		if(!tune->url.isEmpty())
+			return;
+		url.setPath(QUrl::fromPercentEncoding(tune->internalId.toLatin1()));
+		slot = SLOT(tuneUrlFinished());
+		break;
 	}
 	case QompCon::TypeAlbum:
 	{
@@ -548,7 +559,7 @@ void MyzukaruController::artistUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
-	void* model = requests_.value(reply);
+	//void* model = requests_.value(reply);
 	requests_.remove(reply);
 	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
@@ -559,6 +570,7 @@ void MyzukaruController::artistUrlFinished()
 		//Check if we on first page
 		QString urlStr = reply->url().toString();
 		int page = 1;
+		Q_UNUSED(page)
 		QRegExp pageRx("Page(\\d+)");
 		if(pageRx.indexIn(urlStr) != -1) {
 			page = pageRx.cap(1).toInt();
@@ -586,36 +598,59 @@ void MyzukaruController::artistUrlFinished()
 			artistsModel_->addItems(albums, it);
 		}
 
-		QList<QompPluginModelItem*> tunes = parseTunes3(replyStr, 0);
-		if(!tunes.isEmpty()) {
-			if(it && it->type() == QompCon::TypeArtist) {
-				QompPluginArtist* pa = static_cast<QompPluginArtist*>(it);
-				foreach(QompPluginModelItem* t, tunes) {
-					static_cast<QompPluginTune*>(t)->artist = pa->artist;
-				}
-				pa->tunesReceived = true;
-			}
-			artistsModel_->addItems(tunes, it);
-		}
+//		QList<QompPluginModelItem*> tunes = parseTunes3(replyStr, 0);
+//		if(!tunes.isEmpty()) {
+//			if(it && it->type() == QompCon::TypeArtist) {
+//				QompPluginArtist* pa = static_cast<QompPluginArtist*>(it);
+//				foreach(QompPluginModelItem* t, tunes) {
+//					static_cast<QompPluginTune*>(t)->artist = pa->artist;
+//				}
+//				pa->tunesReceived = true;
+//			}
+//			artistsModel_->addItems(tunes, it);
+//		}
 
-		int maxPage = page;
-		QRegExp maxPageRx("<a href=\"/Artist/.+/Page[\\d]+\">([\\d]+)</a>");
-		maxPageRx.setMinimal(true);
-		if(maxPageRx.lastIndexIn(replyStr) != -1) {
-			maxPage = maxPageRx.cap(1).toInt();
-		}
+//		int maxPage = page;
+//		QRegExp maxPageRx("<a href=\"/Artist/.+/Page[\\d]+\">([\\d]+)</a>");
+//		maxPageRx.setMinimal(true);
+//		if(maxPageRx.lastIndexIn(replyStr) != -1) {
+//			maxPage = maxPageRx.cap(1).toInt();
+//		}
 		//Take Next page
-		if(page < maxPage) {
-			QUrl url(MYZUKA_URL);
-			url.setPath(QString("%1/Page%2").arg(QUrl::fromPercentEncoding(it->internalId.toLatin1()), QString::number(++page)));
-			QNetworkRequest nr(url);
-			nr.setRawHeader("Accept", "*/*");
-			nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-			QNetworkReply *newReply = nam()->get(nr);
-			newReply->setProperty("id", id);
-			requests_.insert(newReply, model);
-			connect(newReply, SIGNAL(finished()), SLOT(artistUrlFinished()));
-			dlg_->startBusyWidget();
+//		if(page < maxPage) {
+//			QUrl url(MYZUKA_URL);
+//			url.setPath(QString("%1/Page%2").arg(QUrl::fromPercentEncoding(it->internalId.toLatin1()), QString::number(++page)));
+//			QNetworkRequest nr(url);
+//			nr.setRawHeader("Accept", "*/*");
+//			nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+//			QNetworkReply *newReply = nam()->get(nr);
+//			newReply->setProperty("id", id);
+//			requests_.insert(newReply, model);
+//			connect(newReply, SIGNAL(finished()), SLOT(artistUrlFinished()));
+//			dlg_->startBusyWidget();
+//		}
+	}
+}
+
+void MyzukaruController::tuneUrlFinished()
+{
+	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
+	reply->deleteLater();
+	QompPluginTreeModel *model = (QompPluginTreeModel *)requests_.value(reply);
+	requests_.remove(reply);
+	checkAndStopBusyWidget();
+	if(reply->error() == QNetworkReply::NoError) {
+		QString replyStr = QString::fromUtf8(reply->readAll());
+		const QString id = reply->property("id").toString();
+		QompPluginModelItem* it = model->itemForId(id);
+		if(it && it->type() == QompCon::TypeTune) {
+			QompPluginTune* t = static_cast<QompPluginTune*>(it);
+			QRegExp re(songsRegExp4);
+			re.setMinimal(true);
+			if(re.indexIn(replyStr) != -1) {
+				t->url = Qomp::unescape(re.cap(1));
+				model->emitUpdateSignal(model->index(it));
+			}
 		}
 	}
 }

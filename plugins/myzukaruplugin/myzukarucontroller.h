@@ -51,7 +51,8 @@ private slots:
 	void searchFinished();
 	//void tuneUrlFinished();
 	void albumUrlFinished();
-	void artistUrlFinished();	
+	void artistUrlFinished();
+	void tuneUrlFinished();
 
 private:
 	void checkAndStopBusyWidget();

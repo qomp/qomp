@@ -75,8 +75,7 @@ public:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "MyzukaruResolveStrategyPrivate::getUrl()";
 #endif
-		QUrl url(MYZUKA_URL);
-		url.setPath(QString("/Song/GetPlayFileUrl/%1").arg(tune_->url));
+		QUrl url(QString("%1Song/Play/%2").arg(MYZUKA_URL).arg(tune_->url));
 		QNetworkRequest nr(url);
 		nr.setRawHeader("Accept", "*/*");
 		nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
@@ -107,11 +106,15 @@ private slots:
 		QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 		reply->deleteLater();
 		if(reply->error() == QNetworkReply::NoError) {
-			QRegExp re("\"(http://[^\"]+)\"");
-			QString text = QString::fromUtf8(reply->readAll());
-			if(re.indexIn(text) != -1) {
-				url_.setUrl(re.cap(1).replace("\\u0026", "&"),QUrl::TolerantMode);
-			}
+//			QRegExp re("\"(http://[^\"]+)\"");
+//			QString text = QString::fromUtf8(reply->readAll());
+//			qDebug() << text;
+//			if(re.indexIn(text) != -1) {
+//				url_.setUrl(re.cap(1).replace("\\u0026", "&"),QUrl::TolerantMode);
+//			}
+//			else {
+				url_.setUrl(reply->header(QNetworkRequest::LocationHeader).toString());
+//			}
 		}
 		loop_->quit();
 	}
