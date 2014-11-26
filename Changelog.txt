@@ -1,5 +1,5 @@
 Version 0.7.1 beta
-xx.11.2014
+26.11.2014
  * adapt myzuka.ru plugin for new site design
  * some minor fixes
 
