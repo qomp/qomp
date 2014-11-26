@@ -1,9 +1,22 @@
 Quick(Qt) Online Music Player
 
 Dependences:
-	Qt 4.8.x, phonon, taglib
+	Qt 4.8.x, phonon, taglib, qjson
 or
 	Qt 5.x.x, taglib
+
+
+Get sources:
+	git clone https://github.com/qomp/qomp.git
+	cd qomp
+	git submodule init
+	git submodule update
+
+Update qomp surces:
+	cd qomp
+	git pull
+	git submodule update
+
 
 Build:
   linux:
