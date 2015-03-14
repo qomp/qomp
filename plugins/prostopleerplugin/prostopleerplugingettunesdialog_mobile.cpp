@@ -27,7 +27,6 @@
 #include <QQmlContext>
 #include <QAbstractItemModel>
 #include <QQmlProperty>
-#include <QJSValue>
 
 class ProstoPleerPluginGetTunesDialog::Private : public QObject
 {
@@ -42,13 +41,13 @@ signals:
 	void next();
 
 public slots:
-	void itemClicked(const QJSValue &row);
+	void itemClicked(const QVariant &row);
 };
 
 ProstoPleerPluginGetTunesDialog::Private::Private() : QObject()
 {
 	item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/ProstoPleerResultView.qml"));
-	connect(item, SIGNAL(itemCheckClick(QJSValue)), SLOT(itemClicked(QJSValue)));
+	connect(item, SIGNAL(itemCheckClick(QVariant)), SLOT(itemClicked(QVariant)));
 	connect(item, SIGNAL(actNext()), SIGNAL(next()));
 }
 
@@ -56,10 +55,10 @@ ProstoPleerPluginGetTunesDialog::Private::~Private()
 {
 }
 
-void ProstoPleerPluginGetTunesDialog::Private::itemClicked(const QJSValue &row)
+void ProstoPleerPluginGetTunesDialog::Private::itemClicked(const QVariant &row)
 {
 	//QAbstractItemModel *model = item->property("model").value<QAbstractItemModel*>();
-	QModelIndex i = row.toVariant().value<QModelIndex>();
+	QModelIndex i = row.value<QModelIndex>();
 	//model->setData(i, QompCon::DataToggle, Qt::CheckStateRole);
 	emit itemClicked(i);
 }

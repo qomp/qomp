@@ -38,7 +38,7 @@ public:
 		item_(0)
 	{
 		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/MyzukaRuResultsView.qml"));
-		connect(item_, SIGNAL(itemCheckClick(QJSValue)), SLOT(clicked(QJSValue)));
+		connect(item_, SIGNAL(itemCheckClick(QVariant)), SLOT(clicked(QVariant)));
 		connect(this, SIGNAL(itemClicked(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
 
 		p->setResultsWidget(item_);
@@ -48,9 +48,9 @@ signals:
 	void itemClicked(const QModelIndex&);
 
 private slots:
-	void clicked(const QJSValue& val)
+	void clicked(const QVariant& val)
 	{
-		QModelIndex i = val.toVariant().value<QModelIndex>();
+		QModelIndex i = val.value<QModelIndex>();
 		emit itemClicked(i);
 	}
 

@@ -68,6 +68,7 @@ android {
     ANDROID_DEPLOYMENT_DEPENDENCIES = \
         jar/QtAndroid-bundled.jar \
         jar/QtAndroidAccessibility-bundled.jar \
+        jar/QtAndroidBearer-bundled.jar \
         jar/QtMultimedia-bundled.jar
 
     ANDROID_DEPLOYMENT_DEPENDENCIES += \
@@ -81,24 +82,8 @@ android {
         lib/libQt5Multimedia.so \
         lib/libQt5Xml.so
 
-    greaterThan(QT_MINOR_VERSION, 3) {
-        ANDROID_DEPLOYMENT_DEPENDENCIES += \
-            plugins/bearer/libqandroidbearer.so \
-            jar/QtAndroidBearer-bundled.jar \
-            qml/QtQuick/Controls/Styles/qmldir \
-            qml/QtQuick/Controls/Styles/Android/qmldir \
-            qml/QtQuick/Controls/Styles/Android/libqtquickcontrolsandroidstyleplugin.so \
-            qml/QtQml/StateMachine/qmldir \
-            qml/QtQml/StateMachine/plugins.qmltypes \
-            qml/QtQml/StateMachine/libqtqmlstatemachine.so
-    }
-    else {
-        ANDROID_DEPLOYMENT_DEPENDENCIES += \
-            plugins/accessible/libqtaccessiblequick.so \
-            plugins/bearer/libqgenericbearer.so
-    }
-
     ANDROID_DEPLOYMENT_DEPENDENCIES += \
+        plugins/bearer/libqandroidbearer.so \
         plugins/platforms/android/libqtforandroid.so \
         plugins/mediaservice/libqtmedia_android.so \
         plugins/audio/libqtaudio_opensles.so
@@ -123,7 +108,10 @@ android {
     ANDROID_DEPLOYMENT_DEPENDENCIES += \
         qml/QtQuick/Controls/libqtquickcontrolsplugin.so \
         qml/QtQuick/Controls/qmldir \
-        qml/QtQuick/Controls/plugins.qmltypes
+        qml/QtQuick/Controls/plugins.qmltypes \
+        qml/QtQuick/Controls/Styles/qmldir \
+        qml/QtQuick/Controls/Styles/Android/qmldir \
+        qml/QtQuick/Controls/Styles/Android/libqtquickcontrolsandroidstyleplugin.so
 
     CONFIG(debug, debug|release) {
         ANDROID_DEPLOYMENT_DEPENDENCIES += \
@@ -148,7 +136,10 @@ android {
 #        qml/Qt/labs/settings/plugins.qmltypes \
 #        qml/QtQuick/Layouts/libqquicklayoutsplugin.so \
 #        qml/QtQuick/Layouts/qmldir \
-#        qml/QtQuick/Layouts/plugins.qmltypes
+#        qml/QtQuick/Layouts/plugins.qmltypes \
+#        qml/QtQml/StateMachine/qmldir \
+#        qml/QtQml/StateMachine/plugins.qmltypes \
+#        qml/QtQml/StateMachine/libqtqmlstatemachine.so
 
 #    ANDROID_DEPLOYMENT_DEPENDENCIES += \
 #        qml/QtMultimedia/libdeclarative_multimedia.so \
