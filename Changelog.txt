@@ -1,3 +1,10 @@
+Cersion 0.8 beta
+15.03.2015
+ * change myzuka.ru link to new site location (myzuka.org)
+ * update Qt libs to 5.4.1 (Windows, Android, OS X)
+ * windows package now installs some third party codecs
+
+
 Version 0.7.1 beta
 26.11.2014
  * adapt myzuka.ru plugin for new site design
