@@ -1,4 +1,4 @@
-Cersion 0.8 beta
+Version 0.8 beta
 15.03.2015
  * change myzuka.ru link to new site location (myzuka.org)
  * update Qt libs to 5.4.1 (Windows, Android, OS X)
