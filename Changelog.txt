@@ -1,3 +1,8 @@
+Version 0.8.1 beta
+30.03.2015
+ * fixes for myzuka.ru and yandex.music plugins
+
+
 Version 0.8 beta
 15.03.2015
  * change myzuka.ru link to new site location (myzuka.org)
