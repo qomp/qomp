@@ -78,8 +78,8 @@ static const QString albumsRegExp2 = QString::fromUtf8(
 			"</ul>\\s+"
 			"</div>\\s+"
 			"</div>\\s+"
-			"<div[^>]*>\\s+"
-			"<div[^>]*>\\s*<a\\s+href=\"([^\"]+)\">([^<]+)</a>.+"			//cap(2) - internalId; cap(3) - title
+			"<div[^>]*>.+"
+			"<div class=\"title\">\\s*<a\\s+href=\"([^\"]+)\">([^<]+)</a>.+"	//cap(2) - internalId; cap(3) - title
 			"<div class=\"tags\">Год релиза:\\s*<a[^>]+>([^<]+)</a>"		//cap(4) - year
 			);
 
@@ -364,9 +364,12 @@ void MyzukaruController::doSearch(const QString &txt)
 	artistsModel_->reset();
 	tracksModel_->reset();
 
-	const QString url = QString("%1/Search?searchText=%2").arg(MYZUKA_URL,txt);
+	const QString url = QString("%1Search?searchText=%2").arg(MYZUKA_URL,txt);
 	QNetworkRequest nr;
 	nr.setUrl(url);
+	nr.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+	nr.setRawHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
+	nr.setRawHeader("Referer", MYZUKA_URL);
 	QNetworkReply* reply = nam()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(searchFinished()));
 	requests_.insert(reply, 0);
@@ -388,20 +391,20 @@ void MyzukaruController::searchFinished()
 	if(reply->error() == QNetworkReply::NoError) {
 		QString replyStr = QString::fromUtf8(reply->readAll());
 
-		int songIndex = replyStr.indexOf("<a name=\"songs\"></a>");
+		int songIndex = replyStr.indexOf(QString::fromUtf8("<h1>Поиск по композициям</h1>"));
 		QList<QompPluginModelItem*> tunes = parseTunes(replyStr, songIndex);
 		if(!tunes.isEmpty()) {
 			tracksModel_->addTopLevelItems(tunes);
 		}
 
-		int albumsIndex = replyStr.indexOf("<a name=\"albums\"></a>");
+		int albumsIndex = replyStr.indexOf(QString::fromUtf8("<h1>Поиск по альбомам"));
 		QList<QompPluginModelItem*> albums = parseAlbums(replyStr, albumsIndex);
 		if(!albums.isEmpty()) {
 			sortAlbums(&albums);
 			albumsModel_->addTopLevelItems(albums);
 		}
 
-		int artistsIndex = replyStr.indexOf("<a name=\"artists\"></a>");
+		int artistsIndex = replyStr.indexOf(QString::fromUtf8("<h1>Поиск по исполнителям</h1>"));
 		QList<QompPluginModelItem*> artists;
 		if(artistsIndex != -1) {
 			QRegExp artistRx(artistsRegExp, Qt::CaseInsensitive);
@@ -436,6 +439,10 @@ void MyzukaruController::searchFinished()
 			dlg_->setCurrentTab(TabTracks);
 		}
 	}
+#ifdef DEBUG_OUTPUT
+	else
+		qDebug() << reply->errorString();
+#endif
 }
 
 void MyzukaruController::itemSelected(QompPluginModelItem* item)
@@ -471,7 +478,8 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 		QompPluginArtist *artist = static_cast<QompPluginArtist *>(item);
 		if(artist->tunesReceived)
 			return;
-		url.setPath(QUrl::fromPercentEncoding(artist->internalId.toLatin1()));
+		url.setPath(QUrl::fromPercentEncoding(QString(artist->internalId + QString("/Albums"))
+							.toLatin1()));
 		slot = SLOT(artistUrlFinished());
 		break;
 	}
@@ -493,7 +501,7 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 void MyzukaruController::getSuggestions(const QString &text)
 {
 	static const QRegExp space("\\s+");
-	QUrl url(QString("%1/Search/Suggestions?term=%2")
+	QUrl url(QString("%1Search/Suggestions?term=%2")
 		 .arg(MYZUKA_URL, QString(text).replace(space, "+")), QUrl::StrictMode);
 	QNetworkRequest nr(url);
 	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
