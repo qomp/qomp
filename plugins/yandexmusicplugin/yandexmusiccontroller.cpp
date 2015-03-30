@@ -43,7 +43,7 @@
 #include <QtDebug>
 #endif
 
-static const QString YA_MUSIC_URL("http://music.yandex.ru/");
+static const QString YA_MUSIC_URL("https://music.yandex.ru/");
 static const QString ARTISTS_NAME("artists");
 static const QString ALBUMS_NAME("albums");
 static const QString TRACKS_NAME("tracks");
@@ -332,6 +332,11 @@ void YandexMusicController::artistsSearchFinished()
 
 		searchNextPage(ba, ARTISTS_NAME, SLOT(artistsSearchFinished()));
 	}
+#ifdef DEBUG_OUTPUT
+	else {
+		qDebug() << reply->errorString();
+	}
+#endif
 }
 
 void YandexMusicController::albumsSearchFinished()
