@@ -46,6 +46,7 @@ protected:
 
 private slots:
 	void showConfirmExitMessage();
+	void updateMainWindowState();
 
 private:
 	static QompQmlEngine *instance_;

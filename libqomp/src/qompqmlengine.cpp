@@ -28,6 +28,7 @@
 #include <QQuickWindow>
 #include <QQuickImageProvider>
 #include <QPixmapCache>
+#include <QTimer>
 
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
@@ -35,6 +36,8 @@
 #include <QKeyEvent>
 
 QQuickWindow* _instance = nullptr;
+
+static const int UPDATE_INTERVAL = 100;
 
 #ifdef Q_OS_ANDROID
 static void menuKeyDown(JNIEnv */*env*/, jobject /*thiz*/)
@@ -118,17 +121,7 @@ bool QompQmlEngine::eventFilter(QObject *o, QEvent *e)
 {
 	if(o == qApp) {
 		if(e->type() == QEvent::ApplicationStateChange) {
-			Qt::ApplicationState state = qApp->applicationState();
-#ifdef DEBUG_OUTPUT
-	qDebug() << "QompQmlEngine::eventFilter() " << state;
-#endif
-			if(state == Qt::ApplicationActive) {
-				window_->setProperty("visibility", QWindow::Maximized);
-				window_->update();
-			}
-			else if(state == Qt::ApplicationInactive) {
-				window_->setProperty("visibility", QWindow::Hidden);
-			}
+			QTimer::singleShot(UPDATE_INTERVAL, this, SLOT(updateMainWindowState()));
 		}
 	}
 	return QQmlApplicationEngine::eventFilter(o, e);
@@ -141,6 +134,26 @@ void QompQmlEngine::showConfirmExitMessage()
 							"showNotification",
 							"(Ljava/lang/String;)V",
 							str.object<jstring>());
+}
+
+void QompQmlEngine::updateMainWindowState()
+{
+	Qt::ApplicationState state = qApp->applicationState();
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompQmlEngine::eventFilter() " << state;
+#endif
+	QWindow::Visibility vis = (QWindow::Visibility)window_->property("visibility").toInt();
+
+	if(state == Qt::ApplicationActive) {
+		if(vis != QWindow::Maximized) {
+			window_->setProperty("visibility", QWindow::Maximized);
+			window_->update();
+		}
+	}
+	else {
+		if(vis != QWindow::Hidden)
+			window_->setProperty("visibility", QWindow::Hidden);
+	}
 }
 
 QompQmlEngine::QompQmlEngine() :
