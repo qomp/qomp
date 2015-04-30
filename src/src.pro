@@ -57,7 +57,7 @@ win32:RC_FILE += $$PWD/../qomp.rc
 macx {
    ICON = icons/qomp.icns
    QMAKE_INFO_PLIST = ../Info.plist
-#   QMAKE_LFLAGS += -framework CoreFoundation -framework Carbon -lobjc
+   QMAKE_LFLAGS += -framework CoreFoundation -framework Carbon -lobjc
 }
 
 android {
