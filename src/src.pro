@@ -22,6 +22,7 @@ QT += network
 
 CONFIG(debug, debug|release) {
     greaterThan(QT_MAJOR_VERSION, 4):win32: CONFIG += console
+    macx: CONFIG -= app_bundle
 }
 
 include(src.pri)
@@ -56,7 +57,7 @@ win32:RC_FILE += $$PWD/../qomp.rc
 macx {
    ICON = icons/qomp.icns
    QMAKE_INFO_PLIST = ../Info.plist
-   QMAKE_LFLAGS += -framework Cocoa
+#   QMAKE_LFLAGS += -framework CoreFoundation -framework Carbon -lobjc
 }
 
 android {

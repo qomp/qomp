@@ -73,7 +73,7 @@ qtmultimedia_backend {
 mac {
     HEADERS += $$PWD/CocoaTrayClick.h
 
-    OBJECTIVE_SOURCES += $$PWD/CocoaTrayClick.mm
+    SOURCES += $$PWD/CocoaTrayClick.cpp
 }
 lupdate_only {
     SOURCES += $$PWD/qml/*.qml
