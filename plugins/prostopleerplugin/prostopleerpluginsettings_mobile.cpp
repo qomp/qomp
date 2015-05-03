@@ -29,7 +29,7 @@
 class ProstopleerPluginSettings::Private
 {
 public:
-	Private(ProstopleerPluginSettings* p) :
+	explicit Private(ProstopleerPluginSettings* p) :
 		page_(p),
 		item_(0)
 	{

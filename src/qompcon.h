@@ -34,7 +34,7 @@ class QompCon : public QObject
 {
 	Q_OBJECT
 public:
-	QompCon(QObject *parent = 0);
+	explicit QompCon(QObject *parent = 0);
 	~QompCon();
 
 #ifdef Q_OS_ANDROID

@@ -32,7 +32,7 @@ static const QString defaultDevice = QObject::tr("default");
 class QompOptionsMain::Private
 {
 public:
-	Private(QompOptionsMain* page) :
+	explicit Private(QompOptionsMain* page) :
 		page_(page),
 		item_(0)
 	{

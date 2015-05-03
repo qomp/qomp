@@ -27,7 +27,7 @@
 class TuneToFileSettings::Private
 {
 public:
-	Private(TuneToFileSettings* p) :
+	explicit Private(TuneToFileSettings* p) :
 		page_(p),
 		widget_(new QWidget),
 		ui(new Ui::TuneToFileSettings)

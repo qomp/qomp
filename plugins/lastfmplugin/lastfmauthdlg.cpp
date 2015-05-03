@@ -31,7 +31,7 @@
 class LastFmAuthDlg::Private
 {
 public:
-	Private(LastFmAuthDlg* p) :
+	explicit Private(LastFmAuthDlg* p) :
 		parent_(p),
 		ui(new Ui::LastFmAuthDlg),
 		dialog_(new QDialog)
@@ -53,7 +53,7 @@ public:
 class LastFmAuthDlg::Private
 {
 public:
-	Private(LastFmAuthDlg* p) :
+	explicit Private(LastFmAuthDlg* p) :
 		parent_(p)
 	{
 		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/LastfmAuthDlg.qml"));

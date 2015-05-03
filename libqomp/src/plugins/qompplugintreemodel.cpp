@@ -106,7 +106,7 @@ QompPluginModelItem *QompPluginTreeModel::item(const QModelIndex &index) const
 	if(!index.isValid())
 		return 0;
 
-	return (QompPluginModelItem *)index.internalPointer();
+	return static_cast<QompPluginModelItem*>(index.internalPointer());
 }
 
 QList<QompPluginModelItem*> QompPluginTreeModel::selectedItems(QompPluginModelItem *parent) const
@@ -133,10 +133,10 @@ QVariant QompPluginTreeModel::data(const QModelIndex &index, int role) const
 		return QVariant(selected_.contains(index) ? 2 : 0);
 	}
 	else if(role == Qt::DisplayRole) {
-		return ((QompPluginModelItem*)index.internalPointer())->toString();
+		return static_cast<QompPluginModelItem*>(index.internalPointer())->toString();
 	}
 	else if(role == Qt::DecorationRole) {
-		return ((QompPluginModelItem*)index.internalPointer())->icon();
+		return static_cast<QompPluginModelItem*>(index.internalPointer())->icon();
 	}
 	return QVariant();
 }
@@ -144,7 +144,7 @@ QVariant QompPluginTreeModel::data(const QModelIndex &index, int role) const
 int QompPluginTreeModel::rowCount(const QModelIndex &parent) const
 {
 	if(parent.isValid()) {
-		return ((QompPluginModelItem*)parent.internalPointer())->items().size();
+		return static_cast<QompPluginModelItem*>(parent.internalPointer())->items().size();
 	}
 
 	return topLevelItems_.size();
@@ -209,11 +209,11 @@ QModelIndex QompPluginTreeModel::parent(const QModelIndex &index) const
 	if(!index.internalPointer())
 		return QModelIndex();
 
-	QompPluginModelItem* it = (QompPluginModelItem*)index.internalPointer();
+	QompPluginModelItem* it = static_cast<QompPluginModelItem*>(index.internalPointer());
 	if(topLevelItems_.contains(it))
 		return QModelIndex();
 
-	QompPluginModelItem* par = (QompPluginModelItem*)it->parent();
+	QompPluginModelItem* par = static_cast<QompPluginModelItem*>(it->parent());
 	if(par) {
 		if(topLevelItems_.contains(par))
 			return createIndex(topLevelItems_.indexOf(par), 0, par);
@@ -233,7 +233,7 @@ QModelIndex QompPluginTreeModel::index(int row, int column, const QModelIndex &p
 		return QModelIndex();
 
 	if(parent.isValid() && parent.internalPointer()) {
-		QompPluginModelItem* par = (QompPluginModelItem*)parent.internalPointer();
+		QompPluginModelItem* par = static_cast<QompPluginModelItem*>(parent.internalPointer());
 		if(row < par->items().size())
 			return createIndex(row, column, par->items().at(row));
 	}
@@ -269,7 +269,7 @@ QModelIndex QompPluginTreeModel::index(QompPluginModelItem *item) const
 
 void QompPluginTreeModel::validateSelection(const QModelIndex &parent)
 {
-	QompPluginModelItem* item = (QompPluginModelItem*)parent.internalPointer();
+	QompPluginModelItem* item = static_cast<QompPluginModelItem*>(parent.internalPointer());
 	bool select = selected_.contains(parent);
 	foreach(QompPluginModelItem* it, item->items()) {
 		QModelIndex i = index(it);

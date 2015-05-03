@@ -85,7 +85,8 @@ public:
 
 QompMainWin::Private::Private(QompMainWin *p) :
 	QObject(p),
-	mainWin_(p)
+	mainWin_(p),
+	root_(nullptr)
 {
 }
 

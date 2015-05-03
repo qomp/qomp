@@ -101,7 +101,7 @@ class FilesystemPlugin::Private : public QObject
 {
 	Q_OBJECT
 public:
-	Private(QObject* p = 0) : QObject(p)
+	explicit Private(QObject* p = 0) : QObject(p)
 #ifdef QOMP_MOBILE
 		,loop_(new QEventLoop(this))
 		,item_(0)

@@ -110,7 +110,7 @@ static QJsonArray ByteArrayToJsonArray(const QString& type, const QByteArray& ba
 class YandexMusicTune : public QompPluginTune
 {
 public:
-	YandexMusicTune(QompPluginModelItem* parent = 0) :
+	explicit YandexMusicTune(QompPluginModelItem* parent = 0) :
 		QompPluginTune(parent) {}
 
 	QString durationToString() const
@@ -448,7 +448,7 @@ void YandexMusicController::albumUrlFinished()
 					static_cast<QompPluginTune*>(it)->artist = artist;
 				}
 			}
-			QompPluginTreeModel *model_ = (QompPluginTreeModel *)model;
+			QompPluginTreeModel *model_ = static_cast<QompPluginTreeModel *>(model);
 			QompPluginModelItem* it = model_->itemForId(reply->property("id").toString());
 			model_->setItems(list, it);
 

@@ -27,7 +27,7 @@
 class ProstopleerPluginSettings::Private
 {
 public:
-	Private(ProstopleerPluginSettings* p) :
+	explicit Private(ProstopleerPluginSettings* p) :
 		page_(p),
 		widget_(new QWidget),
 		ui(new Ui::ProstopleerPluginSettings)

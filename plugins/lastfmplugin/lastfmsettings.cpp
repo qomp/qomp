@@ -28,7 +28,7 @@
 class LastFmSettings::Private
 {
 public:
-	Private(LastFmSettings* p) :
+	explicit Private(LastFmSettings* p) :
 		page_(p),
 		widget_(new QWidget),
 		ui(new Ui::LastFmSettings)
@@ -48,7 +48,7 @@ public:
 class LastFmSettings::Private
 {
 public:
-	Private(LastFmSettings* p) :
+	explicit Private(LastFmSettings* p) :
 		page_(p)
 	{
 		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/LastfmOptionsPage.qml"));

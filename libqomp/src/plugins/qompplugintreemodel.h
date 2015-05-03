@@ -35,7 +35,7 @@ public:
 	 * Class designed for hold and manage search results.
 	 * Represents a tree of QompPluginModelItem's
 	 */
-	QompPluginTreeModel(QObject *parent = 0);
+	explicit QompPluginTreeModel(QObject *parent = 0);
 
 	/**
 	 * Destructor removes all top level items.

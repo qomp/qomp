@@ -23,7 +23,7 @@
 class YandexMusicGettunsDlg::Private
 {
 public:
-	Private(YandexMusicGettunsDlg* p) :
+	explicit Private(YandexMusicGettunsDlg* p) :
 		tabWidget_(new QTabWidget(0)),
 		artistsView_(new QompPluginTreeView(tabWidget_)),
 		albumsView_(new QompPluginTreeView(tabWidget_)),

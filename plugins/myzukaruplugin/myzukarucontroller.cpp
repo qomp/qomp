@@ -541,7 +541,7 @@ void MyzukaruController::albumUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
-	QompPluginTreeModel *model = (QompPluginTreeModel *)requests_.value(reply);
+	QompPluginTreeModel *model = static_cast<QompPluginTreeModel *>(requests_.value(reply));
 	requests_.remove(reply);
 	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
@@ -644,7 +644,7 @@ void MyzukaruController::tuneUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
-	QompPluginTreeModel *model = (QompPluginTreeModel *)requests_.value(reply);
+	QompPluginTreeModel *model = static_cast<QompPluginTreeModel *>(requests_.value(reply));
 	requests_.remove(reply);
 	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {

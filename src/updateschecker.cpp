@@ -42,7 +42,7 @@ class UpdatesChecker::Private : public QObject
 {
 	Q_OBJECT
 public:
-	Private(UpdatesChecker* p) :
+	explicit Private(UpdatesChecker* p) :
 		QObject(p),
 #ifndef QOMP_MOBILE
 		progressDialog_(0),

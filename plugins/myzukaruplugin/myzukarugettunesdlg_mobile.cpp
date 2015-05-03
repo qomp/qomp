@@ -33,7 +33,7 @@ class MyzukaruGettunesDlg::Private : public QObject
 {
 	Q_OBJECT
 public:
-	Private(MyzukaruGettunesDlg* p) :
+	explicit Private(MyzukaruGettunesDlg* p) :
 		QObject(p),
 		item_(0)
 	{

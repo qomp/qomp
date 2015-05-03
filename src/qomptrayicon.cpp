@@ -42,7 +42,7 @@ signals:
 	void executed();
 
 protected:
-	QompTrayAction(QompMainWin* win) :
+	explicit QompTrayAction(QompMainWin* win) :
 		QObject(win),
 		win_(win)
 	{}
@@ -54,7 +54,7 @@ class PlayPauseAction : public QompTrayAction
 {
 	Q_OBJECT
 public:
-	PlayPauseAction(QompMainWin* win) : QompTrayAction(win)
+	explicit PlayPauseAction(QompMainWin* win) : QompTrayAction(win)
 	{
 		connect(this, SIGNAL(executed()), win, SIGNAL(actPlayActivated()));
 	}
@@ -64,7 +64,7 @@ class PlayNextAction : public QompTrayAction
 {
 	Q_OBJECT
 public:
-	PlayNextAction(QompMainWin* win) : QompTrayAction(win)
+	explicit PlayNextAction(QompMainWin* win) : QompTrayAction(win)
 	{
 		connect(this, SIGNAL(executed()), win, SIGNAL(actNextActivated()));
 	}
@@ -74,7 +74,7 @@ class PlayPrevAction : public QompTrayAction
 {
 	Q_OBJECT
 public:
-	PlayPrevAction(QompMainWin* win) : QompTrayAction(win)
+	explicit PlayPrevAction(QompMainWin* win) : QompTrayAction(win)
 	{
 		connect(this, SIGNAL(executed()), win, SIGNAL(actPrevActivated()));
 	}
@@ -84,7 +84,7 @@ class ToggleVisibilityAction : public QompTrayAction
 {
 	Q_OBJECT
 public:
-	ToggleVisibilityAction(QompMainWin* win) : QompTrayAction(win) {}
+	explicit ToggleVisibilityAction(QompMainWin* win) : QompTrayAction(win) {}
 
 	void exequte()
 	{

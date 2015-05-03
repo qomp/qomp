@@ -24,6 +24,7 @@
 
 QompPlayer::QompPlayer() :
 	QObject(),
+	currentTune_(nullptr),
 	lastAction_(Qomp::StateStopped)
 {
 }

@@ -30,7 +30,7 @@ class LIBQOMPSHARED_EXPORT QompMetaDataResolver : public QObject
 {
 	Q_OBJECT
 public:
-	QompMetaDataResolver(QObject *parent = 0);
+	explicit QompMetaDataResolver(QObject *parent = 0);
 	~QompMetaDataResolver();
 
 	void resolve(const QList<Tune*>& tunes);

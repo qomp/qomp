@@ -28,7 +28,7 @@ class QompPlayListModel : public QAbstractListModel
 {
 	Q_OBJECT
 public:
-	QompPlayListModel(QObject *parent = 0);
+	explicit QompPlayListModel(QObject *parent = 0);
 
 	enum QompPlayListModelRole {
 		ArtistRole = Qt::UserRole+1,

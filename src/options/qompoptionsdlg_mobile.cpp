@@ -33,7 +33,7 @@ class QompOptionsDlg::Private: public QObject
 {
 	Q_OBJECT
 public:
-	Private(QompOptionsDlg* p) :
+	explicit Private(QompOptionsDlg* p) :
 		QObject(p),
 		parentDialog_(p),
 		item_(0)

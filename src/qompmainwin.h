@@ -33,7 +33,7 @@ class QompMainWin : public QObject
 	Q_OBJECT
 	
 public:
-	QompMainWin(QObject *parent = 0);
+	explicit QompMainWin(QObject *parent = 0);
 	~QompMainWin();
 
 	void setModel(QompPlayListModel* model);

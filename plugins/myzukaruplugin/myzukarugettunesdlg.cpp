@@ -31,7 +31,7 @@
 class MyzukaruGettunesDlg::Private
 {
 public:
-	Private(MyzukaruGettunesDlg* p) :
+	explicit Private(MyzukaruGettunesDlg* p) :
 		tabWidget_(new QTabWidget),
 		artistsView_(new QompPluginTreeView(tabWidget_)),
 		albumsView_(new QompPluginTreeView(tabWidget_)),

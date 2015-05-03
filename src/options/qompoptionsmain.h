@@ -29,7 +29,7 @@ class QompOptionsMain : public QompOptionsPage
 	Q_OBJECT
 	
 public:
-	QompOptionsMain(QObject *parent = 0);
+	explicit QompOptionsMain(QObject *parent = 0);
 	~QompOptionsMain();
 
 	virtual QString name() const { return tr("Main"); }

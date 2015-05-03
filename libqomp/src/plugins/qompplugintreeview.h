@@ -33,7 +33,7 @@ public:
 	* Can select and unselect elements with mouse doubleclick
 	* or Space and Return(Enter) keyboard keys.
 	*/
-	QompPluginTreeView(QWidget *parent = 0);
+	explicit QompPluginTreeView(QWidget *parent = 0);
 	
 protected:
 	void keyPressEvent(QKeyEvent *ke);

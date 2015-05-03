@@ -27,7 +27,7 @@ class YandexMusicGettunsDlg::Private : public QObject
 {
 	Q_OBJECT
 public:
-	Private(YandexMusicGettunsDlg* p) :
+	explicit Private(YandexMusicGettunsDlg* p) :
 		QObject(p)
 
 	{

@@ -137,7 +137,7 @@ private:
 class QompOptionsKeys::Private
 {
 public:
-	Private(QompOptionsKeys* page) :
+	explicit Private(QompOptionsKeys* page) :
 		page_(page),
 		ui(new Ui::QompOptionsKeys),
 		widget_(new QWidget)

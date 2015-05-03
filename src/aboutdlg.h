@@ -32,7 +32,7 @@ class AboutDlg : public QDialog
 {
 	Q_OBJECT
 public:
-	AboutDlg(QWidget* p = 0);
+	explicit AboutDlg(QWidget* p = 0);
 	~AboutDlg();
 
 private:

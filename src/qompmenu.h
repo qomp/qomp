@@ -104,7 +104,7 @@ class QompRemoveTunesMenu : public QompMenu
 {
 	Q_OBJECT
 public:
-	QompRemoveTunesMenu(QWidget* p = 0);
+	explicit QompRemoveTunesMenu(QWidget* p = 0);
 
 signals:
 	void removeAll();

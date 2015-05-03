@@ -590,7 +590,7 @@ void QompCon::mediaFinished(bool afterError)
 		}
 		else {
 			actStop();
-			model_->setCurrentTune((Tune*)Tune::emptyTune());
+			model_->setCurrentTune(const_cast<Tune*>(Tune::emptyTune()));
 		}
 	}
 	else {

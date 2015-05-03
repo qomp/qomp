@@ -31,7 +31,7 @@ class QompOptionsPlugins::Private: public QObject
 {
 	Q_OBJECT
 public:
-	Private(QompOptionsPlugins* page) :
+	explicit Private(QompOptionsPlugins* page) :
 		QObject(page),
 		page_(page)
 	{

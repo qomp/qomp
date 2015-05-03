@@ -38,7 +38,7 @@ class ProstopleerTune : public QompPluginTune
 {
 public:
 	ProstopleerTune() : QompPluginTune() {}
-	QString duration;
+
 	QString durationToStr() const
 	{
 		return Qomp::durationSecondsToString(duration.toInt());

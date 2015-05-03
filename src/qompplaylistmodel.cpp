@@ -35,7 +35,7 @@ static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
 
 QompPlayListModel::QompPlayListModel(QObject *parent) :
 	QAbstractListModel(parent),
-	currentTune_((Tune*)Tune::emptyTune())
+	currentTune_(const_cast<Tune*>(Tune::emptyTune()))
 {
 }
 
@@ -51,7 +51,7 @@ void QompPlayListModel::addTunes(const QList<Tune*> &tunes)
 Tune *QompPlayListModel::tune(const QModelIndex &index) const
 {
 	if(!index.isValid() || index.row() >= tunes_.size())
-		return (Tune*)Tune::emptyTune();
+		return const_cast<Tune*>(Tune::emptyTune());
 
 	return tunes_.at(index.row());
 }
@@ -79,7 +79,7 @@ void QompPlayListModel::setCurrentTune(Tune *tune)
 void QompPlayListModel::removeTune(Tune *tune)
 {
 	if(tune == currentTune()) {
-		currentTune_ = (Tune*)Tune::emptyTune();
+		currentTune_ = const_cast<Tune*>(Tune::emptyTune());
 		emit currentTuneChanged(currentTune_);
 	}
 
@@ -258,7 +258,7 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 void QompPlayListModel::clear()
 {
 	beginResetModel();
-	currentTune_ = (Tune*)Tune::emptyTune();
+	currentTune_ = const_cast<Tune*>(Tune::emptyTune());
 	emit currentTuneChanged(currentTune_);
 	qDeleteAll(tunes_);
 	tunes_.clear();

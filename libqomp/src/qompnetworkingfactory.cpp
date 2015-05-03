@@ -38,7 +38,7 @@ class QompNetworkCookieJar : public QNetworkCookieJar
 {
 	Q_OBJECT
 public:
-	QompNetworkCookieJar(QObject* p) : QNetworkCookieJar(p)
+	explicit QompNetworkCookieJar(QObject* p) : QNetworkCookieJar(p)
 	{
 		QFile file(Qomp::cacheDir()+ cookieCache);
 		if(file.open(QFile::ReadOnly)) {

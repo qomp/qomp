@@ -35,10 +35,11 @@ class QompTuneDownloader::Private : public QObject
 {
 	Q_OBJECT
 public:
-	Private(QompTuneDownloader* p) : QObject(p),
+	explicit Private(QompTuneDownloader* p) : QObject(p),
 		nam_(QompNetworkingFactory::instance()->getMainNAM()),
 		file_(0),
-		reply_(0)
+		reply_(0),
+		tune_(nullptr)
 	{
 #ifndef QOMP_MOBILE
 		dialog_ = new QProgressDialog();

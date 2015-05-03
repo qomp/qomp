@@ -42,7 +42,7 @@ static const QString notificationName = QObject::tr("New Track");
 class NotificationsPlugin::Private
 {
 public:
-	Private(NotificationsPlugin* plugin) :
+	explicit Private(NotificationsPlugin* plugin) :
 		plugin_(plugin),
 		tune_(0)
 	{

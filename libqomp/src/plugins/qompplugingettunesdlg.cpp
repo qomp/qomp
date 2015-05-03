@@ -38,7 +38,7 @@ class QompPluginGettunesDlg::Private : public QObject
 {
 	Q_OBJECT
 public:
-	Private(QompPluginGettunesDlg* p = 0);
+	explicit Private(QompPluginGettunesDlg* p = 0);
 	~Private();
 
 public slots:

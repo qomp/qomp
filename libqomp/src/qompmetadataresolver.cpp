@@ -48,7 +48,7 @@ Tune* QompMetaDataResolver::get()
 
 void QompMetaDataResolver::tuneFinished()
 {
-	Tune* t = (Tune*)Tune::emptyTune();
+	Tune* t = const_cast<Tune*>(Tune::emptyTune());
 
 	if(!data_.isEmpty()) {
 		t = data_.takeFirst();

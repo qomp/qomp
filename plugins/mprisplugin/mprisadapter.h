@@ -38,7 +38,7 @@ class MprisAdapter : public QDBusAbstractAdaptor
 	Q_PROPERTY(QVariantMap Metadata READ metadata)
 	Q_PROPERTY(QString PlaybackStatus READ playbackStatus)
 public:
-	MprisAdapter(QObject *p);
+	explicit MprisAdapter(QObject *p);
 
 public:
 	QVariantMap metadata() const;

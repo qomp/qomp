@@ -39,7 +39,7 @@ public:
 	 * Base class for items, that can be stored in QompPluginTreeModel.
 	 * Can represent tune, album, artist or something else
 	 */
-	QompPluginModelItem(QompPluginModelItem* parent = 0);
+	explicit QompPluginModelItem(QompPluginModelItem* parent = 0);
 	virtual ~QompPluginModelItem();
 
 	/**
@@ -107,7 +107,7 @@ private:
 class LIBQOMPSHARED_EXPORT QompPluginTune : public QompPluginModelItem
 {
 public:
-	QompPluginTune(QompPluginModelItem* parent = 0);
+	explicit QompPluginTune(QompPluginModelItem* parent = 0);
 
 	QString title;
 	QString artist;
@@ -129,7 +129,7 @@ public:
 class LIBQOMPSHARED_EXPORT QompPluginAlbum : public QompPluginModelItem
 {
 public:
-	QompPluginAlbum(QompPluginModelItem* parent = 0);
+	explicit QompPluginAlbum(QompPluginModelItem* parent = 0);
 
 	QString album;
 	QString artist;
@@ -148,7 +148,7 @@ public:
 class LIBQOMPSHARED_EXPORT QompPluginArtist : public QompPluginModelItem
 {
 public:
-	QompPluginArtist(QompPluginModelItem* parent = 0);
+	explicit QompPluginArtist(QompPluginModelItem* parent = 0);
 
 	QString artist;
 	bool tunesReceived;

@@ -42,11 +42,11 @@ class YandexMusicURLResolveStrategyPrivate : public QObject
 {
 	Q_OBJECT
 public:
-	YandexMusicURLResolveStrategyPrivate(const Tune* t) :
+	explicit YandexMusicURLResolveStrategyPrivate(const Tune* t) :
 		QObject(),
 		loop_(new QEventLoop(this)),
 		timer_(new QTimer(this)),
-		tune_((Tune*)t)
+		tune_(const_cast<Tune*>(t))
 	{
 		nam_ = QompNetworkingFactory::instance()->getThreadedNAM();
 		timer_->setSingleShot(true);

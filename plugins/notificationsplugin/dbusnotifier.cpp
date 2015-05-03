@@ -38,7 +38,7 @@ static const QString TITLE_END = "</u></b>";
 class iiibiiay
 {
 public:
-	iiibiiay(QImage* img)
+	explicit iiibiiay(QImage* img)
 	{
 		if(img->format() != QImage::Format_ARGB32)
 			*img = img->convertToFormat(QImage::Format_ARGB32);

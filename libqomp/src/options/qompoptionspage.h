@@ -29,7 +29,7 @@ class LIBQOMPSHARED_EXPORT QompOptionsPage : public QObject
 {
 	Q_OBJECT
 public:
-	QompOptionsPage(QObject *parent = 0) : QObject(parent) {}
+	explicit QompOptionsPage(QObject *parent = 0) : QObject(parent) {}
 	virtual QString name() const = 0;
 	virtual void retranslate() = 0;
 	virtual void init(QompPlayer* player) { Q_UNUSED(player) }
