@@ -94,6 +94,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="cb_repeatLastSearch">
+     <property name="text">
+      <string>Repeat the last search after opening the search dialog</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QCheckBox" name="cb_metaData">
      <property name="text">
       <string>Automatically resolve metadata on an added tracks</string>

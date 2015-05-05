@@ -229,6 +229,7 @@ void QompCon::checkVersion()
 						);
 		hash.insert(OPTION_CURRENT_TRANSLATION, QLocale::system().name().split("_").first());
 		hash.insert(OPTION_MUTED, false);
+		hash.insert(OPTION_REPEAT_LAST_SEARCH, false);
 
 		foreach(const char* key, hash.keys()) {
 			if(Options::instance()->getOption(key) == QVariant::Invalid)

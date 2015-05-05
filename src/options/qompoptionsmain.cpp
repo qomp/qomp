@@ -74,6 +74,7 @@ void QompOptionsMain::Private::applyOptions()
 	o->setOption(OPTION_TRAY_LEFT_CLICK, ui->cb_leftClick->currentIndex());
 	o->setOption(OPTION_THEME, ui->cb_theme->currentText());
 	o->setOption(OPTION_CURRENT_TRANSLATION,ui->cb_lang->currentText());
+	o->setOption(OPTION_REPEAT_LAST_SEARCH, ui->cb_repeatLastSearch->isChecked());
 }
 
 void QompOptionsMain::Private::restoreOptions()
@@ -127,6 +128,8 @@ void QompOptionsMain::Private::restoreOptions()
 	const QString them = o->getOption(OPTION_THEME).toString();
 	int i = ui->cb_theme->findText(them);
 	ui->cb_theme->setCurrentIndex(i);
+
+	ui->cb_repeatLastSearch->setChecked(o->getOption(OPTION_REPEAT_LAST_SEARCH).toBool());
 }
 
 QompOptionsMain::QompOptionsMain(QObject *parent) :

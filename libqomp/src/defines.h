@@ -50,8 +50,9 @@
 #define OPTION_VOLUME		"main.player-volume"
 #define OPTION_MUTED		"main.player-muted"
 
-#define OPTION_SEARCH_HISTORY	"plugins.search-history"
-#define OPTION_PLUGINS_ORDER	"plugins.order"
+#define OPTION_SEARCH_HISTORY		"plugins.search-history"
+#define OPTION_PLUGINS_ORDER		"plugins.order"
+#define OPTION_REPEAT_LAST_SEARCH	"plugins.repeat-last-search"
 
 #define DECODE_KEY "qompdecodekey"
 

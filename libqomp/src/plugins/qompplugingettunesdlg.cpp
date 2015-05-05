@@ -87,6 +87,10 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	suggestionsMenu_->installEventFilter(this);
 	dialog_->installEventFilter(this);
 	connect(suggestionsMenu_, SIGNAL(triggered(QAction*)), SLOT(suggestionActionTriggered(QAction*)));
+
+	if(Options::instance()->getOption(OPTION_REPEAT_LAST_SEARCH).toBool()) {
+		QTimer::singleShot(0, this, SLOT(search()));
+	}
 }
 
 QompPluginGettunesDlg::Private::~Private()
