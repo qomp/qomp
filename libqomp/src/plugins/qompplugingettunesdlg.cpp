@@ -89,7 +89,7 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	connect(suggestionsMenu_, SIGNAL(triggered(QAction*)), SLOT(suggestionActionTriggered(QAction*)));
 
 	if(Options::instance()->getOption(OPTION_REPEAT_LAST_SEARCH).toBool()) {
-		QTimer::singleShot(0, this, SLOT(search()));
+		QTimer::singleShot(100, this, SLOT(search()));
 	}
 }
 
