@@ -30,7 +30,7 @@
 #endif
 
 QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
-	QompPlayer(),
+	QompPlayerImpl(),
 	player_(new QMediaPlayer(this)),
 	resolver_(0/*new QompTagLibMetaDataResolver(this)*/),
 	watcher_(0)
@@ -133,7 +133,7 @@ void QompQtMultimediaPlayer::play()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::play()";
 #endif
-	QompPlayer::play();
+	QompPlayerImpl::play();
 
 	if(!player_->media().isNull())
 		player_->play();
@@ -141,7 +141,7 @@ void QompQtMultimediaPlayer::play()
 
 void QompQtMultimediaPlayer::pause()
 {
-	QompPlayer::pause();
+	QompPlayerImpl::pause();
 
 	player_->pause();
 }
@@ -151,7 +151,7 @@ void QompQtMultimediaPlayer::stop()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::stop()";
 #endif
-	QompPlayer::stop();
+	QompPlayerImpl::stop();
 
 	player_->stop();
 }
@@ -214,7 +214,7 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 		emit mediaFinished();
 		//break; we wont emit next  signal
 	default:
-		emit QompPlayer::stateChanged(state());
+		emit QompPlayerImpl::stateChanged(state());
 		break;
 	}
 }

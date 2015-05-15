@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015  Khryukin Evgeny
+ * Copyright (C) 2015  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,55 +17,56 @@
  *
  */
 
-#ifndef QOPMPLAYER_H
-#define QOPMPLAYER_H
+#ifndef QOMPPLAYERIMPL_H
+#define QOMPPLAYERIMPL_H
 
 #include <QObject>
+#include <QStringList>
 
 #include "common.h"
 #include "libqomp_global.h"
 
 class QompMetaDataResolver;
 class Tune;
-class QompPlayerImpl;
 
-class LIBQOMPSHARED_EXPORT QompPlayer : public QObject
+class LIBQOMPSHARED_EXPORT QompPlayerImpl : public QObject
 {
 	Q_OBJECT
 public:
-	explicit QompPlayer(QompPlayerImpl* impl);
-	~QompPlayer();
-
-	Tune* currentTune() const;
-
-	void resolveMetadata(const QList<Tune*> &tunes);
-	Qomp::State lastAction() const;
-
-	virtual void setVolume(qreal vol);
+	Q_INVOKABLE Tune* currentTune() const;
+	Q_INVOKABLE Qomp::State lastAction() const;
 	/**
 	 * Volume from 0 to 1
 	 **/
-	virtual qreal volume() const;
-	virtual void setMute(bool mute);
-	virtual bool isMuted() const;
-	virtual void setPosition(qint64 pos);
+	Q_INVOKABLE virtual qreal volume() const = 0;
+
+	Q_INVOKABLE virtual bool isMuted() const = 0;
 	/**
 	 * Position in miliseconds
 	 */
-	virtual qint64 position() const;
+	Q_INVOKABLE virtual qint64 position() const = 0;
 
-	virtual Qomp::State state() const;
+	Q_INVOKABLE virtual Qomp::State state() const = 0;
+	Q_INVOKABLE virtual qint64 currentTuneTotalTime() const = 0;
+	Q_INVOKABLE virtual QStringList audioOutputDevice() const = 0;
+
+public slots:
+	void resolveMetadata(const QList<Tune*> &tunes);
+	void setTune(Tune* tune);
+
 	virtual void play();
 	virtual void pause();
 	virtual void stop();
-	virtual qint64 currentTuneTotalTime() const;
 
-	virtual QStringList audioOutputDevice() const;
-	virtual void setAudioOutputDevice(const QString& devName);
+	virtual void setMute(bool mute) = 0;
+	virtual void setVolume(qreal vol) = 0;
+	virtual void setPosition(qint64 pos) = 0;
 
-public slots:
-	void setTune(Tune* tune);
-	
+	virtual void setAudioOutputDevice(const QString& devName) = 0;
+
+protected slots:
+	virtual void doSetTune() = 0;
+
 signals:
 	void currentPositionChanged(qint64 pos);
 	void currentTuneTotalTimeChanged(qint64 time);
@@ -77,10 +78,14 @@ signals:
 
 	void tuneDataUpdated(Tune*);
 
+protected:
+	QompPlayerImpl();
+
+	Q_INVOKABLE virtual QompMetaDataResolver* metaDataResolver() const { return 0; }
+
 private:
-	class Private;
-	Private* d;
-	friend class Private;
+	Tune* currentTune_;
+	Qomp::State lastAction_;
 };
 
-#endif // QOPMPLAYER_H
+#endif // QOMPPLAYERIMPL_H

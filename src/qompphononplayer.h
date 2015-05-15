@@ -20,7 +20,7 @@
 #ifndef QOMPPHONONPLAYER_H
 #define QOMPPHONONPLAYER_H
 
-#include "qompplayer.h"
+#include "qompplayerimpl.h"
 #include <Phonon/MediaObject>
 #include <QFutureWatcher>
 #include <QPointer>
@@ -30,31 +30,36 @@ class AudioOutput;
 }
 class QompMetaDataResolver;
 
-class QompPhononPlayer : public QompPlayer
+class QompPhononPlayer : public QompPlayerImpl
 {
 	Q_OBJECT
 public:
 	QompPhononPlayer();
 	~QompPhononPlayer();
 
-	virtual void setVolume(qreal vol);
-	virtual qreal volume() const;
-	virtual void setMute(bool mute);
-	virtual bool isMuted() const;
-	virtual void setPosition(qint64 pos);
-	virtual qint64 position() const;
+	Q_INVOKABLE virtual qreal volume() const;
+	Q_INVOKABLE virtual bool isMuted() const;
+	Q_INVOKABLE virtual qint64 position() const;
 
-	virtual Qomp::State state() const;
+	Q_INVOKABLE virtual Qomp::State state() const;
+	Q_INVOKABLE virtual qint64 currentTuneTotalTime() const;
+
+	Q_INVOKABLE virtual QStringList audioOutputDevice() const;
+
+
+public slots:
 	virtual void play();
 	virtual void pause();
 	virtual void stop();
-	virtual qint64 currentTuneTotalTime() const;
 
-	virtual QStringList audioOutputDevice() const;
+	virtual void setVolume(qreal vol);
+	virtual void setMute(bool mute);
+	virtual void setPosition(qint64 pos);
+
 	virtual void setAudioOutputDevice(const QString& newDev);
 
 protected:
-	virtual QompMetaDataResolver* metaDataResolver() const { return resolver_; }
+	Q_INVOKABLE virtual QompMetaDataResolver* metaDataResolver() const { return resolver_; }
 
 protected slots:
 	virtual void doSetTune();

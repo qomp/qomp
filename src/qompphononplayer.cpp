@@ -33,7 +33,7 @@
 #endif
 
 QompPhononPlayer::QompPhononPlayer() :
-	QompPlayer(),
+	QompPlayerImpl(),
 	resolver_(0/*new QompTagLibMetaDataResolver(this)*/),
 	watcher_(0)
 {
@@ -175,14 +175,14 @@ void QompPhononPlayer::play()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompPhononPlayer::play()";
 #endif
-	QompPlayer::play();
+	QompPlayerImpl::play();
 	if(mediaObject_->currentSource().type() != Phonon::MediaSource::Invalid)
 		mediaObject_->play();
 }
 
 void QompPhononPlayer::pause()
 {
-	QompPlayer::pause();
+	QompPlayerImpl::pause();
 	mediaObject_->pause();
 }
 
@@ -191,7 +191,7 @@ void QompPhononPlayer::stop()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompPhononPlayer::stop()";
 #endif
-	QompPlayer::stop();
+	QompPlayerImpl::stop();
 	mediaObject_->stop();
 }
 

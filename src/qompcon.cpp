@@ -53,6 +53,7 @@
 #include <QDesktopServices>
 #include <QClipboard>
 
+#include "qompplayer.h"
 #ifdef HAVE_PHONON
 #include "qompphononplayer.h"
 #elif HAVE_QTMULTIMEDIA
@@ -107,7 +108,7 @@ QompCon::QompCon(QObject *parent) :
 	player_(0)
 {
 	qRegisterMetaType<Tune*>("Tune*");
-	qRegisterMetaType<Qomp::State>("State");
+	qRegisterMetaType<Qomp::State>("Qomp::State");
 #ifdef Q_OS_ANDROID
 	_instance = this;
 
@@ -349,7 +350,7 @@ void QompCon::actMuteToggle(bool mute)
 {
 	if(player_->isMuted() != mute) {
 		player_->setMute(mute);
-		mainWin_->setMuteState(player_->isMuted());
+		mainWin_->setMuteState(mute);
 		Options::instance()->setOption(OPTION_MUTED, mute);
 	}
 }
@@ -561,11 +562,13 @@ void QompCon::playIndex(const QModelIndex &index)
 
 QompPlayer *QompCon::createPlayer()
 {
+	QompPlayerImpl* i = nullptr;
 #ifdef HAVE_PHONON
-	return new QompPhononPlayer;
+	i = new QompPhononPlayer;
 #elif HAVE_QTMULTIMEDIA
-	return new QompQtMultimediaPlayer;
+	i = new QompQtMultimediaPlayer;
 #endif
+	return new QompPlayer(i);
 }
 
 void QompCon::mediaFinished(bool afterError)

@@ -20,7 +20,7 @@
 #ifndef QOMPQTMULTIMEDIAPLAYER_H
 #define QOMPQTMULTIMEDIAPLAYER_H
 
-#include "qompplayer.h"
+#include "qompplayerimpl.h"
 
 #include <QMediaPlayer>
 #include <QFutureWatcher>
@@ -28,27 +28,30 @@
 
 class QompMetaDataResolver;
 
-class QompQtMultimediaPlayer : public QompPlayer
+class QompQtMultimediaPlayer : public QompPlayerImpl
 {
 	Q_OBJECT
 public:
 	QompQtMultimediaPlayer();
 	~QompQtMultimediaPlayer();
 
-	virtual void setVolume(qreal vol);
-	virtual qreal volume() const;
-	virtual void setMute(bool mute);
-	virtual bool isMuted() const;
-	virtual void setPosition(qint64 pos);
-	virtual qint64 position() const;
+	Q_INVOKABLE virtual qreal volume() const;
+	Q_INVOKABLE virtual bool isMuted() const;
+	Q_INVOKABLE virtual qint64 position() const;
 
-	virtual Qomp::State state() const;
+	Q_INVOKABLE virtual Qomp::State state() const;
+	Q_INVOKABLE virtual qint64 currentTuneTotalTime() const;
+	Q_INVOKABLE virtual QStringList audioOutputDevice() const;
+
+public slots:
 	virtual void play();
 	virtual void pause();
 	virtual void stop();
-	virtual qint64 currentTuneTotalTime() const;
 
-	virtual QStringList audioOutputDevice() const;
+	virtual void setPosition(qint64 pos);
+	virtual void setMute(bool mute);
+	virtual void setVolume(qreal vol);
+
 	virtual void setAudioOutputDevice(const QString& devName);
 
 protected slots:
@@ -61,7 +64,7 @@ private slots:
 	void tuneUrlReady(const QUrl& url);
 
 protected:
-	virtual QompMetaDataResolver* metaDataResolver() const;
+	Q_INVOKABLE virtual QompMetaDataResolver* metaDataResolver() const;
 
 private:
 	QMediaPlayer* player_;

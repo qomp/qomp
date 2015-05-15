@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2015  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,51 +18,160 @@
  */
 
 #include "qompplayer.h"
+#include "qompplayerimpl.h"
 #include "qompmetadataresolver.h"
 #include "tune.h"
 
+#include <QThread>
 
-QompPlayer::QompPlayer() :
-	QObject(),
-	currentTune_(nullptr),
-	lastAction_(Qomp::StateStopped)
+
+class QompPlayer::Private
 {
+public:
+	explicit Private(QompPlayer* p) : _player(p){}
+
+	void connectImpl()
+	{
+		connect(impl, SIGNAL(currentPositionChanged(qint64)), _player, SIGNAL(currentPositionChanged(qint64)));
+		connect(impl, SIGNAL(currentTuneTotalTimeChanged(qint64)), _player, SIGNAL(currentTuneTotalTimeChanged(qint64)));
+		connect(impl, SIGNAL(stateChanged(Qomp::State)), _player, SIGNAL(stateChanged(Qomp::State)));
+		connect(impl, SIGNAL(mediaFinished()), _player, SIGNAL(mediaFinished()));
+		connect(impl, SIGNAL(volumeChanged(qreal)), _player, SIGNAL(volumeChanged(qreal)));
+		connect(impl, SIGNAL(mutedChanged(bool)), _player, SIGNAL(mutedChanged(bool)));
+		connect(impl, SIGNAL(tuneChanged(Tune*)), _player, SIGNAL(tuneChanged(Tune*)));
+		connect(impl, SIGNAL(tuneDataUpdated(Tune*)), _player, SIGNAL(tuneDataUpdated(Tune*)));
+	}
+
+public:
+	QompPlayer* _player;
+	QompPlayerImpl* impl;
+	QThread thread;
+};
+
+
+
+QompPlayer::QompPlayer(QompPlayerImpl* impl) :
+	QObject(),
+	d(new Private(this))
+{
+	d->impl = impl;
+	d->connectImpl();
+	d->thread.start();
+	d->impl->moveToThread(&d->thread);
+}
+
+QompPlayer::~QompPlayer()
+{
+	d->thread.quit();
+	delete d->impl;
+	delete d;
 }
 
 void QompPlayer::setTune(Tune *tune)
 {
-	currentTune_ = tune;
-	doSetTune();
-	emit tuneChanged(tune);
+	QMetaObject::invokeMethod(d->impl, "setTune", Qt::QueuedConnection, Q_ARG(Tune*, tune));
 }
 
 Tune *QompPlayer::currentTune() const
 {
-	return currentTune_;
+	Tune* r;
+	QMetaObject::invokeMethod(d->impl, "currentTune", Qt::BlockingQueuedConnection,
+				  Q_RETURN_ARG(Tune*, r));
+	return r;
 }
 
 void QompPlayer::resolveMetadata(const QList<Tune*>& tunes)
 {
-	if(metaDataResolver())
-		metaDataResolver()->resolve(tunes);
+	QMetaObject::invokeMethod(d->impl, "resolveMetadata", Qt::QueuedConnection, Q_ARG(QList<Tune*>, tunes));
 }
 
 Qomp::State QompPlayer::lastAction() const
 {
-	return lastAction_;
+	Qomp::State r;
+	QMetaObject::invokeMethod(d->impl, "lastAction", Qt::BlockingQueuedConnection,
+				  Q_RETURN_ARG(Qomp::State, r));
+	return r;
+}
+
+void QompPlayer::setVolume(qreal vol)
+{
+	QMetaObject::invokeMethod(d->impl, "setVolume", Qt::QueuedConnection, Q_ARG(qreal, vol));
+}
+
+qreal QompPlayer::volume() const
+{
+	qreal r;
+	QMetaObject::invokeMethod(d->impl, "volume", Qt::BlockingQueuedConnection,
+				  Q_RETURN_ARG(qreal, r));
+	return r;
+}
+
+void QompPlayer::setMute(bool mute)
+{
+	QMetaObject::invokeMethod(d->impl, "setMute", Qt::QueuedConnection, Q_ARG(bool, mute));
+}
+
+bool QompPlayer::isMuted() const
+{
+	bool r;
+	QMetaObject::invokeMethod(d->impl, "isMuted", Qt::BlockingQueuedConnection,
+				  Q_RETURN_ARG(bool, r));
+	return r;
+}
+
+void QompPlayer::setPosition(qint64 pos)
+{
+	QMetaObject::invokeMethod(d->impl, "setPosition", Qt::QueuedConnection, Q_ARG(qint64, pos));
+}
+
+qint64 QompPlayer::position() const
+{
+	qint64 r;
+	QMetaObject::invokeMethod(d->impl, "position", Qt::BlockingQueuedConnection,
+				  Q_RETURN_ARG(qint64, r));
+	return r;
+}
+
+Qomp::State QompPlayer::state() const
+{
+	Qomp::State r;
+	QMetaObject::invokeMethod(d->impl, "state", Qt::BlockingQueuedConnection,
+				  Q_RETURN_ARG(Qomp::State, r));
+	return r;
 }
 
 void QompPlayer::play()
 {
-	lastAction_ = Qomp::StatePlaying;
+	QMetaObject::invokeMethod(d->impl, "play", Qt::QueuedConnection);
 }
 
 void QompPlayer::pause()
 {
-	lastAction_ = Qomp::StatePaused;
+	QMetaObject::invokeMethod(d->impl, "pause", Qt::QueuedConnection);
 }
 
 void QompPlayer::stop()
 {
-	lastAction_ = Qomp::StateStopped;
+	QMetaObject::invokeMethod(d->impl, "stop", Qt::QueuedConnection);
+}
+
+qint64 QompPlayer::currentTuneTotalTime() const
+{
+	qint64 r;
+	QMetaObject::invokeMethod(d->impl, "currentTuneTotalTime", Qt::BlockingQueuedConnection,
+				  Q_RETURN_ARG(qint64, r));
+	return r;
+}
+
+QStringList QompPlayer::audioOutputDevice() const
+{
+	QStringList r;
+	QMetaObject::invokeMethod(d->impl, "audioOutputDevice", Qt::BlockingQueuedConnection,
+				  Q_RETURN_ARG(QStringList, r));
+	return r;
+}
+
+void QompPlayer::setAudioOutputDevice(const QString &devName)
+{
+	QMetaObject::invokeMethod(d->impl, "setAudioOutputDevice", Qt::QueuedConnection, Q_ARG(QString, devName));
 }
