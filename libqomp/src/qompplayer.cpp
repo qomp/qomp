@@ -32,14 +32,14 @@ public:
 
 	void connectImpl()
 	{
-		connect(impl, SIGNAL(currentPositionChanged(qint64)), _player, SIGNAL(currentPositionChanged(qint64)));
-		connect(impl, SIGNAL(currentTuneTotalTimeChanged(qint64)), _player, SIGNAL(currentTuneTotalTimeChanged(qint64)));
-		connect(impl, SIGNAL(stateChanged(Qomp::State)), _player, SIGNAL(stateChanged(Qomp::State)));
-		connect(impl, SIGNAL(mediaFinished()), _player, SIGNAL(mediaFinished()));
-		connect(impl, SIGNAL(volumeChanged(qreal)), _player, SIGNAL(volumeChanged(qreal)));
-		connect(impl, SIGNAL(mutedChanged(bool)), _player, SIGNAL(mutedChanged(bool)));
-		connect(impl, SIGNAL(tuneChanged(Tune*)), _player, SIGNAL(tuneChanged(Tune*)));
-		connect(impl, SIGNAL(tuneDataUpdated(Tune*)), _player, SIGNAL(tuneDataUpdated(Tune*)));
+		connect(impl, SIGNAL(currentPositionChanged(qint64)), _player, SIGNAL(currentPositionChanged(qint64)), Qt::QueuedConnection);
+		connect(impl, SIGNAL(currentTuneTotalTimeChanged(qint64)), _player, SIGNAL(currentTuneTotalTimeChanged(qint64)), Qt::QueuedConnection);
+		connect(impl, SIGNAL(stateChanged(Qomp::State)), _player, SIGNAL(stateChanged(Qomp::State)), Qt::QueuedConnection);
+		connect(impl, SIGNAL(mediaFinished()), _player, SIGNAL(mediaFinished()), Qt::QueuedConnection);
+		connect(impl, SIGNAL(volumeChanged(qreal)), _player, SIGNAL(volumeChanged(qreal)), Qt::QueuedConnection);
+		connect(impl, SIGNAL(mutedChanged(bool)), _player, SIGNAL(mutedChanged(bool)), Qt::QueuedConnection);
+		connect(impl, SIGNAL(tuneChanged(Tune*)), _player, SIGNAL(tuneChanged(Tune*)), Qt::QueuedConnection);
+		connect(impl, SIGNAL(tuneDataUpdated(Tune*)), _player, SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 	}
 
 public:
@@ -54,10 +54,12 @@ QompPlayer::QompPlayer(QompPlayerImpl* impl) :
 	QObject(),
 	d(new Private(this))
 {
-	d->impl = impl;
+	Q_ASSERT(impl != nullptr);
+
+	d->impl = impl;	
+	d->impl->moveToThread(&d->thread);
 	d->connectImpl();
 	d->thread.start();
-	d->impl->moveToThread(&d->thread);
 }
 
 QompPlayer::~QompPlayer()
