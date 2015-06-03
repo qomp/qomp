@@ -7,7 +7,10 @@ if( ${USE_QT5} )
 	#install taglib
 	find_package( TagLib )
 	if( TAGLIB_FOUND )
-		INSTALL( FILES ${TAGLIB_LIBRARY} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+		find_file( _libtag libtag.dll PATHES ${TAGLIB_ROOT}/bin ${TAGLIB_INCLUDE_DIR}/../bin )
+		if( NOT "${_libtag}" STREQUAL "_libtag-NOTFOUND" )
+			INSTALL( FILES ${_libtag} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+		endif( NOT "${_libtag}" STREQUAL "_libtag-NOTFOUND" )
 	endif( TAGLIB_FOUND )
 	#install Qt5 libs and plugins
 	set( qt5_components
@@ -20,7 +23,6 @@ if( ${USE_QT5} )
 		Concurrent
 	)
 	find_package( Qt5 COMPONENTS ${qt5_components} REQUIRED )
-	set( qt_ver ${Qt5_VERSION_MAJOR}${Qt5_VERSION_MINOR} )
 	foreach( liba ${qt5_components} )
 		get_target_property( _libloc Qt5::${liba} LOCATION )
 		if( _libloc )
@@ -66,11 +68,25 @@ if( ${USE_QT5} )
 		endif( _libloc )
 	endforeach( plug )
 	#install mingw and other needed libs
-	#version of icu libs sets automatically from Qt5 version
+	set( ICU_LIBS_PREFIXES
+		icudt5
+		icuin5
+		icuuc5
+	)
+	set( ICU_LIBS "" )
+	foreach( icu_prefix ${ICU_LIBS_PREFIXES} )
+		foreach( icu_counter RANGE 9 )
+			find_file( ${icu_prefix}${icu_counter} "${icu_prefix}${icu_counter}.dll" )
+			if( NOT "${${icu_prefix}${icu_counter}}" STREQUAL "${icu_prefix}${icu_counter}-NOTFOUND" )
+				set( ICU_LIBS ${ICU_LIBS} ${${icu_prefix}${icu_counter}} )
+			endif( NOT "${${icu_prefix}${icu_counter}}" STREQUAL "${icu_prefix}${icu_counter}-NOTFOUND" )
+		endforeach( icu_counter )
+	endforeach( icu_prefix )
+	if( ICU_LIBS )
+		INSTALL( FILES ${ICU_LIBS} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+	endif( ICU_LIBS )
+
 	set( FILE_LIST
-		icudt${qt_ver}.dll
-		icuin${qt_ver}.dll
-		icuuc${qt_ver}.dll
 		libeay32.dll
 		libgcc_s_sjlj-1.dll
 		libgcc_s_dw2-1.dll
@@ -98,10 +114,10 @@ if( ${USE_QT5} )
 	endif( ${USE_MXE} )
 	set( inc 1 )
 	foreach( liba ${FILE_LIST} )
-		find_file( _file${inc} ${liba} )
-		if( _file${inc} )
-			INSTALL( FILES ${_file${inc}} DESTINATION ${CMAKE_INSTALL_PREFIX} )
-		endif( _file${inc} )
+		find_file( ${liba}${inc} ${liba} )
+		if( NOT "${${liba}${inc}}" STREQUAL "${liba}${inc}-NOTFOUND" )
+			INSTALL( FILES ${${liba}${inc}} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+		endif( NOT "${${liba}${inc}}" STREQUAL "${liba}${inc}-NOTFOUND" )
 		math( EXPR inc ${inc}+1)
 	endforeach( liba )
 endif( ${USE_QT5} ) 
