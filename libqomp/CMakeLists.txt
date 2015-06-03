@@ -38,6 +38,7 @@ set( libqomp_HDRS
 	src/qompmetadataresolver.h
 	src/qompnetworkingfactory.h
 	src/qompplayer.h
+	src/qompplayerimpl.h
 	src/tune.h
 	${plugins_HDRS}
 	${options_HDRS}
@@ -57,6 +58,7 @@ set( libqomp_INCLUDE_HDRS
 	src/qompbusylabel.h
 	src/qompnetworkingfactory.h
 	src/qompmetadataresolver.h
+	src/qompplayerimpl.h
 	src/options.h
 	src/defines.h
 	src/plugins/qompplugingettunesdlg.h
@@ -80,6 +82,7 @@ set( libqomp_SRCS
 	src/qompmetadataresolver.cpp
 	src/qompnetworkingfactory.cpp
 	src/qompplayer.cpp
+	src/qompplayerimpl.cpp
 	src/tune.cpp
 	src/tuneurlchecker.cpp
 	${plugins_SRCS}

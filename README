@@ -59,3 +59,9 @@ Usefull cmake flags:
    -DTAGLIB_ROOT=%YOUR_PATH%
    usefull to build qomp in windows,
    default value is c:\build\taglib
+**set install needed qomp dependences for win32
+   -DINSTALL_DEPS=ON
+   default value is OFF
+**set use MXE for build (only for .dll installation)
+   -USE_MXE=ON
+   default value is OFF
