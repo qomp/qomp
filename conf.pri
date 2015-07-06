@@ -58,3 +58,5 @@ android {
     QT += quick qml androidextras
     DEFINES += QOMP_MOBILE
 }
+
+CONFIG += warn_on

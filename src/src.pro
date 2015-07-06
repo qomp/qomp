@@ -159,3 +159,11 @@ android {
 
 INCLUDEPATH += $$PWD/../libqomp/include
 DEPENDPATH += $$PWD/../libqomp/include
+
+DISTFILES += \
+    ../android/gradle/wrapper/gradle-wrapper.jar \
+    ../android/gradlew \
+    ../android/res/values/libs.xml \
+    ../android/build.gradle \
+    ../android/gradle/wrapper/gradle-wrapper.properties \
+    ../android/gradlew.bat
