@@ -26,6 +26,7 @@
 class QompPluginTreeModel;
 class QNetworkReply;
 class YandexMusicGettunsDlg;
+class QNetworkRequest;
 
 class YandexMusicController : public QompPluginController
 {
@@ -56,11 +57,14 @@ private:
 	void checkAndStopBusyWidget();
 	void search(const QString& text, const QString& type, const char* slot, int page = 0);
 	void searchNextPage(const QByteArray &reply, const QString& type, const char* slot);
+	QNetworkRequest creatNetworkRequest(const QUrl& url) const;
+	bool checkRedirect(QNetworkReply* reply, const char *slot, QompPluginTreeModel* model = nullptr);
 
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;
 	QHash<QNetworkReply*, void*> requests_;
 	YandexMusicGettunsDlg* dlg_;
+	QString mainUrl_;
 };
 
 #endif // YANDEXMUSICCONTROLLER_H

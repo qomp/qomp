@@ -74,15 +74,6 @@ static QString safeJSONValue2String(const QJsonValue& val)
 	return QString();
 }
 
-static QNetworkRequest creatNetworkRequest(const QUrl& url)
-{
-	QNetworkRequest nr(url);
-	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
-	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-	nr.setRawHeader("Referer", YA_MUSIC_URL.toLatin1());
-	return nr;
-}
-
 static QJsonArray ByteArrayToJsonArray(const QString& type, const QByteArray& ba)
 {
 #ifdef HAVE_QT5
@@ -192,7 +183,8 @@ YandexMusicController::YandexMusicController(QObject *parent) :
 	tracksModel_(new QompPluginTreeModel(this)),
 	albumsModel_(new QompPluginTreeModel(this)),
 	artistsModel_(new QompPluginTreeModel(this)),
-	dlg_(new YandexMusicGettunsDlg())
+	dlg_(new YandexMusicGettunsDlg()),
+	mainUrl_(YA_MUSIC_URL)
 {
 	init();
 }
@@ -212,7 +204,7 @@ void YandexMusicController::init()
 	QNetworkCookie c("makeyourownkindofmusic", "optin");
 	QList<QNetworkCookie> l;
 	l.append(c);
-	nam()->cookieJar()->setCookiesFromUrl(l, YA_MUSIC_URL);
+	nam()->cookieJar()->setCookiesFromUrl(l, mainUrl_);
 }
 
 QList<Tune*> YandexMusicController::prepareTunes() const
@@ -268,14 +260,14 @@ QompPluginGettunesDlg *YandexMusicController::view() const
 
 void YandexMusicController::search(const QString& text, const QString &type, const char *slot, int page)
 {
-	static const QString urlStr = YA_MUSIC_URL + QString("handlers/search.jsx?text=%1&type=%2");
+	static const QString urlStr = mainUrl_+ QString("handlers/search.jsx?text=%1&type=%2");
 	QString url = urlStr.arg(text, type);
 	if(page > 0) {
 		url += "&page=" + QString::number(page);
 	}
 	QNetworkReply* reply = nam()->get(creatNetworkRequest(QUrl(url)));
 	connect(reply, SIGNAL(finished()), slot);
-	requests_.insert(reply, 0);
+	requests_.insert(reply, nullptr);
 	dlg_->startBusyWidget();
 }
 
@@ -302,6 +294,40 @@ void YandexMusicController::searchNextPage(const QByteArray &reply, const QStrin
 		search(root.value("text").toString(), type, slot, ++curPage);
 }
 
+QNetworkRequest YandexMusicController::creatNetworkRequest(const QUrl &url) const
+{
+	QNetworkRequest nr(url);
+	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+	nr.setRawHeader("Referer", mainUrl_.toLatin1());
+	return nr;
+}
+
+bool YandexMusicController::checkRedirect(QNetworkReply *reply, const char* slot, QompPluginTreeModel *model)
+{
+	if(reply->header(QNetworkRequest::LocationHeader).isValid()) {
+		QString str = reply->header(QNetworkRequest::LocationHeader).toString();
+
+#ifdef DEBUG_OUTPUT
+		qDebug() << "checkRedirect() \n  url:\n" << reply->url().toString()
+							<< "\n  location:\n" << str;
+#endif
+
+		QUrl url(str);
+		mainUrl_ = QString("%1://%2/").arg(url.scheme(), url.host());
+
+		QNetworkRequest nr = creatNetworkRequest(url);
+		QNetworkReply* r = nam()->get(nr);
+		connect(r, SIGNAL(finished()), slot);
+		requests_.insert(r, model);
+		dlg_->startBusyWidget();
+
+		return true;
+	}
+
+	return false;
+}
+
 void YandexMusicController::artistsSearchFinished()
 {
 	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
@@ -310,6 +336,10 @@ void YandexMusicController::artistsSearchFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
+		if(checkRedirect(reply, SLOT(artistsSearchFinished()))) {
+			return;
+		}
+
 		QByteArray ba = reply->readAll();
 #ifdef DEBUG_OUTPUT
 		qDebug() << ba;
@@ -347,6 +377,10 @@ void YandexMusicController::albumsSearchFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
+		if(checkRedirect(reply, SLOT(albumsSearchFinished()))) {
+			return;
+		}
+
 		const QByteArray ba = reply->readAll();
 		QJsonArray arr = ByteArrayToJsonArray(ALBUMS_NAME, ba);
 		albumsModel_->addTopLevelItems(parseAlbums(arr));
@@ -363,6 +397,10 @@ void YandexMusicController::tracksSearchFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
+		if(checkRedirect(reply, SLOT(tracksSearchFinished()))) {
+			return;
+		}
+
 		const QByteArray ba = reply->readAll();
 		QJsonArray arr = ByteArrayToJsonArray(TRACKS_NAME, ba);
 		tracksModel_->addTopLevelItems(parseTunes(arr));
@@ -377,7 +415,12 @@ void YandexMusicController::artistUrlFinished()
 	reply->deleteLater();
 	requests_.remove(reply);
 	checkAndStopBusyWidget();
+
 	if(reply->error() == QNetworkReply::NoError) {
+		if(checkRedirect(reply, SLOT(artistUrlFinished()))) {
+			return;
+		}
+
 		const QByteArray replyStr = reply->readAll();
 #ifdef DEBUG_OUTPUT
 		qDebug() << replyStr;
@@ -420,6 +463,10 @@ void YandexMusicController::albumUrlFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
+		if(checkRedirect(reply, SLOT(albumUrlFinished()))) {
+			return;
+		}
+
 		const QByteArray replyStr = reply->readAll();
 #ifdef HAVE_QT5
 		QJsonDocument doc = QJsonDocument::fromJson(replyStr);
@@ -492,7 +539,7 @@ void YandexMusicController::itemSelected(QompPluginModelItem *item)
 		return;
 	}
 
-	QUrl url(YA_MUSIC_URL + path, QUrl::StrictMode);
+	QUrl url(mainUrl_ + path, QUrl::StrictMode);
 	QNetworkReply *reply = nam()->get(creatNetworkRequest(url));
 	reply->setProperty("id", item->internalId);
 
