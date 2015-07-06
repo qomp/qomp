@@ -22,6 +22,8 @@
 
 #include <QStringList>
 #include <QPair>
+#include <QObject>
+
 #include "libqomp_global.h"
 
 
