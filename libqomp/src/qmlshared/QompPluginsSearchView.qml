@@ -1,4 +1,4 @@
-import QtQuick 2.3
+import QtQuick 2.5
 
 Rectangle  {
 	id: root
@@ -19,7 +19,6 @@ Rectangle  {
 		id: head
 
 		property alias text: headerText.text
-		property var rootIndex;
 		property int oldIndex: 0;
 
 		color: "steelblue"
@@ -27,7 +26,7 @@ Rectangle  {
 		anchors.top: parent.top
 		width: parent.width
 		height: 60 * scaler.scaleY
-		visible: rootView.model.rootIndex !== rootIndex
+		visible: false
 
 		Rectangle {
 			id: backIco
@@ -51,8 +50,6 @@ Rectangle  {
 			runnning: true
 			color: "transparent"
 		}
-
-		Component.onCompleted: rootIndex = rootView.model.rootIndex
 
 		MouseArea {
 			anchors.fill:parent
@@ -152,6 +149,10 @@ Rectangle  {
 						}
 					}
 				}
+			}
+
+			onRootIndexChanged: {
+				head.visible = rootIndex !== undefined && rootIndex.valid
 			}
 		}
 		populate: Transition {
