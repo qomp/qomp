@@ -1,3 +1,13 @@
+Version 0.9 beta
+x.x.2015
+ * fixes for yandex.music plugin
+ + add "repeat last search" option
+ * fix dock click detection on OS X
+ + add ability select several tunes with shift key pressed at tunes search dialog
+ * various fixes
+ * update Qt libs to 5.5.0 (Windows, Android, OS X)
+
+
 Version 0.8.1 beta
 30.03.2015
  * fixes for myzuka.ru and yandex.music plugins
