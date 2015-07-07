@@ -154,7 +154,7 @@ FocusScope {
 					if(/\.qomp$/.exec(fileName) !== null)
 						return "qrc:///filedialog-playlist"
 
-					if(/\.mp3$/.exec(fileName) !== null)
+					if(/\.(mp3|flac|ogg|wav)$/.exec(fileName) !== null)
 						return "qrc:///icons/tune"
 
 					return "qrc:///filedialog-file"
