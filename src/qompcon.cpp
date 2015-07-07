@@ -240,9 +240,9 @@ void QompCon::checkVersion()
 	}
 }
 
-#ifdef Q_OS_ANDROID
 void QompCon::incomingCall(bool begining)
 {
+#ifdef Q_OS_ANDROID
 	static Qomp::State state = Qomp::StateStopped;
 
 	if(begining) {
@@ -257,8 +257,11 @@ void QompCon::incomingCall(bool begining)
 			state =  Qomp::StateStopped;
 		}
 	}
-}
+#else
+	Q_UNUSED(begining)
 #endif
+}
+
 void QompCon::updateSettings()
 {
 	QompNetworkingFactory::instance()->updateProxySettings();

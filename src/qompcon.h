@@ -38,9 +38,7 @@ public:
 	~QompCon();
 
 public slots:
-#ifdef Q_OS_ANDROID
 	void incomingCall(bool begining);
-#endif
 
 private slots:
 	void updateSettings();
