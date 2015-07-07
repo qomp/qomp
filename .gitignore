@@ -30,4 +30,5 @@ bin/
 android/assets/
 .DS_Store
 libqomp/include/
-android/*.properties~
+android/gradle.properties*
+android/local.properties*
