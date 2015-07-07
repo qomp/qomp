@@ -38,9 +38,17 @@ public:
 protected:
 	void keyPressEvent(QKeyEvent *ke);
 	void mouseDoubleClickEvent(QMouseEvent *e);
+	void mousePressEvent(QMouseEvent *e);
+
+private slots:
+	void updateIndexes();
 
 private:
 	void itemActivated();
+	QRect checkBoxRectAt(const QModelIndex& index) const;
+
+private:
+	QModelIndexList indexes_;
 };
 
 #endif // QompPluginTreeView_H

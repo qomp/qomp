@@ -21,6 +21,7 @@
 #include "qompplugintypes.h"
 
 #include <QKeyEvent>
+#include <QTimer>
 
 
 QompPluginTreeView::QompPluginTreeView(QWidget *parent) :
@@ -53,6 +54,50 @@ void QompPluginTreeView::mouseDoubleClickEvent(QMouseEvent *e)
 	return QTreeView::mouseDoubleClickEvent(e);
 }
 
+void QompPluginTreeView::mousePressEvent(QMouseEvent *e)
+{
+	QModelIndex index = indexAt(e->pos());
+
+	if(index.isValid()&& e->modifiers() == Qt::ShiftModifier
+		&& (index.flags() & Qt::ItemIsUserCheckable))
+	{
+		QRect rect = checkBoxRectAt(index);
+
+		if (rect.contains(e->pos())) {
+			QModelIndex old = currentIndex();
+			QModelIndex par = index.parent();
+
+			if(old.isValid() && old.parent() == par) {
+				int start = qMin(old.row(), index.row());
+				int end = qMax(old.row(), index.row());
+				int col = index.column();
+
+				indexes_.clear();
+				for(int i = start; i <= end; ++i) {
+					indexes_.append(model()->index(i, col, par));
+				}
+
+				e->accept();
+				setCurrentIndex(index);
+				QTimer::singleShot(100, this, SLOT(updateIndexes()));
+				return;
+			}
+
+		}
+	}
+
+	QTreeView::mousePressEvent(e);
+	setCurrentIndex(index);
+}
+
+void QompPluginTreeView::updateIndexes()
+{
+	foreach (const QModelIndex& ind, indexes_) {
+		model()->setData(ind, QompCon::DataSelect, Qt::CheckStateRole);
+		emit clicked(ind);
+	}
+}
+
 void QompPluginTreeView::itemActivated()
 {
 	QModelIndex i = currentIndex();
@@ -60,3 +105,13 @@ void QompPluginTreeView::itemActivated()
 		model()->setData(i, QompCon::DataToggle, Qt::CheckStateRole);
 	}
 }
+
+QRect QompPluginTreeView::checkBoxRectAt(const QModelIndex &index) const
+{
+	QStyleOptionButton opt;
+	opt.QStyleOption::operator=(viewOptions());
+	opt.rect = visualRect(index);
+	QRect rect = style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &opt);
+	return rect;
+}
+
