@@ -73,12 +73,12 @@ static QompCon* _instance;
 
 static void incomingCallStart(JNIEnv */*env*/, jobject /*thiz*/)
 {
-	_instance->incomingCall(true);
+	QMetaObject::invokeMethod(_instance, "incomingCall", Qt::QueuedConnection, Q_ARG(bool, true));
 }
 
 static void incomingCallFinish(JNIEnv */*env*/, jobject /*thiz*/)
 {
-	_instance->incomingCall(false);
+	QMetaObject::invokeMethod(_instance, "incomingCall", Qt::QueuedConnection, Q_ARG(bool, false));
 }
 
 static void notifyIcon(const QString& text)

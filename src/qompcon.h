@@ -37,6 +37,7 @@ public:
 	explicit QompCon(QObject *parent = 0);
 	~QompCon();
 
+public slots:
 #ifdef Q_OS_ANDROID
 	void incomingCall(bool begining);
 #endif
