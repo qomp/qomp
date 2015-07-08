@@ -19,7 +19,6 @@
 
 #include "prostopleerplugin.h"
 #include "prostopleercontroller.h"
-#include "prostopleerplugindefines.h"
 #include "prostopleerpluginsettings.h"
 #include "qomppluginaction.h"
 
@@ -28,16 +27,6 @@
 
 ProstoPleerPlugin::ProstoPleerPlugin() : enabled_(false)
 {
-}
-
-QString ProstoPleerPlugin::name() const
-{
-	return PROSTOPLEER_PLUGIN_NAME;
-}
-
-QString ProstoPleerPlugin::version() const
-{
-	return PROSTOPLEER_PLUGIN_VERSION;
 }
 
 QString ProstoPleerPlugin::description() const

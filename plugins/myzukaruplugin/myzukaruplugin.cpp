@@ -18,7 +18,6 @@
  */
 
 #include "myzukaruplugin.h"
-#include "myzukarudefines.h"
 #include "myzukarucontroller.h"
 #include "myzukaruresolvestrategy.h"
 #include "qomppluginaction.h"
@@ -27,16 +26,6 @@
 
 MyzukaruPlugin::MyzukaruPlugin()
 {
-}
-
-QString MyzukaruPlugin::name() const
-{
-	return MYZUKA_PLUGIN_NAME;
-}
-
-QString MyzukaruPlugin::version() const
-{
-	return MYZUKA_PLUGIN_VERSION;
 }
 
 QString MyzukaruPlugin::description() const

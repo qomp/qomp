@@ -29,16 +29,6 @@ YandexMusicPlugin::YandexMusicPlugin(QObject *parent) :
 {
 }
 
-QString YandexMusicPlugin::name() const
-{
-	return "Yandex.Music";
-}
-
-QString YandexMusicPlugin::version() const
-{
-	return "0.8.1";
-}
-
 QString YandexMusicPlugin::description() const
 {
 	return tr("Listening to the music from Yandex.Music");

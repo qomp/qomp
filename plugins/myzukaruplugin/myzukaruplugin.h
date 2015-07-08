@@ -22,6 +22,7 @@
 
 #include "qompplugin.h"
 #include "qomptunepluign.h"
+#include "myzukarudefines.h"
 
 class MyzukaruPlugin : public QObject, public QompPlugin, public QompTunePlugin
 {
@@ -32,8 +33,8 @@ class MyzukaruPlugin : public QObject, public QompPlugin, public QompTunePlugin
 #endif
 public:
 	MyzukaruPlugin();
-	virtual QString name() const;
-	virtual QString version() const;
+	virtual QString name() const { return MYZUKA_PLUGIN_NAME; }
+	virtual QString version() const { return MYZUKA_PLUGIN_VERSION; }
 	virtual QString description() const;
 	virtual QompOptionsPage* options();
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const;

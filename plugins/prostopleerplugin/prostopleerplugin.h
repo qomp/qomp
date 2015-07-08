@@ -22,6 +22,7 @@
 
 #include "qompplugin.h"
 #include "qomptunepluign.h"
+#include "prostopleerplugindefines.h"
 
 #include <QPointer>
 
@@ -34,8 +35,8 @@ class ProstoPleerPlugin : public QObject, public QompPlugin, public QompTunePlug
 #endif
 public:
 	ProstoPleerPlugin();
-	virtual QString name() const;
-	virtual QString version() const;
+	virtual QString name() const { return PROSTOPLEER_PLUGIN_NAME; }
+	virtual QString version() const { return PROSTOPLEER_PLUGIN_VERSION; }
 	virtual QString description() const;
 	virtual QompOptionsPage* options();
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
