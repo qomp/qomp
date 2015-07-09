@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014  Khryukin Evgeny
+ * Copyright (C) 2013-2015  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
  *
  */
 
-#include "tune2fileplugin.h"
+#include "tunetofileplugin.h"
 #include "tunetofilesettings.h"
 #include "options.h"
 #include "tune.h"
@@ -27,12 +27,12 @@
 #include <QFile>
 
 
-Tune2FilePlugin::Tune2FilePlugin() : player_(0), enabled_(false)
+TuneToFilePlugin::TuneToFilePlugin() : player_(0), enabled_(false)
 {
 	QTimer::singleShot(0, this, SLOT(init()));
 }
 
-QompOptionsPage *Tune2FilePlugin::options()
+QompOptionsPage *TuneToFilePlugin::options()
 {
 	if(!enabled_)
 		return 0;
@@ -41,7 +41,7 @@ QompOptionsPage *Tune2FilePlugin::options()
 	return optPage_;
 }
 
-void Tune2FilePlugin::qompPlayerChanged(QompPlayer *player)
+void TuneToFilePlugin::qompPlayerChanged(QompPlayer *player)
 {
 	if(player_ != player) {
 		if(player_)
@@ -53,7 +53,7 @@ void Tune2FilePlugin::qompPlayerChanged(QompPlayer *player)
 	}
 }
 
-void Tune2FilePlugin::setEnabled(bool enabled)
+void TuneToFilePlugin::setEnabled(bool enabled)
 {
 	enabled_ = enabled;
 
@@ -65,13 +65,13 @@ void Tune2FilePlugin::setEnabled(bool enabled)
 	}
 }
 
-void Tune2FilePlugin::unload()
+void TuneToFilePlugin::unload()
 {
 	if(optPage_)
 		delete optPage_;
 }
 
-void Tune2FilePlugin::playerStatusChanged(Qomp::State state)
+void TuneToFilePlugin::playerStatusChanged(Qomp::State state)
 {
 	if(!enabled_ || file_.isEmpty() || !player_)
 		return;
@@ -86,12 +86,12 @@ void Tune2FilePlugin::playerStatusChanged(Qomp::State state)
 	}
 }
 
-void Tune2FilePlugin::optionsUpdate()
+void TuneToFilePlugin::optionsUpdate()
 {
 	file_ = Options::instance()->getOption(T2FOPT_FILE).toString();
 }
 
-void Tune2FilePlugin::init()
+void TuneToFilePlugin::init()
 {
 	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(optionsUpdate()));
 	optionsUpdate();

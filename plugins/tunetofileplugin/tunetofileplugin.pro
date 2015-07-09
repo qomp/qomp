@@ -1,9 +1,9 @@
 include($$PWD/../plugins.pri)
 
-HEADERS += $$PWD/tune2fileplugin.h \
+HEADERS += $$PWD/tunetofileplugin.h \
     $$PWD/tunetofilesettings.h
 
-SOURCES += $$PWD/tune2fileplugin.cpp \
+SOURCES += $$PWD/tunetofileplugin.cpp \
     $$PWD/tunetofilesettings.cpp
 
 FORMS += $$PWD/tunetofilesettings.ui

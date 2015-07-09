@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2015  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef TUNE2FILEPLUGIN_H
-#define TUNE2FILEPLUGIN_H
+#ifndef TUNETOFILEPLUGIN_H
+#define TUNETOFILEPLUGIN_H
 
 #include "qompplugin.h"
 #include "qompplayerstatusplugin.h"
@@ -28,7 +28,7 @@
 
 class TuneToFileSettings;
 
-class Tune2FilePlugin : public QObject, public QompPlugin, public QompPlayerStatusPlugin
+class TuneToFilePlugin : public QObject, public QompPlugin, public QompPlayerStatusPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QompPlugin QompPlayerStatusPlugin)
@@ -37,7 +37,7 @@ class Tune2FilePlugin : public QObject, public QompPlugin, public QompPlayerStat
 #endif
 
 public:
-	explicit Tune2FilePlugin();
+	explicit TuneToFilePlugin();
 
 	virtual QString name() const { return tr("Tune to File"); }
 	virtual QString version() const { return "0.8"; }
@@ -59,4 +59,4 @@ private:
 	QPointer<TuneToFileSettings> optPage_;
 };
 
-#endif // TUNE2FILEPLUGIN_H
+#endif // TUNETOFILEPLUGIN_H
