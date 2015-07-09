@@ -12,8 +12,7 @@ blue="\x1B[01;94m"
 #
 #constans
 version="0"
-libqomp_defines="${qomp_path}/libqomp/include/defines.h
-${qomp_path}/libqomp/src/defines.h"
+libqomp_defines="${qomp_path}/libqomp/src/defines.h"
 macx_file=${qomp_path}/Info.plist
 android_file=${qomp_path}/android/AndroidManifest.xml
 plugins_dir=${qomp_path}/plugins
