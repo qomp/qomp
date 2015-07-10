@@ -282,7 +282,7 @@ void YandexMusicController::searchNextPage(const QByteArray &reply, const QStrin
 	QJson::Parser parser;
 	bool ok;
 	QJsonObject root = parser.parse(reply, &ok).toMap();
-	if (!ok || root.contains("pager")) {
+	if (!ok || !root.contains("pager")) {
 		return;
 	}
 #endif
