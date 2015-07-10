@@ -6,11 +6,11 @@ endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 set( CMAKE_AUTOMOC ON )
 add_definitions( -Wall -DQT_PLUGIN )
 set( tunetofileplugin_HDRS
-	tune2fileplugin.h
+	tunetofileplugin.h
 	tunetofilesettings.h
 )
 set( tunetofileplugin_SRCS
-	tune2fileplugin.cpp
+	tunetofileplugin.cpp
 	tunetofilesettings.cpp
 )
 set( tunetofileplugin_UIS
