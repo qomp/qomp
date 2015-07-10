@@ -21,7 +21,7 @@
 #define LASTFMDEFINES_H
 
 #define LASTFM_NAME		"LastFm"
-#define LASTFM_VER		"0.8"
+#define LASTFM_VER		"0.9"
 #define LASTFM_OPT_USER		"plugins.lastfm.user"
 #define LASTFM_OPT_ENABLED	"plugins.lastfm.enabled"
 #define LASTFM_SESS_KEY		"plugins.lastfm.data"
