@@ -11,6 +11,7 @@ set( QOMP_LIB_VERSION_PATCH 0 )
 set( QOMP_LIB_VERSION_STRING
 	${QOMP_LIB_VERSION_MAJOR}.${QOMP_LIB_VERSION_MINOR}.${QOMP_LIB_VERSION_PATCH}
 )
+set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 set( plugins_HDRS
 	src/plugins/qompplugingettunesdlg.h
 	src/plugins/qompplugintreeview.h
@@ -118,7 +119,7 @@ if( ${USE_QT5} )
 		${Qt5Concurrent_INCLUDES}
 	)
 	qt5_wrap_ui( libqomp_UIS ${libqomp_UIFILES} )
-	set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
+	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
 	add_definitions(
 		${Qt5Widgets_DEFINITIONS}
 		${Qt5Network_DEFINITIONS}

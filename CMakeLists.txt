@@ -23,7 +23,7 @@ endif( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 set( LIBQOMP_LIBRARY libqomp )
 add_subdirectory( ${LIBQOMP_LIBRARY} )
 add_subdirectory( plugins )
-
+set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -90,7 +90,7 @@ if( ${USE_QT5} )
 		${qomp_UIS}
 		${options_UIS}
 	)
-	set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 	add_definitions(
 		-DHAVE_QT5
 		-DHAVE_QTMULTIMEDIA

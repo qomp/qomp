@@ -5,6 +5,7 @@ if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 set( CMAKE_AUTOMOC ON )
 add_definitions( -Wall -DQT_PLUGIN )
+set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 set( yandexmusicplugin_HDRS
 	${PLUGIN}.h
 	yandexmusicgettunsdlg.h
@@ -22,6 +23,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PROJECT_BINARY_DIR}/libqomp/include
 )
+set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 if( ${USE_QT5} )
 	find_package( Qt5Widgets REQUIRED )
 	find_package( Qt5Network REQUIRED )
@@ -30,7 +32,7 @@ if( ${USE_QT5} )
 		${Qt5Network_INCLUDES}
 		${Qt5Xml_INCLUDES}
 	)
-	set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
+	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
 	add_definitions(
 		${Qt5Widgets_DEFINITIONS}
 		${Qt5Network_DEFINITIONS}

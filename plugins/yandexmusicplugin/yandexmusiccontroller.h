@@ -27,6 +27,7 @@ class QompPluginTreeModel;
 class QNetworkReply;
 class YandexMusicGettunsDlg;
 class QNetworkRequest;
+class QUrl;
 
 class YandexMusicController : public QompPluginController
 {

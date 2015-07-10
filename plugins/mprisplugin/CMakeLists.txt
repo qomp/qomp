@@ -3,6 +3,7 @@ cmake_minimum_required( VERSION 2.8.11 )
 if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
 endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
+set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 if( ${UNIX} )
 	set( CMAKE_AUTOMOC TRUE )
 	add_definitions( -Wall -DQT_PLUGIN -DHAVE_DBUS )
@@ -28,7 +29,7 @@ if( ${UNIX} )
 			${Qt5Widgets_INCLUDES}
 			${Qt5DBus_INCLUDES}
 		)
-		set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
+		set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
 		add_definitions(
 			${Qt5Widgets_DEFINITIONS}
 			${Qt5DBus_DEFINITIONS}

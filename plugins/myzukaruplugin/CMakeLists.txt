@@ -5,6 +5,7 @@ if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 set( CMAKE_AUTOMOC ON )
 add_definitions( -Wall -DQT_PLUGIN )
+set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 set( myzukaruplugin_HDRS
 	${PLUGIN}.h
 	myzukarudefines.h
@@ -30,7 +31,7 @@ if( ${USE_QT5} )
 		${Qt5Widgets_INCLUDES}
 		${Qt5Network_INCLUDES}
 	)
-	set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
+	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
 	add_definitions(
 		${Qt5Widgets_DEFINITIONS}
 		${Qt5Network_DEFINITIONS}
