@@ -260,7 +260,7 @@ QompPluginGettunesDlg *YandexMusicController::view() const
 
 void YandexMusicController::search(const QString& text, const QString &type, const char *slot, int page)
 {
-	static const QString urlStr = mainUrl_+ QString("handlers/search.jsx?text=%1&type=%2");
+	static const QString urlStr = mainUrl_+ QString("handlers/music-search.jsx?text=%1&type=%2");
 	QString url = urlStr.arg(text, type);
 	if(page > 0) {
 		url += "&page=" + QString::number(page);
