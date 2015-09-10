@@ -27,11 +27,16 @@ import android.os.IBinder;
 import android.content.ComponentName;
 import android.app.Service;
 
+//For PowerManager
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+
 
 public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     public static final String NOTIFY = "net.sourceforge.qomp.NOTIFY";
 
     private static Qomp _instance;
+    private PowerManager.WakeLock wl;
     private BroadcastReceiver callReceiver_;
     private QompService service_;
     private ServiceConnection sConn_ = new ServiceConnection() {
@@ -52,6 +57,10 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
         _instance = this;
         registerCallReceiver();
         bindToService();
+
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
+        wl.acquire();
     }
 
     @Override
@@ -63,6 +72,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     public static void deInit() {
         _instance.unbindService(_instance.sConn_);
         _instance.unregisterReceiver(_instance.callReceiver_);
+        _instance.wl.release();
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {

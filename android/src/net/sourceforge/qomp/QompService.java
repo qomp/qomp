@@ -30,8 +30,8 @@ public class QompService extends Service {
 
     @Override
     public void onCreate() {
-        super.onCreate();
 //        Log.i("QompService", "onCreated");
+        super.onCreate();
     }
 
     @Override
