@@ -21,13 +21,19 @@
 
 #include <QPixmap>
 
+#ifdef QOMP_MOBILE
+#include <QQuickItem>
+#include <QEventLoop>
+#include <QQuickImageProvider>
+#include "qompqmlengine.h"
+#else
 #include <QDialog>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QDialogButtonBox>
 #include <QLineEdit>
-
+#endif
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -35,6 +41,36 @@
 
 class QompPluginCaptchaDialog::Private
 {
+#ifdef QOMP_MOBILE
+	class ImageProvider : public QQuickImageProvider
+	{
+	public:
+		explicit ImageProvider(const QPixmap& p) :
+			QQuickImageProvider(QQmlImageProviderBase::Pixmap),
+			_pix(p)
+		{
+		}
+
+		~ImageProvider() {}
+
+		QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
+		{
+			Q_UNUSED(id)
+			Q_UNUSED(size)
+			Q_UNUSED(requestedSize)
+			return _pix;
+		}
+
+		static QString provId()
+		{
+			return QStringLiteral("captcha");
+		}
+
+	private:
+		QPixmap _pix;
+	};
+#endif
+
 public:
 	Private(QompPluginCaptchaDialog* parent) :
 		_parent(parent)
@@ -52,7 +88,28 @@ public:
 #endif
 			return false;
 		}
+		bool res = false;
 
+#ifdef QOMP_MOBILE
+
+		QQuickItem* item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/QompCaptchaDlg.qml"));
+		ImageProvider *prov = new ImageProvider(_pix);
+		QompQmlEngine::instance()->addImageProvider(ImageProvider::provId(), prov);
+
+		item->setProperty("captcha", QString("image://%1/image").arg(ImageProvider::provId()));
+
+		QEventLoop loop;
+		connect(item, SIGNAL(accepted()), &loop, SLOT(quit()));
+		QompQmlEngine::instance()->addItem(item);
+		loop.exec();
+		res = item->property("status").toBool();
+		if(res) {
+			_res = item->property("text").toString();
+		}
+		QompQmlEngine::instance()->removeItem();
+		QompQmlEngine::instance()->removeImageProvider(ImageProvider::provId());
+
+#else
 		QDialog dlg;
 
 		dlg.setWindowTitle(tr("Enter the text from the image"));
@@ -91,10 +148,10 @@ public:
 
 		if(dlg.exec() == QDialog::Accepted) {
 			_res = le->text();
-			return true;
+			res = true;
 		}
-
-		return false;
+#endif
+		return res;
 	}
 
 	QString result() const

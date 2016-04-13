@@ -87,7 +87,9 @@ android {
         plugins/bearer/libqandroidbearer.so \
         plugins/platforms/android/libqtforandroid.so \
         plugins/mediaservice/libqtmedia_android.so \
-        plugins/audio/libqtaudio_opensles.so
+        plugins/audio/libqtaudio_opensles.so \
+        plugins/imageformats/libqgif.so \
+        plugins/imageformats/libqjpeg.so
 
     ANDROID_DEPLOYMENT_DEPENDENCIES += \
         qml/QtQuick/Dialogs/qmldir \
@@ -119,9 +121,21 @@ android {
             plugins/generic/libqevdevkeyboardplugin.so \
             plugins/generic/libqevdevmouseplugin.so \
             plugins/generic/libqevdevtabletplugin.so \
-            plugins/generic/libqevdevtouchplugin.so \
-            plugins/qmltooling/libqmldbg_qtquick2.so \
+            plugins/generic/libqevdevtouchplugin.so \            
             plugins/qmltooling/libqmldbg_tcp.so
+
+        greaterThan(QT_MINOR_VERSION, 5) {
+            ANDROID_DEPLOYMENT_DEPENDENCIES += \
+                plugins/qmltooling/libqmldbg_debugger.so \
+                plugins/qmltooling/libqmldbg_inspector.so \
+                plugins/qmltooling/libqmldbg_local.so \
+                plugins/qmltooling/libqmldbg_native.so \
+                plugins/qmltooling/libqmldbg_profiler.so \
+                plugins/qmltooling/libqmldbg_server.so \
+        }
+        else {
+            ANDROID_DEPLOYMENT_DEPENDENCIES += plugins/qmltooling/libqmldbg_qtquick2.so
+        }
     }
 
     ANDROID_DEPLOYMENT_DEPENDENCIES += \
