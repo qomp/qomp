@@ -60,6 +60,8 @@ private:
 	void searchNextPage(const QByteArray &reply, const QString& type, const char* slot);
 	QNetworkRequest creatNetworkRequest(const QUrl& url) const;
 	bool checkRedirect(QNetworkReply* reply, const char *slot, QompPluginTreeModel* model = nullptr);
+	bool checkCaptcha(const QUrl& url, const QByteArray& reply, const char *slot, QompPluginTreeModel* model = nullptr);
+	QPixmap getCaptcha(const QString& captchaUrl, QString* key);
 
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;

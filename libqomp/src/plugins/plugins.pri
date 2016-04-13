@@ -19,11 +19,13 @@ HEADERS += $$PWD/qompplugingettunesdlg.h \
     $$PWD/qomptunepluign.h \
     $$PWD/qompplayerstatusplugin.h \
     $$PWD/qompplugincontroller.h \
-    $$PWD/qomppluginaction.h
+    $$PWD/qomppluginaction.h \
+    $$PWD/qompplugincaptchadialog.h
 
 SOURCES += $$PWD/qompplugintreemodel.cpp \
     $$PWD/qompplugintypes.cpp \
     $$PWD/qompplugincontroller.cpp \
-    $$PWD/qomppluginaction.cpp
+    $$PWD/qomppluginaction.cpp \
+    $$PWD/qompplugincaptchadialog.cpp
 
 

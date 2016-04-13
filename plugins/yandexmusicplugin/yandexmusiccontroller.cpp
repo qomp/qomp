@@ -23,6 +23,7 @@
 #include "qompplugintypes.h"
 #include "common.h"
 #include "yandexmusicurlresolvestrategy.h"
+#include "qompplugincaptchadialog.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkCookieJar>
@@ -30,6 +31,8 @@
 #include <QNetworkReply>
 #include <QRegExp>
 #include <QStringList>
+#include <QEventLoop>
+#include <QPixmap>
 
 #ifdef HAVE_QT5
 #include <QJsonArray>
@@ -309,7 +312,7 @@ bool YandexMusicController::checkRedirect(QNetworkReply *reply, const char* slot
 		QString str = reply->header(QNetworkRequest::LocationHeader).toString();
 
 #ifdef DEBUG_OUTPUT
-		qDebug() << "checkRedirect() \n  url:\n" << reply->url().toString()
+		qDebug() << "YandexMusicController::checkRedirect() \n  url:\n" << reply->url().toString()
 							<< "\n  location:\n" << str;
 #endif
 
@@ -328,6 +331,98 @@ bool YandexMusicController::checkRedirect(QNetworkReply *reply, const char* slot
 	return false;
 }
 
+bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray &reply,
+					 const char *slot, QompPluginTreeModel *model)
+{
+#ifdef HAVE_QT5
+	QJsonDocument doc = QJsonDocument::fromJson(reply);
+	QJsonObject root = doc.object();
+	if(!root.contains("type") || root.value("type").toString() != QStringLiteral("captcha"))
+		return false;
+#else
+	QJson::Parser parser;
+	bool ok;
+	QJsonObject root = parser.parse(reply, &ok).toMap();
+	if (!ok || !root.contains("type") || root.value("type").toString() != QString("captcha")) {
+		return false;
+	}
+#endif
+
+	QJsonObject captcha = root.value("captcha").toObject();
+
+	const QString status = captcha.value("status").toString();
+	if(status == "success") {
+		return true;
+	}
+
+	const QString imageURL = captcha.value("img-url").toString();
+	const QString page = captcha.value("captcha-page").toString();
+	const QString ref = QUrl(page).query(QUrl::FullyEncoded);
+	QString key = captcha.value("key").toString();
+
+#ifdef DEBUG_OUTPUT
+		qDebug() << "YandexMusicController::checkCaptcha():  " << imageURL <<  key << page << ref;
+#endif
+
+	QString key2;
+	QPixmap px = getCaptcha(imageURL, &key2);
+	QompPluginCaptchaDialog dlg(px, dlg_);
+	if(dlg.start()) {
+		QUrl url(QString("%1://%2/checkcaptcha?key=%3&%4&rep=%5")
+				.arg(replyUrl.scheme(), replyUrl.host(), key, ref,
+				QUrl::toPercentEncoding(dlg.result())), QUrl::StrictMode);
+#ifdef DEBUG_OUTPUT
+		qDebug() << url.toString(QUrl::FullyEncoded);
+#endif
+		QNetworkRequest nr(url);
+		nr.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+		QNetworkReply* r = nam()->get(nr);
+		connect(r, SIGNAL(finished()), slot);
+		requests_.insert(r, model);
+		dlg_->startBusyWidget();
+	}
+
+	return true;
+}
+
+QPixmap YandexMusicController::getCaptcha(const QString &captchaUrl, QString *key)
+{
+#ifdef DEBUG_OUTPUT
+		qDebug() << "YandexMusicController::getCaptcha():  " << captchaUrl;
+#endif
+	QUrl url(captchaUrl);
+	QNetworkRequest nr = creatNetworkRequest(url);
+	QNetworkReply* r = nam()->get(nr);
+
+	dlg_->startBusyWidget();
+	QEventLoop el;
+	connect(r, SIGNAL(finished()), &el, SLOT(quit()));
+	el.exec();
+	dlg_->stopBusyWidget();
+	r->deleteLater();
+
+	QPixmap pix;
+	if (r->error() == QNetworkReply::NoError) {
+		if(r->header(QNetworkRequest::LocationHeader).isValid()) {
+			QString str = r->header(QNetworkRequest::LocationHeader).toString();
+			return getCaptcha(str, key);
+		}
+		if(url.hasQuery()) {
+			const QString queries = url.query();
+			foreach(const QString& query, queries.split("&")) {
+				QStringList data = query.split("=");
+				if(data.at(0) == "key" && data.size() == 2) {
+					*key = data.at(1);
+				}
+			}
+		}
+		QByteArray ba = r->readAll();
+		pix.loadFromData(ba);
+	}
+
+	return pix;
+}
+
 void YandexMusicController::artistsSearchFinished()
 {
 	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
@@ -344,6 +439,10 @@ void YandexMusicController::artistsSearchFinished()
 #ifdef DEBUG_OUTPUT
 		qDebug() << ba;
 #endif
+
+		if(checkCaptcha(reply->url(), ba, SLOT(artistsSearchFinished()))) {
+			return;
+		}
 
 		QJsonArray arr = ByteArrayToJsonArray(ARTISTS_NAME, ba);
 		QList<QompPluginModelItem*> artists;
@@ -382,6 +481,11 @@ void YandexMusicController::albumsSearchFinished()
 		}
 
 		const QByteArray ba = reply->readAll();
+
+		if(checkCaptcha(reply->url(), ba, SLOT(albumsSearchFinished()))) {
+			return;
+		}
+
 		QJsonArray arr = ByteArrayToJsonArray(ALBUMS_NAME, ba);
 		albumsModel_->addTopLevelItems(parseAlbums(arr));
 
@@ -402,6 +506,10 @@ void YandexMusicController::tracksSearchFinished()
 		}
 
 		const QByteArray ba = reply->readAll();
+		if(checkCaptcha(reply->url(), ba, SLOT(tracksSearchFinished()))) {
+			return;
+		}
+
 		QJsonArray arr = ByteArrayToJsonArray(TRACKS_NAME, ba);
 		tracksModel_->addTopLevelItems(parseTunes(arr));
 
@@ -422,6 +530,10 @@ void YandexMusicController::artistUrlFinished()
 		}
 
 		const QByteArray replyStr = reply->readAll();
+		if(checkCaptcha(reply->url(), replyStr, SLOT(artistUrlFinished()))) {
+			return;
+		}
+
 #ifdef DEBUG_OUTPUT
 		qDebug() << replyStr;
 #endif
@@ -452,6 +564,11 @@ void YandexMusicController::artistUrlFinished()
 			pa->tunesReceived = true;
 		}
 	}
+	else {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "artistUrlFinished()" << reply->errorString();
+#endif
+	}
 }
 
 void YandexMusicController::albumUrlFinished()
@@ -463,11 +580,15 @@ void YandexMusicController::albumUrlFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
-		if(checkRedirect(reply, SLOT(albumUrlFinished()))) {
+		if(checkRedirect(reply, SLOT(albumUrlFinished()), static_cast<QompPluginTreeModel*>(model))) {
 			return;
 		}
 
 		const QByteArray replyStr = reply->readAll();
+		if(checkCaptcha(reply->url(), replyStr, SLOT(albumUrlFinished()), static_cast<QompPluginTreeModel*>(model))) {
+			return;
+		}
+
 #ifdef HAVE_QT5
 		QJsonDocument doc = QJsonDocument::fromJson(replyStr);
 		QJsonObject jo = doc.object();
@@ -502,6 +623,11 @@ void YandexMusicController::albumUrlFinished()
 			QompPluginAlbum* pa = static_cast<QompPluginAlbum*>(it);
 			pa->tunesReceived = true;
 		}
+	}
+	else {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "albumUrlFinished()" << reply->errorString();
+#endif
 	}
 }
 
