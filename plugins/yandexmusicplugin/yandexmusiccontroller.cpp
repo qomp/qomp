@@ -208,6 +208,8 @@ void YandexMusicController::init()
 	QList<QNetworkCookie> l;
 	l.append(c);
 	nam()->cookieJar()->setCookiesFromUrl(l, mainUrl_);
+
+	connect(this, SIGNAL(queryFinished()), SLOT(makeQuery()));
 }
 
 QList<Tune*> YandexMusicController::prepareTunes() const
@@ -247,13 +249,13 @@ void YandexMusicController::doSearch(const QString& txt)
 	artistsModel_->reset();
 	tracksModel_->reset();
 
-	QHash<QString, const char*> req;
-	req.insert(ARTISTS_NAME, SLOT(artistsSearchFinished()));
-	req.insert(ALBUMS_NAME, SLOT(albumsSearchFinished()));
-	req.insert(TRACKS_NAME, SLOT(tracksSearchFinished()));
-	foreach(const QString& key, req.keys()) {
-		search(txt, key, req.value(key));
-	}
+	queries_.insert(ARTISTS_NAME, SLOT(artistsSearchFinished()));
+	queries_.insert(ALBUMS_NAME, SLOT(albumsSearchFinished()));
+	queries_.insert(TRACKS_NAME, SLOT(tracksSearchFinished()));
+
+	searchText_ = txt;
+
+	makeQuery();
 }
 
 QompPluginGettunesDlg *YandexMusicController::view() const
@@ -466,6 +468,8 @@ void YandexMusicController::artistsSearchFinished()
 		qDebug() << reply->errorString();
 	}
 #endif
+
+	emit queryFinished();
 }
 
 void YandexMusicController::albumsSearchFinished()
@@ -491,6 +495,13 @@ void YandexMusicController::albumsSearchFinished()
 
 		searchNextPage(ba, ALBUMS_NAME, SLOT(albumsSearchFinished()));
 	}
+	else {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "albumssSearchFinished()" << reply->errorString();
+#endif
+	}
+
+	emit queryFinished();
 }
 
 void YandexMusicController::tracksSearchFinished()
@@ -515,6 +526,13 @@ void YandexMusicController::tracksSearchFinished()
 
 		searchNextPage(ba, TRACKS_NAME, SLOT(tracksSearchFinished()));
 	}
+	else {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "tracksSearchFinished()" << reply->errorString();
+#endif
+	}
+
+	emit queryFinished();
 }
 
 void YandexMusicController::artistUrlFinished()
@@ -569,6 +587,15 @@ void YandexMusicController::artistUrlFinished()
 	qDebug() << "artistUrlFinished()" << reply->errorString();
 #endif
 	}
+}
+
+void YandexMusicController::makeQuery()
+{
+	if(queries_.isEmpty())
+		return;
+
+	const QString key = queries_.keys().first();
+	search(searchText_, key, queries_.take(key));
 }
 
 void YandexMusicController::albumUrlFinished()

@@ -53,6 +53,10 @@ private slots:
 	void tracksSearchFinished();
 	void albumUrlFinished();
 	void artistUrlFinished();
+	void makeQuery();
+
+signals:
+	void queryFinished();
 
 private:
 	void checkAndStopBusyWidget();
@@ -68,6 +72,8 @@ private:
 	QHash<QNetworkReply*, void*> requests_;
 	YandexMusicGettunsDlg* dlg_;
 	QString mainUrl_;
+	QHash<QString, const char*> queries_;
+	QString searchText_;
 };
 
 #endif // YANDEXMUSICCONTROLLER_H
