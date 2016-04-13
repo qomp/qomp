@@ -16,6 +16,7 @@ set( plugins_HDRS
 	src/plugins/qompplugingettunesdlg.h
 	src/plugins/qompplugintreeview.h
 	src/plugins/qompplugintreemodel.h
+	src/plugins/qompplugincaptchadialog.h
 	src/plugins/qompplugincontroller.h
 	src/plugins/qomppluginaction.h
 )
@@ -24,6 +25,7 @@ set( plugins_SRCS
 	src/plugins/qompplugintreeview.cpp
 	src/plugins/qompplugintreemodel.cpp
 	src/plugins/qompplugintypes.cpp
+	src/plugins/qompplugincaptchadialog.cpp
 	src/plugins/qompplugincontroller.cpp
 	src/plugins/qomppluginaction.cpp
 )
@@ -65,6 +67,7 @@ set( libqomp_INCLUDE_HDRS
 	src/plugins/qompplugintypes.h
 	src/plugins/qomptunepluign.h
 	src/plugins/qompplugintreeview.h
+	src/plugins/qompplugincaptchadialog.h
 	src/plugins/qompplugincontroller.h
 	src/plugins/qompplugin.h
 	src/plugins/qompplugintreemodel.h
