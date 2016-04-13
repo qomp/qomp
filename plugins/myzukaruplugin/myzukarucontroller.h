@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Khryukin Evgeny
+ * Copyright (C) 2014-2016  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@ private slots:
 
 private:
 	void checkAndStopBusyWidget();
+	bool checkRedirect(QNetworkReply* reply, const char *slot, QompPluginTreeModel* model = nullptr);
 
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;

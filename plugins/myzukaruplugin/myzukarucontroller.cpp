@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Khryukin Evgeny
+ * Copyright (C) 2014-2016  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -389,6 +389,9 @@ void MyzukaruController::searchFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
+		if(checkRedirect(reply, SLOT(searchFinished()))) {
+			return;
+		}
 		QString replyStr = QString::fromUtf8(reply->readAll());
 
 		int songIndex = replyStr.indexOf(QString::fromUtf8("<h1>Поиск по композициям</h1>"));
@@ -537,6 +540,32 @@ void MyzukaruController::checkAndStopBusyWidget()
 		dlg_->stopBusyWidget();
 }
 
+bool MyzukaruController::checkRedirect(QNetworkReply *reply, const char *slot, QompPluginTreeModel *model)
+{
+	if(reply->header(QNetworkRequest::LocationHeader).isValid()) {
+		QString str = reply->header(QNetworkRequest::LocationHeader).toString();
+
+#ifdef DEBUG_OUTPUT
+		qDebug() << "MyzukaruController::checkRedirect() \n  url:\n" << reply->url().toString()
+							<< "\n  location:\n" << str;
+#endif
+
+		QUrl url(str);
+
+		QNetworkRequest nr(url);
+		nr.setRawHeader("Accept", "*/*");
+		nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+		QNetworkReply* r = nam()->get(nr);
+		connect(r, SIGNAL(finished()), slot);
+		requests_.insert(r, model);
+		dlg_->startBusyWidget();
+
+		return true;
+	}
+
+	return false;
+}
+
 void MyzukaruController::albumUrlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
@@ -545,6 +574,9 @@ void MyzukaruController::albumUrlFinished()
 	requests_.remove(reply);
 	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
+		if(checkRedirect(reply, SLOT(albumUrlFinished()), model)) {
+			return;
+		}
 		QString replyStr = QString::fromUtf8(reply->readAll());
 		QList<QompPluginModelItem*> tunes = parseTunes2(replyStr, 0);
 		if(!tunes.isEmpty()) {
@@ -571,6 +603,9 @@ void MyzukaruController::artistUrlFinished()
 	requests_.remove(reply);
 	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
+		if(checkRedirect(reply, SLOT(artistUrlFinished()))) {
+			return;
+		}
 		QString replyStr = QString::fromUtf8(reply->readAll());
 		QString id = reply->property("id").toString();
 		QompPluginModelItem* it = artistsModel_->itemForId(id);
@@ -648,6 +683,9 @@ void MyzukaruController::tuneUrlFinished()
 	requests_.remove(reply);
 	checkAndStopBusyWidget();
 	if(reply->error() == QNetworkReply::NoError) {
+		if(checkRedirect(reply, SLOT(tuneUrlFinished()), model)) {
+			return;
+		}
 		QString replyStr = QString::fromUtf8(reply->readAll());
 		const QString id = reply->property("id").toString();
 		QompPluginModelItem* it = model->itemForId(id);

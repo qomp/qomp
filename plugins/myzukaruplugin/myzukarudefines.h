@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2016  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@
 
 #define MYZUKA_PLUGIN_NAME "Myzuka.ru"
 #define MYZUKA_PLUGIN_VERSION "0.9"
-#define MYZUKA_URL "https://myzuka.org/"
+#define MYZUKA_URL "https://myzuka.fm/"
 
 
 #endif // MYZUKARUDEFINES_H
