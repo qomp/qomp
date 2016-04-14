@@ -66,6 +66,7 @@ public slots:
 	void updateState(Qomp::State state);
 
 	void updateRepeatState(bool val);
+	void updateShuffleState(bool val);
 	void totalDurationChanged(uint time);
 
 
@@ -105,6 +106,7 @@ void QompMainWin::Private::setUp()
 	buildOpenTunesMenu();
 
 	QQmlProperty::write(root(), "repeat", Options::instance()->getOption(OPTION_REPEAT_ALL));
+	QQmlProperty::write(root(), "shuffle", Options::instance()->getOption(OPTION_SHUFFLE));
 	QQmlProperty::write(root(), "currentFolder", QUrl::fromLocalFile(Qomp::safeDir(Options::instance()->getOption(LAST_DIR).toString())));
 
 	connect(root(), SIGNAL(positionChanged(int)), SLOT(sliderMoved(int)));
@@ -118,6 +120,7 @@ void QompMainWin::Private::connectActions()
 {
 	QQuickItem* r = root();
 	connect(r, SIGNAL(actRepeat(bool)),		SLOT(updateRepeatState(bool)));
+	connect(r, SIGNAL(actShuffle(bool)),		SLOT(updateShuffleState(bool)));
 	connect(r, SIGNAL(actDoOpenMenu()),		SLOT(actOpenActivated()));
 	connect(r, SIGNAL(itemActivated(int)),		SLOT(indexActivate(int)));
 	connect(r, SIGNAL(actToggle(int)),		SLOT(doToggle(int)));
@@ -260,6 +263,11 @@ void QompMainWin::Private::updateState(Qomp::State state)
 void QompMainWin::Private::updateRepeatState(bool val)
 {
 	Options::instance()->setOption(OPTION_REPEAT_ALL, val);
+}
+
+void QompMainWin::Private::updateShuffleState(bool val)
+{
+	Options::instance()->setOption(OPTION_SHUFFLE, val);
 }
 
 void QompMainWin::Private::totalDurationChanged(uint time)

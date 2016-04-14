@@ -47,6 +47,7 @@
 
 #define OPTION_CURRENT_TRACK	"main.current-track"
 #define OPTION_REPEAT_ALL	"main.repeat-all"
+#define OPTION_SHUFFLE		"main.shuffle"
 #define OPTION_VOLUME		"main.player-volume"
 #define OPTION_MUTED		"main.player-muted"
 

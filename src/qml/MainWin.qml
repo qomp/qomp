@@ -9,6 +9,7 @@ Rectangle {
 	signal actStop()
 	signal actPlay()
 	signal actRepeat(bool rep)
+	signal actShuffle(bool shuf)
 	signal positionChanged(int pos)
 
 	signal actClearPlaylist()
@@ -35,6 +36,7 @@ Rectangle {
 	property bool playing: false
 	property bool busy: false
 	property bool repeat: false
+	property bool shuffle: false
 	property string totalDuration;
 	property string currentFolder
 
@@ -257,6 +259,7 @@ Rectangle {
 			model: root.pluginsActions
 			expanded: menuButton.expanded
 			repeatAll: root.repeat
+			shuffle: root.shuffle
 
 			onOpen: menuButton.expanded = false
 			onClear: root.actClearPlaylist()
@@ -265,6 +268,7 @@ Rectangle {
 				root.actDoOptions()
 			}
 			onRepeatAllChanged: root.actRepeat(repeatAll)
+			onShuffleChanged: root.actShuffle(shuffle)
 
 			onLoadPlaylist: {
 				menuButton.expanded = false

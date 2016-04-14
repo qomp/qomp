@@ -95,6 +95,7 @@ void QompActionsList::fillActionsList()
 	actions_.insert("open", QompAction(ActOpen, tr("Open"), QKeySequence("Ctrl+L")));
 	actions_.insert("settings", QompAction(ActSettings, tr("Options"), QKeySequence("Ctrl+p")));
 	actions_.insert("repeatall", QompAction(ActRepeatAll, tr("Repeat All"), QKeySequence("R")));
+	actions_.insert("shuffle", QompAction(ActShuffle, tr("Shuffle"), QKeySequence("F")));
 	actions_.insert("mute", QompAction(ActMute, tr("Mute"), QKeySequence("V")));
 	actions_.insert("clearplaylist", QompAction(ActClearPlaylist, tr("Clear Playlist"), QKeySequence("Ctrl+Delete")));
 }

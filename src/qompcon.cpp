@@ -217,6 +217,7 @@ void QompCon::checkVersion()
 		hash.insert(OPTION_TRAY_MIDDLE_CLICK,	0);
 		hash.insert(OPTION_TRAY_LEFT_CLICK,	2);
 		hash.insert(OPTION_REPEAT_ALL,		false);
+		hash.insert(OPTION_SHUFFLE,		false);
 		hash.insert(OPTION_PLUGINS_ORDER,	QStringList()	<< "Myzuka.ru"
 									<< "Yandex.Music"
 									<< "Pleer.com");
@@ -599,7 +600,16 @@ void QompCon::mediaFinished(bool afterError)
 	}
 	else {
 		if(player_->lastAction() == Qomp::StatePlaying) {
-			index = model_->index(index.row()+1);
+			if(Options::instance()->getOption(OPTION_SHUFFLE).toBool()){
+				int r = rand() % model_->rowCount();
+				if(index.row() == r)
+					++r;
+
+				index = model_->index(r);
+			}
+			else {
+				index = model_->index(index.row()+1);
+			}
 			playIndex(index);
 		}
 		else {

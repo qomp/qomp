@@ -96,6 +96,7 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	updateShortcuts();
 
 	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());
+	ui->tb_shuffle->setChecked(Options::instance()->getOption(OPTION_SHUFFLE).toBool());
 
 	trayIcon_->setContextMenu(mainMenu_);
 
@@ -133,6 +134,7 @@ void QompMainWin::Private::connectMainMenu()
 void QompMainWin::Private::connectActions()
 {
 	connect(ui->tb_repeatAll,SIGNAL(clicked()), SLOT(updateOptions()));
+	connect(ui->tb_shuffle,	 SIGNAL(clicked()), SLOT(updateOptions()));
 	connect(ui->tb_open,	 SIGNAL(clicked()), SLOT(actOpenActivated()));
 	connect(ui->tb_load,	 SIGNAL(clicked()), SLOT(actLoadPlaylist()));
 	connect(ui->tb_save,	 SIGNAL(clicked()), SLOT(actSavePlaylist()));
@@ -299,6 +301,7 @@ void QompMainWin::Private::trayWheeled(int delta)
 void QompMainWin::Private::updateOptions()
 {
 	Options::instance()->setOption(OPTION_REPEAT_ALL, ui->tb_repeatAll->isChecked());
+	Options::instance()->setOption(OPTION_SHUFFLE, ui->tb_shuffle->isChecked());
 }
 
 void QompMainWin::Private::removeSelectedIndexes()
@@ -368,6 +371,7 @@ void QompMainWin::Private::updateShortcuts()
 	ui->tb_open->setShortcut(a->getShortcut(QompActionsList::ActOpen));
 	ui->tb_mute->setShortcut(a->getShortcut(QompActionsList::ActMute));
 	ui->tb_repeatAll->setShortcut(a->getShortcut(QompActionsList::ActRepeatAll));
+	ui->tb_shuffle->setShortcut(a->getShortcut(QompActionsList::ActShuffle));
 	ui->tbOptions->setShortcut(a->getShortcut(QompActionsList::ActSettings));
 	actClearPlaylist_->setShortcut(a->getShortcut(QompActionsList::ActClearPlaylist));
 }

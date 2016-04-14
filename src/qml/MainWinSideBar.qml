@@ -11,6 +11,7 @@ QompSideBar {
 	signal options()
 
 	property alias repeatAll: repAll.checked
+	property alias shuffle: shuf.checked
 	property var model: []
 	readonly property int subActionOffset: 55 * scaler.scaleX
 
@@ -75,6 +76,11 @@ QompSideBar {
 		QompSideBarAction {
 			id: repAll
 			text: qsTr("Repeat All")
+			checkable: true
+		},Line{ height: 2 },
+		QompSideBarAction {
+			id: shuf
+			text: qsTr("Shuffle")
 			checkable: true
 		},Line{ height: 2 },
 		QompSideBarAction {

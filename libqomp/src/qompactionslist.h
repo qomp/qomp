@@ -41,7 +41,8 @@ public:
 		ActClearPlaylist,
 		ActSettings,
 		ActRepeatAll,
-		ActMute
+		ActMute,
+		ActShuffle
 	};
 
 	struct QompAction {
