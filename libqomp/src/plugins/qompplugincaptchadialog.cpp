@@ -77,6 +77,17 @@ public:
 	{
 	}
 
+	~Private()
+	{
+#ifdef QOMP_MOBILE
+		if(_loop.isRunning())
+			_loop.exit();
+
+		QompQmlEngine::instance()->removeItem();
+		QompQmlEngine::instance()->removeImageProvider(ImageProvider::provId());
+#endif
+	}
+
 	bool start()
 	{
 #ifdef DEBUG_OUTPUT
@@ -97,18 +108,15 @@ public:
 		QompQmlEngine::instance()->addImageProvider(ImageProvider::provId(), prov);
 
 		item->setProperty("captcha", QString("image://%1/image").arg(ImageProvider::provId()));
+		item->setProperty("aspect", double(_pix.height()) / double(_pix.width()));
 
-		QEventLoop loop;
-		connect(item, SIGNAL(accepted()), &loop, SLOT(quit()));
+		connect(item, SIGNAL(accepted()), &_loop, SLOT(quit()));
 		QompQmlEngine::instance()->addItem(item);
-		loop.exec();
+		_loop.exec();
 		res = item->property("status").toBool();
 		if(res) {
 			_res = item->property("text").toString();
 		}
-		QompQmlEngine::instance()->removeItem();
-		QompQmlEngine::instance()->removeImageProvider(ImageProvider::provId());
-
 #else
 		QDialog dlg;
 
@@ -168,6 +176,9 @@ private:
 	QompPluginCaptchaDialog* _parent;
 	QPixmap _pix;
 	QString _res;
+#ifdef QOMP_MOBILE
+	QEventLoop _loop;
+#endif
 };
 
 QompPluginCaptchaDialog::QompPluginCaptchaDialog(const QPixmap &captcha, QObject *parent) :
