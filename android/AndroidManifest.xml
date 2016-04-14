@@ -35,11 +35,11 @@
         <service android:name=".QompService" android:enabled="true" android:exported="false" android:label="@string/srv_name" android:icon="@drawable/icon">
         </service>
     </application>
-    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="19"/>
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
     <supports-screens android:smallScreens="true" android:largeScreens="true" android:normalScreens="true" android:anyDensity="true"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
 </manifest>
