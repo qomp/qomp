@@ -72,8 +72,8 @@ class QompPluginCaptchaDialog::Private
 #endif
 
 public:
-	Private(QompPluginCaptchaDialog* parent) :
-		_parent(parent)
+	Private(const QPixmap& pix) :
+		_pix(pix)
 	{
 	}
 
@@ -167,13 +167,7 @@ public:
 		return _res;
 	}
 
-	void setPixmap(const QPixmap& pix)
-	{
-		_pix = pix;
-	}
-
 private:
-	QompPluginCaptchaDialog* _parent;
 	QPixmap _pix;
 	QString _res;
 #ifdef QOMP_MOBILE
@@ -183,9 +177,8 @@ private:
 
 QompPluginCaptchaDialog::QompPluginCaptchaDialog(const QPixmap &captcha, QObject *parent) :
 	QObject(parent),
-	d(new Private(this))
+	d(new Private(captcha))
 {
-	d->setPixmap(captcha);
 }
 
 QompPluginCaptchaDialog::~QompPluginCaptchaDialog()
