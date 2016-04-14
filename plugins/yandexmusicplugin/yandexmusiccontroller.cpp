@@ -359,7 +359,12 @@ bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray 
 
 	const QString imageURL = captcha.value("img-url").toString();
 	const QString page = captcha.value("captcha-page").toString();
-	const QString ref = QUrl(page).query(QUrl::FullyEncoded);
+	const QString ref =
+#ifdef HAVE_QT5
+			QUrl(page).query(QUrl::FullyEncoded);
+#else
+			QUrl(page).encodedQuery();
+#endif
 	QString key = captcha.value("key").toString();
 
 #ifdef DEBUG_OUTPUT
@@ -374,7 +379,11 @@ bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray 
 				.arg(replyUrl.scheme(), replyUrl.host(), key, ref,
 				QUrl::toPercentEncoding(dlg.result())), QUrl::StrictMode);
 #ifdef DEBUG_OUTPUT
+	#ifdef HAVE_QT5
 		qDebug() << url.toString(QUrl::FullyEncoded);
+	#else
+		qDebug() << url.toEncoded();
+	#endif
 #endif
 		QNetworkRequest nr(url);
 		nr.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
@@ -410,7 +419,12 @@ QPixmap YandexMusicController::getCaptcha(const QString &captchaUrl, QString *ke
 			return getCaptcha(str, key);
 		}
 		if(url.hasQuery()) {
-			const QString queries = url.query();
+			const QString queries =
+#ifdef HAVE_QT5
+					url.query();
+#else
+					url.encodedQuery();
+#endif
 			foreach(const QString& query, queries.split("&")) {
 				QStringList data = query.split("=");
 				if(data.at(0) == "key" && data.size() == 2) {

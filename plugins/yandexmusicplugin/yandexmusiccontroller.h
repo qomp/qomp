@@ -28,6 +28,7 @@ class QNetworkReply;
 class YandexMusicGettunsDlg;
 class QNetworkRequest;
 class QUrl;
+class QPixmap;
 
 class YandexMusicController : public QompPluginController
 {

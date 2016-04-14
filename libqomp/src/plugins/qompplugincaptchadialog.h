@@ -23,6 +23,8 @@
 #include <QObject>
 #include "libqomp_global.h"
 
+class QPixmap;
+
 class LIBQOMPSHARED_EXPORT QompPluginCaptchaDialog: public QObject
 {
 	Q_OBJECT

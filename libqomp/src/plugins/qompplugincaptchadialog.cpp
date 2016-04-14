@@ -135,7 +135,7 @@ public:
 		QHBoxLayout *leLayout = new QHBoxLayout;
 		leLayout->addWidget(le);
 
-		QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,&dlg);
+		QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 		connect(bb, SIGNAL(accepted()), &dlg, SLOT(accept()));
 		connect(bb, SIGNAL(rejected()), &dlg, SLOT(reject()));
 
