@@ -72,7 +72,7 @@ class QompPluginCaptchaDialog::Private
 #endif
 
 public:
-	Private(const QPixmap& pix) :
+	explicit Private(const QPixmap& pix) :
 		_pix(pix)
 	{
 	}
