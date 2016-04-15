@@ -105,6 +105,23 @@ QModelIndex QompPlayListModel::indexForTune(Tune *tune) const
 	return QModelIndex();
 }
 
+bool QompPlayListModel::allTunesPlayed() const
+{
+	for(int i =0; i < rowCount(); ++i) {
+		if(!tune(index(i))->played)
+			return false;
+	}
+
+	return true;
+}
+
+void QompPlayListModel::unsetAllTunesPlayed()
+{
+	for(int i =0; i < rowCount(); ++i) {
+		tune(index(i))->played = false;
+	}
+}
+
 QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 {
 	if(!index.isValid() || index.row() >= tunes_.size() || index.column() != 0)

@@ -41,6 +41,7 @@ class LIBQOMPSHARED_EXPORT Tune
 {
 public:
 	explicit Tune(bool canSave = true);
+
 	QString artist;
 	QString title;
 	QString trackNumber;
@@ -49,6 +50,8 @@ public:
 	QString url;
 	QString file;
 	QString bitRate;
+
+	bool played;
 
 	QString displayString() const;
 	/**

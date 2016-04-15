@@ -572,6 +572,60 @@ QompPlayer *QompCon::createPlayer()
 #endif
 }
 
+void QompCon::playNextShuffle(QModelIndex index)
+{
+	QModelIndex ind;
+
+	if(model_->allTunesPlayed() && !Options::instance()->getOption(OPTION_REPEAT_ALL).toBool()) {
+		model_->unsetAllTunesPlayed();
+	}
+	else {
+		if(player_->lastAction() == Qomp::StatePlaying) {
+			int r = index.row();
+
+			while(index.row() == r || model_->tune(model_->index(r))->played) {
+				r = rand() % model_->rowCount();
+
+				if(index.row() == r)
+					++r;
+			}
+
+			ind = model_->index(r);
+		}
+	}
+
+	if(ind.isValid())
+		playIndex(ind);
+	else
+		stopPlayer();
+}
+
+void QompCon::playNext(bool afterError, QModelIndex index)
+{
+	if(index.row() == model_->rowCount()-1) {
+		if(!afterError && player_->lastAction() == Qomp::StatePlaying &&
+				Options::instance()->getOption(OPTION_REPEAT_ALL).toBool())
+		{
+			const QModelIndex ind = model_->index(0);
+			playIndex(ind);
+
+		}
+		else {
+			stopPlayer();
+			model_->setCurrentTune(const_cast<Tune*>(Tune::emptyTune()));
+		}
+	}
+	else {
+		if(player_->lastAction() == Qomp::StatePlaying) {
+			index = model_->index(index.row()+1);
+			playIndex(index);
+		}
+		else {
+			stopPlayer();
+		}
+	}
+}
+
 void QompCon::mediaFinished(bool afterError)
 {
 #ifdef DEBUG_OUTPUT
@@ -585,36 +639,12 @@ void QompCon::mediaFinished(bool afterError)
 	if(!index.isValid())
 		return;
 
-	if(index.row() == model_->rowCount()-1) {
-		if(!afterError && player_->lastAction() == Qomp::StatePlaying &&
-			Options::instance()->getOption(OPTION_REPEAT_ALL).toBool())
-		{
-			const QModelIndex ind = model_->index(0);
-			playIndex(ind);
-
-		}
-		else {
-			actStop();
-			model_->setCurrentTune(const_cast<Tune*>(Tune::emptyTune()));
-		}
+	if(Options::instance()->getOption(OPTION_SHUFFLE).toBool()) {
+		model_->currentTune()->played = true;
+		playNextShuffle(index);
 	}
 	else {
-		if(player_->lastAction() == Qomp::StatePlaying) {
-			if(Options::instance()->getOption(OPTION_SHUFFLE).toBool()){
-				int r = rand() % model_->rowCount();
-				if(index.row() == r)
-					++r;
-
-				index = model_->index(r);
-			}
-			else {
-				index = model_->index(index.row()+1);
-			}
-			playIndex(index);
-		}
-		else {
-			stopPlayer();
-		}
+		playNext(afterError, index);
 	}
 }
 

@@ -95,6 +95,8 @@ private:
 
 	void stopPlayer();
 	void playIndex(const QModelIndex& index);
+	void playNextShuffle(QModelIndex index);
+	void playNext(bool afterError, QModelIndex index);
 
 	static QompPlayer* createPlayer();
 
