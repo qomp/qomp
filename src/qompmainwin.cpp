@@ -36,6 +36,7 @@
 class QompMainWin::Private : public QObject
 {
 	Q_OBJECT
+
 public:
 	explicit Private(QompMainWin *p);
 	~Private();
@@ -69,7 +70,8 @@ public slots:
 	void actLoadPlaylist();
 	void actDownloadTune(Tune *tune);
 
-	void updateShortcuts();
+	void updateShortcuts();	
+	void updateShuffleIcon();
 
 public:
 	Ui::QompMainWin *ui;
@@ -79,6 +81,13 @@ public:
 	QompMainWin*  parentWin_;
 	QAction* actClearPlaylist_;
 };
+
+void QompMainWin::Private::updateShuffleIcon()
+{
+	ui->tb_shuffle->setIcon(ui->tb_shuffle->isChecked() ?
+				     QIcon(":/icons/random") :
+				     QIcon(":/icons/linear"));
+}
 
 QompMainWin::Private::Private(QompMainWin *p) :
 	QObject(p),
@@ -97,6 +106,7 @@ QompMainWin::Private::Private(QompMainWin *p) :
 
 	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());
 	ui->tb_shuffle->setChecked(Options::instance()->getOption(OPTION_SHUFFLE).toBool());
+	updateShuffleIcon();
 
 	trayIcon_->setContextMenu(mainMenu_);
 
@@ -135,6 +145,7 @@ void QompMainWin::Private::connectActions()
 {
 	connect(ui->tb_repeatAll,SIGNAL(clicked()), SLOT(updateOptions()));
 	connect(ui->tb_shuffle,	 SIGNAL(clicked()), SLOT(updateOptions()));
+	connect(ui->tb_shuffle,	 SIGNAL(clicked()), SLOT(updateShuffleIcon()));
 	connect(ui->tb_open,	 SIGNAL(clicked()), SLOT(actOpenActivated()));
 	connect(ui->tb_load,	 SIGNAL(clicked()), SLOT(actLoadPlaylist()));
 	connect(ui->tb_save,	 SIGNAL(clicked()), SLOT(actSavePlaylist()));

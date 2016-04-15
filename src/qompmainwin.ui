@@ -282,7 +282,7 @@
         </property>
         <property name="icon">
          <iconset resource="qomp.qrc">
-          <normaloff>:/icons/help</normaloff>:/icons/help</iconset>
+          <normaloff>:/icons/linear</normaloff>:/icons/linear</iconset>
         </property>
         <property name="iconSize">
          <size>

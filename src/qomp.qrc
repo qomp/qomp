@@ -36,5 +36,7 @@
         <file alias="bugreport">icons/buttons/Bugreport.png</file>
         <file alias="branch-closed">icons/buttons/branch-closed.png</file>
         <file alias="branch-open">icons/buttons/branch-open.png</file>
+        <file alias="linear">icons/buttons/linear.png</file>
+        <file alias="random">icons/buttons/random.png</file>
     </qresource>
 </RCC>
