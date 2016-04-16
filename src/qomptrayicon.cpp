@@ -171,6 +171,7 @@ void QompTrayIcon::trayActivated(QSystemTrayIcon::ActivationReason reason)
 	case QSystemTrayIcon::Context:
 #if defined(HAVE_X11) && QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
 		emit trayContextMenu();
+		break;
 #else
 		return;
 #endif
