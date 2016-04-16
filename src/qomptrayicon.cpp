@@ -171,10 +171,8 @@ void QompTrayIcon::trayActivated(QSystemTrayIcon::ActivationReason reason)
 	case QSystemTrayIcon::Context:
 #if defined(HAVE_X11) && QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
 		emit trayContextMenu();
-		break;
-#else
-		return;
 #endif
+		return;
 	case QSystemTrayIcon::Trigger:
 		QTimer::singleShot(QApplication::doubleClickInterval()+1, this, SLOT(trayClicked()));
 		return;
