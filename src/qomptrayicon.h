@@ -33,6 +33,7 @@ class QompTrayIcon : public QObject
 	Q_OBJECT
 public:
 	explicit QompTrayIcon(QompMainWin* parent);
+
 	void setToolTip(const QString& text);
 	void setIcon(const QIcon& ico);
 	void setContextMenu(QMenu* m);
@@ -41,7 +42,7 @@ public:
 	static QompTrayActionType actionTimeForName(const QString& name);
 	
 signals:
-	//void trayContextMenu();
+	void trayContextMenu();
 	void trayWheeled(int delta);
 	
 private slots:

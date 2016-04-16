@@ -108,7 +108,11 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	ui->tb_shuffle->setChecked(Options::instance()->getOption(OPTION_SHUFFLE).toBool());
 	updateShuffleIcon();
 
+#if defined(HAVE_X11) && QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+	connect(trayIcon_, SIGNAL(trayContextMenu()), SLOT(doMainContextMenu()));
+#else
 	trayIcon_->setContextMenu(mainMenu_);
+#endif
 
 	connect(ui->seekSlider, SIGNAL(valueChanged(int)), parentWin_, SIGNAL(seekSliderMoved(int)));
 	connect(ui->volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderMoved(int)));
@@ -395,7 +399,7 @@ QompMainWin::QompMainWin(QObject *parent) :
 	d(new Private(this)),
 	model_(0),	
 	currentState_(Qomp::StateUnknown)
-{	
+{
 }
 
 QompMainWin::~QompMainWin()
