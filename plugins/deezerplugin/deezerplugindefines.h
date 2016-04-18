@@ -21,7 +21,7 @@
 #define DEEZERPLUGINDEFINES_H
 
 #define DEEZER_PLUGIN_NAME "Deezer.com Plugin"
-#define DEEZER_PLUGIN_VER "0.9"
+#define DEEZER_PLUGIN_VER "1.0"
 
 #define DEEZER_URL "http://api.deezer.com/2.0/"
 

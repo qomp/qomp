@@ -21,7 +21,7 @@
 #define DEFINES_H
 
 #define APPLICATION_NAME    "qomp"
-#define APPLICATION_VERSION "0.9 beta"
+#define APPLICATION_VERSION "1.0"
 
 #define LAST_DIR	"main.last-dir"
 #define LAST_SAVE_DIR	"main.last-save-dir"
