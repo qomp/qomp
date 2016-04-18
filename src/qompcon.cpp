@@ -572,22 +572,24 @@ QompPlayer *QompCon::createPlayer()
 #endif
 }
 
-void QompCon::playNextShuffle(QModelIndex index)
+void QompCon::playNextShuffle(bool afterError, const QModelIndex &index)
 {
 	QModelIndex ind;
 
-	if(model_->allTunesPlayed() && !Options::instance()->getOption(OPTION_REPEAT_ALL).toBool()) {
+	bool finished = model_->allTunesPlayed();
+
+	if(finished) {
 		model_->unsetAllTunesPlayed();
 	}
-	else {
+
+	if( !finished || (!afterError && Options::instance()->getOption(OPTION_REPEAT_ALL).toBool()) ) {
 		if(player_->lastAction() == Qomp::StatePlaying) {
 			int r = index.row();
 
-			while(index.row() == r || model_->tune(model_->index(r))->played) {
-				r = rand() % model_->rowCount();
-
-				if(index.row() == r)
-					++r;
+			if(model_->rowCount() > 1) {
+				while(index.row() == r || model_->tune(model_->index(r))->played) {
+					r = rand() % model_->rowCount();
+				}
 			}
 
 			ind = model_->index(r);
@@ -600,7 +602,7 @@ void QompCon::playNextShuffle(QModelIndex index)
 		stopPlayer();
 }
 
-void QompCon::playNext(bool afterError, QModelIndex index)
+void QompCon::playNext(bool afterError, const QModelIndex &index)
 {
 	if(index.row() == model_->rowCount()-1) {
 		if(!afterError && player_->lastAction() == Qomp::StatePlaying &&
@@ -617,8 +619,8 @@ void QompCon::playNext(bool afterError, QModelIndex index)
 	}
 	else {
 		if(player_->lastAction() == Qomp::StatePlaying) {
-			index = model_->index(index.row()+1);
-			playIndex(index);
+			const QModelIndex ind = model_->index(index.row()+1);
+			playIndex(ind);
 		}
 		else {
 			stopPlayer();
@@ -641,7 +643,7 @@ void QompCon::mediaFinished(bool afterError)
 
 	if(Options::instance()->getOption(OPTION_SHUFFLE).toBool()) {
 		model_->currentTune()->played = true;
-		playNextShuffle(index);
+		playNextShuffle(afterError, index);
 	}
 	else {
 		playNext(afterError, index);
