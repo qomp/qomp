@@ -38,6 +38,8 @@ public:
 	void setIcon(const QIcon& ico);
 	void setContextMenu(QMenu* m);
 
+	void show();
+
 	static QStringList availableActions();
 	static QompTrayActionType actionTimeForName(const QString& name);
 	

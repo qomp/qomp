@@ -106,7 +106,6 @@ QompTrayIcon::QompTrayIcon(QompMainWin *parent) :
 	connect(icon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
 
 	icon_->installEventFilter(this);
-	icon_->show();
 }
 
 void QompTrayIcon::setToolTip(const QString &text)
@@ -125,6 +124,11 @@ void QompTrayIcon::setIcon(const QIcon &ico)
 void QompTrayIcon::setContextMenu(QMenu *m)
 {
 	icon_->setContextMenu(m);
+}
+
+void QompTrayIcon::show()
+{
+	icon_->show();
 }
 
 QStringList QompTrayIcon::availableActions()
@@ -169,9 +173,7 @@ void QompTrayIcon::trayActivated(QSystemTrayIcon::ActivationReason reason)
 		action = actionForType(Options::instance()->getOption(OPTION_TRAY_MIDDLE_CLICK).toInt());
 		break;
 	case QSystemTrayIcon::Context:
-#if defined(HAVE_X11) && QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
 		emit trayContextMenu();
-#endif
 		return;
 	case QSystemTrayIcon::Trigger:
 		QTimer::singleShot(QApplication::doubleClickInterval()+1, this, SLOT(trayClicked()));

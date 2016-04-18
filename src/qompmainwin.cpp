@@ -108,8 +108,13 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	ui->tb_shuffle->setChecked(Options::instance()->getOption(OPTION_SHUFFLE).toBool());
 	updateShuffleIcon();
 
-#if defined(HAVE_X11) && QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-	connect(trayIcon_, SIGNAL(trayContextMenu()), SLOT(doMainContextMenu()));
+#if defined(HAVE_X11) && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+	QMenu *menu = new QMenu(mainWin_);
+	menu->addAction(QIcon(":/icons/toggle"), tr("Toggle Visibility"), parentWin_, SLOT(toggleVisibility()))->setParent(menu);
+	menu->addSeparator();
+	menu->addAction(QIcon(":/icons/close"), tr("Exit"), qApp, SLOT(quit()))->setParent(menu);
+
+	trayIcon_->setContextMenu(menu);
 #else
 	trayIcon_->setContextMenu(mainMenu_);
 #endif
@@ -400,6 +405,7 @@ QompMainWin::QompMainWin(QObject *parent) :
 	model_(0),	
 	currentState_(Qomp::StateUnknown)
 {
+	d->trayIcon_->show();
 }
 
 QompMainWin::~QompMainWin()
