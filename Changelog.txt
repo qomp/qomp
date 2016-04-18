@@ -1,3 +1,12 @@
+Version 1.0
+xx.04.2016
+ + add CAPTCHA support for Yandex.Music plugin
+ * update Myzuka.ru url (now Myzuka.fm)
+ + add shuffle support
+ * update Qt libs to 5.6.0 (windows, Android, OS X)
+
+
+
 Version 0.9 beta
 10.07.2015
  * fixes for yandex.music plugin
