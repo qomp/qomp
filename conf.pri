@@ -1,11 +1,11 @@
 CONFIG -= debug_and_release debug_and_release_target
 
-MOC_DIR = .moc
-OBJECTS_DIR = .obj
-UI_DIR = .ui
-RCC_DIR = .rcc
+MOC_DIR = $$PWD/.moc
+OBJECTS_DIR = $$PWD/.obj
+UI_DIR = $$PWD/.ui
+RCC_DIR = $$PWD/.rcc
 
-INCLUDEPATH += $$PWD/.ui
+INCLUDEPATH += $$UI_DIR $$MOC_DIR
 
 
 isEmpty(PREFIX) {
