@@ -7,6 +7,8 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 else {
     CONFIG += phonon_backend
+
+    warning("Qt4 support is incomplete!")
 }
 
 phonon_backend {

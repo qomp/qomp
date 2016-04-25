@@ -94,6 +94,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="cb_rememberPosition">
+     <property name="text">
+      <string>Remember track position</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QCheckBox" name="cb_repeatLastSearch">
      <property name="text">
       <string>Repeat the last search after opening the search dialog</string>

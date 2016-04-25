@@ -46,6 +46,8 @@
 #define OPTION_HIDE_ON_CLOSE	"main.hide-on-close"
 
 #define OPTION_CURRENT_TRACK	"main.current-track"
+#define OPTION_REMEMBER_POS	"main.remember-pos"
+#define OPTION_LAST_POS		"main.last-pos"
 #define OPTION_REPEAT_ALL	"main.repeat-all"
 #define OPTION_SHUFFLE		"main.shuffle"
 #define OPTION_VOLUME		"main.player-volume"

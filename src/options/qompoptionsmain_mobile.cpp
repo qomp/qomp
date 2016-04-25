@@ -54,6 +54,7 @@ void QompOptionsMain::Private::applyOptions()
 	o->setOption(OPTION_AUTOSTART_PLAYBACK, item_->property("autoStartPlay"));
 	o->setOption(OPTION_DEFAULT_ENCODING, item_->property("metadataEncoding"));
 	o->setOption(OPTION_CURRENT_TRANSLATION, item_->property("curLang"));
+	o->setOption(OPTION_REMEMBER_POS, item_->property("rememberPos"));
 //	o->setOption(OPTION_THEME, ui->cb_theme->currentText());
 }
 
@@ -64,6 +65,7 @@ void QompOptionsMain::Private::restoreOptions()
 	item_->setProperty("metadataEncoding" ,o->getOption(OPTION_DEFAULT_ENCODING).toByteArray());
 	item_->setProperty("langs", Translator::instance()->availableTranslations());
 	item_->setProperty("curLang", o->getOption(OPTION_CURRENT_TRANSLATION));
+	item_->setProperty("rememberPos", o->getOption(OPTION_REMEMBER_POS).toBool());
 
 //	ui->cb_theme->clear();
 //	ui->cb_theme->addItems(ThemeManager::instance()->availableThemes());

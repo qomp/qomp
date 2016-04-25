@@ -10,6 +10,7 @@ Item {
 	property alias metadataEncoding: encoding.value
 	property alias langs: lang.model
 	property alias curLang: lang.text
+	property alias rememberPos: rememberPosition.checked
 
 	height: col.height
 	Column {
@@ -36,6 +37,25 @@ Item {
 				anchors.fill: parent
 				anchors.leftMargin: autoplay.width
 				text: qsTr("Automatically start playback")
+				font.pixelSize: 22 * scaler.scaleFont
+				wrapMode: Text.WordWrap
+				verticalAlignment: Text.AlignVCenter
+			}
+		}
+
+		OptionsEntry {
+
+			QompCheckBox {
+				id: rememberPosition
+
+				checkBoxHeight: parent.height / 2
+				anchors.left: parent.left
+			}
+
+			Text {
+				anchors.fill: parent
+				anchors.leftMargin: autoplay.width
+				text: qsTr("Remember track position")
 				font.pixelSize: 22 * scaler.scaleFont
 				wrapMode: Text.WordWrap
 				verticalAlignment: Text.AlignVCenter

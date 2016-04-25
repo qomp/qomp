@@ -162,23 +162,63 @@ void QompCon::init()
 
 	model_->restoreState();
 
-	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateSettings()));
+	Options* o = Options::instance();
+
+	connect(o, SIGNAL(updateOptions()), SLOT(updateSettings()));
 
 #ifndef Q_OS_ANDROID
-	if(Options::instance()->getOption(OPTION_START_MINIMIZED).toBool())
+	if(o->getOption(OPTION_START_MINIMIZED).toBool())
 		mainWin_->hide();
 	else
 		mainWin_->show();
 #endif
-
-	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
+	if(o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
 		actPlay();
+
+#ifdef HAVE_QT5
+	if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
+		const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
+		auto pConn = QSharedPointer<QMetaObject::Connection>::create();
+		*pConn = connect(player_, &QompPlayer::stateChanged,
+			[pos, this, pConn](Qomp::State state)
+			{
+#ifdef DEBUG_OUTPUT
+				qDebug() << "lambda " << state;
+#endif
+				if(state == Qomp::StateStopped) {
+					player_->setPosition(pos);
+					mainWin_->setCurrentPosition(pos);
+					disconnect(*pConn);
+				}
+			}
+		);
+	}
+#endif
+}
+
+void QompCon::savePlayerPosition(qint64 pos)
+{
+	Options* o = Options::instance();
+
+	if(!o->getOption(OPTION_REMEMBER_POS).toBool())
+		pos = 0;
+
+	o->setOption(OPTION_LAST_POS, pos);
+}
+
+void QompCon::savePlayerPosition()
+{
+	savePlayerPosition(player_->position());
 }
 
 void QompCon::deInit()
 {
+	qint64 pos = player_->position();
+
 	stopPlayer();
 	model_->saveState();
+
+	savePlayerPosition(pos);
 
 	Options::instance()->setOption(OPTION_VOLUME, player_->volume());
 
@@ -231,6 +271,8 @@ void QompCon::checkVersion()
 		hash.insert(OPTION_CURRENT_TRANSLATION, QLocale::system().name().split("_").first());
 		hash.insert(OPTION_MUTED, false);
 		hash.insert(OPTION_REPEAT_LAST_SEARCH, false);
+		hash.insert(OPTION_REMEMBER_POS, true);
+		hash.insert(OPTION_LAST_POS, 0);
 
 		foreach(const char* key, hash.keys()) {
 			if(Options::instance()->getOption(key) == QVariant::Invalid)
@@ -553,6 +595,7 @@ void QompCon::stopPlayer()
 #endif
 		qApp->processEvents();
 	}
+	savePlayerPosition();
 	player_->blockSignals(false);
 }
 
@@ -634,6 +677,7 @@ void QompCon::mediaFinished(bool afterError)
 	qDebug() << "QompCon::mediaFinished()";
 #endif
 	mainWin_->setCurrentPosition(0);
+	savePlayerPosition();
 
 	QModelIndex index = model_->currentIndex();
 

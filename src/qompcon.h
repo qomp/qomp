@@ -98,6 +98,9 @@ private:
 	void playNextShuffle(bool afterError, const QModelIndex& index);
 	void playNext(bool afterError, const QModelIndex& index);
 
+	void savePlayerPosition();
+	void savePlayerPosition(qint64 pos);
+
 	static QompPlayer* createPlayer();
 
 private:
