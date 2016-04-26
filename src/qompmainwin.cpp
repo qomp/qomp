@@ -73,6 +73,10 @@ public slots:
 	void updateShortcuts();	
 	void updateShuffleIcon();
 
+	void togglePlaylistVisibility();
+	void showPlaylist();
+	void hidePlaylist();
+
 public:
 	Ui::QompMainWin *ui;
 	QMainWindow*  mainWin_;
@@ -82,12 +86,6 @@ public:
 	QAction* actClearPlaylist_;
 };
 
-void QompMainWin::Private::updateShuffleIcon()
-{
-	ui->tb_shuffle->setIcon(ui->tb_shuffle->isChecked() ?
-				     QIcon(":/icons/random") :
-				     QIcon(":/icons/linear"));
-}
 
 QompMainWin::Private::Private(QompMainWin *p) :
 	QObject(p),
@@ -123,10 +121,12 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	connect(ui->volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderMoved(int)));
 	connect(mainWin_, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doMainContextMenu()));
 	connect(trayIcon_, SIGNAL(trayWheeled(int)), SLOT(trayWheeled(int)));
+	connect(ui->tb_showPlaylist, SIGNAL(clicked(bool)), SLOT(togglePlaylistVisibility()));
 
 	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateShortcuts()));
 
 	restoreWindowState();
+
 	totalDurationChanged(0);
 
 	mainWin_->installEventFilter(parentWin_);
@@ -137,6 +137,52 @@ QompMainWin::Private::~Private()
 	saveWindowState();
 
 	delete ui;
+}
+
+void QompMainWin::Private::updateShuffleIcon()
+{
+	ui->tb_shuffle->setIcon(ui->tb_shuffle->isChecked() ?
+				     QIcon(":/icons/random") :
+					QIcon(":/icons/linear"));
+}
+
+void QompMainWin::Private::togglePlaylistVisibility()
+{
+	bool vis;
+	if (ui->playList->isVisible()) {
+		const int h = ui->playList->height();
+		Options::instance()->setOption(OPTION_PLAYLIST_HEIGHT, h);
+		hidePlaylist();
+		vis = false;
+	}
+	else {
+		showPlaylist();
+		vis = true;
+	}
+
+	Options::instance()->setOption(OPTION_PLAYLIST_VISIBLE, vis);
+}
+
+void QompMainWin::Private::showPlaylist()
+{
+	if (ui->playList->isVisible())
+		return;
+
+	const int h = Options::instance()->getOption(OPTION_PLAYLIST_HEIGHT).toInt();
+	mainWin_->setMaximumHeight(QWIDGETSIZE_MAX);
+	mainWin_->resize( mainWin_->width(), mainWin_->height() + h );
+	ui->playList->show();
+	Qomp::forceUpdate(mainWin_);
+	ui->tb_showPlaylist->setIcon(QIcon(":/icons/arrow-down"));
+}
+
+void QompMainWin::Private::hidePlaylist()
+{
+	ui->playList->hide();
+	Qomp::forceUpdate(mainWin_);
+	mainWin_->resize( mainWin_->width(), 0 );
+	mainWin_->setMaximumHeight(mainWin_->height());
+	ui->tb_showPlaylist->setIcon(QIcon(":/icons/arrow-up"));
 }
 
 void QompMainWin::Private::connectMainMenu()
@@ -192,6 +238,9 @@ void QompMainWin::Private::saveWindowState()
 
 void QompMainWin::Private::restoreWindowState()
 {
+	if (!Options::instance()->getOption(OPTION_PLAYLIST_VISIBLE).toBool())
+		hidePlaylist();
+
 	mainWin_->resize(Options::instance()->getOption(OPTION_GEOMETRY_WIDTH, mainWin_->width()).toInt(),
 		Options::instance()->getOption(OPTION_GEOMETRY_HEIGHT, mainWin_->height()).toInt());
 

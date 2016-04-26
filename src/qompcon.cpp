@@ -273,6 +273,8 @@ void QompCon::checkVersion()
 		hash.insert(OPTION_REPEAT_LAST_SEARCH, false);
 		hash.insert(OPTION_REMEMBER_POS, true);
 		hash.insert(OPTION_LAST_POS, 0);
+		hash.insert(OPTION_PLAYLIST_VISIBLE, true);
+		hash.insert(OPTION_PLAYLIST_HEIGHT, 0);
 
 		foreach(const char* key, hash.keys()) {
 			if(Options::instance()->getOption(key) == QVariant::Invalid)

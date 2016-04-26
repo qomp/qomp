@@ -47,3 +47,19 @@ void QompPlaylistView::dropEvent(QDropEvent *e)
 	}
 	selected_.clear();
 }
+
+QSize QompPlaylistView::minimumSizeHint() const
+{
+	QSize sz = QListView::minimumSizeHint();
+	sz.setHeight(0);
+
+	return sz;
+}
+
+QSize QompPlaylistView::sizeHint() const
+{
+	QSize sz = QListView::sizeHint();
+	sz.setHeight(0);
+
+	return sz;
+}

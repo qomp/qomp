@@ -28,6 +28,8 @@ namespace TagLib {
 class String;
 }
 
+class QWidget;
+
 namespace Qomp {
 
 LIBQOMPSHARED_EXPORT QString encodePassword(const QString& str, const QString &key);
@@ -46,6 +48,12 @@ LIBQOMPSHARED_EXPORT QString dataDir();
 #ifdef QOMP_MOBILE
 LIBQOMPSHARED_EXPORT QString safeDir(const QString& dir);
 #endif
+
+/**
+ * Forces the given widget to update, even if it's hidden.
+ */
+LIBQOMPSHARED_EXPORT void forceUpdate(QWidget *widget);
+
 
 enum /*LIBQOMPSHARED_EXPORT*/ State { StateUnknown,StateStopped,StatePaused,StatePlaying,StateError,StateLoading,StateBuffering };
 

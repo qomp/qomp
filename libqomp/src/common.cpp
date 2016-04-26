@@ -22,6 +22,8 @@
 #include "options.h"
 
 #include <QTime>
+#include <QWidget>
+#include <QLayout>
 #include <QTextDocument>
 #ifdef HAVE_QT5
 #include <QStandardPaths>
@@ -39,6 +41,7 @@
 #else
 #include <tag/tstring.h>
 #endif
+
 
 namespace Qomp {
 
@@ -215,6 +218,42 @@ QString safeTagLibString2QString(const TagLib::String& string)
 	}
 
 	return ret;
+}
+
+/**
+ * Helper function for forceUpdate().
+ */
+static void invalidateLayout(QLayout *layout)
+{
+	static const QString mainWinLayoutName("QMainWindowLayout");
+	const int cnt = mainWinLayoutName.compare(layout->metaObject()->className()) == 0
+						? 1 : layout->count();
+	for (int i = 0; i < cnt; i++) {
+		QLayoutItem *item = layout->itemAt(i);
+		if (item->layout()) {
+			invalidateLayout(item->layout());
+		} else {
+			item->invalidate();
+		}
+	}
+	layout->invalidate();
+	layout->activate();
+}
+
+void forceUpdate(QWidget *widget)
+{
+	// Update all child widgets.
+	for (int i = 0; i < widget->children().size(); i++) {
+		QObject *child = widget->children()[i];
+		if (child->isWidgetType()) {
+			forceUpdate(static_cast<QWidget*>(child));
+		}
+	}
+
+	// Invalidate the layout of the widget.
+	if (widget->layout()) {
+		invalidateLayout(widget->layout());
+	}
 }
 
 } //namespace Qomp

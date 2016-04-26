@@ -44,6 +44,8 @@
 #define OPTION_GEOMETRY_HEIGHT	"main.mainwin-height"
 #define OPTION_GEOMETRY_WIDTH	"main.mainwin-width"
 #define OPTION_HIDE_ON_CLOSE	"main.hide-on-close"
+#define OPTION_PLAYLIST_HEIGHT	"main.playlist-height"
+#define OPTION_PLAYLIST_VISIBLE	"main.playlist-visible"
 
 #define OPTION_CURRENT_TRACK	"main.current-track"
 #define OPTION_REMEMBER_POS	"main.remember-pos"

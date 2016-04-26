@@ -29,10 +29,13 @@ class QompPlaylistView : public QListView
 	Q_OBJECT
 public:
 	explicit QompPlaylistView(QWidget *parent = 0);
+
+	virtual QSize minimumSizeHint() const Q_DECL_OVERRIDE;
+	virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 	
 protected:
-	virtual void startDrag(Qt::DropActions supportedActions);
-	virtual void dropEvent(QDropEvent *e);
+	virtual void startDrag(Qt::DropActions supportedActions) Q_DECL_OVERRIDE;
+	virtual void dropEvent(QDropEvent *e) Q_DECL_OVERRIDE;
 
 private:
 	QList<Tune*> selected_;
