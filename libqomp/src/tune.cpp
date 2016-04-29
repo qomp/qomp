@@ -199,5 +199,10 @@ QList<Tune*> Tune::tunesFromFile(const QString &fileName)
 	return tunes;
 }
 
+bool Tune::sameSource(const Tune *other) const
+{
+	return other->file == file && other->url == url;
+}
+
 int Tune::lastId_ = 0;
 const Tune* Tune::empty_ = new Tune(false);

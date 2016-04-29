@@ -82,7 +82,7 @@ public:
 
 	static const Tune* emptyTune() { return empty_; }
 
-//	static const
+	bool sameSource(const Tune* other) const;
 
 private:
 	Q_DISABLE_COPY(Tune)

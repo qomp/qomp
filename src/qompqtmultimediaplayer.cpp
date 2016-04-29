@@ -33,7 +33,8 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	QompPlayer(),
 	player_(new QMediaPlayer(this)),
 	resolver_(0/*new QompTagLibMetaDataResolver(this)*/),
-	watcher_(0)
+	watcher_(0),
+	prevTune_(Tune::emptyTune())
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 	player_->setAudioRole(QAudio::MusicRole);
@@ -72,12 +73,20 @@ void QompQtMultimediaPlayer::doSetTune()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::doSetTune()";
 #endif
+	if(!prevTune_->sameSource(currentTune())) {
+		player_->blockSignals(true);
+		player_->setMedia(QMediaContent());
+		player_->blockSignals(false);
+	}
+
 	if(watcher_) {
 		watcher_->parent()->setProperty("blocked", true);
 	}
 
 	GetTuneUrlHelper* helper = new GetTuneUrlHelper(this, "tuneUrlReady", this);
 	watcher_ = helper->getTuneUrlAsynchronously(currentTune());
+
+	prevTune_ = currentTune();
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const
@@ -272,10 +281,6 @@ void QompQtMultimediaPlayer::setPlayerMediaContent(const QUrl &url)
 	}
 	else {
 		if(player_->media().canonicalUrl() != url) {
-			player_->blockSignals(true);
-			player_->setMedia(QMediaContent());
-			player_->blockSignals(false);
-
 			player_->setMedia(QMediaContent(url));
 		}
 		else {
