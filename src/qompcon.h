@@ -100,6 +100,7 @@ private:
 
 	void savePlayerPosition();
 	void savePlayerPosition(qint64 pos);
+	void preparePlayback();
 
 	static QompPlayer* createPlayer();
 

@@ -60,6 +60,8 @@ private slots:
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
 	void tuneUrlReady(const QUrl& url);
 	void tuneDurationChanged(qint64 dur);
+	void tunePositionChanged(qint64 pos);
+	void audioReadyChanged(bool ready);
 
 protected:
 	virtual QompMetaDataResolver* metaDataResolver() const;

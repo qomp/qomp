@@ -40,25 +40,13 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	player_->setAudioRole(QAudio::MusicRole);
 #endif
 
-	connect(player_, SIGNAL(volumeChanged(int)), SLOT(volumeChanged(int)));
-	connect(player_, SIGNAL(mutedChanged(bool)), SIGNAL(mutedChanged(bool)));
-	connect(player_, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(playerStateChanged(QMediaPlayer::State)));
-	connect(player_, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
-	connect(player_, SIGNAL(durationChanged(qint64)), SLOT(tuneDurationChanged(qint64)));
-
-	connect(player_, &QMediaPlayer::positionChanged, [this](qint64 pos) {
-		const int curPos = mapPositionFromTrack(pos);
-		if(currentTune()->length == 0 || curPos < currentTune()->length) {
-			emit currentPositionChanged(curPos);
-		}
-		else {
-			player_->blockSignals(true);
-			player_->stop();
-			player_->blockSignals(false);
-
-			emit mediaFinished();
-		}
-	});
+	connect(player_, &QMediaPlayer::volumeChanged, this, &QompQtMultimediaPlayer::volumeChanged);
+	connect(player_, &QMediaPlayer::mutedChanged,  this, &QompQtMultimediaPlayer::mutedChanged);
+	connect(player_, &QMediaPlayer::stateChanged,  this, &QompQtMultimediaPlayer::playerStateChanged);
+	connect(player_, &QMediaPlayer::mediaStatusChanged, this, &QompQtMultimediaPlayer::mediaStatusChanged);
+	connect(player_, &QMediaPlayer::durationChanged,    this, &QompQtMultimediaPlayer::tuneDurationChanged);
+	connect(player_, &QMediaPlayer::positionChanged,    this, &QompQtMultimediaPlayer::tunePositionChanged);
+	connect(player_, &QMediaPlayer::audioAvailableChanged, this, &QompQtMultimediaPlayer::audioReadyChanged);
 
 	//connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 }
@@ -104,8 +92,10 @@ qint64 QompQtMultimediaPlayer::mapPositionFromTune(qint64 pos) const
 
 qint64 QompQtMultimediaPlayer::mapPositionFromTrack(qint64 pos) const
 {
-	if(currentTune())
-		return pos - currentTune()->start;
+	if(currentTune()) {
+		qint64 cur = pos - currentTune()->start;
+		return cur > 0 ? cur : 0;
+	}
 
 	return pos;
 }
@@ -143,7 +133,7 @@ void QompQtMultimediaPlayer::setPosition(qint64 pos)
 
 qint64 QompQtMultimediaPlayer::position() const
 {
-	return mapPositionFromTune( player_->position() );
+	return mapPositionFromTrack( player_->position() );
 }
 
 static Qomp::State convertState(QMediaPlayer::State s)
@@ -249,12 +239,10 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 	qDebug() << "QompQtMultimediaPlayer::mediaStatusChanged()  " << status;
 #endif
 	switch(status) {
-	case QMediaPlayer::LoadedMedia:
-	case QMediaPlayer::BufferedMedia: {
-		updatePlayerPosition();
-		emit QompPlayer::stateChanged(state());
-		break;
-	}
+//	case QMediaPlayer::LoadedMedia:
+//		updatePlayerPosition();
+//		emit QompPlayer::stateChanged(state());
+//		break;
 	case QMediaPlayer::LoadingMedia:
 	case QMediaPlayer::StalledMedia:
 		emit stateChanged(Qomp::StateLoading);
@@ -290,6 +278,18 @@ void QompQtMultimediaPlayer::setPlayerMediaContent(const QUrl &url)
 	}
 }
 
+void QompQtMultimediaPlayer::audioReadyChanged(bool ready)
+{
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompQtMultimediaPlayer::audioReadyChanged " << ready;
+#endif
+	if(ready) {
+		tuneDurationChanged(player_->duration());
+		updatePlayerPosition();
+		emit mediaReady();
+	}
+}
+
 void QompQtMultimediaPlayer::tuneUrlReady(const QUrl &url)
 {
 #ifdef DEBUG_OUTPUT
@@ -313,4 +313,19 @@ void QompQtMultimediaPlayer::tuneDurationChanged(qint64 dur)
 		emit currentTuneTotalTimeChanged(dur);
 	else
 		emit currentTuneTotalTimeChanged(currentTune()->length);
+}
+
+void QompQtMultimediaPlayer::tunePositionChanged(qint64 pos)
+{
+	const int curPos = mapPositionFromTrack(pos);
+	if(currentTune()->length == 0 || curPos < currentTune()->length) {
+		emit currentPositionChanged(curPos);
+	}
+	else {
+		player_->blockSignals(true);
+		player_->stop();
+		player_->blockSignals(false);
+
+		emit mediaFinished();
+	}
 }

@@ -32,7 +32,7 @@ QompPlayer::QompPlayer() :
 void QompPlayer::setTune(Tune *tune)
 {
 	currentTune_ = tune;
-	doSetTune();
+	QMetaObject::invokeMethod(this, "doSetTune", Qt::QueuedConnection);
 	emit tuneChanged(tune);
 }
 

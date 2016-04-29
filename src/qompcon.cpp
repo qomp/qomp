@@ -151,6 +151,37 @@ void QompCon::applicationStateChanged(Qt::ApplicationState state)
 }
 #endif
 
+void QompCon::preparePlayback()
+{
+#ifdef HAVE_QT5
+	auto pConn = QSharedPointer<QMetaObject::Connection>::create();
+	*pConn = connect(player_, &QompPlayer::mediaReady,
+			 [this, pConn]()
+		{
+	#ifdef DEBUG_OUTPUT
+			qDebug() << "QompCon::init lambda";
+	#endif
+			Options* o = Options::instance();
+
+			if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
+				const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
+				player_->setPosition(pos);
+				mainWin_->setCurrentPosition(pos);
+			}
+
+			if(o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool()) {
+				player_->play();
+			}
+
+			disconnect(*pConn);
+		}
+	);
+#else
+	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
+		actPlay();
+#endif
+}
+
 void QompCon::init()
 {
 	checkVersion();
@@ -172,28 +203,8 @@ void QompCon::init()
 	else
 		mainWin_->show();
 #endif
-	if(o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
-		actPlay();
 
-#ifdef HAVE_QT5
-	if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
-		const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
-		auto pConn = QSharedPointer<QMetaObject::Connection>::create();
-		*pConn = connect(player_, &QompPlayer::stateChanged,
-			[pos, this, pConn](Qomp::State state)
-			{
-#ifdef DEBUG_OUTPUT
-				qDebug() << "QompCon::init lambda " << state;
-#endif
-				if(state == Qomp::StateStopped) {
-					player_->setPosition(pos);
-					mainWin_->setCurrentPosition(pos);
-					disconnect(*pConn);
-				}
-			}
-		);
-	}
-#endif
+	preparePlayback();
 }
 
 void QompCon::savePlayerPosition(qint64 pos)

@@ -73,6 +73,7 @@ signals:
 	void volumeChanged(qreal newVolume);
 	void mutedChanged(bool muted);
 	void tuneChanged(Tune*);
+	void mediaReady();
 
 	void tuneDataUpdated(Tune*);
 
