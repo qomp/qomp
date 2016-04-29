@@ -64,6 +64,16 @@ protected:
 	virtual QompMetaDataResolver* metaDataResolver() const;
 
 private:
+	/**
+	 * @brief mapPositionForTune map tune position to whole track length
+	 */
+	qint64 mapPositionFromTune(qint64 pos) const;
+	/**
+	 * @brief mapPositionFromTune map whole track position to tune position
+	 */
+	qint64 mapPositionFromTrack(qint64 pos) const;
+
+private:
 	QMediaPlayer* player_;
 	QompMetaDataResolver* resolver_;
 	QPointer< QFutureWatcher<QUrl> > watcher_;

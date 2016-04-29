@@ -21,17 +21,9 @@
 #include "options.h"
 #include "tune.h"
 #include "qomppluginaction.h"
-#include "common.h"
+#include "cueparser.h"
+#include "filesystemcommon.h"
 
-#ifndef Q_OS_MAC
-#include <taglib/fileref.h>
-#include <taglib/tag.h>
-#include <taglib/audioproperties.h>
-#else
-#include <tag/fileref.h>
-#include <tag/tag.h>
-#include <tag/audioproperties.h>
-#endif
 
 #ifdef QOMP_MOBILE
 #include <QDir>
@@ -45,35 +37,6 @@
 
 #include <QtPlugin>
 
-static Tune* tuneFromFile(const QString& file)
-{
-	Tune* tune = new Tune(false);
-	tune->file = file;
-	TagLib::String str( file.toUtf8().constData(), TagLib::String::UTF8 );
-#ifdef Q_OS_WIN
-	TagLib::FileName fname(str.toCWString());
-#else
-	TagLib::FileName fname(str.toCString(true));
-#endif
-	TagLib::FileRef ref(fname, true, TagLib::AudioProperties::Accurate);
-	if(!ref.isNull()) {
-		if(ref.tag()) {
-			TagLib::Tag* tag = ref.tag();
-			tune->artist = Qomp::safeTagLibString2QString( tag->artist() );
-			tune->album = Qomp::safeTagLibString2QString( tag->album() );
-			tune->title = Qomp::safeTagLibString2QString( tag->title() );
-			tune->trackNumber = QString::number( tag->track() );
-		}
-
-		if(ref.audioProperties()) {
-			TagLib::AudioProperties *prop = ref.audioProperties();
-			tune->duration = Qomp::durationSecondsToString( prop->length() );
-			tune->bitRate = QString::number( prop->bitrate() );
-		}
-	}
-
-	return tune;
-}
 
 static QList<Tune*> getTunesRecursive(const QString& folder)
 {
@@ -89,7 +52,7 @@ static QList<Tune*> getTunesRecursive(const QString& folder)
 			static const QRegExp songRe("\\.(mp3|ogg|flac|wav|mp4)$");
 			QString song = fi.absoluteFilePath();
 			if(songRe.indexIn(song) != -1)
-				list.append(tuneFromFile(song));
+				list.append(Qomp::tuneFromFile(song));
 		}
 	}
 
@@ -159,7 +122,7 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 #else
 	QFileDialog f(0, tr("Select file(s)"),
 		      Options::instance()->getOption("filesystemplugin.lastdir", QDir::homePath()).toString(),
-		      tr("Audio files(*.mp3 *.ogg *.wav *.flac);;All files(*)"));
+		      tr("Audio files(*.mp3 *.ogg *.wav *.flac *.cue);;All files(*)"));
 	f.setFileMode(QFileDialog::ExistingFiles);
 	f.setViewMode(QFileDialog::List);
 	f.setAcceptMode(QFileDialog::AcceptOpen);
@@ -170,10 +133,14 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 		if(!files.isEmpty()) {
 			QFileInfo fi (files.first());
 			Options::instance()->setOption("filesystemplugin.lastdir", fi.dir().path());
-		}
+
+			if(files.size() == 1 && fi.suffix() == "cue") {
+				list = CueParser::parseTunes(files.takeFirst());
+			}
+		} 
 
 		foreach(const QString& file, files) {
-			list.append(tuneFromFile(file));
+			list.append(Qomp::tuneFromFile(file));
 		}
 	}
 #endif

@@ -51,6 +51,12 @@ public:
 	QString file;
 	QString bitRate;
 
+	/**
+	 * for cue sheet files
+	 */
+	qint64 start;
+	qint64 length;
+
 	bool played;
 
 	QString displayString() const;
@@ -75,6 +81,8 @@ public:
 	static QList<Tune*> tunesFromFile(const QString& fileName);
 
 	static const Tune* emptyTune() { return empty_; }
+
+//	static const
 
 private:
 	Q_DISABLE_COPY(Tune)

@@ -35,12 +35,35 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	resolver_(0/*new QompTagLibMetaDataResolver(this)*/),
 	watcher_(0)
 {
-	connect(player_, SIGNAL(positionChanged(qint64)), SIGNAL(currentPositionChanged(qint64)));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+	player_->setAudioRole(QAudio::MusicRole);
+#endif
+
 	connect(player_, SIGNAL(volumeChanged(int)), SLOT(volumeChanged(int)));
 	connect(player_, SIGNAL(mutedChanged(bool)), SIGNAL(mutedChanged(bool)));
-	connect(player_, SIGNAL(durationChanged(qint64)), SIGNAL(currentTuneTotalTimeChanged(qint64)));
 	connect(player_, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(playerStateChanged(QMediaPlayer::State)));
 	connect(player_, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
+
+	connect(player_, &QMediaPlayer::durationChanged, [this](qint64 dur) {
+		if(currentTune()->length == 0)
+			emit currentTuneTotalTimeChanged(dur);
+		else
+			emit currentTuneTotalTimeChanged(currentTune()->length);
+	});
+
+	connect(player_, &QMediaPlayer::positionChanged, [this](qint64 pos) {
+		const int curPos = mapPositionFromTrack(pos);
+		if(currentTune()->length == 0 || curPos < currentTune()->length) {
+			emit currentPositionChanged(curPos);
+		}
+		else {
+			player_->blockSignals(true);
+			stop();
+			player_->blockSignals(false);
+
+			emit mediaFinished();
+		}
+	});
 
 	//connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 }
@@ -74,6 +97,22 @@ QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const
 	return resolver_;
 }
 
+qint64 QompQtMultimediaPlayer::mapPositionFromTune(qint64 pos) const
+{
+	if(currentTune())
+		return currentTune()->start + pos;
+
+	return pos;
+}
+
+qint64 QompQtMultimediaPlayer::mapPositionFromTrack(qint64 pos) const
+{
+	if(currentTune())
+		return pos - currentTune()->start;
+
+	return pos;
+}
+
 void QompQtMultimediaPlayer::setVolume(qreal vol)
 {
 	player_->blockSignals(true);
@@ -101,13 +140,13 @@ bool QompQtMultimediaPlayer::isMuted() const
 void QompQtMultimediaPlayer::setPosition(qint64 pos)
 {
 	player_->blockSignals(true);
-	player_->setPosition(pos);
+	player_->setPosition( mapPositionFromTune(pos) );
 	player_->blockSignals(false);
 }
 
 qint64 QompQtMultimediaPlayer::position() const
 {
-	return player_->position();
+	return mapPositionFromTune( player_->position() );
 }
 
 static Qomp::State convertState(QMediaPlayer::State s)
@@ -158,7 +197,10 @@ void QompQtMultimediaPlayer::stop()
 
 qint64 QompQtMultimediaPlayer::currentTuneTotalTime() const
 {
-	return player_->duration();
+	if(!currentTune() || currentTune()->length == 0)
+		return player_->duration();
+
+	return currentTune()->length;
 }
 
 QStringList QompQtMultimediaPlayer::audioOutputDevice() const
@@ -200,6 +242,16 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 	qDebug() << "QompQtMultimediaPlayer::mediaStatusChanged()  " << status;
 #endif
 	switch(status) {
+	case QMediaPlayer::BufferedMedia: {
+		const qint64 pos = currentTune()->start;
+		if(pos > 0) {
+			player_->blockSignals(true);
+			player_->setPosition(pos);
+			player_->blockSignals(false);
+		}
+		emit QompPlayer::stateChanged(state());
+		break;
+	}
 	case QMediaPlayer::LoadingMedia:
 	case QMediaPlayer::StalledMedia:
 		emit stateChanged(Qomp::StateLoading);

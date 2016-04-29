@@ -71,6 +71,8 @@ SimpleStrategy* SimpleStrategy::instance_ = 0;
 
 
 Tune::Tune(bool canSave) :
+	start(0),
+	length(0),
 	played(false),
 	canSave_(canSave),
 	strategy_(0)
@@ -116,7 +118,9 @@ QUrl Tune::getUrl() const
 QString Tune::toString() const
 {
 	QStringList list;
-	list << artist << title << trackNumber << album << duration << url << file << strategy()->name() << (canSave_ ? "true" : "false") << bitRate;
+	list << artist << title << trackNumber << album << duration << url << file
+	     << strategy()->name() << (canSave_ ? "true" : "false") << bitRate
+	     << QString::number(start) << QString::number(length);
 	return list.join(separator);
 }
 
@@ -146,6 +150,10 @@ bool Tune::fromString(const QString &str)
 	if(!list.isEmpty())
 		bitRate = list.takeFirst();
 
+	if(!list.isEmpty())
+		start = list.takeFirst().toLongLong();
+	if(!list.isEmpty())
+		length = list.takeFirst().toLongLong();
 	return true;
 }
 
