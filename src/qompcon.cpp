@@ -183,7 +183,7 @@ void QompCon::init()
 			[pos, this, pConn](Qomp::State state)
 			{
 #ifdef DEBUG_OUTPUT
-				qDebug() << "lambda " << state;
+				qDebug() << "QompCon::init lambda " << state;
 #endif
 				if(state == Qomp::StateStopped) {
 					player_->setPosition(pos);

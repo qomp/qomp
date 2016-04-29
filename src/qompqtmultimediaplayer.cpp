@@ -43,13 +43,7 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	connect(player_, SIGNAL(mutedChanged(bool)), SIGNAL(mutedChanged(bool)));
 	connect(player_, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(playerStateChanged(QMediaPlayer::State)));
 	connect(player_, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
-
-	connect(player_, &QMediaPlayer::durationChanged, [this](qint64 dur) {
-		if(currentTune()->length == 0)
-			emit currentTuneTotalTimeChanged(dur);
-		else
-			emit currentTuneTotalTimeChanged(currentTune()->length);
-	});
+	connect(player_, SIGNAL(durationChanged(qint64)), SLOT(tuneDurationChanged(qint64)));
 
 	connect(player_, &QMediaPlayer::positionChanged, [this](qint64 pos) {
 		const int curPos = mapPositionFromTrack(pos);
@@ -58,7 +52,7 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 		}
 		else {
 			player_->blockSignals(true);
-			stop();
+			player_->stop();
 			player_->blockSignals(false);
 
 			emit mediaFinished();
@@ -78,12 +72,6 @@ void QompQtMultimediaPlayer::doSetTune()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::doSetTune()";
 #endif
-	if(!player_->media().isNull()) {
-		player_->blockSignals(true);
-		player_->setMedia(QMediaContent());
-		player_->blockSignals(false);
-	}
-
 	if(watcher_) {
 		watcher_->parent()->setProperty("blocked", true);
 	}
@@ -236,19 +224,25 @@ void QompQtMultimediaPlayer::playerStateChanged(QMediaPlayer::State _state)
 	emit stateChanged(convertState(_state));
 }
 
+void QompQtMultimediaPlayer::updatePlayerPosition()
+{
+	const qint64 pos = currentTune()->start;
+	if(pos > 0) {
+		player_->blockSignals(true);
+		player_->setPosition(pos);
+		player_->blockSignals(false);
+	}
+}
+
 void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status)
 {
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::mediaStatusChanged()  " << status;
 #endif
 	switch(status) {
+	case QMediaPlayer::LoadedMedia:
 	case QMediaPlayer::BufferedMedia: {
-		const qint64 pos = currentTune()->start;
-		if(pos > 0) {
-			player_->blockSignals(true);
-			player_->setPosition(pos);
-			player_->blockSignals(false);
-		}
+		updatePlayerPosition();
 		emit QompPlayer::stateChanged(state());
 		break;
 	}
@@ -271,13 +265,32 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 	}
 }
 
+void QompQtMultimediaPlayer::setPlayerMediaContent(const QUrl &url)
+{
+	if(player_->media().isNull()) {
+		player_->setMedia(QMediaContent(url));
+	}
+	else {
+		if(player_->media().canonicalUrl() != url) {
+			player_->blockSignals(true);
+			player_->setMedia(QMediaContent());
+			player_->blockSignals(false);
+
+			player_->setMedia(QMediaContent(url));
+		}
+		else {
+			updatePlayerPosition();
+			tuneDurationChanged(player_->duration());
+		}
+	}
+}
+
 void QompQtMultimediaPlayer::tuneUrlReady(const QUrl &url)
 {
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::tuneUrlReady()  " << lastAction() << url;
 #endif
-
-	player_->setMedia(QMediaContent(url));
+	setPlayerMediaContent(url);
 
 	switch (lastAction()) {
 	case Qomp::StatePlaying: player_->play();
@@ -286,5 +299,13 @@ void QompQtMultimediaPlayer::tuneUrlReady(const QUrl &url)
 		break;
 	default: player_->stop();
 		break;
-	}	
+	}
+}
+
+void QompQtMultimediaPlayer::tuneDurationChanged(qint64 dur)
+{
+	if(currentTune()->length == 0)
+		emit currentTuneTotalTimeChanged(dur);
+	else
+		emit currentTuneTotalTimeChanged(currentTune()->length);
 }

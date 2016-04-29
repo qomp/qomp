@@ -59,6 +59,7 @@ private slots:
 	void playerStateChanged(QMediaPlayer::State);
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
 	void tuneUrlReady(const QUrl& url);
+	void tuneDurationChanged(qint64 dur);
 
 protected:
 	virtual QompMetaDataResolver* metaDataResolver() const;
@@ -72,6 +73,8 @@ private:
 	 * @brief mapPositionFromTune map whole track position to tune position
 	 */
 	qint64 mapPositionFromTrack(qint64 pos) const;
+	void updatePlayerPosition();
+	void setPlayerMediaContent(const QUrl &url);
 
 private:
 	QMediaPlayer* player_;
