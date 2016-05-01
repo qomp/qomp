@@ -17,3 +17,5 @@ else {
 }
 
 LIBS += -lcue
+
+linux:!mac: INCLUDEPATH += /usr/include/libcue-1.4/libcue
