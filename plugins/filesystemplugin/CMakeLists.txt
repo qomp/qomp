@@ -8,15 +8,21 @@ add_definitions( -Wall -DQT_PLUGIN )
 set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 set( filesystemplugin_HDRS
 	${PLUGIN}.h
+	cueparser.h
+	filesystemcommon.h
 )
 set( filesystemplugin_SRCS
 	${PLUGIN}.cpp
+	cueparser.cpp
+	filesystemcommon.cpp
 )
 find_package( TagLib REQUIRED )
+find_package( LibCue REQUIRED )
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${TAGLIB_INCLUDE_DIR}
+	${LIBCUE_INCLUDE_DIR}
 	${PROJECT_BINARY_DIR}/libqomp/include
 )
 if( ${USE_QT5} )
@@ -53,6 +59,7 @@ add_library(
 target_link_libraries(
 	${PLUGIN}
 	${TAGLIB_LIBRARY}
+	${LIBCUE_LIBRARY}
 	${QT_DEPLIBS}
 	libqomp
 )
