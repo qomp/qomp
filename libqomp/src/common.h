@@ -47,12 +47,14 @@ LIBQOMPSHARED_EXPORT QString dataDir();
 
 #ifdef QOMP_MOBILE
 LIBQOMPSHARED_EXPORT QString safeDir(const QString& dir);
-#endif
-
+#else
 /**
  * Forces the given widget to update, even if it's hidden.
  */
 LIBQOMPSHARED_EXPORT void forceUpdate(QWidget *widget);
+#endif
+
+
 
 
 enum /*LIBQOMPSHARED_EXPORT*/ State { StateUnknown,StateStopped,StatePaused,StatePlaying,StateError,StateLoading,StateBuffering };

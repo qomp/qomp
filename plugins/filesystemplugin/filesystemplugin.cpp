@@ -30,6 +30,7 @@
 #include <QQuickItem>
 #include <QEventLoop>
 #include "qompqmlengine.h"
+#include "common.h"
 #else
 #include <QFileDialog>
 #include <QMenu>
@@ -37,6 +38,7 @@
 
 #include <QtPlugin>
 
+static const QString CUE_SUFFIX = "cue";
 
 static QList<Tune*> getTunesRecursive(const QString& folder)
 {
@@ -100,7 +102,7 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 				   Qomp::safeDir(Options::instance()->getOption("filesystemplugin.lastdir").toString())
 						));
 	item_->setProperty("filter", QStringList()
-				<< tr("Audio files (*.mp3, *.ogg, *.wav, *.flac)")
+				<< tr("Audio files (*.mp3, *.ogg, *.wav, *.flac, *.cue)")
 				<< tr("All files (*.*)") );
 	QompQmlEngine::instance()->addItem(item_);
 	connect(item_, SIGNAL(accepted()), loop_, SLOT(quit()));
@@ -114,8 +116,15 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 		QVariant varFiles = item_->property("files");
 		foreach(const QVariant& var, varFiles.value<QVariantMap>().keys()) {
 			const QString str = var.toUrl().toLocalFile();
-			if(!str.isEmpty())
-				list.append(tuneFromFile(str));
+			if(!str.isEmpty()) {
+				QFileInfo fi(str);
+				if(fi.suffix() == CUE_SUFFIX) {
+					list.append(CueParser::parseTunes(str));
+				}
+				else {
+					list.append(Qomp::tuneFromFile(str));
+				}
+			}
 		}
 	}
 	QompQmlEngine::instance()->removeItem();
@@ -133,14 +142,16 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 		if(!files.isEmpty()) {
 			QFileInfo fi (files.first());
 			Options::instance()->setOption("filesystemplugin.lastdir", fi.dir().path());
-
-			if(files.size() == 1 && fi.suffix() == "cue") {
-				list = CueParser::parseTunes(files.takeFirst());
-			}
 		} 
 
 		foreach(const QString& file, files) {
-			list.append(Qomp::tuneFromFile(file));
+			QFileInfo fi(file);
+			if(fi.suffix() == CUE_SUFFIX) {
+				list.append(CueParser::parseTunes(file));
+			}
+			else {
+				list.append(Qomp::tuneFromFile(file));
+			}
 		}
 	}
 #endif

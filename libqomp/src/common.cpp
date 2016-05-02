@@ -22,8 +22,6 @@
 #include "options.h"
 
 #include <QTime>
-#include <QWidget>
-#include <QLayout>
 #include <QTextDocument>
 #ifdef HAVE_QT5
 #include <QStandardPaths>
@@ -34,6 +32,9 @@
 #include <QTextCodec>
 #ifdef Q_OS_ANDROID
 #include <QCoreApplication>
+#else
+#include <QWidget>
+#include <QLayout>
 #endif
 
 #ifndef Q_OS_MAC
@@ -223,6 +224,7 @@ QString safeTagLibString2QString(const TagLib::String& string)
 /**
  * Helper function for forceUpdate().
  */
+#ifndef QOMP_MOBILE
 static void invalidateLayout(QLayout *layout)
 {
 	static const QString mainWinLayoutName("QMainWindowLayout");
@@ -255,7 +257,7 @@ void forceUpdate(QWidget *widget)
 		invalidateLayout(widget->layout());
 	}
 }
-
+#endif
 } //namespace Qomp
 
 #ifdef DEBUG_OUTPUT

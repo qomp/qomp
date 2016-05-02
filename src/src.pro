@@ -65,7 +65,8 @@ macx {
 android {
     LIBS += -L$$OUT_PWD/../bin -lqomp-shared
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
-    ANDROID_EXTRA_LIBS += $$[QT_INSTALL_LIBS]/libtag.so \
+    ANDROID_EXTRA_LIBS += $$TAG_LIB/libtag.so \
+        $$CUE_LIB/libcue.so \
         $$OUT_PWD/../bin/libqomp-shared.so
 
     ANDROID_DEPLOYMENT_DEPENDENCIES = \
