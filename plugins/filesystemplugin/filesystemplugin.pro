@@ -38,3 +38,6 @@ win32|android {
     LIBS += -L$$CUE_LIB -L$$TAG_LIB
     INCLUDEPATH += $$CUE_INCLUDE $$TAG_INCLUDE
 }
+
+linux:!mac: INCLUDEPATH += /usr/include/libcue-1.4/libcue
+
