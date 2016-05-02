@@ -22,7 +22,9 @@
 #include "common.h"
 #include "filesystemcommon.h"
 
+extern "C" {
 #include "libcue.h"
+}
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
