@@ -60,6 +60,10 @@ PluginHost::~PluginHost()
 
 bool PluginHost::load()
 {
+#ifdef DEBUG_OUTPUT
+	qDebug() << "PluginHost::load() " << name();
+#endif
+
 	if(!loader_)
 		loader_ = new QPluginLoader(fileName_, this);
 
@@ -75,6 +79,9 @@ bool PluginHost::load()
 		return true;
 	}
 
+#ifdef DEBUG_OUTPUT
+	qDebug() << "PluginHost::load() unable load plugin " << name() << loader_->errorString();
+#endif
 	loader_->unload();
 	delete loader_;
 	loader_ = 0;

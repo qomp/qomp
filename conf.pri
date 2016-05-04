@@ -75,9 +75,6 @@ win32|android {
         CUE_PATH = $$[QT_INSTALL_PREFIX]
     }
 
-    CUE_INCLUDE = $$CUE_PATH/include
-    CUE_LIB     = $$CUE_PATH/lib
-
-    LIBS += -L$$CUE_LIB -L$$TAG_LIB
-    INCLUDEPATH += $$CUE_INCLUDE $$TAG_INCLUDE
+    CUE_INCLUDE = $$shell_path($$CUE_PATH/include)
+    CUE_LIB     = $$shell_path($$CUE_PATH/lib)
 }
