@@ -201,7 +201,7 @@ QList<Tune*> Tune::tunesFromFile(const QString &fileName)
 
 bool Tune::sameSource(const Tune *other) const
 {
-	return other->file == file && other->url == url;
+	return QString::compare(other->file, file) == 0 && QString::compare(other->url, url) == 0;
 }
 
 int Tune::lastId_ = 0;
