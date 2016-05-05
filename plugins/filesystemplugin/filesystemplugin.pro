@@ -11,6 +11,9 @@ OTHER_FILES += $$PWD/metadata.json
 
 mac {
     QMAKE_LFLAGS += -framework tag
+
+    LIBS += -L$$CUE_LIB
+    INCLUDEPATH += $$CUE_INCLUDE
 }
 else {
     LIBS += -ltag
