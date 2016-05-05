@@ -180,6 +180,8 @@ void QompQtMultimediaPlayer::stop()
 	QompPlayer::stop();
 
 	player_->stop();
+
+	updatePlayerPosition();
 }
 
 qint64 QompQtMultimediaPlayer::currentTuneTotalTime() const
