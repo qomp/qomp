@@ -61,7 +61,7 @@ android {
 
 CONFIG += warn_on
 
-win32|android {
+win32|android|macx {
     #libtag staff
     isEmpty(TAG_PATH) {
         TAG_PATH = $$[QT_INSTALL_PREFIX]
