@@ -71,6 +71,7 @@ SimpleStrategy* SimpleStrategy::instance_ = 0;
 
 
 Tune::Tune(bool canSave) :
+	QObject(),
 	start(0),
 	length(0),
 	played(false),

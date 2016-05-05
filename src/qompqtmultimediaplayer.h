@@ -82,7 +82,7 @@ private:
 	QMediaPlayer* player_;
 	QompMetaDataResolver* resolver_;
 	QPointer< QFutureWatcher<QUrl> > watcher_;
-	const Tune* prevTune_;
+	QPointer<const Tune> prevTune_;
 };
 
 #endif // QOMPQTMULTIMEDIAPLAYER_H

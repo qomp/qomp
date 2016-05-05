@@ -61,7 +61,7 @@ void QompQtMultimediaPlayer::doSetTune()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::doSetTune()";
 #endif
-	if(!prevTune_->sameSource(currentTune())) {
+	if(!prevTune_ || !prevTune_->sameSource(currentTune())) {
 		player_->blockSignals(true);
 		player_->setMedia(QMediaContent());
 		player_->blockSignals(false);

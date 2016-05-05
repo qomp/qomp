@@ -37,8 +37,9 @@ public:
 	virtual QString name() const = 0;
 };
 
-class LIBQOMPSHARED_EXPORT Tune
+class LIBQOMPSHARED_EXPORT Tune: public QObject
 {
+	Q_OBJECT
 public:
 	explicit Tune(bool canSave = true);
 
