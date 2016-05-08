@@ -73,8 +73,6 @@ void QompQtMultimediaPlayer::doSetTune()
 
 	GetTuneUrlHelper* helper = new GetTuneUrlHelper(this, "tuneUrlReady", this);
 	watcher_ = helper->getTuneUrlAsynchronously(currentTune());
-
-	prevTune_ = currentTune();
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const
@@ -161,7 +159,7 @@ void QompQtMultimediaPlayer::play()
 #endif
 	QompPlayer::play();
 
-	if(!player_->media().isNull())
+	if(!player_->media().isNull() && isTuneChangeFinished())
 		player_->play();
 }
 
@@ -227,8 +225,9 @@ void QompQtMultimediaPlayer::playerStateChanged(QMediaPlayer::State _state)
 
 void QompQtMultimediaPlayer::updatePlayerPosition()
 {
-	const qint64 pos = currentTune()->start;
-	if(pos > 0) {
+	if(currentTune()->length > 0) {
+		const qint64 pos = currentTune()->start;
+
 		player_->blockSignals(true);
 		player_->setPosition(pos);
 		player_->blockSignals(false);
@@ -280,6 +279,11 @@ void QompQtMultimediaPlayer::setPlayerMediaContent(const QUrl &url)
 	}
 }
 
+bool QompQtMultimediaPlayer::isTuneChangeFinished() const
+{
+	return prevTune_ == currentTune();
+}
+
 void QompQtMultimediaPlayer::audioReadyChanged(bool ready)
 {
 #ifdef DEBUG_OUTPUT
@@ -297,6 +301,8 @@ void QompQtMultimediaPlayer::tuneUrlReady(const QUrl &url)
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::tuneUrlReady()  " << lastAction() << url;
 #endif
+	prevTune_ = currentTune();
+
 	setPlayerMediaContent(url);
 
 	switch (lastAction()) {

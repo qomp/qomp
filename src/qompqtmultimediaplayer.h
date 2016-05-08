@@ -77,6 +77,7 @@ private:
 	qint64 mapPositionFromTrack(qint64 pos) const;
 	void updatePlayerPosition();
 	void setPlayerMediaContent(const QUrl &url);
+	bool isTuneChangeFinished() const;
 
 private:
 	QMediaPlayer* player_;
