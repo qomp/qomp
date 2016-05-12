@@ -256,3 +256,17 @@ QHeaderView::section {
     border: 2px solid #799fd8;
     border-radius: 5px;
 }
+
+QTreeView::branch {
+    border-image: none;
+    image: none;
+    padding: 3px;
+}
+
+QTreeView::branch:has-children:closed {
+    image: url(:/icons/branch-closed);
+}
+
+QTreeView::branch:has-children:open {
+    image: url(:/icons/branch-open);
+}

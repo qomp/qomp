@@ -77,15 +77,13 @@ void ThemeManager::loadThemes()
 
 void ThemeManager::prepareTheme(QFile *file)
 {
-	const QByteArray content = file->readAll();
+	QFileInfo fi(*file);
+	const QByteArray content = file->readAll().replace(themePathExpression,
+					fi.absoluteDir().absolutePath().toLatin1());
 
 	QRegExp re(iconsExpression);
 	if(re.indexIn(content) != -1) {
 		iconPath_ = re.cap(1);
-		if(iconPath_.contains(themePathExpression)) {
-			QFileInfo fi(*file);
-			iconPath_ = iconPath_.replace(themePathExpression, fi.absoluteDir().absolutePath());
-		}
 	}
 	else {
 		iconPath_.clear();
