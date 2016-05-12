@@ -21,6 +21,7 @@
 #include "pluginmanager.h"
 #include "tune.h"
 #include "qomppluginaction.h"
+#include "thememanager.h"
 
 #include <QApplication>
 
@@ -84,7 +85,7 @@ void QompGetTunesMenu::buildMenu()
 
 void QompGetTunesMenu::init()
 {
-	setIcon(QIcon(":/icons/add"));
+	setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/add")));
 	connect(this, SIGNAL(triggered(QAction*)), SLOT(actionActivated(QAction*)));
 }
 
@@ -98,30 +99,30 @@ QompMainMenu::QompMainMenu(QWidget *p) :
 
 void QompMainMenu::buildMenu()
 {
-	QAction* act = addAction(QIcon(":/icons/toggle"), tr("Toggle Visibility"), this, SIGNAL(actToggleVisibility()));
+	QAction* act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/toggle")), tr("Toggle Visibility"), this, SIGNAL(actToggleVisibility()));
 	act->setParent(this);
 
 	QompGetTunesMenu *open = new QompGetTunesMenu(tr("Open"), this);
 	connect(open, SIGNAL(tunes(QList<Tune*>)), SIGNAL(tunes(QList<Tune*>)));
 	addMenu(open);
 
-	act = addAction(QIcon(":/icons/options"), tr("Settings"), this, SIGNAL(actDoOptions()));
+	act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/options")), tr("Settings"), this, SIGNAL(actDoOptions()));
 	act->setParent(this);
 	addSeparator();
 
 	QMenu* helpMenu = new QMenu(tr("Help"), this);
-	helpMenu->setIcon(QIcon(":/icons/help"));
-	act = helpMenu->addAction(QIcon(":/icons/home"), tr("About qomp"), this, SIGNAL(actAbout()));
+	helpMenu->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/help")));
+	act = helpMenu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/home")), tr("About qomp"), this, SIGNAL(actAbout()));
 	act->setParent(helpMenu);
-	act = helpMenu->addAction(QIcon(":/icons/info"), tr("About Qt"), qApp, SLOT(aboutQt()));
+	act = helpMenu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/info")), tr("About Qt"), qApp, SLOT(aboutQt()));
 	act->setParent(helpMenu);
-	act = helpMenu->addAction(QIcon(":/icons/bugreport"), tr("Report a bug"), this, SIGNAL(actReportBug()));
+	act = helpMenu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/bugreport")), tr("Report a bug"), this, SIGNAL(actReportBug()));
 	act->setParent(helpMenu);
-	act = helpMenu->addAction(QIcon(":/icons/updates"), tr("Check for updates"), this, SIGNAL(actCheckUpdates()));
+	act = helpMenu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/updates")), tr("Check for updates"), this, SIGNAL(actCheckUpdates()));
 	act->setParent(helpMenu);
 	addMenu(helpMenu);
 
-	act = addAction(QIcon(":/icons/close"), tr("Exit"), this, SIGNAL(actExit()));
+	act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/close")), tr("Exit"), this, SIGNAL(actExit()));
 	act->setParent(this);
 }
 
@@ -154,18 +155,18 @@ void QompTrackMenu::actToggleActivated()
 
 void QompTrackMenu::buildMenu()
 {
-	QAction* act = addAction(QIcon(":/icons/play"), tr("Play/Pause"), this, SLOT(actToggleActivated()));
+	QAction* act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")), tr("Play/Pause"), this, SLOT(actToggleActivated()));
 	act->setParent(this);
 
-	act = addAction(QIcon(":/icons/delete"), tr("Remove"), this, SLOT(actRemoveActivated()));
+	act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/delete")), tr("Remove"), this, SLOT(actRemoveActivated()));
 	act->setParent(this);
 
 	if(!tune_->url.isEmpty()) {
-		act = addAction(QIcon(":/icons/ok"), tr("Copy URL"), this, SLOT(actCopyUrlActivated()));
+		act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/ok")), tr("Copy URL"), this, SLOT(actCopyUrlActivated()));
 		act->setParent(this);
 	}
 	if(tune_->canSave()) {
-		act = addAction(QIcon(":/icons/save"), tr("Save File"), this, SLOT(actSaveActivated()));
+		act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/save")), tr("Save File"), this, SLOT(actSaveActivated()));
 		act->setParent(this);
 	}
 }

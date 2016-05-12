@@ -22,6 +22,7 @@
 #include "defines.h"
 #include "options.h"
 #include "tune.h"
+#include "thememanager.h"
 
 #include "ui_qompplugingettunesdlg.h"
 
@@ -73,6 +74,8 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 
 	ui->cb_search->addItems(searchHistory);
 	ui->cb_search->setInsertPolicy(QComboBox::InsertAtTop);
+
+	ui->pb_search->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/search")));
 
 	sugTimer_->setSingleShot(true);
 	sugTimer_->setInterval(sugTimerInterval);

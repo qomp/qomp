@@ -565,7 +565,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbOptions">
+       <widget class="QToolButton" name="tb_options">
         <property name="toolTip">
          <string>Settings</string>
         </property>

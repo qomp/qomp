@@ -75,6 +75,7 @@ public slots:
 	void updateShuffleIcon();
 	void updateMuteIcon();
 	void updatePlaylistIcon();
+	void updateIcons();
 
 	void togglePlaylistVisibility();
 	void showPlaylist();
@@ -104,6 +105,7 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	connectMainMenu();
 	setupPlaylist();
 	updateShortcuts();
+	updateIcons();
 
 	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());
 	ui->tb_shuffle->setChecked(Options::instance()->getOption(OPTION_SHUFFLE).toBool());
@@ -160,7 +162,22 @@ void QompMainWin::Private::updatePlaylistIcon()
 {
 	ui->tb_showPlaylist->setIcon(ui->playList->isVisible() ?
 				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/arrow-down")) :
-				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/arrow-up")));
+					     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/arrow-up")));
+}
+
+void QompMainWin::Private::updateIcons()
+{
+	ui->tb_clear->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/delete")));
+	ui->tb_prev->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/prev")));
+	ui->tb_next->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/next")));
+	ui->tb_stop->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/stop")));
+	ui->tb_repeatAll->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/repeat")));
+	ui->tb_load->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/load")));
+	ui->tb_save->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/save")));
+	ui->tb_open->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/add")));
+	ui->tb_options->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/options")));
+
+
 }
 
 void QompMainWin::Private::togglePlaylistVisibility()
@@ -227,7 +244,7 @@ void QompMainWin::Private::connectActions()
 	connect(ui->tb_next, SIGNAL(clicked()),     parentWin_, SIGNAL(actNextActivated()));
 	connect(ui->tb_prev, SIGNAL(clicked()),	    parentWin_, SIGNAL(actPrevActivated()));
 	connect(ui->tb_mute, SIGNAL(clicked(bool)), parentWin_, SIGNAL(actMuteActivated(bool)));
-	connect(ui->tbOptions, SIGNAL(clicked()),   parentWin_, SIGNAL(doOptions()));
+	connect(ui->tb_options, SIGNAL(clicked()),   parentWin_, SIGNAL(doOptions()));
 
 	actClearPlaylist_ = new QAction(mainWin_);
 	connect(actClearPlaylist_, SIGNAL(triggered()), parentWin_, SIGNAL(clearPlaylist()));
@@ -457,7 +474,7 @@ void QompMainWin::Private::updateShortcuts()
 	ui->tb_mute->setShortcut(a->getShortcut(QompActionsList::ActMute));
 	ui->tb_repeatAll->setShortcut(a->getShortcut(QompActionsList::ActRepeatAll));
 	ui->tb_shuffle->setShortcut(a->getShortcut(QompActionsList::ActShuffle));
-	ui->tbOptions->setShortcut(a->getShortcut(QompActionsList::ActSettings));
+	ui->tb_options->setShortcut(a->getShortcut(QompActionsList::ActSettings));
 	actClearPlaylist_->setShortcut(a->getShortcut(QompActionsList::ActClearPlaylist));
 }
 
@@ -602,6 +619,7 @@ void QompMainWin::updateButtonIcons()
 	d->updateShuffleIcon();
 	d->updatePlaylistIcon();
 	d->updateMuteIcon();
+	d->updateIcons();
 }
 
 
