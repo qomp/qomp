@@ -30,17 +30,19 @@ android {
          $$PWD/scaler.h
 
     SOURCES += $$PWD/qompqmlengine.cpp  \
-         $$PWD/scaler.cpp
+         $$PWD/scaler.cpp \
 
     RESOURCES += $$PWD/qml.qrc \
              $$PWD/icons.qrc
 }
 else {
     HEADERS += $$PWD/qompbusylabel.h \
-               $$PWD/qompactionslist.h
+               $$PWD/qompactionslist.h \
+               $$PWD/thememanager.h
 
     SOURCES += $$PWD/qompbusylabel.cpp \
-               $$PWD/qompactionslist.cpp
+               $$PWD/qompactionslist.cpp \
+               $$PWD/thememanager.cpp
 }
 
 lupdate_only {

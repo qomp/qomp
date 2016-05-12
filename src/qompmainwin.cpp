@@ -26,6 +26,7 @@
 #include "qompmenu.h"
 #include "tune.h"
 #include "qompactionslist.h"
+#include "thememanager.h"
 
 #include "ui_qompmainwin.h"
 
@@ -72,6 +73,8 @@ public slots:
 
 	void updateShortcuts();	
 	void updateShuffleIcon();
+	void updateMuteIcon();
+	void updatePlaylistIcon();
 
 	void togglePlaylistVisibility();
 	void showPlaylist();
@@ -108,9 +111,9 @@ QompMainWin::Private::Private(QompMainWin *p) :
 
 #if defined(HAVE_X11) && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QMenu *menu = new QMenu(mainWin_);
-	menu->addAction(QIcon(":/icons/toggle"), tr("Toggle Visibility"), parentWin_, SLOT(toggleVisibility()))->setParent(menu);
+	menu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/toggle")), tr("Toggle Visibility"), parentWin_, SLOT(toggleVisibility()))->setParent(menu);
 	menu->addSeparator();
-	menu->addAction(QIcon(":/icons/close"), tr("Exit"), qApp, SLOT(quit()))->setParent(menu);
+	menu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/close")), tr("Exit"), qApp, SLOT(quit()))->setParent(menu);
 
 	trayIcon_->setContextMenu(menu);
 #else
@@ -142,8 +145,22 @@ QompMainWin::Private::~Private()
 void QompMainWin::Private::updateShuffleIcon()
 {
 	ui->tb_shuffle->setIcon(ui->tb_shuffle->isChecked() ?
-				     QIcon(":/icons/random") :
-					QIcon(":/icons/linear"));
+				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/random")) :
+				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/linear")));
+}
+
+void QompMainWin::Private::updateMuteIcon()
+{
+	ui->tb_mute->setIcon(ui->tb_mute->isChecked() ?
+				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/mute")) :
+				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/volume")));
+}
+
+void QompMainWin::Private::updatePlaylistIcon()
+{
+	ui->tb_showPlaylist->setIcon(ui->playList->isVisible() ?
+				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/arrow-down")) :
+				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/arrow-up")));
 }
 
 void QompMainWin::Private::togglePlaylistVisibility()
@@ -160,6 +177,7 @@ void QompMainWin::Private::togglePlaylistVisibility()
 		vis = true;
 	}
 
+	updatePlaylistIcon();
 	Options::instance()->setOption(OPTION_PLAYLIST_VISIBLE, vis);
 }
 
@@ -173,7 +191,6 @@ void QompMainWin::Private::showPlaylist()
 	mainWin_->resize( mainWin_->width(), mainWin_->height() + h );
 	ui->playList->show();
 	Qomp::forceUpdate(mainWin_);
-	ui->tb_showPlaylist->setIcon(QIcon(":/icons/arrow-down"));
 }
 
 void QompMainWin::Private::hidePlaylist()
@@ -182,7 +199,6 @@ void QompMainWin::Private::hidePlaylist()
 	Qomp::forceUpdate(mainWin_);
 	mainWin_->resize( mainWin_->width(), 0 );
 	mainWin_->setMaximumHeight(mainWin_->height());
-	ui->tb_showPlaylist->setIcon(QIcon(":/icons/arrow-up"));
 }
 
 void QompMainWin::Private::connectMainMenu()
@@ -337,13 +353,13 @@ void QompMainWin::Private::updateIcons(Qomp::State state)
 {
 	switch (state) {
 	case Qomp::StatePaused: {
-		ui->tb_play->setIcon(QIcon(":/icons/play"));
+		ui->tb_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")));
 		static const QIcon pauseIco(":/icons/icons/qomp_pause.png");
 		trayIcon_->setIcon(pauseIco);
 		break;
 	}
 	case Qomp::StatePlaying: {
-		ui->tb_play->setIcon(QIcon(":/icons/pause"));
+		ui->tb_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/pause")));
 		static const QIcon playIcon(":/icons/icons/qomp_play.png");
 		trayIcon_->setIcon(playIcon);
 		break;
@@ -351,7 +367,7 @@ void QompMainWin::Private::updateIcons(Qomp::State state)
 	default: {
 		static const QIcon stopIco(":/icons/icons/qomp_stop.png");
 		trayIcon_->setIcon(stopIco);
-		ui->tb_play->setIcon(QIcon(":/icons/play"));
+		ui->tb_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")));
 		break;
 	}
 	}
@@ -474,9 +490,7 @@ void QompMainWin::setModel(QompPlayListModel *model)
 void QompMainWin::setMuteState(bool mute)
 {
 	d->ui->tb_mute->setChecked(mute);
-	d->ui->tb_mute->setIcon(d->ui->tb_mute->isChecked() ?
-				     QIcon(":/icons/mute") :
-				     QIcon(":/icons/volume"));
+	d->updateMuteIcon();
 }
 
 void QompMainWin::volumeChanged(qreal vol)
@@ -580,6 +594,14 @@ void QompMainWin::savePlaylist(const QString &fileName)
 {
 	Options::instance()->setOption(LAST_DIR, QFileInfo(fileName).absolutePath());
 	model_->saveTunes(fileName);
+}
+
+void QompMainWin::updateButtonIcons()
+{
+	d->updateIcons(currentState_);
+	d->updateShuffleIcon();
+	d->updatePlaylistIcon();
+	d->updateMuteIcon();
 }
 
 

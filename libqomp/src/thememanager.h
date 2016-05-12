@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Khryukin Evgeny
+ * Copyright (C) 2014, 2016  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,7 +23,11 @@
 #include <QObject>
 #include <QMap>
 
-class ThemeManager : public QObject
+#include "libqomp_global.h"
+
+class QFile;
+
+class LIBQOMPSHARED_EXPORT ThemeManager : public QObject
 {
 	Q_OBJECT
 public:
@@ -31,16 +35,24 @@ public:
 
 	void setTheme(const QString& theme);
 	QStringList availableThemes() const;
+	QString getIconFromTheme(const QString& file) const;
+
+signals:
+	void themeChanged();
 
 private:
 	ThemeManager();
 
 	void loadThemes();
+	void prepareTheme(QFile* file);
+
 	static QStringList themeFolders();
 
+private:
 	static ThemeManager* instance_;
 	QMap<QString,QString> themes_;
 	QString currentTheme_;
+	QString iconPath_;
 };
 
 #endif // THEMEMANAGER_H

@@ -50,6 +50,8 @@ public slots:
 	void loadPlaylist(const QString& fileName);
 	void savePlaylist(const QString& fileName);
 
+	void updateButtonIcons();
+
 signals:
 	void downloadTune(Tune* tune, const QString& dir);
 	void doOptions();

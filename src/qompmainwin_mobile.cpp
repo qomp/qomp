@@ -363,4 +363,8 @@ void QompMainWin::savePlaylist(const QString &fileName)
 	model_->saveTunes(fileName);
 }
 
+void QompMainWin::updateButtonIcons()
+{
+}
+
 #include "qompmainwin_mobile.moc"

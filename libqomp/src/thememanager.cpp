@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Khryukin Evgeny
+ * Copyright (C) 2014, 2016  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,17 @@
 #include <QApplication>
 #include <QFile>
 #include <QDir>
+#include <QRegExp>
+#include <QFileInfo>
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
+
+
+static const QString iconsExpression = "Icons\\s*\\{\\s*path:\\s*(\\S+[^;]*);\\s*\\}";
+static const QString themePathExpression = "<theme_path>";
+
+
 
 ThemeManager *ThemeManager::instance_ = 0;
 
@@ -42,8 +53,8 @@ void ThemeManager::setTheme(const QString &theme)
 		QFile file(themes_.value(theme));
 		if(file.exists() && file.open(QFile::ReadOnly | QFile::Text)) {
 			currentTheme_ = theme;
-			const QByteArray content = file.readAll();
-			qApp->setStyleSheet(content);
+			prepareTheme(&file);
+			emit themeChanged();
 		}
 	}
 }
@@ -64,9 +75,49 @@ void ThemeManager::loadThemes()
 	}
 }
 
+void ThemeManager::prepareTheme(QFile *file)
+{
+	const QByteArray content = file->readAll();
+
+	QRegExp re(iconsExpression);
+	if(re.indexIn(content) != -1) {
+		iconPath_ = re.cap(1);
+		if(iconPath_.contains(themePathExpression)) {
+			QFileInfo fi(*file);
+			iconPath_ = iconPath_.replace(themePathExpression, fi.absoluteDir().absolutePath());
+		}
+	}
+	else {
+		iconPath_.clear();
+	}
+
+	qApp->setStyleSheet(content);
+}
+
 QStringList ThemeManager::availableThemes() const
 {
 	return themes_.keys();
+}
+
+QString ThemeManager::getIconFromTheme(const QString &file) const
+{
+	if(iconPath_.isEmpty())
+		return file;
+
+	QFileInfo fi(file);
+	if(fi.exists()) {
+		QString fname = fi.fileName();
+		QString ext = fi.suffix().isEmpty() ? ".png" : "";
+		QString newFile = iconPath_ + "/" + fname + ext;
+		if(QFileInfo::exists(newFile)) {
+#ifdef DEBUG_OUTPUT
+			qDebug() << "ThemeManager::getIconFromTheme()" << newFile;
+#endif
+			return newFile;
+		}
+	}
+
+	return file;
 }
 
 ThemeManager::ThemeManager() :

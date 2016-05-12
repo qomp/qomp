@@ -37,15 +37,13 @@ else {
         $$PWD/aboutdlg.cpp \
         $$PWD/qompplaylistdelegate.cpp \
         $$PWD/qompplaylistview.cpp \
-        $$PWD/qompmenu.cpp \
-        $$PWD/thememanager.cpp
+        $$PWD/qompmenu.cpp
 
     HEADERS += $$PWD/qomptrayicon.h \
         $$PWD/aboutdlg.h \
         $$PWD/qompplaylistdelegate.h \
         $$PWD/qompplaylistview.h \
-        $$PWD/qompmenu.h \
-        $$PWD/thememanager.h
+        $$PWD/qompmenu.h
 
     FORMS   += \
         $$PWD/qompmainwin.ui \
