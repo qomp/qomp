@@ -5,10 +5,10 @@ QMainWindow {
 }
 
 QDialogButtonBox {
-    dialogbuttonbox-buttons-have-icons: 1;
-    dialog-ok-icon: url(":/icons/ok");
+    dialogbuttonbox-buttons-have-icons: 0;
+    /*dialog-ok-icon: url(":/icons/ok");
     dialog-cancel-icon: url(":/icons/cancel");
-    dialog-close-icon: url(":/icons/cancel");
+    dialog-close-icon: url(":/icons/cancel");*/
 }
 
 QDialog {
@@ -176,6 +176,7 @@ QPushButton {
      border-color: #8d909c;
      border-radius: 5px;
      padding : 4px 8px;
+     min-width: 5em;
 }
 
 QPushButton:pressed {

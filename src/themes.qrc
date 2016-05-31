@@ -2,6 +2,5 @@
     <qresource prefix="/">
         <file>themes/blue.thm</file>
         <file>themes/default.thm</file>
-        <file>themes/black.thm</file>
     </qresource>
 </RCC>

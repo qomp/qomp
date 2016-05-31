@@ -532,6 +532,8 @@ void QompCon::setupMainWin()
 	mainWin_->playerStateChanged(player_->state());
 
 	connectMainWin();
+
+	mainWin_->updateButtonIcons();
 }
 
 void QompCon::connectMainWin()
