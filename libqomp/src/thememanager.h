@@ -45,6 +45,7 @@ private:
 
 	void loadThemes();
 	void prepareTheme(QFile* file);
+	void loadExternResources();
 
 	static QStringList themeFolders();
 

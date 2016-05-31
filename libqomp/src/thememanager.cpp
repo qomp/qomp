@@ -24,6 +24,7 @@
 #include <QDir>
 #include <QRegExp>
 #include <QFileInfo>
+#include <QResource>
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
 #endif
@@ -31,6 +32,7 @@
 
 static const QString iconsExpression = "Icons\\s*\\{\\s*path:\\s*(\\S+[^;]*);\\s*\\}";
 static const QString themePathExpression = "<theme_path>";
+static const QString resourceFileName = "*.rcc";
 
 
 
@@ -92,6 +94,16 @@ void ThemeManager::prepareTheme(QFile *file)
 	qApp->setStyleSheet(content);
 }
 
+void ThemeManager::loadExternResources()
+{
+	foreach(const QString& dir, themeFolders()) {
+		foreach(const QString& file, QDir(dir).entryList(
+						QStringList() << resourceFileName,
+						QDir::Files) )
+			QResource::registerResource(dir + "/" + file);
+	}
+}
+
 QStringList ThemeManager::availableThemes() const
 {
 	return themes_.keys();
@@ -121,13 +133,14 @@ QString ThemeManager::getIconFromTheme(const QString &file) const
 ThemeManager::ThemeManager() :
 	QObject(qApp)
 {
+	loadExternResources();
 	loadThemes();
 }
 
 QStringList ThemeManager::themeFolders()
 {
 	QStringList list;
-	list << ":/themes/";
+	list << ":/themes";
 #ifdef Q_OS_WIN
 	list.append(qApp->applicationDirPath()+"/themes");
 #elif defined (HAVE_X11)
