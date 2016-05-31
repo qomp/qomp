@@ -160,7 +160,7 @@ void QompMainWin::Private::updateMuteIcon()
 
 void QompMainWin::Private::updatePlaylistIcon()
 {
-	ui->tb_showPlaylist->setIcon(ui->playList->isVisible() ?
+	ui->tb_showPlaylist->setIcon(Options::instance()->getOption(OPTION_PLAYLIST_VISIBLE).toBool() ?
 				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/arrow-down")) :
 					     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/arrow-up")));
 }
@@ -194,8 +194,8 @@ void QompMainWin::Private::togglePlaylistVisibility()
 		vis = true;
 	}
 
-	updatePlaylistIcon();
 	Options::instance()->setOption(OPTION_PLAYLIST_VISIBLE, vis);
+	updatePlaylistIcon();
 }
 
 void QompMainWin::Private::showPlaylist()
