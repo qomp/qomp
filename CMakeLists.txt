@@ -1,60 +1,60 @@
 project( qomp )
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 2.8.12 )
 if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
-endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
+endif()
 #common part
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
+
+option( USE_QT5 "Use Qt5" ON )
+option( INSTALL_DEPS "Install win32 qomp dependencies" OFF )
+option( DEV_MODE "Enable development mode" OFF )
 set( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
-set( USE_QT5 OFF CACHE BOOL "Use Qt5" )
-set( LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
-set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where lib will install" )
-set( USE_MXE OFF CACHE BOOL "Use MXE (M cross environment) tools")
-set( INSTALL_DEPS OFF CACHE BOOL "Install win32 qomp dependencies" )
-if( ${WIN32} )
-	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
-endif( ${WIN32} )
+set( LIB_SUFFIX "" CACHE STRING "Define suffix of lib directory name (32/64)" )
+set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where libs will be installed" )
+
 set( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
+if( NOT CMAKE_BUILD_TYPE )
+	set(CMAKE_BUILD_TYPE Release)
+endif()
 if( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 	add_definitions( -DQT_NO_DEBUG )
-endif( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
+endif()
+
 set( LIBQOMP_LIBRARY libqomp )
 add_subdirectory( ${LIBQOMP_LIBRARY} )
 add_subdirectory( plugins )
+
 set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${PROJECT_BINARY_DIR}/libqomp/include
+	${CMAKE_BINARY_DIR}/libqomp/include
 	src/options
 	src
-)
+	)
 
-set( qomp_UIS
-	src/qompmainwin.ui
-	src/aboutdlg.ui
-)
 set( qomp_RSCS
-	src/qomp.qrc
+	src/${PROJECT_NAME}.qrc
 	src/themes.qrc
-)
+	)
 set( qomp_TRS
 	translations/translations/${PROJECT_NAME}_ru.ts
-)
+	)
 set( options_SRCS
 	src/options/qompoptionsdlg.cpp
 	src/options/qompoptionskeys.cpp
 	src/options/qompoptionsmain.cpp
 	src/options/qompoptionsplugins.cpp
-)
+	)
 set( options_UIS
 	src/options/qompoptionsdlg.ui
 	src/options/qompoptionskeys.ui
 	src/options/qompoptionsmain.ui
 	src/options/qompoptionsplugins.ui
-)
+	)
 set( qomp_SRCS
 	src/main.cpp
 	src/qompmainwin.cpp
@@ -68,106 +68,79 @@ set( qomp_SRCS
 	src/updateschecker.cpp
 	src/qompplaylistview.cpp
 	src/qompmenu.cpp
-	src/thememanager.cpp
 	${options_SRCS}
-)
+	)
+set( qomp_UIS
+	src/qompmainwin.ui
+	src/aboutdlg.ui
+	${options_UIS}
+	)
 
-if( ${USE_QT5} )
-	find_package( Qt5Widgets REQUIRED )
-	find_package( Qt5Network REQUIRED )
-	find_package( Qt5Multimedia REQUIRED )
-	find_package( Qt5Concurrent REQUIRED )
+if( WIN32 )
+	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
+	set( LIBCUE_ROOT "C:\\build\\libcue" CACHE STRING "LibCue root path" )
+	set( qomp_RC ${PROJECT_NAME}.rc )
+endif()
+
+if( UNIX AND NOT (APPLE OR CYGWIN) )
+	set(LINUX ON)
+endif()
+
+if( DEV_MODE )
+	set( EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/${PROJECT_NAME}" )
+	set_property( SOURCE ${qomp_TRS} PROPERTY OUTPUT_LOCATION "${EXECUTABLE_OUTPUT_PATH}/translations" )
+	set( QOMP_DATADIR ${EXECUTABLE_OUTPUT_PATH} )
+endif()
+
+if( LINUX )
+	set( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}/share )
+	set( APPDATA_PATH ${DATADIR_PATH}/${PROJECT_NAME} )
+	if( NOT QOMP_DATADIR )
+		set( QOMP_DATADIR ${APPDATA_PATH} )
+	endif()
+	add_definitions( -DHAVE_X11 -DQOMP_DATADIR="${QOMP_DATADIR}" )
+endif()
+
+if( USE_QT5 )
+	find_package( Qt5 REQUIRED Widgets Network Multimedia Concurrent )
 	find_package( Qt5LinguistTools )
-	include_directories(
-		${Qt5Widgets_INCLUDES}
-		${Qt5Network_INCLUDES}
-		${Qt5Multimedia_INCLUDES}
-		${Qt5Concurrent_INCLUDES}
-	)
 	qt5_add_resources( RSCS ${qomp_RSCS} )
-	qt5_add_translation( TRS ${qomp_TRS} )
-	qt5_wrap_ui(main_UIS 
+	if( Qt5LinguistTools_FOUND )
+		qt5_add_translation( TRS ${qomp_TRS} )
+	endif()
+	qt5_wrap_ui(main_UIS
 		${qomp_UIS}
-		${options_UIS}
-	)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+		)
 	add_definitions(
 		-DHAVE_QT5
 		-DHAVE_QTMULTIMEDIA
-		${Qt5Widgets_DEFINITIONS}
-		${Qt5Network_DEFINITIONS}
-		${Qt5Multimedia_DEFINITIONS}
-		${Qt5Concurrent_DEFINITIONS}
-	)
+		)
 	set(QT_DEPLIBS
 		Qt5::Widgets
 		Qt5::Network
 		Qt5::Multimedia
 		Qt5::Concurrent
-	)
+		)
 	set(qomp_MMEDIA
 		src/qompqtmultimediaplayer.cpp
-	)
-else( ${USE_QT5} )
+		)
+else()
 	find_package( Qt4 REQUIRED )
 	include( ${QT_USE_FILE} )
 	include_directories(
 		${QT_QTCORE_INCLUDE_DIR}
 		${QT_QTGUI_INCLUDE_DIR}
 		${QT_QTNETWORK_INCLUDE_DIR}
-	)
+		)
 	QT4_ADD_RESOURCES( RSCS ${qomp_RSCS} )
 	QT4_ADD_TRANSLATION( TRS ${qomp_TRS} )
-	QT4_WRAP_UI(main_UIS 
+	QT4_WRAP_UI(main_UIS
 		${qomp_UIS}
-		${options_UIS}
-	)
-	set(QT_DEPLIBS
-		${QT_QTCORE_LIBRARY}
-		${QT_QTGUI_LIBRARY}
-		${QT_QTMULTIMEDIA_LIBRARY}
-		${QT_QTNETWORK_LIBRARY}
-	)
-endif( ${USE_QT5} )
-
-if( ${WIN32} )
-	set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-	set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
-	add_executable(
-		${PROJECT_NAME}
-		WIN32
-		${qomp_SRCS}
-		${qomp_MMEDIA}
-		${main_UIS}
-		${RSCS}
-		${TRS}
-		qomp.rc
-	)
-	target_link_libraries(
-			${PROJECT_NAME}
-			${LIBQOMP_LIBRARY}
-			${QT_DEPLIBS}
-	)
-	add_dependencies( ${PROJECT_NAME} ${LIBQOMP_LIBRARY} )
-	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} )
-	if( ${INSTALL_DEPS} )
-		if( ${USE_QT5} )
-			include(Win32Qt5Install_files)
-		endif( ${USE_QT5} )
-	endif( ${INSTALL_DEPS} )
-	set( TRS_PATH ${CMAKE_INSTALL_PREFIX}/translations )
-	INSTALL( FILES ${TRS} DESTINATION ${TRS_PATH} )
-	INSTALL( FILES LICENSE.txt DESTINATION ${CMAKE_INSTALL_PREFIX} )
-endif( ${WIN32} )
-
-if( ${UNIX} )
-	set( DATADIR_PATH ${CMAKE_INSTALL_PREFIX}/share )
-	set( APPDATA_PATH ${DATADIR_PATH}/${PROJECT_NAME} )
-	add_definitions( -DHAVE_X11 -DQOMP_DATADIR="${APPDATA_PATH}" )
-	if( NOT ${USE_QT5} )
+		)
+	if( LINUX )
 		find_package( Phonon QUIET )
-			set( qomp_phonon_SRCS
-				src/qompphononplayer.cpp
+		set( qomp_phonon_SRCS
+			src/qompphononplayer.cpp
 			)
 		add_definitions(-DHAVE_PHONON)
 		if( ${Phonon_FOUND} )
@@ -175,49 +148,59 @@ if( ${UNIX} )
 			foreach( inc_path ${PHONON_INCLUDES};/usr/include/phonon )
 				if( EXISTS "${inc_path}/Phonon/MediaObject" )
 					include_directories(${inc_path})
-				endif( EXISTS "${inc_path}/Phonon/MediaObject" )
+				endif()
 			endforeach( inc_path )
-		else( ${Phonon_FOUND} )
+			set( phonon_LIB ${PHONON_LIBRARY} )
+		else()
 			message( "-- Looking for Phonon - not found" )
 			set( QT_USE_PHONON TRUE )
 			include_directories( ${QT_PHONON_INCLUDE_DIR} )
-		endif( ${Phonon_FOUND} )
-	endif( NOT ${USE_QT5} )
-	set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-	set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
-	add_executable(
-		${PROJECT_NAME}
-		${qomp_SRCS}
-		${qomp_phonon_SRCS}
-		${qomp_MMEDIA}
-		${main_UIS}
-		${RSCS}
-		${TRS}
-	)
-	if(${USE_QT5})
-		target_link_libraries(
-			${PROJECT_NAME}
-			${LIBQOMP_LIBRARY}
-			${QT_DEPLIBS}
+			set( phonon_LIB ${QT_PHONON_LIBRARY} )
+		endif()
+	endif()
+	set(QT_DEPLIBS
+		${QT_QTCORE_LIBRARY}
+		${QT_QTGUI_LIBRARY}
+		${QT_QTMULTIMEDIA_LIBRARY}
+		${QT_QTNETWORK_LIBRARY}
 		)
-	else(${USE_QT5})
-		if( ${Phonon_FOUND} )
-			target_link_libraries(
-				${PROJECT_NAME}
-				${LIBQOMP_LIBRARY}
-				${PHONON_LIBRARY}
-				${QT_DEPLIBS}
-			)
-		else( ${Phonon_FOUND} )
-			target_link_libraries (
-				${PROJECT_NAME}
-				${LIBQOMP_LIBRARY}
-				${QT_PHONON_LIBRARY}
-				${QT_DEPLIBS}
-			)
-		endif( ${Phonon_FOUND} )
-	endif(${USE_QT5})
-	add_dependencies( ${PROJECT_NAME} ${LIBQOMP_LIBRARY} )
+endif()
+
+set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
+
+add_executable(
+	${PROJECT_NAME}
+	WIN32
+	${qomp_SRCS}
+	${qomp_phonon_SRCS}
+	${qomp_MMEDIA}
+	${main_UIS}
+	${RSCS}
+	${TRS}
+	${qomp_RC}
+	)
+
+target_link_libraries(
+	${PROJECT_NAME}
+	${LIBQOMP_LIBRARY}
+	${phonon_LIB}
+	${QT_DEPLIBS}
+	)
+
+add_dependencies( ${PROJECT_NAME} ${LIBQOMP_LIBRARY} )
+
+if( WIN32 )
+	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} )
+	if( INSTALL_DEPS AND USE_QT5 )
+		include( Win32Qt5Install_files )
+	endif()
+	set( TRS_PATH ${CMAKE_INSTALL_PREFIX}/translations )
+	INSTALL( FILES ${TRS} DESTINATION ${TRS_PATH} )
+	INSTALL( FILES LICENSE.txt DESTINATION ${CMAKE_INSTALL_PREFIX} )
+endif()
+
+if( LINUX )
 	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 	
 	set( DESKTOP_PATH ${DATADIR_PATH}/applications )
@@ -239,6 +222,6 @@ if( ${UNIX} )
 	INSTALL( FILES ${ICON_64} DESTINATION ${ICONS_PREFIX}/64x64/apps RENAME qomp.png )
 	INSTALL( FILES ${TRS} DESTINATION ${TRS_PATH} )
 	INSTALL( FILES ${DESKTOPFILES} DESTINATION ${DESKTOP_PATH} )
-	
-endif( ${UNIX} )
+endif()
+
 unset( BUILD_PLUGINS CACHE )

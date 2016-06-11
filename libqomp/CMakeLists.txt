@@ -1,8 +1,8 @@
 set( QOMP_LIB libqomp )
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 2.8.12 )
 if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
-endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
+endif()
 set( CMAKE_AUTOMOC ON )
 add_definitions( -Wall -DLIBQOMP_LIBRARY )
 set( QOMP_LIB_VERSION_MAJOR 1 )
@@ -12,6 +12,9 @@ set( QOMP_LIB_VERSION_STRING
 	${QOMP_LIB_VERSION_MAJOR}.${QOMP_LIB_VERSION_MINOR}.${QOMP_LIB_VERSION_PATCH}
 )
 set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
+if( UNIX AND NOT (APPLE OR CYGWIN) )
+	set(LINUX ON)
+endif()
 set( plugins_HDRS
 	src/plugins/qompplugingettunesdlg.h
 	src/plugins/qompplugintreeview.h
@@ -41,6 +44,7 @@ set( libqomp_HDRS
 	src/qompmetadataresolver.h
 	src/qompnetworkingfactory.h
 	src/qompplayer.h
+	src/thememanager.h
 	src/tune.h
 	${plugins_HDRS}
 	${options_HDRS}
@@ -56,6 +60,7 @@ set( libqomp_INCLUDE_HDRS
 	src/pluginmanager.h
 	src/libqomp_global.h
 	src/qompactionslist.h
+	src/thememanager.h
 	src/tuneurlchecker.h
 	src/qompbusylabel.h
 	src/qompnetworkingfactory.h
@@ -84,6 +89,7 @@ set( libqomp_SRCS
 	src/qompmetadataresolver.cpp
 	src/qompnetworkingfactory.cpp
 	src/qompplayer.cpp
+	src/thememanager.cpp
 	src/tune.cpp
 	src/tuneurlchecker.cpp
 	${plugins_SRCS}
@@ -95,14 +101,14 @@ find_package( TagLib REQUIRED )
 #copy include headers
 file( COPY ${libqomp_INCLUDE_HDRS} DESTINATION include )
 #
-if( ${UNIX} )
+if( LINUX )
 	set( LIBQOMP_DATADIR ${CMAKE_INSTALL_PREFIX}/share/qomp )
 	set( LIBQOMP_PLUGSDIR ${LIB_INSTALL_DIR}/qomp/plugins )
 	add_definitions(
 		-DQOMP_DATADIR="${LIBQOMP_DATADIR}"
 		-DQOMP_PLUGSDIR="${LIBQOMP_PLUGSDIR}"
 	 )
-endif( ${UNIX} )
+endif()
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -112,21 +118,10 @@ include_directories(
 	src/plugins
 	src/options
 )
-if( ${USE_QT5} )
-	find_package( Qt5Widgets REQUIRED )
-	find_package( Qt5Network REQUIRED )
-	find_package( Qt5Concurrent REQUIRED )
-	include_directories(
-		${Qt5Widgets_INCLUDES}
-		${Qt5Network_INCLUDES}
-		${Qt5Concurrent_INCLUDES}
-	)
+if( USE_QT5 )
+	find_package( Qt5 REQUIRED Widgets Network Concurrent )
 	qt5_wrap_ui( libqomp_UIS ${libqomp_UIFILES} )
-	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
 	add_definitions(
-		${Qt5Widgets_DEFINITIONS}
-		${Qt5Network_DEFINITIONS}
-		${Qt5Concurrent_DEFINITIONS}
 		-DHAVE_QT5
 	)
 	set( QT_DEPLIBS
@@ -134,7 +129,7 @@ if( ${USE_QT5} )
 		Qt5::Network
 		Qt5::Concurrent
 	)
-else( ${USE_QT5} )
+else()
 	find_package( Qt4 REQUIRED )
 	include( ${QT_USE_FILE} )
 	include_directories(
@@ -148,7 +143,11 @@ else( ${USE_QT5} )
 		${QT_QTGUI_LIBRARY}
 		${QT_QTNETWORK_LIBRARY}
 	)
-endif( ${USE_QT5} )
+endif()
+
+if( DEV_MODE )
+	set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/qomp" )
+endif()
 
 add_library(
 	${QOMP_LIB}
@@ -171,16 +170,16 @@ target_link_libraries(
 	${TAGLIB_LIBRARY}
 )
 
-if( ${UNIX} )
+if( LINUX )
 	install(
 		TARGETS
 		${QOMP_LIB}
 		LIBRARY DESTINATION
 		${LIB_INSTALL_DIR}
 	)
-endif( ${UNIX} )
+endif()
 
-if( ${WIN32} )
+if( WIN32 )
 	install(
 		TARGETS
 		${QOMP_LIB}
@@ -190,4 +189,4 @@ if( ${WIN32} )
 		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}
 		#ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}
 	)
-endif( ${WIN32} )
+endif()

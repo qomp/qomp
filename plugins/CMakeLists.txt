@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 2.8.12 )
 
 set( plugins_list
 	filesystemplugin
@@ -12,18 +12,26 @@ set( plugins_list
 	mprisplugin
 )
 
+if( DEV_MODE )
+	set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/qomp/plugins" )
+endif()
+
+if( UNIX AND NOT (APPLE OR CYGWIN) )
+	set(LINUX ON)
+endif()
+
 if( "${BUILD_PLUGINS}" STREQUAL "ALL" )
 	set( plugins ${plugins_list} )
-else( "${BUILD_PLUGINS}" STREQUAL "ALL" )
+else()
 	set ( plugins "${BUILD_PLUGINS}" )
-endif( "${BUILD_PLUGINS}" STREQUAL "ALL" )
+endif()
 
 foreach( plugin ${plugins_list} )
 	foreach( subdir ${plugins} )
 		if( ${plugin} STREQUAL ${subdir} )
 			message( "Parse subdirectory: ${plugin}" )
 			add_subdirectory( "${plugin}" )
-		endif( ${plugin} STREQUAL ${subdir} )
+		endif()
 	endforeach( subdir )
 endforeach( plugin )
 

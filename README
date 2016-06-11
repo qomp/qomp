@@ -1,9 +1,9 @@
 Quick(Qt) Online Music Player
 
 Dependences:
-	Qt 4.8.x, phonon, taglib, qjson
+	Qt 4.8.x, phonon, taglib, libcue, qjson
 or
-	Qt 5.x.x, taglib
+	Qt 5.x.x, taglib, libcue
 
 
 Get sources:
@@ -26,21 +26,25 @@ Build:
 	mkdir build && cd build
 	cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 	make && make install (sudo if needed)
+	or
+	cmake --build . --target all &&	cmake --build . --target install (sudo if needed)
   
   windows using cmake utility:
 	mkdir build && cd build
-	cmake -DCMAKE_INSTALL_PREFIX=./release -DUSE_QT5=ON ..
+	cmake -DCMAKE_INSTALL_PREFIX=./release ..
 	mingw32-make && mingw32-make install
+	or
+	cmake --build . --target all &&	cmake --build . --target install (sudo if needed)
 	
   windows:
 	qmake
 	mingw32-make
 
 Usefull cmake flags:
-**build qomp with Qt5:
-   -DUSE_QT5=ON
-   set this flag to ON to build qomp with Qt5 libraries
-   default value is OFF
+**build qomp with Qt4:
+   -DUSE_QT5=OFF
+   set this flag to OFF to build qomp with Qt4 libraries
+   default value is ON
 **build and install only needed plugins:
    -DBUILD_PLUGINS=${plugins}
    possible values for plugins:
@@ -55,7 +59,16 @@ Usefull cmake flags:
    or
    -DCMAKE_BUILD_TYPE=Debug
    default value is Release
+**set development mode:
+   -DDEV_MODE=ON
+   set this flag to ON to enable development mode
+   usefull with QtCreator
+   default value is OFF
 **set path to taglib library:
    -DTAGLIB_ROOT=%YOUR_PATH%
    usefull to build qomp in windows,
    default value is c:\build\taglib
+**set path to libcue library:
+   -DLIBCUE_ROOT=%YOUR_PATH%
+   usefull to build qomp in windows,
+   default value is c:\build\libcue

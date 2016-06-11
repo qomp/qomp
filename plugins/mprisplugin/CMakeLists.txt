@@ -1,68 +1,63 @@
 set( PLUGIN mprisplugin )
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 2.8.12 )
 if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
-endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
+endif()
 set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
-if( ${UNIX} )
+if( UNIX AND NOT (APPLE OR CYGWIN) )
+	set(LINUX ON)
+endif()
+if( LINUX )
 	set( CMAKE_AUTOMOC TRUE )
 	add_definitions( -Wall -DQT_PLUGIN -DHAVE_DBUS )
 	set( mprisplugin_HDRS
 		mprisadapter.h
 		mpriscontroller.h
 		${PLUGIN}.h
-	)
+		)
 	set( mprisplugin_SRCS
 		mprisadapter.cpp
 		mpriscontroller.cpp
 		${PLUGIN}.cpp
-	)
+		)
 	include_directories(
 		${CMAKE_SOURCE_DIR}
 		${CMAKE_CURRENT_BINARY_DIR}
 		${PROJECT_BINARY_DIR}/libqomp/include
-	)
-	if( ${USE_QT5} )
-		find_package( Qt5Widgets REQUIRED )
-		find_package( Qt5DBus REQUIRED )
-		include_directories(
-			${Qt5Widgets_INCLUDES}
-			${Qt5DBus_INCLUDES}
 		)
-		set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}" )
+	if( USE_QT5 )
+		find_package( Qt5 REQUIRED Widgets DBus)
 		add_definitions(
-			${Qt5Widgets_DEFINITIONS}
-			${Qt5DBus_DEFINITIONS}
 			-DHAVE_QT5
-		)
+			)
 		set( QT_DEPLIBS
 			Qt5::Widgets
 			Qt5::DBus
-		)
-	else( ${USE_QT5} )
+			)
+	else()
 		find_package( Qt4 REQUIRED )
 		include( ${QT_USE_FILE} )
 		include_directories(
 			${QT_QTCORE_INCLUDE_DIR}
 			${QT_QTGUI_INCLUDE_DIR}
 			${QT_QTDBUS_INCLUDE_DIR}
-		)
+			)
 		set( QT_DEPLIBS
 			${QT_QTCORE_LIBRARY}
 			${QT_QTGUI_LIBRARY}
 			${QT_QTDBUS_LIBRARY}
-		)
-	endif( ${USE_QT5} )
+			)
+	endif()
 	add_library(
 		${PLUGIN}
 		SHARED
 		${mprisplugin_SRCS}
-	)
+		)
 	target_link_libraries(
 		${PLUGIN}
 		${QT_DEPLIBS}
 		libqomp
-	)
+		)
 	add_dependencies( ${PLUGIN} libqomp qomp )
 	install(
 		TARGETS
@@ -72,5 +67,5 @@ if( ${UNIX} )
 		${LIB_INSTALL_DIR}/qomp/plugins
 		RUNTIME DESTINATION
 		${LIB_INSTALL_DIR}/qomp/plugins
-	)
-endif( ${UNIX} )
+		)
+endif()
