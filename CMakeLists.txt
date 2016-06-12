@@ -125,6 +125,7 @@ if( USE_QT5 )
 		src/qompqtmultimediaplayer.cpp
 		)
 else()
+	message(WARNING " Qt4 not longer supported! Last version of qomp with Qt4 support is 1.0")
 	find_package( Qt4 REQUIRED )
 	include( ${QT_USE_FILE} )
 	include_directories(

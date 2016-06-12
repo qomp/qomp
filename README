@@ -1,8 +1,6 @@
 Quick(Qt) Online Music Player
 
 Dependences:
-	Qt 4.8.x, phonon, taglib, libcue, qjson
-or
 	Qt 5.x.x, taglib, libcue
 
 
@@ -41,10 +39,6 @@ Build:
 	mingw32-make
 
 Usefull cmake flags:
-**build qomp with Qt4:
-   -DUSE_QT5=OFF
-   set this flag to OFF to build qomp with Qt4 libraries
-   default value is ON
 **build and install only needed plugins:
    -DBUILD_PLUGINS=${plugins}
    possible values for plugins:
