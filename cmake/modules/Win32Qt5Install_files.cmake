@@ -1,8 +1,8 @@
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 2.8.12 )
 if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
-endif( CMAKE_VERSION VERSION_GREATER 3.0.0 )
-set( USE_MXE OFF CACHE BOOL "Use MXE (M cross environment) tools")
+endif()
+
 if( ${USE_QT5} )
 	#install taglib
 	find_package( TagLib )
@@ -10,8 +10,38 @@ if( ${USE_QT5} )
 		find_file( _libtag libtag.dll PATHES ${TAGLIB_ROOT}/bin ${TAGLIB_INCLUDE_DIR}/../bin )
 		if( NOT "${_libtag}" STREQUAL "_libtag-NOTFOUND" )
 			INSTALL( FILES ${_libtag} DESTINATION ${CMAKE_INSTALL_PREFIX} )
-		endif( NOT "${_libtag}" STREQUAL "_libtag-NOTFOUND" )
-	endif( TAGLIB_FOUND )
+		endif()
+	endif()
+	#install libcue
+	find_package( LibCue )
+	if( LIBCUE_FOUND )
+		find_file( _libcue libcue.dll PATHES ${LIBCUE_ROOT}/bin ${LIBCUE_INCLUDE_DIR}/../bin )
+		if( NOT "${_libcue}" STREQUAL "_libcue-NOTFOUND" )
+			INSTALL( FILES ${_libcue} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+		endif()
+	endif()
+	#install OpenSSL
+	set( OPENSSL_ROOT_DIR "c:\\build\\psibuild\\psideps\\Qt5\\openssl" CACHE STRING "OpenSSL root path" )
+	set( ZLIB_ROOT "c:\\build\\psibuild\\psideps\\Qt5\\zlib" CACHE STRING "ZLIB root path" )
+	find_package( OpenSSL QUIET )
+	if( OPENSSL_FOUND )
+		find_file( _libssl ssleay32.dll PATHES ${OPENSSL_ROOT_DIR}/bin ${OPENSSL_ROOT_DIR}/lib )
+		if( NOT "${_libssl}" STREQUAL "_libssl-NOTFOUND" )
+			INSTALL( FILES ${_libssl} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+		endif()
+		find_file( _libeay libeay32.dll PATHES ${OPENSSL_ROOT_DIR}/bin ${OPENSSL_ROOT_DIR}/lib )
+		if( NOT "${_libeay}" STREQUAL "_libeay-NOTFOUND" )
+			INSTALL( FILES ${_libeay} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+		endif()
+	endif()
+	#install ZLIB
+	find_package( ZLIB QUIET )
+	if( ZLIB_FOUND )
+		find_file( _libz zlib1.dll PATHES ${ZLIB_ROOT}/bin ${ZLIB_ROOT}/lib )
+		if( NOT "${_libz}" STREQUAL "_libz-NOTFOUND" )
+			INSTALL( FILES ${_libz} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+		endif()
+	endif()
 	#install Qt5 libs and plugins
 	set( qt5_components
 		Core
@@ -27,8 +57,8 @@ if( ${USE_QT5} )
 		get_target_property( _libloc Qt5::${liba} LOCATION )
 		if( _libloc )
 			INSTALL( FILES ${_libloc} DESTINATION ${CMAKE_INSTALL_PREFIX} )
-		endif( _libloc )
-	endforeach( liba )
+		endif()
+	endforeach()
 	set( INST_PLATFORM_PLUGS
 		QMinimalIntegrationPlugin
 		QWindowsIntegrationPlugin
@@ -37,8 +67,8 @@ if( ${USE_QT5} )
 		get_target_property( _libloc Qt5::${plug} LOCATION )
 		if( _libloc )
 			INSTALL( FILES ${_libloc} DESTINATION ${CMAKE_INSTALL_PREFIX}/platforms )
-		endif( _libloc )
-	endforeach( plug )
+		endif()
+	endforeach()
 	set( INST_NETWORK_PLUGS
 		QNativeWifiEnginePlugin
 		QGenericEnginePlugin
@@ -47,16 +77,16 @@ if( ${USE_QT5} )
 		get_target_property( _libloc Qt5::${plug} LOCATION )
 		if( _libloc )
 			INSTALL( FILES ${_libloc} DESTINATION ${CMAKE_INSTALL_PREFIX}/bearer )
-		endif( _libloc )
-	endforeach( plug )
+		endif()
+	endforeach()
 	get_target_property( _audio Qt5::QWindowsAudioPlugin LOCATION )
 	if( _audio )
 		INSTALL( FILES ${_audio} DESTINATION ${CMAKE_INSTALL_PREFIX}/audio )
-	endif( _audio )
+	endif()
 	get_target_property( _plformats Qt5::QM3uPlaylistPlugin LOCATION )
 	if( _plformats )
 		INSTALL( FILES ${_plformats} DESTINATION ${CMAKE_INSTALL_PREFIX}/playlistformats )
-	endif( _plformats )
+	endif()
 	set( INST_MEDIA_PLUGS
 		AudioCaptureServicePlugin
 		DSServicePlugin
@@ -65,8 +95,8 @@ if( ${USE_QT5} )
 		get_target_property( _libloc Qt5::${plug} LOCATION )
 		if( _libloc )
 			INSTALL( FILES ${_libloc} DESTINATION ${CMAKE_INSTALL_PREFIX}/mediaservice )
-		endif( _libloc )
-	endforeach( plug )
+		endif()
+	endforeach()
 	#install mingw and other needed libs
 	set( ICU_LIBS_PREFIXES
 		icudt5
@@ -79,45 +109,25 @@ if( ${USE_QT5} )
 			find_file( ${icu_prefix}${icu_counter} "${icu_prefix}${icu_counter}.dll" )
 			if( NOT "${${icu_prefix}${icu_counter}}" STREQUAL "${icu_prefix}${icu_counter}-NOTFOUND" )
 				set( ICU_LIBS ${ICU_LIBS} ${${icu_prefix}${icu_counter}} )
-			endif( NOT "${${icu_prefix}${icu_counter}}" STREQUAL "${icu_prefix}${icu_counter}-NOTFOUND" )
-		endforeach( icu_counter )
-	endforeach( icu_prefix )
+			endif()
+		endforeach()
+	endforeach()
 	if( ICU_LIBS )
 		INSTALL( FILES ${ICU_LIBS} DESTINATION ${CMAKE_INSTALL_PREFIX} )
-	endif( ICU_LIBS )
+	endif()
 
 	set( FILE_LIST
-		libeay32.dll
 		libgcc_s_sjlj-1.dll
 		libgcc_s_dw2-1.dll
 		libstdc++-6.dll
 		libwinpthread-1.dll
-		zlib1.dll
-		ssleay32.dll
 	)
-	if( ${USE_MXE} )
-		set( MXE_NEEDED_LIBS
-			libbz2.dll
-			libfreetype-6.dll
-			libglib-2.0-0.dll
-			libharfbuzz-0.dll
-			libiconv-2.dll
-			libintl-8.dll
-			libpcre16-0.dll
-			libpcre-1.dll
-			libpng16-16.dll
-		)
-		set( FILE_LIST
-			${FILE_LIST}
-			${MXE_NEEDED_LIBS}
-		)
-	endif( ${USE_MXE} )
 	set( inc 1 )
 	foreach( liba ${FILE_LIST} )
 		find_file( ${liba}${inc} ${liba} )
 		if( NOT "${${liba}${inc}}" STREQUAL "${liba}${inc}-NOTFOUND" )
 			INSTALL( FILES ${${liba}${inc}} DESTINATION ${CMAKE_INSTALL_PREFIX} )
-		endif( NOT "${${liba}${inc}}" STREQUAL "${liba}${inc}-NOTFOUND" )
+		endif()
 		math( EXPR inc ${inc}+1)
-	endforeach( liba )
+	endforeach()
 endif( ${USE_QT5} ) 

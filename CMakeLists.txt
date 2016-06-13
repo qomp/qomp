@@ -80,6 +80,10 @@ set( qomp_UIS
 if( WIN32 )
 	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
 	set( LIBCUE_ROOT "C:\\build\\libcue" CACHE STRING "LibCue root path" )
+	if( INSTALL_DEPS )
+		set( OPENSSL_ROOT_DIR "c:\\build\\psibuild\\psideps\\Qt5\\openssl" CACHE STRING "OpenSSL root path" )
+		set( ZLIB_ROOT "c:\\build\\psibuild\\psideps\\Qt5\\zlib" CACHE STRING "ZLIB root path" )
+	endif()
 	set( qomp_RC ${PROJECT_NAME}.rc )
 endif()
 
