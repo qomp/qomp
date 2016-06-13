@@ -11,6 +11,8 @@ set( QOMP_LIB_VERSION_PATCH 0 )
 set( QOMP_LIB_VERSION_STRING
 	${QOMP_LIB_VERSION_MAJOR}.${QOMP_LIB_VERSION_MINOR}.${QOMP_LIB_VERSION_PATCH}
 )
+set( LIB_SUFFIX "" CACHE STRING "Define suffix of lib directory name (32/64)" )
+set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where libs will be installed" )
 set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 if( UNIX AND NOT (APPLE OR CYGWIN) )
 	set(LINUX ON)
@@ -102,9 +104,15 @@ find_package( TagLib REQUIRED )
 file( COPY ${libqomp_INCLUDE_HDRS} DESTINATION include )
 #
 if( LINUX )
-	set( LIBQOMP_DATADIR ${CMAKE_INSTALL_PREFIX}/share/qomp )
-	set( LIBQOMP_PLUGSDIR ${LIB_INSTALL_DIR}/qomp/plugins )
+	if(DEV_MODE)
+		set( LIBQOMP_DATADIR ${PROJECT_BINARY_DIR}/qomp )
+		set( LIBQOMP_PLUGSDIR ${PROJECT_BINARY_DIR}/qomp/plugins )
+	else()
+		set( LIBQOMP_DATADIR ${CMAKE_INSTALL_PREFIX}/share/qomp )
+		set( LIBQOMP_PLUGSDIR ${LIB_INSTALL_DIR}/qomp/plugins )
+	endif()
 	add_definitions(
+		-DHAVE_X11
 		-DQOMP_DATADIR="${LIBQOMP_DATADIR}"
 		-DQOMP_PLUGSDIR="${LIBQOMP_PLUGSDIR}"
 	 )
