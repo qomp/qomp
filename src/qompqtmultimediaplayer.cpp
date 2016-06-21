@@ -225,7 +225,7 @@ void QompQtMultimediaPlayer::playerStateChanged(QMediaPlayer::State _state)
 
 void QompQtMultimediaPlayer::updatePlayerPosition()
 {
-	if(currentTune()->length > 0) {
+	if(currentTune() && currentTune()->length > 0) {
 		const qint64 pos = currentTune()->start;
 
 		player_->blockSignals(true);

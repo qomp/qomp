@@ -115,7 +115,7 @@ PluginHost *PluginManager::pluginForName(const QString &pluginName) const
 		if(pp.first->name() == pluginName)
 			return pp.first;
 	}
-	return 0;
+	return nullptr;
 }
 
 QStringList PluginManager::pluginsDirs()
@@ -160,7 +160,7 @@ QompOptionsPage *PluginManager::getOptions(const QString &pluginName)
 			return p->options();
 		}
 	}
-	return 0;
+	return nullptr;
 }
 
 QString PluginManager::getVersion(const QString &pluginName) const
@@ -244,7 +244,24 @@ TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) c
 				return rs;
 		}
 	}
-	return 0;
+	return nullptr;
+}
+
+bool PluginManager::processUrl(const QString &url, QList<Tune *> *tunes)
+{
+	bool res = false;
+	foreach(const PluginPair& pp, plugins_) {
+		if(!pp.second)
+			continue;
+
+		QompTunePlugin *p = qobject_cast<QompTunePlugin*>(pp.first->instance());
+		if(p) {
+			res = p->processUrl(url, tunes);
+			if(res)
+				break;
+		}
+	}
+	return res;
 }
 
 void PluginManager::qompPlayerChanged(QompPlayer *player)
@@ -260,4 +277,4 @@ void PluginManager::qompPlayerChanged(QompPlayer *player)
 }
 
 
-PluginManager* PluginManager::instance_ = 0;
+PluginManager* PluginManager::instance_ = nullptr;

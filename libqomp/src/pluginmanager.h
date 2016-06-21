@@ -32,6 +32,7 @@ class QompOptionsPage;
 class TuneURLResolveStrategy;
 class QompPlayer;
 class QompPluginAction;
+class Tune;
 
 
 class LIBQOMPSHARED_EXPORT PluginManager : public QObject
@@ -49,6 +50,7 @@ public:
 	QStringList tunePlugins() const;
 	QList<QompPluginAction*> tunesActions();
 	TuneURLResolveStrategy* urlResolveStrategy(const QString& strategyName) const;
+	bool processUrl(const QString &url, QList<Tune*> *tunes);
 	void qompPlayerChanged(QompPlayer* player);
 	void sortPlugins();
 

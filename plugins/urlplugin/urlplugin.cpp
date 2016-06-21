@@ -41,9 +41,7 @@ QList<Tune*> UrlPlugin::getTunes()
 	bool ok = false;
 	QString url = QInputDialog::getText(0, tr("Input url"), "URL:",QLineEdit::Normal, "", &ok);
 	if(ok && !url.isEmpty()) {
-		Tune *tune = new Tune;
-		tune->url = url;
-		list.append(tune);
+		list.append(urlToTune(url));
 	}
 #else
 	QEventLoop l;
@@ -56,15 +54,20 @@ QList<Tune*> UrlPlugin::getTunes()
 	if(item->property("status").toBool()) {
 		QString url = item->property("url").toString();
 		if(!url.isEmpty()) {
-			Tune *tune = new Tune;
-			tune->url = url;
-			list.append(tune);
+			list.append(urlToTune(url));
 		}
 	}
 	QompQmlEngine::instance()->removeItem();
 #endif
 
 	return list;
+}
+
+Tune *UrlPlugin::urlToTune(const QString &url)
+{
+	Tune *tune = new Tune;
+	tune->url = url;
+	return tune;
 }
 
 QompOptionsPage *UrlPlugin::options()
@@ -78,6 +81,17 @@ QList<QompPluginAction *> UrlPlugin::getTunesActions()
 	QompPluginAction *act = new QompPluginAction(QIcon(), tr("Url"), this, "getTunes", this);
 	l.append(act);
 	return l;
+}
+
+bool UrlPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
+{
+	QUrl u(url);
+	if(u.isValid() && !u.isLocalFile()) {
+		tunes->append(urlToTune(u.toString()));
+		return true;
+	}
+
+	return false;
 }
 
 #ifndef HAVE_QT5

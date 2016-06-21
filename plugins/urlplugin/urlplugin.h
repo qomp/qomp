@@ -42,9 +42,13 @@ public:
 	virtual void setEnabled(bool /*enabled*/) {}
 	virtual void unload(){}
 	virtual QList<QompPluginAction*> getTunesActions();
+	virtual bool processUrl(const QString &, QList<Tune*> *);
 
 private slots:
 	QList<Tune*> getTunes();
+
+private:
+	Tune* urlToTune(const QString& url);
 };
 
 #endif // URLPLUGIN_H

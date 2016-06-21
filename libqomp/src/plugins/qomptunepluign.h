@@ -35,6 +35,7 @@ public:
 
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const = 0;
 	virtual QList<QompPluginAction*> getTunesActions() = 0;
+	virtual bool processUrl(const QString &url, QList<Tune*> *tunes) = 0;
 };
 
 Q_DECLARE_INTERFACE(QompTunePlugin, "Qomp.QompTunePlugin/0.2")

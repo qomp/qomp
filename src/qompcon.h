@@ -101,6 +101,7 @@ private:
 	void savePlayerPosition();
 	void savePlayerPosition(qint64 pos);
 	void preparePlayback();
+	void processCommandLine();
 
 	static QompPlayer* createPlayer();
 
@@ -108,6 +109,7 @@ private:
 	QompMainWin* mainWin_;
 	QompPlayListModel* model_;
 	QompPlayer* player_;
+	bool shouldRestoreState_;
 };
 
 #endif // QOMP_H

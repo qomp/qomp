@@ -257,6 +257,22 @@ QList<QompPluginAction *> FilesystemPlugin::getTunesActions()
 	return l;
 }
 
+bool FilesystemPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
+{
+	QFileInfo fi(url);
+	if(fi.exists()) {
+		if(fi.suffix() == CUE_SUFFIX) {
+			tunes->append(CueParser::parseTunes(fi.absoluteFilePath()));
+		}
+		else {
+			tunes->append(Qomp::tuneFromFile(fi.absoluteFilePath()));
+		}
+		return true;
+	}
+
+	return false;
+}
+
 
 #ifndef HAVE_QT5
 Q_EXPORT_PLUGIN2(filesystemplugin, FilesystemPlugin)

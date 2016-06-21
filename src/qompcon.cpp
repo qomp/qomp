@@ -47,6 +47,7 @@
 
 #ifdef HAVE_QT5
 #include <QThread>
+#include <QCommandLineParser>
 #endif
 
 #include <QTimer>
@@ -104,7 +105,8 @@ QompCon::QompCon(QObject *parent) :
 	QObject(parent),
 	mainWin_(0),
 	model_(0),
-	player_(0)
+	player_(0),
+	shouldRestoreState_(true)
 {
 	qRegisterMetaType<Tune*>("Tune*");
 	qRegisterMetaType<Qomp::State>("State");
@@ -129,6 +131,9 @@ QompCon::QompCon(QObject *parent) :
 #endif
 
 	connect(qApp, SIGNAL(aboutToQuit()), SLOT(deInit()));
+
+	setupModel();
+	processCommandLine();
 
 	QTimer::singleShot(0, this, SLOT(init()));
 }
@@ -182,16 +187,38 @@ void QompCon::preparePlayback()
 #endif
 }
 
+void QompCon::processCommandLine()
+{
+#ifdef HAVE_QT5
+	QCommandLineParser p;
+	p.setApplicationDescription(QStringLiteral(APPLICATION_NAME) + ' ' + QStringLiteral(APPLICATION_VERSION));
+	p.addHelpOption();
+	p.addVersionOption();
+	p.addPositionalArgument("file/url", tr("The file (url) to open."));
+	p.process(*qApp);
+
+	const QStringList args = p.positionalArguments();
+	QList<Tune*> tunes;
+	foreach(const QString& arg, args) {
+		tunes.clear();
+		if(PluginManager::instance()->processUrl(arg, &tunes)) {
+			model_->addTunes(tunes);
+			shouldRestoreState_ = false;
+		}
+	}
+#endif
+}
+
 void QompCon::init()
 {
 	checkVersion();
 	updateSettings();
 
-	setupModel();
 	setupPlayer();
 	setupMainWin();
 
-	model_->restoreState();
+	if(shouldRestoreState_)
+		model_->restoreState();
 
 	Options* o = Options::instance();
 
