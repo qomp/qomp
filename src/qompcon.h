@@ -78,6 +78,7 @@ private slots:
 
 	void init();
 	void deInit();
+	void processUrl(const QString& url);
 #ifdef HAVE_QT5
 	void applicationStateChanged(Qt::ApplicationState state);
 #endif

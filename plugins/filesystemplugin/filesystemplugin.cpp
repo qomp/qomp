@@ -259,18 +259,30 @@ QList<QompPluginAction *> FilesystemPlugin::getTunesActions()
 
 bool FilesystemPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 {
+	QString file;
+
 	QFileInfo fi(url);
 	if(fi.exists()) {
+		file = fi.absoluteFilePath();
+	}
+	else {
+		QUrl u(url);
+		if(u.isValid() && u.isLocalFile()) {
+			file = u.toLocalFile();
+		}
+	}
+
+	if(!file.isEmpty()) {
 		if(fi.suffix() == CUE_SUFFIX) {
-			tunes->append(CueParser::parseTunes(fi.absoluteFilePath()));
+			tunes->append(CueParser::parseTunes(file));
 		}
 		else {
-			tunes->append(Qomp::tuneFromFile(fi.absoluteFilePath()));
+			tunes->append(Qomp::tuneFromFile(file));
 		}
 		return true;
 	}
-
-	return false;
+	else
+		return false;
 }
 
 

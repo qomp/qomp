@@ -133,7 +133,19 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
             _instance.service_.showToast(text);
     }
 
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String uri = intent.getDataString();
+//        Log.i("Qomp","onNewInten " + uri);
+        if (uri != null){
+            setUrl(uri);
+        }
+    }
+
     private static native void menuKeyDown();
     private static native void incomingCallStart();
     private static native void incomingCallFinish();
+    private static native void setUrl(String url);
 }

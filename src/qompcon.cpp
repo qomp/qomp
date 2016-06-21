@@ -97,6 +97,12 @@ static void deInitActivity()
 						"deInit", "()V");
 
 }
+
+static void setUrl(JNIEnv */*env*/, jobject /*thiz*/, jstring url)
+{
+	QAndroidJniObject obj(url);
+	QMetaObject::invokeMethod(_instance, "processUrl", Qt::QueuedConnection, Q_ARG(QString, obj.toString()));
+}
 #endif
 
 
@@ -118,7 +124,8 @@ QompCon::QompCon(QObject *parent) :
 	jclass clazz = jni->GetObjectClass(act.object());
 	JNINativeMethod methods[] = {
 			{ "incomingCallStart",  "()V", (void*)incomingCallStart  },
-			{ "incomingCallFinish", "()V", (void*)incomingCallFinish }
+			{ "incomingCallFinish", "()V", (void*)incomingCallFinish },
+			{ "setUrl", "(Ljava/lang/String;)V", (void*)setUrl }
 		};
 	jni->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0]));
 	jni->DeleteLocalRef(clazz);
@@ -277,6 +284,18 @@ void QompCon::deInit()
 	deInitActivity();
 	delete QompQmlEngine::instance();
 #endif
+}
+
+void QompCon::processUrl(const QString &url)
+{
+	QList<Tune*> tunes;
+	if(PluginManager::instance()->processUrl(url, &tunes)) {
+		model_->addTunes(tunes);
+		if(tunes.size() > 0) {
+			model_->setCurrentTune(tunes.at(0));
+			player_->play();
+		}
+	}
 }
 
 void QompCon::checkVersion()

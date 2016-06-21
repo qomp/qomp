@@ -31,6 +31,13 @@
             <!-- Splash screen -->
             <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/logo"/>
             <!-- Splash screen -->
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:mimeType="audio/*"/>
+            </intent-filter>
         </activity>
         <service android:name=".QompService" android:enabled="true" android:exported="false" android:label="@string/srv_name" android:icon="@drawable/icon">
         </service>
