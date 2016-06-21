@@ -132,6 +132,8 @@ QompCon::QompCon(QObject *parent) :
 
 	connect(qApp, SIGNAL(aboutToQuit()), SLOT(deInit()));
 
+
+	updateSettings();
 	setupModel();
 	processCommandLine();
 
@@ -194,6 +196,7 @@ void QompCon::processCommandLine()
 	p.setApplicationDescription(QStringLiteral(APPLICATION_NAME) + ' ' + QStringLiteral(APPLICATION_VERSION));
 	p.addHelpOption();
 	p.addVersionOption();
+	p.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 	p.addPositionalArgument("file/url", tr("The file (url) to open."));
 	p.process(*qApp);
 
@@ -212,7 +215,6 @@ void QompCon::processCommandLine()
 void QompCon::init()
 {
 	checkVersion();
-	updateSettings();
 
 	setupPlayer();
 	setupMainWin();
