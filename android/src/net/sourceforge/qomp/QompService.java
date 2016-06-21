@@ -95,7 +95,7 @@ public class QompService extends Service {
         }
 
         @Override
-        public void run(){
+        public void run() {
              Toast.makeText(getApplicationContext(), text_, Toast.LENGTH_LONG).show();
         }
     }

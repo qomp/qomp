@@ -38,11 +38,16 @@
 #else
 #include "qompqmlengine.h"
 
+//#define TEST_ANDROID
+
 #include <qqml.h>
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
 #include <QtAndroid>
 #include <QGuiApplication>
+#ifdef TEST_ANDROID
+#include <QFile>
+#endif
 #endif
 
 #ifdef HAVE_QT5
@@ -72,6 +77,22 @@
 #ifdef Q_OS_ANDROID
 static QompCon* _instance;
 
+#ifdef TEST_ANDROID
+static QFile f("/sdcard/.qomp/log.txt");
+void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+	QString str = QString("Debug: %1 (%2:%3, %4)\n")
+				.arg(msg)
+				.arg(context.file)
+				.arg(context.line)
+				.arg(context.function);
+	f.write(str.toLocal8Bit());
+	if (type == QtFatalMsg) {
+		abort();
+	}
+}
+#endif
+
 static void incomingCallStart(JNIEnv */*env*/, jobject /*thiz*/)
 {
 	QMetaObject::invokeMethod(_instance, "incomingCall", Qt::QueuedConnection, Q_ARG(bool, true));
@@ -85,10 +106,8 @@ static void incomingCallFinish(JNIEnv */*env*/, jobject /*thiz*/)
 static void notifyIcon(const QString& text)
 {
 	QAndroidJniObject str = QAndroidJniObject::fromString(text);
-	QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
-							"showStatusIcon",
-							"(Ljava/lang/String;)V",
-							str.object<jstring>());
+	QAndroidJniObject act = QtAndroid::androidActivity();
+	act.callObjectMethod("showStatusIcon", "(Ljava/lang/String;)V", str.object<jstring>());
 }
 
 static void deInitActivity()
@@ -98,9 +117,13 @@ static void deInitActivity()
 
 }
 
-static void setUrl(JNIEnv */*env*/, jobject /*thiz*/, jstring url)
+static void setUrl(JNIEnv */*env*/, jobject /*thiz*/, const jstring url)
 {
 	QAndroidJniObject obj(url);
+
+#ifdef DEBUG_OUTPUT
+	qDebug() << "setUrl " << obj.toString();
+#endif
 	QMetaObject::invokeMethod(_instance, "processUrl", Qt::QueuedConnection, Q_ARG(QString, obj.toString()));
 }
 #endif
@@ -112,12 +135,21 @@ QompCon::QompCon(QObject *parent) :
 	mainWin_(0),
 	model_(0),
 	player_(0),
-	shouldRestoreState_(true)
+	urlHandled_(false)
 {
 	qRegisterMetaType<Tune*>("Tune*");
 	qRegisterMetaType<Qomp::State>("State");
 #ifdef Q_OS_ANDROID
 	_instance = this;
+
+#ifdef TEST_ANDROID
+	if(f.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
+		qInstallMessageHandler(myMessageOutput);
+	}
+	else {
+		qWarning() << "Error setup message handler!";
+	}
+#endif
 
 	QAndroidJniObject act = QtAndroid::androidActivity();
 	QAndroidJniEnvironment jni;
@@ -139,6 +171,9 @@ QompCon::QompCon(QObject *parent) :
 
 	connect(qApp, SIGNAL(aboutToQuit()), SLOT(deInit()));
 
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompCon creation";
+#endif
 
 	updateSettings();
 	setupModel();
@@ -149,6 +184,10 @@ QompCon::QompCon(QObject *parent) :
 
 QompCon::~QompCon()
 {
+#ifdef TEST_ANDROID
+	f.flush();
+	f.close();
+#endif
 }
 #ifdef HAVE_QT5
 void QompCon::applicationStateChanged(Qt::ApplicationState state)
@@ -198,7 +237,14 @@ void QompCon::preparePlayback()
 
 void QompCon::processCommandLine()
 {
-#ifdef HAVE_QT5
+	QStringList args;
+#ifdef Q_OS_ANDROID
+	QAndroidJniObject act = QtAndroid::androidActivity();
+	QAndroidJniObject str = act.callObjectMethod("checkIntent", "()Ljava/lang/String;");
+	if(str.isValid()) {
+		args.append(str.toString());
+	}
+#elif defined HAVE_QT5
 	QCommandLineParser p;
 	p.setApplicationDescription(QStringLiteral(APPLICATION_NAME) + ' ' + QStringLiteral(APPLICATION_VERSION));
 	p.addHelpOption();
@@ -207,16 +253,18 @@ void QompCon::processCommandLine()
 	p.addPositionalArgument("file/url", tr("The file (url) to open."));
 	p.process(*qApp);
 
-	const QStringList args = p.positionalArguments();
+	args = p.positionalArguments();
+#else
+	Q_UNUSED(args);
+#endif
 	QList<Tune*> tunes;
 	foreach(const QString& arg, args) {
 		tunes.clear();
 		if(PluginManager::instance()->processUrl(arg, &tunes)) {
 			model_->addTunes(tunes);
-			shouldRestoreState_ = false;
+			urlHandled_ = true;
 		}
 	}
-#endif
 }
 
 void QompCon::init()
@@ -226,7 +274,7 @@ void QompCon::init()
 	setupPlayer();
 	setupMainWin();
 
-	if(shouldRestoreState_)
+	if(!urlHandled_)
 		model_->restoreState();
 
 	Options* o = Options::instance();
@@ -241,6 +289,9 @@ void QompCon::init()
 #endif
 
 	preparePlayback();
+
+	if(urlHandled_)
+		actPlay();
 }
 
 void QompCon::savePlayerPosition(qint64 pos)

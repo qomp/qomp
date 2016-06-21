@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.app.Activity;
 import java.lang.Exception;
 
+//for checking intent
+import android.os.Handler;
+
 import android.util.Log;
 
 //for menu key handling
@@ -39,6 +42,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
 //    private PowerManager.WakeLock wl;
     private BroadcastReceiver callReceiver_;
     private QompService service_;
+
     private ServiceConnection sConn_ = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 service_ = ((QompService.QompBinder)binder).getService();
@@ -61,6 +65,19 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
 //        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 //        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
 //        wl.acquire();
+
+    }
+
+    public String checkIntent() {
+        Intent intent = getIntent();
+        if(intent != null) {
+            String action = intent.getAction();
+            if (action != null && action.compareTo(Intent.ACTION_VIEW) == 0) {
+                String uri = intent.getDataString();
+                return uri;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -123,9 +140,9 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     }
 
 
-    public static void showStatusIcon(final String text) {
-        if(_instance.service_ != null)
-            _instance.service_.showStatusIcon(text);
+    public void showStatusIcon(final String text) {
+        if(service_ != null)
+            service_.showStatusIcon(text);
     }
 
     public static void showNotification(final String text) {
@@ -136,7 +153,6 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        setIntent(intent);
         String uri = intent.getDataString();
 //        Log.i("Qomp","onNewInten " + uri);
         if (uri != null){
@@ -147,5 +163,5 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     private static native void menuKeyDown();
     private static native void incomingCallStart();
     private static native void incomingCallFinish();
-    private static native void setUrl(String url);
+    private static native void setUrl(final String url);
 }
