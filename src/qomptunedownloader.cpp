@@ -28,6 +28,7 @@
 #include <QAndroidJniObject>
 #else
 #include <QProgressDialog>
+#include <QMessageBox>
 #endif
 
 
@@ -98,8 +99,18 @@ public slots:
 		}
 
 		file_ = new QFile(QString("%1/%2-%3.mp3").arg(dir_, tune_->artist, tune_->title));
-		if(!file_->open(QFile::WriteOnly))
+		if(!file_->open(QFile::WriteOnly)) {
+#ifdef QOMP_MOBILE
+			QAndroidJniObject str = QAndroidJniObject::fromString(tr("Cann't create file!"));
+			QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
+									"showNotification",
+									"(Ljava/lang/String;)V",
+									str.object<jstring>());
+#else
+			QMessageBox::warning(0, tr("Error"), tr("Cann't create file!"));
+#endif
 			return;
+		}
 
 		QNetworkRequest nr(url);
 		reply_ = nam_->get(nr);
