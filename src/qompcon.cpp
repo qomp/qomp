@@ -67,6 +67,7 @@
 
 #ifdef Q_OS_MAC
 #include "CocoaTrayClick.h"
+#include <QFileOpenEvent>
 #endif
 
 #ifdef DEBUG_OUTPUT
@@ -173,6 +174,10 @@ QompCon::QompCon(QObject *parent) :
 
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompCon creation";
+#endif
+
+#ifdef Q_OS_MAC
+	qApp->installEventFilter(this);
 #endif
 
 	updateSettings();
@@ -347,6 +352,20 @@ void QompCon::processUrl(const QString &url)
 			player_->play();
 		}
 	}
+}
+
+bool QompCon::eventFilter(QObject *obj, QEvent *e)
+{
+#ifdef Q_OS_MAC
+	if(obj == qApp && e->type() == QEvent::FileOpen) {
+		QFileOpenEvent *fo = static_cast<QFileOpenEvent *>(e);
+		const QString file = fo->file();
+		if(!file.isEmpty()) {
+			processUrl(file);
+		}
+	}
+#endif
+	return QObject::eventFilter(obj, e);
 }
 
 void QompCon::checkVersion()

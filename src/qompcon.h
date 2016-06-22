@@ -83,8 +83,8 @@ private slots:
 	void applicationStateChanged(Qt::ApplicationState state);
 #endif
 
-//protected:
-//	bool eventFilter(QObject *obj, QEvent *e);
+protected:
+	bool eventFilter(QObject *obj, QEvent *e);
 
 private:
 	void setupMainWin();
