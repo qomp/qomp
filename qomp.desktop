@@ -9,3 +9,8 @@ Icon=qomp
 Exec=qomp
 Categories=AudioVideo;Audio;Player;Qt;
 Terminal=false
+
+MimeType=audio/mpeg
+MimeType=audio/ogg
+MimeType=audio/flac
+MimeType=application/x-cue
