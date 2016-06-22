@@ -29,6 +29,7 @@
 #include <QQuickItem>
 #endif
 #include <QtPlugin>
+#include <QFileInfo>
 
 UrlPlugin::UrlPlugin()
 {
@@ -86,7 +87,7 @@ QList<QompPluginAction *> UrlPlugin::getTunesActions()
 bool UrlPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 {
 	QUrl u(url);
-	if(u.isValid() && !u.isLocalFile()) {
+	if(u.isValid() && !u.isLocalFile() && !QFileInfo(url).exists()) {
 		tunes->append(urlToTune(u.toString()));
 		return true;
 	}
