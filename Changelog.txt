@@ -1,9 +1,23 @@
+Version 1.1
+xx.xx.2016
+ + add CUE SHEET support (*.cue files)
+ + add "Open With..." dialog support
+ + add last position remembering (option at settings)
+ + add compact playlist support
+ * major improvement for Themes: now themed icons are supported 
+ + add new green theme
+ * update Qt libs to 5.6.1 (Windows, Android, OS X)
+ * update TagLib to 1.11 (Windows, Android, OS X)
+ - dropped Qt4 support
+ * various fixes and improvements
+
+
 Version 1.0
 18.04.2016
  + add CAPTCHA support for Yandex.Music plugin
  * update Myzuka.ru url (now Myzuka.fm)
  + add shuffle support
- * update Qt libs to 5.6.0 (windows, Android, OS X)
+ * update Qt libs to 5.6.0 (Windows, Android, OS X)
 
 
 
