@@ -1,3 +1,6 @@
 [submodule "translations"]
 	path = translations
 	url = https://github.com/qomp/translations.git
+[submodule "themes"]
+	path = themes
+	url = http://github.com/qomp/themes
