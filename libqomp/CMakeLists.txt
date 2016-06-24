@@ -186,7 +186,7 @@ if( LINUX )
 		TARGETS
 		${QOMP_LIB}
 		LIBRARY DESTINATION
-		${LIB_INSTALL_DIR}
+		${LIB_INSTALL_DIR}/qomp
 	)
 endif()
 
