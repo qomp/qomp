@@ -10,7 +10,7 @@ set( CMAKE_INCLUDE_CURRENT_DIR ON )
 option( USE_QT5 "Use Qt5" ON )
 option( INSTALL_DEPS "Install win32 qomp dependencies" OFF )
 option( DEV_MODE "Enable development mode" OFF )
-option( BUILD_THEMES "Build qomp themes" ON )
+option( BUILD_THEMES "Build qomp themes" OFF )
 set( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
 set( LIB_SUFFIX "" CACHE STRING "Define suffix of lib directory name (32/64)" )
 set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where libs will be installed" )
@@ -195,9 +195,7 @@ if(BUILD_THEMES)
 endif()
 
 set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-if( LINUX )
-	set( CMAKE_INSTALL_RPATH "${LIB_INSTALL_DIR}/qomp" )
-endif()
+#set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
 
 add_executable(
 	${PROJECT_NAME}
