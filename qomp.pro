@@ -11,7 +11,7 @@ sub_src.depends = sub_libqomp
 SUBDIRS += \
 	sub_libqomp \
 	sub_src \
-	sub_plugins
+        sub_plugins
 
 LANG_PATH = translations/translations
 TRANSLATIONS = $$LANG_PATH/qomp_ru.ts

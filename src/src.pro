@@ -29,6 +29,7 @@ CONFIG(debug, debug|release) {
 
 include(src.pri)
 include($$PWD/../translations.pri)
+include($$PWD/../themes.pri)
 
 unix:!android {
 	INCLUDEPATH += /usr/include/KDE/
