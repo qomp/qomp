@@ -10,8 +10,9 @@
         system( $$QMAKE_MKDIR $$shell_path($$THEMESDESTDIR) )
     }
 
-    QMAKE_PRE_LINK += $$shell_path($$[QT_INSTALL_BINS]/rcc) -o $$shell_path($$THEMES_FILE) \
-                                                    $$shell_path($$THEMES_PATH/themes.qrc) \
+    QMAKE_PRE_LINK += $$shell_path($$[QT_INSTALL_BINS]/rcc) \
+                                  -binary $$shell_path($$THEMES_PATH/themes.qrc) \
+                                  -o $$shell_path($$THEMES_FILE) \
                       $$escape_expand(\\n\\t)
 
     win32 {

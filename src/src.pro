@@ -28,17 +28,17 @@ unix:!android {
 	dt.path = $$PREFIX/share/applications/
 	dt.files = $$PWD/../qomp.desktop
 	icon.path = $$PREFIX/share/icons/hicolor/128x128/apps
-        icon.extra = $$QMAKE_COPY icons/qomp.png $(INSTALL_ROOT)$$icon.path/qomp.png
+        icon.extra = $$QMAKE_COPY $$PWD/icons/qomp.png $(INSTALL_ROOT)$$icon.path/qomp.png
 	icon1.path = $$PREFIX/share/icons/hicolor/16x16/apps
-        icon1.extra = $$QMAKE_COPY icons/qomp_16.png $(INSTALL_ROOT)$$icon1.path/qomp.png
+        icon1.extra = $$QMAKE_COPY $$PWD/icons/qomp_16.png $(INSTALL_ROOT)$$icon1.path/qomp.png
 	icon2.path = $$PREFIX/share/icons/hicolor/24x24/apps
-        icon2.extra = $$QMAKE_COPY icons/qomp_24.png $(INSTALL_ROOT)$$icon2.path/qomp.png
+        icon2.extra = $$QMAKE_COPY $$PWD/icons/qomp_24.png $(INSTALL_ROOT)$$icon2.path/qomp.png
 	icon3.path = $$PREFIX/share/icons/hicolor/48x48/apps
-        icon3.extra = $$QMAKE_COPY icons/qomp_48.png $(INSTALL_ROOT)$$icon3.path/qomp.png
+        icon3.extra = $$QMAKE_COPY $$PWD/icons/qomp_48.png $(INSTALL_ROOT)$$icon3.path/qomp.png
         icon4.path = $$PREFIX/share/icons/hicolor/64x64/apps
-        icon4.extra = $$QMAKE_COPY icons/qomp_64.png $(INSTALL_ROOT)$$icon4.path/qomp.png
+        icon4.extra = $$QMAKE_COPY $$PWD/icons/qomp_64.png $(INSTALL_ROOT)$$icon4.path/qomp.png
 	icon5.path = $$PREFIX/share/icons/hicolor/32x32/apps
-        icon5.extra = $$QMAKE_COPY icons/qomp_32.png $(INSTALL_ROOT)$$icon5.path/qomp.png
+        icon5.extra = $$QMAKE_COPY $$PWD/icons/qomp_32.png $(INSTALL_ROOT)$$icon5.path/qomp.png
 
         INSTALLS += dt icon icon1 icon2 icon3 icon4 icon5
 }
