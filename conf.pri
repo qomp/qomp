@@ -34,25 +34,10 @@ CONFIG(debug, debug|release) {
     DEFINES += DEBUG_OUTPUT
 }
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-    !android:  QT += widgets
+!android:  QT += widgets
 
-    DEFINES += HAVE_QT5
-    CONFIG += c++11
-}
-else {
-    QMAKE_CXXFLAGS += -std=c++11
-
-    defineReplace(shell_path) {
-        var = $$1
-        win32: var ~= s,/,\\,g
-        return ($$quote($$var))
-    }
-
-    defineReplace(system_path) {
-        return ($$shell_path($$1))
-    }
-}
+DEFINES += HAVE_QT5
+CONFIG += c++11
 
 android {
     QT += quick qml androidextras

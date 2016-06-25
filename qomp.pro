@@ -1,3 +1,7 @@
+equals(QT_MAJOR_VERSION, 4) {
+    error("Qt4 support is deprecated!")
+}
+
 TEMPLATE = subdirs
 
 sub_libqomp.subdir = libqomp

@@ -20,11 +20,7 @@
 #include "gettuneurlhelper.h"
 #include "tune.h"
 
-#ifdef HAVE_QT5
 #include <QtConcurrent>
-#else
-#include <QtConcurrentRun>
-#endif
 
 GetTuneUrlHelper::GetTuneUrlHelper(QObject *target, const char *slot, QObject *parent) :
 	QObject(parent),

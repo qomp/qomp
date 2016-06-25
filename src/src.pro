@@ -1,30 +1,18 @@
 include($$PWD/../conf.pri)
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += multimedia concurrent
-    DEFINES += HAVE_QTMULTIMEDIA
-    CONFIG += qtmultimedia_backend
-}
-else {
-    CONFIG += phonon_backend
+QT += multimedia concurrent network
+DEFINES += HAVE_QTMULTIMEDIA
+CONFIG += qtmultimedia_backend
 
-    warning("Qt4 support is incomplete!")
-}
-
-phonon_backend {
-    QT += phonon
-    DEFINES += HAVE_PHONON
-}
 
 TARGET = qomp
 DESTDIR = $$OUT_PWD/../bin
 TEMPLATE = app
 
-QT += network
 
 CONFIG(debug, debug|release) {
-    greaterThan(QT_MAJOR_VERSION, 4):win32: CONFIG += console
-    macx: CONFIG -= app_bundle
+    win32: CONFIG += console
+    macx:  CONFIG -= app_bundle
 }
 
 include(src.pri)

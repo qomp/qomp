@@ -34,13 +34,9 @@
 #include <QEventLoop>
 #include <QPixmap>
 
-#ifdef HAVE_QT5
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#else
-#include <qjson/parser.h>
-#endif
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
@@ -51,18 +47,9 @@ static const QString ARTISTS_NAME("artists");
 static const QString ALBUMS_NAME("albums");
 static const QString TRACKS_NAME("tracks");
 
-#ifndef HAVE_QT5
-typedef QVariant QJsonValue;
-typedef QVariantList QJsonArray;
-typedef QVariantMap QJsonObject;
-
-#define toObject() toMap()
-#define toArray() toList()
-#endif
 
 static QString safeJSONValue2String(const QJsonValue& val)
 {
-#ifdef HAVE_QT5
 	switch (val.type()) {
 	case QJsonValue::String:
 		return val.toString();
@@ -71,31 +58,17 @@ static QString safeJSONValue2String(const QJsonValue& val)
 	default:
 		break;
 	}
-#else
-	return val.toString();
-#endif
+
 	return QString();
 }
 
 static QJsonArray ByteArrayToJsonArray(const QString& type, const QByteArray& ba)
 {
-#ifdef HAVE_QT5
 	QJsonDocument doc = QJsonDocument::fromJson(ba);
 	QJsonObject jo = doc.object();
 	QJsonObject art = jo.value(type).toObject();
 	QJsonArray arr = art.value("items").toArray();
 	return arr;
-#else
-	QJson::Parser parser;
-	bool ok;
-	QJsonArray arr;
-	QJsonObject result = parser.parse(ba, &ok).toMap();
-	if (ok) {
-		QJsonObject t = result[type].toMap();
-		arr = t["items"].toList();
-	}
-	return arr;
-#endif
 }
 
 //----------------------------------------
@@ -278,19 +251,11 @@ void YandexMusicController::search(const QString& text, const QString &type, con
 
 void YandexMusicController::searchNextPage(const QByteArray &reply, const QString &type, const char *slot)
 {
-#ifdef HAVE_QT5
 	QJsonDocument doc = QJsonDocument::fromJson(reply);
 	QJsonObject root = doc.object();
 	if(!root.contains("pager"))
 		return;
-#else
-	QJson::Parser parser;
-	bool ok;
-	QJsonObject root = parser.parse(reply, &ok).toMap();
-	if (!ok || !root.contains("pager")) {
-		return;
-	}
-#endif
+
 	QJsonObject pages = root.value("pager").toObject();
 	int curPage = pages.value("page").toInt();
 	int total = pages.value("total").toInt();
@@ -336,19 +301,10 @@ bool YandexMusicController::checkRedirect(QNetworkReply *reply, const char* slot
 bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray &reply,
 					 const char *slot, QompPluginTreeModel *model)
 {
-#ifdef HAVE_QT5
 	QJsonDocument doc = QJsonDocument::fromJson(reply);
 	QJsonObject root = doc.object();
 	if(!root.contains("type") || root.value("type").toString() != QStringLiteral("captcha"))
 		return false;
-#else
-	QJson::Parser parser;
-	bool ok;
-	QJsonObject root = parser.parse(reply, &ok).toMap();
-	if (!ok || !root.contains("type") || root.value("type").toString() != QString("captcha")) {
-		return false;
-	}
-#endif
 
 	QJsonObject captcha = root.value("captcha").toObject();
 
@@ -359,12 +315,8 @@ bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray 
 
 	const QString imageURL = captcha.value("img-url").toString();
 	const QString page = captcha.value("captcha-page").toString();
-	const QString ref =
-#ifdef HAVE_QT5
-			QUrl(page).query(QUrl::FullyEncoded);
-#else
-			QUrl(page).encodedQuery();
-#endif
+	const QString ref = QUrl(page).query(QUrl::FullyEncoded);
+
 	QString key = captcha.value("key").toString();
 
 #ifdef DEBUG_OUTPUT
@@ -419,12 +371,8 @@ QPixmap YandexMusicController::getCaptcha(const QString &captchaUrl, QString *ke
 			return getCaptcha(str, key);
 		}
 		if(url.hasQuery()) {
-			const QString queries =
-#ifdef HAVE_QT5
-					url.query();
-#else
-					url.encodedQuery();
-#endif
+			const QString queries = url.query();
+
 			foreach(const QString& query, queries.split("&")) {
 				QStringList data = query.split("=");
 				if(data.at(0) == "key" && data.size() == 2) {
@@ -569,20 +517,13 @@ void YandexMusicController::artistUrlFinished()
 #ifdef DEBUG_OUTPUT
 		qDebug() << replyStr;
 #endif
-#ifdef HAVE_QT5
+
 		QJsonDocument doc = QJsonDocument::fromJson(replyStr);
 		QJsonObject jo = doc.object();
-	#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
 		qDebug() << doc.toJson(QJsonDocument::Indented);
-	#endif
-#else
-		QJson::Parser parser;
-		bool ok;
-		QJsonObject jo = parser.parse(replyStr, &ok).toMap();
-		if (!ok) {
-			return;
-		}
 #endif
+
 		QJsonArray arr = jo.value(ALBUMS_NAME).toArray();
 		QJsonArray also = jo.value("alsoAlbums").toArray();
 
@@ -630,20 +571,12 @@ void YandexMusicController::albumUrlFinished()
 			return;
 		}
 
-#ifdef HAVE_QT5
 		QJsonDocument doc = QJsonDocument::fromJson(replyStr);
 		QJsonObject jo = doc.object();
-	#ifdef DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
 		qDebug() << doc.toJson(QJsonDocument::Indented);
-	#endif
-#else
-		QJson::Parser parser;
-		bool ok;
-		QJsonObject jo = parser.parse(replyStr, &ok).toMap();
-		if (!ok) {
-			return;
-		}
 #endif
+
 		QJsonArray arr = jo.value("volumes").toArray();
 		QList<QompPluginModelItem*> list;
 		while(!arr.isEmpty())

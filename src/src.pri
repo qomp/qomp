@@ -52,14 +52,6 @@ else {
     RESOURCES   += $$PWD/themes.qrc
 }
 
-phonon_backend {
-    HEADERS += $$PWD/qompphononplayer.h #\
-    #$$PWD/qompphononmetadataresolver.h
-
-    SOURCES += $$PWD/qompphononplayer.cpp #\
-    #$$PWD/qompphononmetadataresolver.cpp
-}
-
 qtmultimedia_backend {
     HEADERS += $$PWD/qompqtmultimediaplayer.h #\
        # $$PWD/qompqtmultimediametadataresolver.h

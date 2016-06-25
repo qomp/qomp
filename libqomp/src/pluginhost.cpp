@@ -23,9 +23,7 @@
 #include <QPluginLoader>
 #include <QFileInfo>
 
-#ifdef HAVE_QT5
 #include <QJsonObject>
-#endif
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
@@ -37,7 +35,6 @@ PluginHost::PluginHost(const QString &file, QObject *parent) :
 	loader_(new QPluginLoader(file, this)),
 	valid_(false)
 {
-#ifdef HAVE_QT5
 	QJsonObject obj = loader_->metaData();
 	if(!obj.isEmpty() && obj.value("IID").toString().startsWith("Qomp.QompPlugin") ) {
 		valid_ = true;
@@ -48,7 +45,6 @@ PluginHost::PluginHost(const QString &file, QObject *parent) :
 			description_ = md.value("description").toString();
 		}
 	}
-#endif
 }
 
 PluginHost::~PluginHost()
@@ -106,15 +102,7 @@ void PluginHost::unload()
 
 bool PluginHost::isValid()
 {
-#ifdef HAVE_QT5
 	return valid_;
-#else
-	if(!load())
-		return false;
-
-	unload();
-#endif
-	return true;
 }
 
 QString PluginHost::name() const

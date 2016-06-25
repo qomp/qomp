@@ -23,11 +23,7 @@
 
 #include <QTime>
 #include <QTextDocument>
-#ifdef HAVE_QT5
 #include <QStandardPaths>
-#else
-#include <QDesktopServices>
-#endif
 #include <QDir>
 #include <QTextCodec>
 #ifdef Q_OS_ANDROID
@@ -149,14 +145,12 @@ QString cacheDir()
 	QString dir;
 #ifdef Q_OS_ANDROID
 	dir = QString("/sdcard/.%1").arg(qApp->organizationName());
-#elif defined HAVE_QT5
+#else
 	QStringList list = QStandardPaths::standardLocations(QStandardPaths::CacheLocation);
 	if(!list.isEmpty())
 		dir = list.first();
 	else
 		dir = QDir::homePath();
-#else
-	dir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
 #endif
 	QDir d(dir);
 	if(!d.exists())
@@ -168,15 +162,13 @@ QString cacheDir()
 QString dataDir()
 {
 	QString dir;
-#ifdef HAVE_QT5
+
 	QStringList list = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
 	if(!list.isEmpty())
 		dir = list.first();
 	else
 		dir = QDir::homePath();
-#else
-	dir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-#endif
+
 	QDir d(dir);
 	if(!d.exists())
 		d.mkpath(dir);

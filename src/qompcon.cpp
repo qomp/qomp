@@ -50,18 +50,14 @@
 #endif
 #endif
 
-#ifdef HAVE_QT5
 #include <QThread>
 #include <QCommandLineParser>
-#endif
 
 #include <QTimer>
 #include <QDesktopServices>
 #include <QClipboard>
 
-#ifdef HAVE_PHONON
-#include "qompphononplayer.h"
-#elif HAVE_QTMULTIMEDIA
+#ifdef HAVE_QTMULTIMEDIA
 #include "qompqtmultimediaplayer.h"
 #endif
 
@@ -166,10 +162,7 @@ QompCon::QompCon(QObject *parent) :
 	qmlRegisterType<UpdatesChecker>("net.sourceforge.qomp", 1, 0, "UpdatesChecker");
 #endif
 
-#ifdef HAVE_QT5
 	connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), SLOT(applicationStateChanged(Qt::ApplicationState)));
-#endif
-
 	connect(qApp, SIGNAL(aboutToQuit()), SLOT(deInit()));
 
 #ifdef DEBUG_OUTPUT
@@ -194,7 +187,7 @@ QompCon::~QompCon()
 	f.close();
 #endif
 }
-#ifdef HAVE_QT5
+
 void QompCon::applicationStateChanged(Qt::ApplicationState state)
 {
 	switch(state) {
@@ -207,11 +200,9 @@ void QompCon::applicationStateChanged(Qt::ApplicationState state)
 		break;
 	}
 }
-#endif
 
 void QompCon::preparePlayback()
 {
-#ifdef HAVE_QT5
 	auto pConn = QSharedPointer<QMetaObject::Connection>::create();
 	*pConn = connect(player_, &QompPlayer::mediaReady,
 			 [this, pConn]()
@@ -234,10 +225,6 @@ void QompCon::preparePlayback()
 			disconnect(*pConn);
 		}
 	);
-#else
-	if(Options::instance()->getOption(OPTION_AUTOSTART_PLAYBACK).toBool())
-		actPlay();
-#endif
 }
 
 void QompCon::processCommandLine()
@@ -249,7 +236,7 @@ void QompCon::processCommandLine()
 	if(str.isValid()) {
 		args.append(str.toString());
 	}
-#elif defined HAVE_QT5
+#else
 	QCommandLineParser p;
 	p.setApplicationDescription(QStringLiteral(APPLICATION_NAME) + ' ' + QStringLiteral(APPLICATION_VERSION));
 	p.addHelpOption();
@@ -259,8 +246,6 @@ void QompCon::processCommandLine()
 	p.process(*qApp);
 
 	args = p.positionalArguments();
-#else
-	Q_UNUSED(args);
 #endif
 	QList<Tune*> tunes;
 	foreach(const QString& arg, args) {
@@ -726,12 +711,12 @@ void QompCon::stopPlayer()
 	player_->stop();
 	mainWin_->setCurrentPosition(0);
 	playerStateChanged(Qomp::StateStopped);
+
 	while (player_->state() != Qomp::StateStopped) {
-#ifdef HAVE_QT5
 		QThread::sleep(1);
-#endif
 		qApp->processEvents();
 	}
+
 	savePlayerPosition();
 	player_->blockSignals(false);
 }
@@ -745,11 +730,10 @@ void QompCon::playIndex(const QModelIndex &index)
 
 QompPlayer *QompCon::createPlayer()
 {
-#ifdef HAVE_PHONON
-	return new QompPhononPlayer;
-#elif HAVE_QTMULTIMEDIA
+#ifdef HAVE_QTMULTIMEDIA
 	return new QompQtMultimediaPlayer;
 #endif
+	return nullptr;
 }
 
 void QompCon::playNextShuffle(bool afterError, const QModelIndex &index)
