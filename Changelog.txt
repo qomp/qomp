@@ -6,6 +6,7 @@ xx.xx.2016
  + add compact playlist support
  * major improvement for Themes: now themed icons are supported 
  + add new green theme
+ + add Launchpad support ( https://launchpad.net/~qomp/+archive/ubuntu/ppa )
  * update Qt libs to 5.6.1 (Windows, Android, OS X)
  * update TagLib to 1.11 (Windows, Android, OS X)
  - dropped Qt4 support
