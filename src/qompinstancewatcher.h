@@ -21,7 +21,10 @@
 #define QOMPINSTANCEWATCHER_H
 
 #include <QObject>
-class QSharedMemory;
+#include <QSharedMemory>
+
+class QTimer;
+class QJsonDocument;
 
 class QompInstanceWatcher : public QObject
 {
@@ -31,10 +34,25 @@ public:
 	~QompInstanceWatcher();
 
 	bool newInstanceAllowed() const;
+	static int pullInterval();
+
+	void sendCommandShow();
+	void sendCommandTune(const QString& url);
+
+private slots:
+	void pull();
+
+signals:
+	void commandShow();
+	void commandTune(const QString& url);
 
 private:
-	QSharedMemory* _mem;
+	void sendCommand(const QJsonDocument& doc);
+
+private:
+	QSharedMemory _mem;
 	bool _firstInstance;
+	QTimer* _timer;
 };
 
 #endif // QOMPINSTANCEWATCHER_H

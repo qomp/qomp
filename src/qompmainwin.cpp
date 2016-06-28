@@ -292,7 +292,8 @@ void QompMainWin::Private::bringToFront()
 	if(mainWin_->isMaximized())
 		mainWin_->showMaximized();
 	else
-		mainWin_->show();
+		mainWin_->showNormal();
+
 	mainWin_->raise();
 	mainWin_->activateWindow();
 }
@@ -549,7 +550,7 @@ void QompMainWin::hide()
 
 void QompMainWin::show()
 {
-	d->mainWin_->show();
+	d->bringToFront();
 }
 
 bool QompMainWin::eventFilter(QObject *o, QEvent *e)

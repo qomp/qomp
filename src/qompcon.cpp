@@ -133,14 +133,8 @@ QompCon::QompCon(QObject *parent) :
 	mainWin_(nullptr),
 	model_(nullptr),
 	player_(nullptr),
-	commandLine_(nullptr),
-	watcher_(new QompInstanceWatcher(this))
+	commandLine_(nullptr)
 {
-	if(!watcher_->newInstanceAllowed()) {
-		QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
-		return;
-	}
-
 	qRegisterMetaType<Tune*>("Tune*");
 	qRegisterMetaType<Qomp::State>("State");
 #ifdef Q_OS_ANDROID
@@ -169,6 +163,10 @@ QompCon::QompCon(QObject *parent) :
 	qmlRegisterType<UpdatesChecker>("net.sourceforge.qomp", 1, 0, "UpdatesChecker");
 #endif
 
+	commandLine_ = new QompCommandLine(this);
+	if(!setupWatcher())
+		return;
+
 	connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), SLOT(applicationStateChanged(Qt::ApplicationState)));
 	connect(qApp, SIGNAL(aboutToQuit()), SLOT(deInit()));
 
@@ -179,8 +177,6 @@ QompCon::QompCon(QObject *parent) :
 #ifdef Q_OS_MAC
 	qApp->installEventFilter(this);
 #endif
-
-	commandLine_ = new QompCommandLine(this);
 
 	QTimer::singleShot(0, this, SLOT(init()));
 }
@@ -240,6 +236,26 @@ void QompCon::processCommandLine()
 
 	commandLine_->deleteLater();
 	commandLine_ = nullptr;
+}
+
+bool QompCon::setupWatcher()
+{
+#ifndef QOMP_MOBILE
+	connect(&watcher_, &QompInstanceWatcher::commandTune, this, &QompCon::processUrl);
+
+	if(!watcher_.newInstanceAllowed()) {
+		watcher_.sendCommandShow();
+
+		QThread::msleep(QompInstanceWatcher::pullInterval());
+
+		foreach(const QString& arg, commandLine_->args())
+			watcher_.sendCommandTune(arg);
+
+		QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
+		return false;
+	}
+#endif
+	return true;
 }
 
 void QompCon::init()
@@ -318,9 +334,11 @@ void QompCon::processUrl(const QString &url)
 	if(PluginManager::instance()->processUrl(url, &tunes)) {
 		model_->addTunes(tunes);
 		if(tunes.size() > 0) {
+			stopPlayer();
 			//start playback from the begining
 			Options::instance()->setOption(OPTION_LAST_POS, 0);
 			model_->setCurrentTune(tunes.at(0));
+			player_->setPosition(0);
 			player_->play();
 		}
 	}
@@ -654,6 +672,9 @@ void QompCon::connectMainWin()
 	connect(mainWin_, SIGNAL(removeTune(Tune*)),			SLOT(actRemoveTune(Tune*)));
 	connect(mainWin_, SIGNAL(mediaActivated(QModelIndex)),		SLOT(actMediaActivated(QModelIndex)));
 	connect(mainWin_, SIGNAL(mediaClicked(QModelIndex)),		SLOT(actMediaClicked(QModelIndex)));
+#ifndef QOMP_MOBILE
+	connect(&watcher_, SIGNAL(commandShow()), mainWin_, SLOT(show()));
+#endif
 
 #ifdef Q_OS_MAC
 	connect(CocoaTrayClick::instance(), SIGNAL(trayClicked()), mainWin_, SLOT(toggleVisibility()));
@@ -701,7 +722,7 @@ void QompCon::stopPlayer()
 	playerStateChanged(Qomp::StateStopped);
 
 	while (player_->state() != Qomp::StateStopped) {
-		QThread::sleep(1);
+		QThread::msleep(1);
 		qApp->processEvents();
 	}
 

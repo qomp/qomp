@@ -23,13 +23,13 @@
 #include <QModelIndex>
 
 #include "common.h"
+#include "qompinstancewatcher.h"
 
 class QompMainWin;
 class QompPlayListModel;
 class QompPlayer;
 class Tune;
 class QompCommandLine;
-class QompInstanceWatcher;
 
 
 class QompCon : public QObject
@@ -103,6 +103,7 @@ private:
 	void savePlayerPosition(qint64 pos);
 	void preparePlayback();
 	void processCommandLine();
+	bool setupWatcher();
 
 	static QompPlayer* createPlayer();
 
@@ -111,7 +112,9 @@ private:
 	QompPlayListModel* model_;
 	QompPlayer* player_;
 	QompCommandLine* commandLine_;
-	QompInstanceWatcher* watcher_;
+#ifndef QOMP_MOBILE
+	QompInstanceWatcher watcher_;
+#endif
 };
 
 #endif // QOMP_H

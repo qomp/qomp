@@ -7,8 +7,7 @@ SOURCES += $$PWD/main.cpp \
     $$PWD/updateschecker.cpp \
     $$PWD/qomptunedownloader.cpp \
     $$PWD/translator.cpp \
-    $$PWD/qompcommandline.cpp \
-    $$PWD/qompinstancewatcher.cpp
+    $$PWD/qompcommandline.cpp
 #    $$PWD/qomptaglibmetadataresolver.cpp \
 
 
@@ -18,8 +17,7 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/updateschecker.h \
     $$PWD/qomptunedownloader.h \
     $$PWD/translator.h \
-    $$PWD/qompcommandline.h \
-    $$PWD/qompinstancewatcher.h
+    $$PWD/qompcommandline.h
 #    $$PWD/qomptaglibmetadataresolver.h \
 
 RESOURCES+= $$PWD/qomp.qrc
@@ -41,13 +39,15 @@ else {
         $$PWD/aboutdlg.cpp \
         $$PWD/qompplaylistdelegate.cpp \
         $$PWD/qompplaylistview.cpp \
-        $$PWD/qompmenu.cpp
+        $$PWD/qompmenu.cpp \
+        $$PWD/qompinstancewatcher.cpp
 
     HEADERS += $$PWD/qomptrayicon.h \
         $$PWD/aboutdlg.h \
         $$PWD/qompplaylistdelegate.h \
         $$PWD/qompplaylistview.h \
-        $$PWD/qompmenu.h
+        $$PWD/qompmenu.h \
+        $$PWD/qompinstancewatcher.h
 
     FORMS   += \
         $$PWD/qompmainwin.ui \
