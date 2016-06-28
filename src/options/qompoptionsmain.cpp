@@ -76,6 +76,7 @@ void QompOptionsMain::Private::applyOptions()
 	o->setOption(OPTION_CURRENT_TRANSLATION,ui->cb_lang->currentText());
 	o->setOption(OPTION_REPEAT_LAST_SEARCH, ui->cb_repeatLastSearch->isChecked());
 	o->setOption(OPTION_REMEMBER_POS, ui->cb_rememberPosition->isChecked());
+	o->setOption(OPTION_ONE_COPY, ui->cb_oneCopy->isChecked());
 }
 
 void QompOptionsMain::Private::restoreOptions()
@@ -93,6 +94,7 @@ void QompOptionsMain::Private::restoreOptions()
 	ui->cb_hideOnClose->setChecked(o->getOption(OPTION_HIDE_ON_CLOSE).toBool());
 	ui->le_encoding->setText(o->getOption(OPTION_DEFAULT_ENCODING).toByteArray());
 	ui->cb_rememberPosition->setChecked(o->getOption(OPTION_REMEMBER_POS).toBool());
+	ui->cb_oneCopy->setChecked(o->getOption(OPTION_ONE_COPY).toBool());
 
 	ui->cb_output->clear();
 	ui->cb_output->addItem(defaultDevice);

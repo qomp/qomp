@@ -115,6 +115,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="cb_oneCopy">
+     <property name="text">
+      <string>Allow to run only one copy of the qomp</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="metaDataEncodingLayout">
      <item>
       <widget class="QLabel" name="label_8">

@@ -29,6 +29,7 @@ class QompPlayListModel;
 class QompPlayer;
 class Tune;
 class QompCommandLine;
+class QompInstanceWatcher;
 
 
 class QompCon : public QObject
@@ -110,6 +111,7 @@ private:
 	QompPlayListModel* model_;
 	QompPlayer* player_;
 	QompCommandLine* commandLine_;
+	QompInstanceWatcher* watcher_;
 };
 
 #endif // QOMP_H

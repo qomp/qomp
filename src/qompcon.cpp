@@ -32,6 +32,7 @@
 #include "qomptunedownloader.h"
 #include "gettuneurlhelper.h"
 #include "qompcommandline.h"
+#include "qompinstancewatcher.h"
 #ifndef Q_OS_ANDROID
 #include "aboutdlg.h"
 #include "thememanager.h"
@@ -132,8 +133,14 @@ QompCon::QompCon(QObject *parent) :
 	mainWin_(nullptr),
 	model_(nullptr),
 	player_(nullptr),
-	commandLine_(nullptr)
+	commandLine_(nullptr),
+	watcher_(new QompInstanceWatcher(this))
 {
+	if(!watcher_->newInstanceAllowed()) {
+		QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
+		return;
+	}
+
 	qRegisterMetaType<Tune*>("Tune*");
 	qRegisterMetaType<Qomp::State>("State");
 #ifdef Q_OS_ANDROID
@@ -369,6 +376,7 @@ void QompCon::checkVersion()
 		hash.insert(OPTION_LAST_POS, 0);
 		hash.insert(OPTION_PLAYLIST_VISIBLE, true);
 		hash.insert(OPTION_PLAYLIST_HEIGHT, 0);
+		hash.insert(OPTION_ONE_COPY, true);
 
 		foreach(const char* key, hash.keys()) {
 			if(Options::instance()->getOption(key) == QVariant::Invalid)

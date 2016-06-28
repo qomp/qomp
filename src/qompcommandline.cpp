@@ -28,7 +28,8 @@
 #include <QtAndroid>
 #endif
 
-QompCommandLine::QompCommandLine(QObject *parent) : QObject(parent)
+QompCommandLine::QompCommandLine(QObject *parent) :
+	QObject(parent)
 {
 	parse();
 }
