@@ -31,6 +31,7 @@
 #include "updateschecker.h"
 #include "qomptunedownloader.h"
 #include "gettuneurlhelper.h"
+#include "qompcommandline.h"
 #ifndef Q_OS_ANDROID
 #include "aboutdlg.h"
 #include "thememanager.h"
@@ -51,7 +52,6 @@
 #endif
 
 #include <QThread>
-#include <QCommandLineParser>
 
 #include <QTimer>
 #include <QDesktopServices>
@@ -129,9 +129,10 @@ static void setUrl(JNIEnv */*env*/, jobject /*thiz*/, const jstring url)
 
 QompCon::QompCon(QObject *parent) :
 	QObject(parent),
-	mainWin_(0),
-	model_(0),
-	player_(0)
+	mainWin_(nullptr),
+	model_(nullptr),
+	player_(nullptr),
+	commandLine_(nullptr)
 {
 	qRegisterMetaType<Tune*>("Tune*");
 	qRegisterMetaType<Qomp::State>("State");
@@ -171,6 +172,8 @@ QompCon::QompCon(QObject *parent) :
 #ifdef Q_OS_MAC
 	qApp->installEventFilter(this);
 #endif
+
+	commandLine_ = new QompCommandLine(this);
 
 	QTimer::singleShot(0, this, SLOT(init()));
 }
@@ -224,27 +227,12 @@ void QompCon::preparePlayback()
 
 void QompCon::processCommandLine()
 {
-	QStringList args;
-#ifdef Q_OS_ANDROID
-	QAndroidJniObject act = QtAndroid::androidActivity();
-	QAndroidJniObject str = act.callObjectMethod("checkIntent", "()Ljava/lang/String;");
-	if(str.isValid()) {
-		args.append(str.toString());
-	}
-#else
-	QCommandLineParser p;
-	p.setApplicationDescription(QStringLiteral(APPLICATION_NAME) + ' ' + QStringLiteral(APPLICATION_VERSION));
-	p.addHelpOption();
-	p.addVersionOption();
-	p.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-	p.addPositionalArgument("file/url", tr("The file (url) to open."));
-	p.process(*qApp);
-
-	args = p.positionalArguments();
-#endif
-	foreach(const QString& arg, args) {
+	foreach(const QString& arg, commandLine_->args()) {
 		QMetaObject::invokeMethod(this, "processUrl", Qt::QueuedConnection, Q_ARG(QString, arg));
 	}
+
+	commandLine_->deleteLater();
+	commandLine_ = nullptr;
 }
 
 void QompCon::init()
@@ -253,8 +241,6 @@ void QompCon::init()
 	updateSettings();
 
 	setupModel();
-
-	processCommandLine();
 
 	setupPlayer();
 	setupMainWin();
@@ -273,6 +259,7 @@ void QompCon::init()
 #endif
 
 	preparePlayback();
+	processCommandLine();
 }
 
 void QompCon::savePlayerPosition(qint64 pos)
