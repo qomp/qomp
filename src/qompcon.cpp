@@ -131,8 +131,7 @@ QompCon::QompCon(QObject *parent) :
 	QObject(parent),
 	mainWin_(0),
 	model_(0),
-	player_(0),
-	urlHandled_(false)
+	player_(0)
 {
 	qRegisterMetaType<Tune*>("Tune*");
 	qRegisterMetaType<Qomp::State>("State");
@@ -172,10 +171,6 @@ QompCon::QompCon(QObject *parent) :
 #ifdef Q_OS_MAC
 	qApp->installEventFilter(this);
 #endif
-
-	updateSettings();
-	setupModel();
-	processCommandLine();
 
 	QTimer::singleShot(0, this, SLOT(init()));
 }
@@ -247,25 +242,24 @@ void QompCon::processCommandLine()
 
 	args = p.positionalArguments();
 #endif
-	QList<Tune*> tunes;
 	foreach(const QString& arg, args) {
-		tunes.clear();
-		if(PluginManager::instance()->processUrl(arg, &tunes)) {
-			model_->addTunes(tunes);
-			urlHandled_ = true;
-		}
+		QMetaObject::invokeMethod(this, "processUrl", Qt::QueuedConnection, Q_ARG(QString, arg));
 	}
 }
 
 void QompCon::init()
 {
 	checkVersion();
+	updateSettings();
+
+	setupModel();
+
+	processCommandLine();
 
 	setupPlayer();
 	setupMainWin();
 
-	if(!urlHandled_)
-		model_->restoreState();
+	model_->restoreState();
 
 	Options* o = Options::instance();
 
@@ -279,9 +273,6 @@ void QompCon::init()
 #endif
 
 	preparePlayback();
-
-	if(urlHandled_)
-		actPlay();
 }
 
 void QompCon::savePlayerPosition(qint64 pos)
@@ -333,6 +324,8 @@ void QompCon::processUrl(const QString &url)
 	if(PluginManager::instance()->processUrl(url, &tunes)) {
 		model_->addTunes(tunes);
 		if(tunes.size() > 0) {
+			//start playback from the begining
+			Options::instance()->setOption(OPTION_LAST_POS, 0);
 			model_->setCurrentTune(tunes.at(0));
 			player_->play();
 		}

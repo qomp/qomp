@@ -108,7 +108,6 @@ private:
 	QompMainWin* mainWin_;
 	QompPlayListModel* model_;
 	QompPlayer* player_;
-	bool urlHandled_;
 };
 
 #endif // QOMP_H
