@@ -21,9 +21,8 @@
 #define QOMPINSTANCEWATCHER_H
 
 #include <QObject>
-#include <QSharedMemory>
+#include <QLocalServer>
 
-class QTimer;
 class QJsonDocument;
 
 class QompInstanceWatcher : public QObject
@@ -39,7 +38,8 @@ public:
 	void sendCommandTune(const QString& url);
 
 private slots:
-	void pull();
+	void newConnection();
+	void dataReady();
 
 signals:
 	void commandShow();
@@ -47,11 +47,12 @@ signals:
 
 private:
 	void sendCommand(const QJsonDocument& doc);
+	bool checkServerExists() const;
+	void setupServer();
 
 private:
-	QSharedMemory _mem;
+	QLocalServer _serv;
 	bool _firstInstance;
-	QTimer* _timer;
 };
 
 #endif // QOMPINSTANCEWATCHER_H

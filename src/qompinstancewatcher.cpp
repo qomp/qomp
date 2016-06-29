@@ -20,20 +20,19 @@
 #include "qompinstancewatcher.h"
 #include "options.h"
 #include "defines.h"
-#include <QTimer>
+
 #include <QBuffer>
 #include <QDataStream>
 #include <QJsonObject>
 #include <QJsonDocument>
-#include <QThread>
+#include <QLocalSocket>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
 #endif
 
 static const QString SYS_KEY = "qomp-instance";
-static int MAX_SIZE = 2048;
-static int TIMER_INTERVAL = 100;
+static int CONNECTION_INTERVAL = 100;
 static const QString COMMAND = "command";
 static const QString ARG = "arg";
 static const QString COM_SHOW = "show";
@@ -42,21 +41,17 @@ static const QString VAL_URL  = "url";
 
 QompInstanceWatcher::QompInstanceWatcher(QObject *parent) :
 	QObject(parent),
-	_mem(SYS_KEY),
-	_firstInstance(true),
-	_timer(new QTimer(this))
-{
-	_firstInstance = _mem.create(MAX_SIZE);
-
-	_timer->setInterval(TIMER_INTERVAL);
-	connect(_timer, &QTimer::timeout, this, &QompInstanceWatcher::pull);
-	_timer->start();
+	_serv(this),
+	_firstInstance(true)
+{	
+	connect(&_serv, &QLocalServer::newConnection, this, &QompInstanceWatcher::newConnection);
+	_firstInstance = !checkServerExists();
+	setupServer();
 }
 
 QompInstanceWatcher::~QompInstanceWatcher()
 {
-	if(_mem.isAttached())
-		_mem.detach();
+
 }
 
 bool QompInstanceWatcher::newInstanceAllowed() const
@@ -81,24 +76,34 @@ void QompInstanceWatcher::sendCommandTune(const QString &url)
 	sendCommand(doc);
 }
 
-void QompInstanceWatcher::pull()
+void QompInstanceWatcher::newConnection()
 {
-	if(!_mem.isAttached())
-		return;
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompInstanceWatcher::newConnection";
+#endif
+	QLocalSocket* soc = _serv.nextPendingConnection();
+	connect(soc, &QLocalSocket::readChannelFinished, this, &QompInstanceWatcher::dataReady);
+	connect(soc, &QLocalSocket::disconnected, soc, &QLocalSocket::deleteLater);
+}
+
+void QompInstanceWatcher::dataReady()
+{
+	QLocalSocket* soc = static_cast<QLocalSocket*>(sender());
 
 	QBuffer buffer;
 	QDataStream in(&buffer);
 
-	_mem.lock();
-	buffer.setData((char*)_mem.constData(), _mem.size());
-	buffer.open(QBuffer::ReadWrite);
+	QByteArray ba = soc->readAll();
+	soc->deleteLater();
+
+	buffer.setData(ba);
+	buffer.open(QBuffer::ReadOnly);
+
 	QVariant v;
 	in >> v;
-	memset(_mem.data(), 0, _mem.size());
-	_mem.unlock();
 
 #ifdef DEBUG_OUTPUT
-	qDebug() << v;
+	qDebug() << "QompInstanceWatcher::dataReady()" << v;
 #endif
 	QJsonDocument doc = QJsonDocument::fromVariant(v);
 
@@ -125,21 +130,32 @@ void QompInstanceWatcher::sendCommand(const QJsonDocument &doc)
 	QVariant v = doc.toVariant();
 
 #ifdef DEBUG_OUTPUT
-	qDebug() << v;
+	qDebug() << "QompInstanceWatcher::sendCommand" << v;
 #endif
 	out << v;
-	int size = buffer.size();
 
-	if (!_mem.isAttached() && !_mem.attach()) {
-		return;
+	QLocalSocket* soc = new QLocalSocket;
+	connect(soc, &QLocalSocket::disconnected, soc, &QLocalSocket::deleteLater);
+
+	soc->connectToServer(SYS_KEY);
+	if(soc->waitForConnected(CONNECTION_INTERVAL)) {
+		soc->write(buffer.data().constData(), buffer.size());
+		soc->flush();
+		soc->disconnectFromServer();
 	}
+	else {
+		soc->deleteLater();
+	}
+}
 
-	_mem.lock();
-	char *to = (char*)_mem.data();
-	const char *from = buffer.data().data();
-	memcpy(to, from, qMin(_mem.size(), size));
-	_mem.unlock();
+bool QompInstanceWatcher::checkServerExists() const
+{
+	QLocalSocket soc;
+	soc.connectToServer(SYS_KEY);
+	return soc.waitForConnected(CONNECTION_INTERVAL);
+}
 
-
-	QThread::msleep(TIMER_INTERVAL);
+void QompInstanceWatcher::setupServer()
+{
+	_serv.listen(SYS_KEY);
 }
