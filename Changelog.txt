@@ -2,6 +2,7 @@ Version 1.1
 xx.xx.2016
  + add CUE SHEET support (*.cue files)
  + add "Open With..." dialog support
+ + add "Allow one copy" option
  + add last position remembering (option at settings)
  + add compact playlist support
  * major improvement for Themes: now themed icons are supported 
