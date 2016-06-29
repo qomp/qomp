@@ -21,31 +21,35 @@
 #define DEEZERPLUGIN_H
 
 #include "qompplugin.h"
+#include "qomptunepluign.h"
 
-#ifndef QT_STATICPLUGIN
-#define QT_STATICPLUGIN
-#endif
+class QompPluginAction;
+class TuneURLResolveStrategy;
+class Tune;
 
-class DeezerPlugin : public QObject, public QompPlugin
+class DeezerPlugin : public QObject, public QompPlugin, public QompTunePlugin
 {
 	Q_OBJECT
-	Q_INTERFACES(QompPlugin)
+	Q_INTERFACES(QompPlugin QompTunePlugin)
 #ifdef HAVE_QT5
-	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1")
+	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1" FILE "metadata.json")
 #endif
 public:
 	explicit DeezerPlugin();
 	virtual QString name() const;
 	virtual QString version() const;
 	virtual QString description() const;
-	virtual TuneList getTunes();
+	virtual QList<QompPluginAction*> getTunesActions();
 	virtual QompOptionsPage* options();
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
+	virtual bool processUrl(const QString &, QList<Tune*> *) { return false; }
+	virtual void setEnabled(bool /*enabled*/) {}
+	virtual void unload() {}
 	
 signals:
 	
-public slots:
-	
+private slots:
+	QList<Tune*> getTunes();
 };
 
 #endif // DEEZERPLUGIN_H

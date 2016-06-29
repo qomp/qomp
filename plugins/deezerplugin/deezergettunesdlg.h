@@ -21,7 +21,9 @@
 #define DEEZERGETTUNESDLG_H
 
 #include "qompplugingettunesdlg.h"
+#include <QHash>
 
+class Tune;
 class QompPluginTreeModel;
 class QTabWidget;
 class QModelIndex;
@@ -32,12 +34,7 @@ class DeezerGettunesDlg : public QompPluginGettunesDlg
 	Q_OBJECT
 public:
 	explicit DeezerGettunesDlg(QWidget *parent = 0);
-	
-public slots:
-	virtual void accept();
-
-protected slots:
-	virtual void doSearch();
+	QList<Tune*> getTunes() const;
 
 private slots:
 	void artistsSearchFinished();
@@ -49,6 +46,7 @@ private slots:
 	void itemSelected(const QModelIndex& ind);
 	void getSuggestions(const QString& text);
 	void suggestionsFinished();
+	void doSearchTunes(const QString& txt);
 
 private:
 	void checkAndStopBusyWidget();
@@ -60,7 +58,6 @@ private:
 	QHash<QNetworkReply*, void*> requests_;
 	QTabWidget* tabWidget_;
 	QString userToken_;
-	
 };
 
 #endif // DEEZRGETTUNESDLG_H

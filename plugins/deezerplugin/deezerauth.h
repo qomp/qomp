@@ -39,7 +39,6 @@ private slots:
 private:
 	QString token_;
 	bool status_;
-	
 };
 
 #endif // DEEZERAUTH_H

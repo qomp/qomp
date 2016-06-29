@@ -16,6 +16,9 @@ SUBDIRS +=  sub_prostopleerplugin \
         sub_yandexmusicplugin \
         sub_filesystemplugin
 
+#sub_deezerplugin.subdir = deezerplugin
+#SUBDIRS += sub_deezerplugin
+
 !android {   
     sub_tunetofileplugin.subdir = tunetofileplugin
     SUBDIRS += sub_tunetofileplugin

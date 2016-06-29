@@ -24,26 +24,29 @@
 #include "qompplugintypes.h"
 #include "deezerplugindefines.h"
 #include "deezerauth.h"
+#include "qompnetworkingfactory.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QDomDocument>
 #include <QSet>
 
-//#include <QtDebug>
+#ifdef DEBUG_OUTPUT
+#include <QtDebug>
+#endif
 
 DeezerGettunesDlg::DeezerGettunesDlg(QWidget *parent) :
 	QompPluginGettunesDlg(parent),
 	tracksModel_(new QompPluginTreeModel(this)),
 	albumsModel_(new QompPluginTreeModel(this)),
 	artistsModel_(new QompPluginTreeModel(this)),
-	tabWidget_(new QTabWidget(this))
+	tabWidget_(new QTabWidget)
 {
 	setWindowTitle(DEEZER_PLUGIN_NAME);
 
-	QompPluginTreeView* tracksView = new QompPluginTreeView(this);
-	QompPluginTreeView* albumsView = new QompPluginTreeView(this);
-	QompPluginTreeView* artistsView = new QompPluginTreeView(this);
+	QompPluginTreeView* tracksView  = new QompPluginTreeView(tabWidget_);
+	QompPluginTreeView* albumsView  = new QompPluginTreeView(tabWidget_);
+	QompPluginTreeView* artistsView = new QompPluginTreeView(tabWidget_);
 
 	tracksView->setModel(tracksModel_);
 	albumsView->setModel(albumsModel_);
@@ -61,34 +64,36 @@ DeezerGettunesDlg::DeezerGettunesDlg(QWidget *parent) :
 		connect(view, SIGNAL(expanded(QModelIndex)), SLOT(itemSelected(QModelIndex)));
 	}
 	connect(this, SIGNAL(searchTextChanged(QString)), SLOT(getSuggestions(QString)));
+	connect(this, SIGNAL(doSearch(QString)), SLOT(doSearchTunes(QString)));
 //	DeezerAuth* a = new DeezerAuth(this);
 //	a->start();
 }
 
-void DeezerGettunesDlg::accept()
+QList<Tune *> DeezerGettunesDlg::getTunes() const
 {
+	QList<Tune *> tunes;
+
 	QList<QompPluginModelItem*> list = QList<QompPluginModelItem*>()
 			<< artistsModel_->selectedItems()
 			<< albumsModel_->selectedItems()
 			<< tracksModel_->selectedItems();
 
 	foreach(QompPluginModelItem* tune, list) {
-		if(!tune || tune->type() != Qomp::TypeTune)
+		if(!tune || tune->type() != QompCon::TypeTune)
 			continue;
 
 		QompPluginTune* pt = static_cast<QompPluginTune*>(tune);
 		if(pt->url.isEmpty())
 			continue;
 
-		tunes_.append(pt->toTune());
+		tunes.append(pt->toTune());
 	}
 
-	QDialog::accept();
+	return tunes;
 }
 
-void DeezerGettunesDlg::doSearch()
+void DeezerGettunesDlg::doSearchTunes(const QString& txt)
 {
-	const QString txt = currentSearchText();
 	if(txt.isEmpty())
 		return;
 
@@ -214,6 +219,9 @@ static QList<QompPluginModelItem*> parseTunes(const QString& replyStr)
 		if(tuneElem.isNull())
 			tuneElem = root.firstChildElement("tracks").firstChildElement("data").firstChildElement("track");
 		while(!tuneElem.isNull()) {
+#ifdef DEBUG_OUTPUT
+			qDebug() << tuneElem.ownerDocument().toString(2);
+#endif
 			QompPluginTune* tune = new QompPluginTune;
 			tune->artist = Qomp::unescape(tuneElem.firstChildElement("artist").firstChildElement("name").text());
 			tune->album = Qomp::unescape(tuneElem.firstChildElement("album").firstChildElement("title").text());
@@ -307,7 +315,7 @@ void DeezerGettunesDlg::itemSelected(const QModelIndex &ind)
 	QString path;
 	const char* slot = 0;
 	switch(item->type()) {
-	case Qomp::TypeTune:
+	case QompCon::TypeTune:
 	{
 //		YandexMusicTune *tune = static_cast<YandexMusicTune *>(item);
 //		if(!tune->url.isEmpty())
@@ -316,7 +324,7 @@ void DeezerGettunesDlg::itemSelected(const QModelIndex &ind)
 //		slot = SLOT(tuneUrlFinishedStepOne());
 		return;
 	}
-	case Qomp::TypeAlbum:
+	case QompCon::TypeAlbum:
 	{
 		QompPluginAlbum *album = static_cast<QompPluginAlbum *>(item);
 		if(album->tunesReceived)
@@ -325,7 +333,7 @@ void DeezerGettunesDlg::itemSelected(const QModelIndex &ind)
 		slot = SLOT(albumUrlFinished());
 		break;
 	}
-	case Qomp::TypeArtist:
+	case QompCon::TypeArtist:
 	{
 		QompPluginArtist *artist = static_cast<QompPluginArtist *>(item);
 		if(artist->tunesReceived)
@@ -342,7 +350,7 @@ void DeezerGettunesDlg::itemSelected(const QModelIndex &ind)
 	QNetworkRequest nr(url);
 	nr.setRawHeader("Accept", "*/*");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-	QNetworkReply *reply = nam_->get(nr);
+	QNetworkReply *reply = QompNetworkingFactory::instance()->getMainNAM()->get(nr);
 	reply->setProperty("id", item->internalId);
 
 	requests_.insert(reply, model);
@@ -368,7 +376,7 @@ void DeezerGettunesDlg::search(const QString &text, const QString &type, const c
 	url += DEEZER_APP_ID;
 
 	QNetworkRequest nr(url);
-	QNetworkReply* reply = nam_->get(nr);
+	QNetworkReply* reply = QompNetworkingFactory::instance()->getMainNAM()->get(nr);
 	connect(reply, SIGNAL(finished()), slot);
 	requests_.insert(reply, 0);
 	startBusyWidget();
@@ -397,7 +405,7 @@ void DeezerGettunesDlg::getSuggestions(const QString &text)
 	QNetworkRequest nr(url);
 	nr.setRawHeader("X-Requested-With", "MLHttpRequest");
 	nr.setRawHeader("Accept", "*/*");
-	QNetworkReply* reply = nam_->get(nr);
+	QNetworkReply* reply = QompNetworkingFactory::instance()->getMainNAM()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(suggestionsFinished()));
 }
 

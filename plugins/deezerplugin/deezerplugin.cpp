@@ -20,8 +20,10 @@
 #include "deezerplugin.h"
 #include "deezergettunesdlg.h"
 #include "deezerplugindefines.h"
+#include "qomppluginaction.h"
 
 #include <QtPlugin>
+#include <QIcon>
 
 DeezerPlugin::DeezerPlugin() :
 	QObject()
@@ -43,11 +45,19 @@ QString DeezerPlugin::description() const
 	return tr("Listen to the music from deezer.com");
 }
 
-TuneList DeezerPlugin::getTunes()
+QList<QompPluginAction *> DeezerPlugin::getTunesActions()
 {
-	TuneList list;
+	QList<QompPluginAction *> l;
+	QompPluginAction *act = new QompPluginAction(QIcon(), tr("Deezer.com"), this, "getTunes", this);
+	l.append(act);
+	return l;
+}
+
+QList<Tune*> DeezerPlugin::getTunes()
+{
+	QList<Tune*> list;
 	DeezerGettunesDlg dlg;
-	if(dlg.exec() == QDialog::Accepted) {
+	if(dlg.go() == QompPluginGettunesDlg::ResultOK) {
 		list = dlg.getTunes();
 	}
 	return list;

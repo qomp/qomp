@@ -1,3 +1,5 @@
+include($$PWD/../plugins.pri)
+
 HEADERS += \
     deezerplugin.h \
     deezergettunesdlg.h \
@@ -10,3 +12,5 @@ SOURCES += \
     deezerauth.cpp
 
 QT += xml
+
+OTHER_FILES += $$PWD/metadata.json

@@ -26,7 +26,10 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+
+#ifdef DEBUG_OUTPUT
 #include <QDebug>
+#endif
 
 DeezerAuth::DeezerAuth(QObject *parent) :
 	QObject(parent),
@@ -45,7 +48,7 @@ void DeezerAuth::start()
 	QString url = QString("http://connect.deezer.com/en/login.php?format=popup&response_type=token&perms=basic_access%1")
 			.arg(DEEZER_APP_ID);
 	QNetworkRequest nr(url);
-	QNetworkReply* reply = QompNetworkingFactory::instance()->getNetworkAccessManager()->get(nr);
+	QNetworkReply* reply = QompNetworkingFactory::instance()->getMainNAM()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(authFinished()));
 }
 
@@ -57,8 +60,10 @@ void DeezerAuth::authFinished()
 
 	if(reply->error() == QNetworkReply::NoError) {
 		const QString res = QString::fromUtf8(reply->readAll());
+#ifdef DEBUG_OUTPUT
 		qDebug() << res;
 		qDebug() << reply->url();
+#endif
 		status_ = true;
 	}
 }
