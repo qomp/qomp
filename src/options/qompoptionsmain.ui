@@ -117,7 +117,7 @@
    <item>
     <widget class="QCheckBox" name="cb_oneCopy">
      <property name="text">
-      <string>Allow to run only one copy of the qomp</string>
+      <string>Allow to run only one copy of the qomp*</string>
      </property>
     </widget>
    </item>
@@ -365,6 +365,18 @@
       </spacer>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_7">
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>*may require a restart of the application</string>
+     </property>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">
