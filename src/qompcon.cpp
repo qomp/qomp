@@ -246,8 +246,6 @@ bool QompCon::setupWatcher()
 	if(!watcher_.newInstanceAllowed()) {
 		watcher_.sendCommandShow();
 
-		QThread::msleep(QompInstanceWatcher::pullInterval());
-
 		foreach(const QString& arg, commandLine_->args())
 			watcher_.sendCommandTune(arg);
 

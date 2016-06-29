@@ -34,7 +34,6 @@ public:
 	~QompInstanceWatcher();
 
 	bool newInstanceAllowed() const;
-	static int pullInterval();
 
 	void sendCommandShow();
 	void sendCommandTune(const QString& url);

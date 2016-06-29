@@ -25,6 +25,7 @@
 #include <QDataStream>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QThread>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -61,11 +62,6 @@ QompInstanceWatcher::~QompInstanceWatcher()
 bool QompInstanceWatcher::newInstanceAllowed() const
 {
 	return _firstInstance || !Options::instance()->getOption(OPTION_ONE_COPY).toBool();
-}
-
-int QompInstanceWatcher::pullInterval()
-{
-	return TIMER_INTERVAL;
 }
 
 void QompInstanceWatcher::sendCommandShow()
@@ -143,4 +139,7 @@ void QompInstanceWatcher::sendCommand(const QJsonDocument &doc)
 	const char *from = buffer.data().data();
 	memcpy(to, from, qMin(_mem.size(), size));
 	_mem.unlock();
+
+
+	QThread::msleep(TIMER_INTERVAL);
 }
