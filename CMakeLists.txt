@@ -63,6 +63,8 @@ set( qomp_SRCS
 	src/qompplaylistmodel.cpp
 	src/qomptrayicon.cpp
 	src/aboutdlg.cpp
+	src/qompcommandline.cpp
+	src/qompinstancewatcher.cpp
 	src/qomptunedownloader.cpp
 	src/qompplaylistdelegate.cpp
 	src/translator.cpp
