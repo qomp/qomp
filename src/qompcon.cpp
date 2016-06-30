@@ -71,6 +71,7 @@
 #include <QDebug>
 #endif
 
+static const int ADDING_INTERVAL = 1000;
 
 #ifdef Q_OS_ANDROID
 static QompCon* _instance;
@@ -241,7 +242,7 @@ void QompCon::processCommandLine()
 bool QompCon::setupWatcher()
 {
 #ifndef QOMP_MOBILE
-	connect(&watcher_, &QompInstanceWatcher::commandTune, this, &QompCon::processUrl);
+	connect(&watcher_, &QompInstanceWatcher::commandTune, this, &QompCon::processUrl, Qt::QueuedConnection);
 
 	if(!watcher_.newInstanceAllowed()) {
 		watcher_.sendCommandShow();
@@ -328,10 +329,15 @@ void QompCon::deInit()
 
 void QompCon::processUrl(const QString &url)
 {
+	//When we open several songs, this slot will be
+	//called several times.
+	//We want to play the first song
+	static bool adding = false;
+
 	QList<Tune*> tunes;
 	if(PluginManager::instance()->processUrl(url, &tunes)) {
 		model_->addTunes(tunes);
-		if(tunes.size() > 0) {
+		if(!adding && tunes.size() > 0) {
 			stopPlayer();
 			//start playback from the begining
 			Options::instance()->setOption(OPTION_LAST_POS, 0);
@@ -339,7 +345,12 @@ void QompCon::processUrl(const QString &url)
 			player_->setPosition(0);
 			player_->play();
 		}
+		adding = true;
 	}
+
+	QTimer::singleShot(ADDING_INTERVAL, [](){
+		adding = false;
+	});
 }
 
 bool QompCon::eventFilter(QObject *obj, QEvent *e)

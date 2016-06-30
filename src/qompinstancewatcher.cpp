@@ -26,6 +26,8 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QLocalSocket>
+#include <QEventLoop>
+#include <QThread>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -96,6 +98,9 @@ void QompInstanceWatcher::dataReady()
 	QByteArray ba = soc->readAll();
 	soc->deleteLater();
 
+	if(ba.size() == 0)
+		return;
+
 	buffer.setData(ba);
 	buffer.open(QBuffer::ReadOnly);
 
@@ -136,16 +141,19 @@ void QompInstanceWatcher::sendCommand(const QJsonDocument &doc)
 
 	QLocalSocket* soc = new QLocalSocket;
 	connect(soc, &QLocalSocket::disconnected, soc, &QLocalSocket::deleteLater);
+	connect(soc, SIGNAL(error(QLocalSocket::LocalSocketError)), soc, SLOT(deleteLater()));
 
-	soc->connectToServer(SYS_KEY);
-	if(soc->waitForConnected(CONNECTION_INTERVAL)) {
+	connect(soc, &QLocalSocket::connected, [soc, &buffer]() {
 		soc->write(buffer.data().constData(), buffer.size());
 		soc->flush();
 		soc->disconnectFromServer();
-	}
-	else {
-		soc->deleteLater();
-	}
+	});
+
+	QEventLoop e;
+	connect(soc, &QLocalSocket::destroyed,  &e, &QEventLoop::quit);
+
+	soc->connectToServer(SYS_KEY, QLocalSocket::WriteOnly);
+	e.exec();
 }
 
 bool QompInstanceWatcher::checkServerExists() const
