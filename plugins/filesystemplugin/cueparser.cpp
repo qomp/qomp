@@ -21,6 +21,8 @@
 #include "tune.h"
 #include "common.h"
 #include "filesystemcommon.h"
+#include "options.h"
+#include "defines.h"
 
 extern "C" {
 #include "libcue.h"
@@ -43,6 +45,15 @@ CueParser::CueParser(const QString &fname)
 		_path = fi.absolutePath();
 
 		QTextStream stream(&f);
+
+		const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray();
+		QTextCodec *tc = QTextCodec::codecForName(decoding);
+		if(tc)
+			stream.setCodec(tc);
+
+
+		stream.setAutoDetectUnicode(true);
+
 		_cd = cue_parse_string(stream.readAll().toUtf8().constData());
 	}
 }
