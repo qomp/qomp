@@ -28,6 +28,8 @@ set( LIBQOMP_LIBRARY libqomp )
 add_subdirectory( ${LIBQOMP_LIBRARY} )
 add_subdirectory( plugins )
 
+add_definitions( -DQAPPLICATION_CLASS=QApplication )
+
 set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 include_directories(
 	${CMAKE_SOURCE_DIR}
@@ -56,6 +58,9 @@ set( options_UIS
 	src/options/qompoptionsmain.ui
 	src/options/qompoptionsplugins.ui
 	)
+set( singleapp_SRCS
+	src/singleapplication/singleapplication.cpp
+	)
 set( qomp_SRCS
 	src/main.cpp
 	src/qompmainwin.cpp
@@ -72,6 +77,7 @@ set( qomp_SRCS
 	src/qompplaylistview.cpp
 	src/qompmenu.cpp
 	${options_SRCS}
+	${singleapp_SRCS}
 	)
 set( qomp_UIS
 	src/qompmainwin.ui
