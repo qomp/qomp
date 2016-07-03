@@ -71,7 +71,7 @@
 #include <QDebug>
 #endif
 
-static const int ADDING_INTERVAL = 1000;
+static const int ADDING_INTERVAL = 2000;
 
 #ifdef Q_OS_ANDROID
 static QompCon* _instance;
@@ -245,8 +245,6 @@ bool QompCon::setupWatcher()
 	connect(&watcher_, &QompInstanceWatcher::commandTune, this, &QompCon::processUrl, Qt::QueuedConnection);
 
 	if(!watcher_.newInstanceAllowed()) {
-		watcher_.sendCommandShow();
-
 		foreach(const QString& arg, commandLine_->args())
 			watcher_.sendCommandTune(arg);
 
@@ -344,13 +342,14 @@ void QompCon::processUrl(const QString &url)
 			model_->setCurrentTune(tunes.at(0));
 			player_->setPosition(0);
 			player_->play();
-		}
-		adding = true;
-	}
 
-	QTimer::singleShot(ADDING_INTERVAL, [](){
-		adding = false;
-	});
+			adding = true;
+
+			QTimer::singleShot(ADDING_INTERVAL, [](){
+				adding = false;
+			});
+		}
+	}
 }
 
 bool QompCon::eventFilter(QObject *obj, QEvent *e)

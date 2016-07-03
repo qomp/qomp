@@ -20,7 +20,8 @@
 #ifdef QOMP_MOBILE
 #include <QGuiApplication>
 #else
-#include <QApplication>
+#include "singleapplication/singleapplication.h"
+#define QAPPLICATION_CLASS QApplication
 #endif
 
 #include "qompcon.h"
@@ -28,14 +29,15 @@
 
 int main(int argc, char *argv[])
 {
+	QCoreApplication::setApplicationName(APPLICATION_NAME);
+	QCoreApplication::setApplicationVersion(APPLICATION_VERSION);
+	QCoreApplication::setOrganizationName(APPLICATION_NAME);
 #ifdef QOMP_MOBILE
 	QGuiApplication* a = new QGuiApplication(argc, argv);
 #else
-	QApplication* a = new QApplication(argc, argv);
+	SingleApplication::setAllowSecondary(true);
+	SingleApplication* a = new SingleApplication(argc, argv, std::numeric_limits<uint8_t>::max());
 #endif
-	a->setApplicationName(APPLICATION_NAME);
-	a->setApplicationVersion(APPLICATION_VERSION);
-	a->setOrganizationName(APPLICATION_NAME);
 	a->setQuitOnLastWindowClosed(false);
 	QompCon* qomp = new QompCon;
 	int ret = a->exec();

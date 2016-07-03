@@ -54,6 +54,8 @@ else {
         $$PWD/aboutdlg.ui
 
     RESOURCES   += $$PWD/themes.qrc
+
+    include ($$PWD/singleapplication/singleapplication.pri)
 }
 
 qtmultimedia_backend {

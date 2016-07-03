@@ -23,7 +23,7 @@
 #include <QObject>
 #include <QLocalServer>
 
-class QJsonDocument;
+class QJsonObject;
 
 class QompInstanceWatcher : public QObject
 {
@@ -33,26 +33,14 @@ public:
 	~QompInstanceWatcher();
 
 	bool newInstanceAllowed() const;
-
-	void sendCommandShow();
 	void sendCommandTune(const QString& url);
-
-private slots:
-	void newConnection();
-	void dataReady();
 
 signals:
 	void commandShow();
 	void commandTune(const QString& url);
 
-private:
-	void sendCommand(const QJsonDocument& doc);
-	bool checkServerExists() const;
-	void setupServer();
-
-private:
-	QLocalServer _serv;
-	bool _firstInstance;
+private slots:
+	void incommingCommand(const QJsonObject& obj);
 };
 
 #endif // QOMPINSTANCEWATCHER_H

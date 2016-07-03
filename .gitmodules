@@ -4,3 +4,6 @@
 [submodule "themes"]
 	path = themes
 	url = http://github.com/qomp/themes
+[submodule "src/singleapplication"]
+	path = src/singleapplication
+	url = https://github.com/wadealer/SingleApplication

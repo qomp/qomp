@@ -20,150 +20,53 @@
 #include "qompinstancewatcher.h"
 #include "options.h"
 #include "defines.h"
+#include "singleapplication/singleapplication.h"
 
-#include <QBuffer>
-#include <QDataStream>
 #include <QJsonObject>
-#include <QJsonDocument>
-#include <QLocalSocket>
-#include <QEventLoop>
-#include <QThread>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
 #endif
 
-static const QString SYS_KEY = "qomp-instance";
-static int CONNECTION_INTERVAL = 100;
 static const QString COMMAND = "command";
-static const QString ARG = "arg";
-static const QString COM_SHOW = "show";
 static const QString COM_TUNE = "tune";
 static const QString VAL_URL  = "url";
 
 QompInstanceWatcher::QompInstanceWatcher(QObject *parent) :
-	QObject(parent),
-	_serv(this),
-	_firstInstance(true)
-{	
-	connect(&_serv, &QLocalServer::newConnection, this, &QompInstanceWatcher::newConnection);
-	_firstInstance = !checkServerExists();
-	setupServer();
+	QObject(parent)
+{
+	connect(static_cast<SingleApplication*>(qApp), &SingleApplication::showUp,
+		this, &QompInstanceWatcher::commandShow);
+	connect(static_cast<SingleApplication*>(qApp), &SingleApplication::command,
+		this, &QompInstanceWatcher::incommingCommand);
 }
 
 QompInstanceWatcher::~QompInstanceWatcher()
 {
-
 }
 
 bool QompInstanceWatcher::newInstanceAllowed() const
 {
-	return _firstInstance || !Options::instance()->getOption(OPTION_ONE_COPY).toBool();
-}
-
-void QompInstanceWatcher::sendCommandShow()
-{
-	QJsonObject obj;
-	obj.insert(COMMAND, QJsonValue(COM_SHOW));
-	QJsonDocument doc(obj);
-	sendCommand(doc);
+	return !Options::instance()->getOption(OPTION_ONE_COPY).toBool()
+			|| static_cast<SingleApplication*>(qApp)->isPrimary();
 }
 
 void QompInstanceWatcher::sendCommandTune(const QString &url)
 {
-	QJsonObject obj;
-	obj.insert(COMMAND, QJsonValue(COM_TUNE));
-	obj.insert(VAL_URL, QJsonValue(url));
-	QJsonDocument doc(obj);
-	sendCommand(doc);
+	QJsonObject obj {
+		{COMMAND, COM_TUNE},
+		{VAL_URL, url}
+	};
+	static_cast<SingleApplication*>(qApp)->sendCommand(obj);
 }
 
-void QompInstanceWatcher::newConnection()
+void QompInstanceWatcher::incommingCommand(const QJsonObject &obj)
 {
-#ifdef DEBUG_OUTPUT
-	qDebug() << "QompInstanceWatcher::newConnection";
-#endif
-	QLocalSocket* soc = _serv.nextPendingConnection();
-	connect(soc, &QLocalSocket::readChannelFinished, this, &QompInstanceWatcher::dataReady);
-	connect(soc, &QLocalSocket::disconnected, soc, &QLocalSocket::deleteLater);
-}
-
-void QompInstanceWatcher::dataReady()
-{
-	QLocalSocket* soc = static_cast<QLocalSocket*>(sender());
-
-	QBuffer buffer;
-	QDataStream in(&buffer);
-
-	QByteArray ba = soc->readAll();
-	soc->deleteLater();
-
-	if(ba.size() == 0)
-		return;
-
-	buffer.setData(ba);
-	buffer.open(QBuffer::ReadOnly);
-
-	QVariant v;
-	in >> v;
-
-#ifdef DEBUG_OUTPUT
-	qDebug() << "QompInstanceWatcher::dataReady()" << v;
-#endif
-	QJsonDocument doc = QJsonDocument::fromVariant(v);
-
-	if(!doc.isNull() && doc.isObject()) {
-		QJsonObject obj = doc.object();
-		if(obj.contains(COMMAND)) {
-			const QString com = obj.value(COMMAND).toString();
-			if(com == COM_SHOW) {
-				emit commandShow();
-			}
-			else if(com == COM_TUNE) {
-				const QString url = obj.value(VAL_URL).toString();
-				emit commandTune(url);
-			}
+	if(obj.contains(COMMAND)) {
+		const QString com = obj.value(COMMAND).toString();
+		if(com == COM_TUNE) {
+			const QString url = obj.value(VAL_URL).toString();
+			emit commandTune(url);
 		}
 	}
-}
-
-void QompInstanceWatcher::sendCommand(const QJsonDocument &doc)
-{
-	QBuffer buffer;
-	buffer.open(QBuffer::ReadWrite);
-	QDataStream out(&buffer);
-	QVariant v = doc.toVariant();
-
-#ifdef DEBUG_OUTPUT
-	qDebug() << "QompInstanceWatcher::sendCommand" << v;
-#endif
-	out << v;
-
-	QLocalSocket* soc = new QLocalSocket;
-	connect(soc, &QLocalSocket::disconnected, soc, &QLocalSocket::deleteLater);
-	connect(soc, SIGNAL(error(QLocalSocket::LocalSocketError)), soc, SLOT(deleteLater()));
-
-	connect(soc, &QLocalSocket::connected, [soc, &buffer]() {
-		soc->write(buffer.data().constData(), buffer.size());
-		soc->flush();
-		soc->disconnectFromServer();
-	});
-
-	QEventLoop e;
-	connect(soc, &QLocalSocket::destroyed,  &e, &QEventLoop::quit);
-
-	soc->connectToServer(SYS_KEY, QLocalSocket::WriteOnly);
-	e.exec();
-}
-
-bool QompInstanceWatcher::checkServerExists() const
-{
-	QLocalSocket soc;
-	soc.connectToServer(SYS_KEY);
-	return soc.waitForConnected(CONNECTION_INTERVAL);
-}
-
-void QompInstanceWatcher::setupServer()
-{
-	_serv.listen(SYS_KEY);
 }
