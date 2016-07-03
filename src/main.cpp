@@ -21,7 +21,6 @@
 #include <QGuiApplication>
 #else
 #include "singleapplication/singleapplication.h"
-#define QAPPLICATION_CLASS QApplication
 #endif
 
 #include "qompcon.h"
