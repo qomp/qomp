@@ -37,7 +37,7 @@
                 <string>wav</string>
             </array>
             <key>CFBundleTypeIconFile</key>
-            <string>qomp.icns</string>
+            <string>qomp-file.icns</string>
         </dict>
         </array>
 </dict>
