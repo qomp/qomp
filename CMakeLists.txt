@@ -117,7 +117,7 @@ if( LINUX )
 endif()
 
 if( USE_QT5 )
-	find_package( Qt5 REQUIRED Widgets Network Multimedia Concurrent )
+	find_package( Qt5 REQUIRED Core Widgets Network Multimedia Concurrent )
 	find_package( Qt5LinguistTools )
 	qt5_add_resources( RSCS ${qomp_RSCS} )
 	if( Qt5LinguistTools_FOUND )
@@ -195,7 +195,17 @@ if(BUILD_THEMES)
 			else()
 				set(THEMES_RCC "${CMAKE_CURRENT_BINARY_DIR}/themes.rcc")
 			endif()
-			qt5_add_binary_resources(build_themes_rcc "${THEMES_QRC}" OPTIONS -binary DESTINATION "${THEMES_RCC}")
+			if(${Qt5Core_VERSION} VERSION_LESS 5.5.0)
+				add_custom_command(OUTPUT "${THEMES_RCC}"
+					COMMAND "${Qt5Core_RCC_EXECUTABLE}" --binary --verbose --output "${THEMES_RCC}" "${THEMES_QRC}"
+					DEPENDS "${THEMES_QRC}"
+					WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+					COMMENT "Building external Qt resource ${THEMES_RCC}"
+					VERBATIM)
+				add_custom_target(build_status_rcc DEPENDS "${THEMES_RCC}" SOURCES "${THEMES_QRC}")
+			else()
+				qt5_add_binary_resources(build_themes_rcc "${THEMES_QRC}" OPTIONS -binary DESTINATION "${THEMES_RCC}")
+			endif()
 		endif()
 	else()
 		message(FATAL_ERROR "Qomp themes sources not found in ${PROJECT_SOURCE_DIR}/themes")
