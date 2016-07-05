@@ -1,5 +1,5 @@
 Version 1.1
-xx.xx.2016
+05.07.2016
  + add CUE SHEET support (*.cue files)
  + add "Open With..." dialog support
  + add "Allow one copy" option
