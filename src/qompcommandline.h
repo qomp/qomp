@@ -21,6 +21,7 @@
 #define QOMPCOMMANDLINE_H
 
 #include <QObject>
+#include <QStringList>
 
 class QompCommandLine : public QObject
 {
