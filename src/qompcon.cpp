@@ -35,6 +35,7 @@
 #include "qompinstancewatcher.h"
 #ifndef Q_OS_ANDROID
 #include "aboutdlg.h"
+#include <QHotkey>
 #include "thememanager.h"
 #include <QApplication>
 #else
@@ -265,6 +266,8 @@ void QompCon::init()
 	setupPlayer();
 	setupMainWin();
 
+	connectMediaKeys();
+
 	model_->restoreState();
 
 	Options* o = Options::instance();
@@ -411,6 +414,29 @@ void QompCon::checkVersion()
 
 		Options::instance()->setOption(OPTION_APPLICATION_VERSION, APPLICATION_VERSION);
 	}
+}
+
+void QompCon::connectMediaKeys()
+{
+#ifndef QOMP_MOBILE
+		QHotkey *keyPlayPause = new QHotkey(Qt::Key_MediaTogglePlayPause, true, this);
+		connect(keyPlayPause, &QHotkey::activated, this, &QompCon::actPlay);
+
+		QHotkey *keyPlay = new QHotkey(Qt::Key_MediaPlay, true, this);
+		connect(keyPlay, &QHotkey::activated, this, &QompCon::actPlay);
+
+		QHotkey *keyPause = new QHotkey(Qt::Key_MediaPause, true, this);
+		connect(keyPause, &QHotkey::activated, this, &QompCon::actPause);
+
+		QHotkey *keyNext = new QHotkey(Qt::Key_MediaNext, true, this);
+		connect(keyNext, &QHotkey::activated, this, &QompCon::actPlayNext);
+
+		QHotkey *keyPrev = new QHotkey(Qt::Key_MediaPrevious, true, this);
+		connect(keyPrev, &QHotkey::activated, this, &QompCon::actPlayPrev);
+
+		QHotkey *keyStop = new QHotkey(Qt::Key_MediaStop, true, this);
+		connect(keyStop, &QHotkey::activated, this, &QompCon::actStop);
+#endif
 }
 
 void QompCon::incomingCall(bool begining)

@@ -56,6 +56,7 @@ else {
     RESOURCES   += $$PWD/themes.qrc
 
     include ($$PWD/singleapplication/singleapplication.pri)
+    include($$PWD/../thirdparty/QHotkey/qhotkey.pri)
 }
 
 qtmultimedia_backend {

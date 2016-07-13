@@ -93,6 +93,7 @@ private:
 	void setupPlayer();
 	void setupModel();
 	void checkVersion();
+	void connectMediaKeys();
 
 	void stopPlayer();
 	void playIndex(const QModelIndex& index);
