@@ -475,18 +475,7 @@ void QompCon::updateSettings()
 
 void QompCon::actPlayNext()
 {
-	QModelIndex index = model_->currentIndex();
-	if(index.isValid() && index.row() < model_->rowCount()-1) {
-		Qomp::State state = player_->state();
-		index = model_->index(index.row()+1);
-		if(state != Qomp::StateStopped) {
-			stopPlayer();
-		}
-		model_->setCurrentTune(model_->tune(index));
-		if(state == Qomp::StatePlaying) {
-			actPlay();
-		}
-	}
+	findNextMedia(false);
 }
 
 void QompCon::actPlayPrev()
@@ -789,24 +778,28 @@ void QompCon::playNextShuffle(bool afterError, const QModelIndex &index)
 		model_->unsetAllTunesPlayed();
 	}
 
-	if( !finished || (!afterError && Options::instance()->getOption(OPTION_REPEAT_ALL).toBool()) ) {
-		if(player_->lastAction() == Qomp::StatePlaying) {
-			int r = index.row();
+	if( !finished || (!afterError && Options::instance()->getOption(OPTION_REPEAT_ALL).toBool()) )
+	{
+		int r = index.row();
 
-			if(model_->rowCount() > 1) {
-				while(index.row() == r || model_->tune(model_->index(r))->played) {
-					r = rand() % model_->rowCount();
-				}
+		if(model_->rowCount() > 1) {
+			while(index.row() == r || model_->tune(model_->index(r))->played) {
+				r = rand() % model_->rowCount();
 			}
-
-			ind = model_->index(r);
 		}
+
+		ind = model_->index(r);
 	}
 
-	if(ind.isValid())
-		playIndex(ind);
-	else
-		stopPlayer();
+	Qomp::State state = player_->lastAction();
+	stopPlayer();
+
+	if(ind.isValid()) {
+		model_->setCurrentTune(model_->tune(ind));
+
+		if(state == Qomp::StatePlaying)
+			actPlay();
+	}
 }
 
 void QompCon::playNext(bool afterError, const QModelIndex &index)
@@ -825,13 +818,31 @@ void QompCon::playNext(bool afterError, const QModelIndex &index)
 		}
 	}
 	else {
+		const QModelIndex ind = model_->index(index.row()+1);
+
 		if(player_->lastAction() == Qomp::StatePlaying) {
-			const QModelIndex ind = model_->index(index.row()+1);
 			playIndex(ind);
 		}
 		else {
 			stopPlayer();
+			model_->setCurrentTune(model_->tune(ind));
 		}
+	}
+}
+
+void QompCon::findNextMedia(bool afterError)
+{
+	QModelIndex index = model_->currentIndex();
+
+	if(!index.isValid())
+		return;
+
+	if(Options::instance()->getOption(OPTION_SHUFFLE).toBool()) {
+		model_->currentTune()->played = true;
+		playNextShuffle(afterError, index);
+	}
+	else {
+		playNext(afterError, index);
 	}
 }
 
@@ -843,19 +854,7 @@ void QompCon::mediaFinished(bool afterError)
 	mainWin_->setCurrentPosition(0);
 	savePlayerPosition();
 
-	QModelIndex index = model_->currentIndex();
-
-	//If current tune is empty tune, we probably reachs the end of playlist
-	if(!index.isValid())
-		return;
-
-	if(Options::instance()->getOption(OPTION_SHUFFLE).toBool()) {
-		model_->currentTune()->played = true;
-		playNextShuffle(afterError, index);
-	}
-	else {
-		playNext(afterError, index);
-	}
+	findNextMedia(afterError);
 }
 
 void QompCon::playerStateChanged(Qomp::State state)

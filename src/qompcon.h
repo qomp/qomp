@@ -105,6 +105,7 @@ private:
 	void preparePlayback();
 	void processCommandLine();
 	bool setupWatcher();
+	void findNextMedia(bool afterError);
 
 	static QompPlayer* createPlayer();
 
