@@ -107,8 +107,10 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	trayIcon_(new QompTrayIcon(p)),
 	mainMenu_(new QompMainMenu(mainWin_)),
 	parentWin_(p),
-	actClearPlaylist_(nullptr),
-	winTaskBar_(nullptr)
+	actClearPlaylist_(nullptr)
+#ifdef Q_OS_WIN
+	, winTaskBar_(nullptr)
+#endif
 {
 	ui->setupUi(mainWin_);
 	connectActions();
