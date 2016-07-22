@@ -129,32 +129,17 @@ include_directories(
 	src/plugins
 	src/options
 )
-if( USE_QT5 )
-	find_package( Qt5 REQUIRED Widgets Network Concurrent )
-	qt5_wrap_ui( libqomp_UIS ${libqomp_UIFILES} )
-	add_definitions(
-		-DHAVE_QT5
-	)
-	set( QT_DEPLIBS
-		Qt5::Widgets
-		Qt5::Network
-		Qt5::Concurrent
-	)
-else()
-	find_package( Qt4 REQUIRED )
-	include( ${QT_USE_FILE} )
-	include_directories(
-		${QT_QTCORE_INCLUDE_DIR}
-		${QT_QTGUI_INCLUDE_DIR}
-		${QT_QTNETWORK_INCLUDE_DIR}
-	)
-	QT4_WRAP_UI( libqomp_UIS ${libqomp_UIFILES} )
-	set( QT_DEPLIBS
-		${QT_QTCORE_LIBRARY}
-		${QT_QTGUI_LIBRARY}
-		${QT_QTNETWORK_LIBRARY}
-	)
-endif()
+
+find_package( Qt5 REQUIRED Widgets Network Concurrent )
+qt5_wrap_ui( libqomp_UIS ${libqomp_UIFILES} )
+add_definitions(
+	-DHAVE_QT5
+)
+set( QT_DEPLIBS
+	Qt5::Widgets
+	Qt5::Network
+	Qt5::Concurrent
+)
 
 if( DEV_MODE )
 	set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/qomp" )

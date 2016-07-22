@@ -51,6 +51,7 @@ if( ${USE_QT5} )
 		Xml
 		Widgets
 		Concurrent
+		WinExtras
 	)
 	find_package( Qt5 COMPONENTS ${qt5_components} REQUIRED )
 	foreach( liba ${qt5_components} )

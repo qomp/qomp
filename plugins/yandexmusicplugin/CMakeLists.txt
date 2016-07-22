@@ -27,38 +27,16 @@ include_directories(
 	${PROJECT_BINARY_DIR}/libqomp/include
 )
 set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
-if( USE_QT5 )
-	find_package( Qt5 REQUIRED Widgets Network )
-	add_definitions(
-		-DHAVE_QT5
-	)
-	qt5_wrap_ui( UIS ${lastfmplugin_UIS} )
-	set( QT_DEPLIBS
-		Qt5::Widgets
-		Qt5::Network
-	)
-else()
-	find_package( Qt4 REQUIRED )
-	find_package( QJSON REQUIRED )
-	message("-- Found QJSON: ${QJSON_LIBRARY}")
-	include( ${QT_USE_FILE} )
-	include_directories(
-		${QT_QTCORE_INCLUDE_DIR}
-		${QT_QTGUI_INCLUDE_DIR}
-		${QT_QTNETWORK_INCLUDE_DIR}
-		${QJSON_INCLUDE_DIR}
-	)
-	QT4_WRAP_UI( UIS ${lastfmplugin_UIS} )
-	set( QT_DEPLIBS
-		${QT_QTCORE_LIBRARY}
-		${QT_QTGUI_LIBRARY}
-		${QT_QTNETWORK_LIBRARY}
-		${QJSON_LIBRARY}
-	)
-	add_definitions(
-		${QJSON_DEFINITIONS}
-	)
-endif()
+
+find_package( Qt5 REQUIRED Widgets Network )
+add_definitions(
+	-DHAVE_QT5
+)
+qt5_wrap_ui( UIS ${lastfmplugin_UIS} )
+set( QT_DEPLIBS
+	Qt5::Widgets
+	Qt5::Network
+)
 
 add_library( ${PLUGIN} SHARED ${yandexmusicplugin_SRCS} )
 target_link_libraries(

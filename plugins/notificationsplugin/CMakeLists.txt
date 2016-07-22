@@ -31,45 +31,27 @@ if( LINUX )
 		dbusnotifier.cpp
 		)
 endif()
-if( USE_QT5 )
-	find_package( Qt5Widgets REQUIRED )
+
+find_package( Qt5Widgets REQUIRED )
+add_definitions(
+	-DHAVE_QT5
+	)
+set( QT_DEPLIBS
+	Qt5::Widgets
+	)
+if( LINUX )
+	find_package( Qt5DBus REQUIRED )
+	include_directories( ${Qt5DBus_INCLUDES} )
 	add_definitions(
-		-DHAVE_QT5
+		${Qt5DBus_DEFINITIONS}
+		-DHAVE_DBUS
 		)
 	set( QT_DEPLIBS
-		Qt5::Widgets
+		${QT_DEPLIBS}
+		Qt5::DBus
 		)
-	if( LINUX )
-		find_package( Qt5DBus REQUIRED )
-		include_directories( ${Qt5DBus_INCLUDES} )
-		add_definitions(
-			${Qt5DBus_DEFINITIONS}
-			-DHAVE_DBUS
-			)
-		set( QT_DEPLIBS
-			${QT_DEPLIBS}
-			Qt5::DBus
-			)
-	endif()
-else()
-	find_package( Qt4 REQUIRED )
-	include( ${QT_USE_FILE} )
-	include_directories(
-		${QT_QTCORE_INCLUDE_DIR}
-		${QT_QTGUI_INCLUDE_DIR}
-		)
-	set( QT_DEPLIBS
-		${QT_QTCORE_LIBRARY}
-		${QT_QTGUI_LIBRARY}
-		)
-	if( LINUX )
-		include_directories( ${QT_QTDBUS_INCLUDE_DIR} )
-		set( QT_DEPLIBS
-			${QT_DEPLIBS}
-			${QT_QTDBUS_LIBRARY}
-			)
-	endif()
 endif()
+
 add_library(
 	${PLUGIN}
 	SHARED

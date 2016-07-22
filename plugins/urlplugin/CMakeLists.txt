@@ -19,26 +19,14 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PROJECT_BINARY_DIR}/libqomp/include
 )
-if( USE_QT5 )
-	find_package( Qt5Widgets REQUIRED )
-	add_definitions(
-		-DHAVE_QT5
-	)
-	set( QT_DEPLIBS
-		Qt5::Widgets
-	)
-else()
-	find_package( Qt4 REQUIRED )
-	include( ${QT_USE_FILE} )
-	include_directories(
-		${QT_QTCORE_INCLUDE_DIR}
-		${QT_QTGUI_INCLUDE_DIR}
-	)
-	set( QT_DEPLIBS
-		${QT_QTCORE_LIBRARY}
-		${QT_QTGUI_LIBRARY}
-	)
-endif()
+
+find_package( Qt5Widgets REQUIRED )
+add_definitions(
+	-DHAVE_QT5
+)
+set( QT_DEPLIBS
+	Qt5::Widgets
+)
 
 add_library(
 	${PLUGIN}

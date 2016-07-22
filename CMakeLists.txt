@@ -7,13 +7,18 @@ endif()
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
-option( USE_QT5 "Use Qt5" ON )
+option( USE_QT5 "Use Qt5" ON ) #Was left for compatibility with build scripts
 option( INSTALL_DEPS "Install win32 qomp dependencies" OFF )
 option( DEV_MODE "Enable development mode" OFF )
 option( BUILD_THEMES "Build qomp themes" ON )
 set( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
 set( LIB_SUFFIX "" CACHE STRING "Define suffix of lib directory name (32/64)" )
 set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where libs will be installed" )
+
+if( NOT USE_QT5 )
+	message(AUTHOR_WARNING "Qt4 support stopped since 1.1 version. Flag USE_QT5 always enabled")
+	set(USE_QT5 ON)
+endif()
 
 set( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
@@ -141,6 +146,9 @@ if( WIN32 )
 endif()
 
 if( DEV_MODE )
+	if( WIN32 )
+		set(INSTALL_DEPS ON)
+	endif()
 	set( EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/${PROJECT_NAME}" )
 	file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
 	file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/translations")
@@ -157,76 +165,42 @@ if( LINUX )
 	add_definitions( -DHAVE_X11 -DQOMP_DATADIR="${QOMP_DATADIR}" )
 endif()
 
-if( USE_QT5 )
-	find_package( Qt5 REQUIRED Core Widgets Network Multimedia Concurrent )
-	find_package( Qt5LinguistTools )
-	qt5_add_resources( RSCS ${qomp_RSCS} )
-	if( Qt5LinguistTools_FOUND )
-		qt5_add_translation( TRS ${qomp_TRS} )
-	endif()
-	qt5_wrap_ui(main_UIS
-		${qomp_UIS}
-		)
-	add_definitions(
-		-DHAVE_QT5
-		-DHAVE_QTMULTIMEDIA
-		)
-	set(QT_DEPLIBS
-		Qt5::Widgets
-		Qt5::Network
-		Qt5::Multimedia
-		Qt5::Concurrent
-		)
-	set(qomp_MMEDIA
-		src/qompqtmultimediaplayer.cpp
-		)
-	if( LINUX )
-		find_package(Qt5X11Extras REQUIRED)
-		set(QT_DEPLIBS
-			${QT_DEPLIBS}
-			Qt5::X11Extras
-			)
-	endif()
+find_package( Qt5 REQUIRED Core Widgets Network Multimedia Concurrent )
+find_package( Qt5LinguistTools )
+qt5_add_resources( RSCS ${qomp_RSCS} )
+if( Qt5LinguistTools_FOUND )
+	qt5_add_translation( TRS ${qomp_TRS} )
 else()
-	message(WARNING " Qt4 not longer supported! Last version of qomp with Qt4 support is 1.0")
-	find_package( Qt4 REQUIRED )
-	include( ${QT_USE_FILE} )
-	include_directories(
-		${QT_QTCORE_INCLUDE_DIR}
-		${QT_QTGUI_INCLUDE_DIR}
-		${QT_QTNETWORK_INCLUDE_DIR}
-		)
-	QT4_ADD_RESOURCES( RSCS ${qomp_RSCS} )
-	QT4_ADD_TRANSLATION( TRS ${qomp_TRS} )
-	QT4_WRAP_UI(main_UIS
-		${qomp_UIS}
-		)
-	if( LINUX )
-		find_package( Phonon QUIET )
-		set( qomp_phonon_SRCS
-			src/qompphononplayer.cpp
-			)
-		add_definitions(-DHAVE_PHONON)
-		if( ${Phonon_FOUND} )
-			message( "-- Looking for Phonon - found" )
-			foreach( inc_path ${PHONON_INCLUDES};/usr/include/phonon )
-				if( EXISTS "${inc_path}/Phonon/MediaObject" )
-					include_directories(${inc_path})
-				endif()
-			endforeach( inc_path )
-			set( phonon_LIB ${PHONON_LIBRARY} )
-		else()
-			message( "-- Looking for Phonon - not found" )
-			set( QT_USE_PHONON TRUE )
-			include_directories( ${QT_PHONON_INCLUDE_DIR} )
-			set( phonon_LIB ${QT_PHONON_LIBRARY} )
-		endif()
-	endif()
+	message(WARNING "Qt5LinguistTools module not found. The translations files will not be created")
+endif()
+qt5_wrap_ui(main_UIS
+	${qomp_UIS}
+	)
+add_definitions(
+	-DHAVE_QT5
+	-DHAVE_QTMULTIMEDIA
+	)
+set(QT_DEPLIBS
+	Qt5::Widgets
+	Qt5::Network
+	Qt5::Multimedia
+	Qt5::Concurrent
+	)
+set(qomp_MMEDIA
+	src/qompqtmultimediaplayer.cpp
+	)
+if( LINUX )
+	find_package(Qt5X11Extras REQUIRED)
 	set(QT_DEPLIBS
-		${QT_QTCORE_LIBRARY}
-		${QT_QTGUI_LIBRARY}
-		${QT_QTMULTIMEDIA_LIBRARY}
-		${QT_QTNETWORK_LIBRARY}
+		${QT_DEPLIBS}
+		Qt5::X11Extras
+		)
+endif()
+if( WIN32 )
+	find_package(Qt5WinExtras REQUIRED)
+	set(QT_DEPLIBS
+		${QT_DEPLIBS}
+		Qt5::WinExtras
 		)
 endif()
 
@@ -260,18 +234,16 @@ endmacro()
 if(BUILD_THEMES)
 	if(EXISTS "${PROJECT_SOURCE_DIR}/themes")
 		set(THEMES_EXISTS ON)
-		if( USE_QT5 )
-			set( THEMES_QRC
-				${PROJECT_SOURCE_DIR}/themes/themes.qrc
-				)
-			if(DEV_MODE)
-				file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/themes")
-				set(THEMES_RCC "${EXECUTABLE_OUTPUT_PATH}/themes/themes.rcc")
-			else()
-				set(THEMES_RCC "${CMAKE_CURRENT_BINARY_DIR}/themes.rcc")
-			endif()
-			create_themes(${THEMES_QRC} ${THEMES_RCC})
+		set( THEMES_QRC
+			${PROJECT_SOURCE_DIR}/themes/themes.qrc
+			)
+		if(DEV_MODE)
+			file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/themes")
+			set(THEMES_RCC "${EXECUTABLE_OUTPUT_PATH}/themes/themes.rcc")
+		else()
+			set(THEMES_RCC "${CMAKE_CURRENT_BINARY_DIR}/themes.rcc")
 		endif()
+		create_themes(${THEMES_QRC} ${THEMES_RCC})
 	else()
 		message(FATAL_ERROR "Qomp themes sources not found in ${PROJECT_SOURCE_DIR}/themes")
 	endif()
@@ -292,7 +264,7 @@ add_dependencies( ${PROJECT_NAME} ${LIBQOMP_LIBRARY} )
 
 if( WIN32 )
 	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} )
-	if( INSTALL_DEPS AND USE_QT5 )
+	if( INSTALL_DEPS )
 		include( Win32Qt5Install_files )
 	endif()
 	set( TRS_PATH ${CMAKE_INSTALL_PREFIX}/translations )
