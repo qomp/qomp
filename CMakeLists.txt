@@ -30,6 +30,23 @@ add_subdirectory( plugins )
 
 add_definitions( -DQAPPLICATION_CLASS=QApplication )
 
+if( UNIX AND NOT (APPLE OR CYGWIN) )
+	set(LINUX ON)
+	find_package( X11 REQUIRED )
+	include_directories(
+		${X11_INCLUDE_DIR}
+		)
+	set(EXTRA_LIBS
+		${X11_LIBRARIES}
+	)
+endif()
+
+if( WIN32 )
+	set(EXTRA_LIBS
+		-lUser32
+		)
+endif()
+
 set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 include_directories(
 	${CMAKE_SOURCE_DIR}
@@ -37,6 +54,7 @@ include_directories(
 	${CMAKE_BINARY_DIR}/libqomp/include
 	src/options
 	src
+	thirdparty/QHotkey
 	)
 
 set( qomp_RSCS
@@ -61,6 +79,31 @@ set( options_UIS
 set( singleapp_SRCS
 	src/singleapplication/singleapplication.cpp
 	)
+set( hotkey_SRCS
+	thirdparty/QHotkey/qhotkey.cpp
+	)
+if( WIN32 )
+	set( hotkey_SRCS
+		${hotkey_SRCS}
+		thirdparty/QHotkey/qhotkey_win.cpp
+	)
+endif()
+if( APPLE )
+	set( hotkey_SRCS
+		${hotkey_SRCS}
+		thirdparty/QHotkey/qhotkey_mac.cpp
+	)
+endif()
+if( LINUX )
+	set( hotkey_SRCS
+		${hotkey_SRCS}
+		thirdparty/QHotkey/qhotkey_x11.cpp
+	)
+endif()
+set( hotkey_HDRS
+	thirdparty/QHotkey/qhotkey.h
+	thirdparty/QHotkey/qhotkey_p.h
+	)
 set( qomp_SRCS
 	src/main.cpp
 	src/qompmainwin.cpp
@@ -78,6 +121,8 @@ set( qomp_SRCS
 	src/qompmenu.cpp
 	${options_SRCS}
 	${singleapp_SRCS}
+	${hotkey_SRCS}
+	${hotkey_HDRS}
 	)
 set( qomp_UIS
 	src/qompmainwin.ui
@@ -93,10 +138,6 @@ if( WIN32 )
 		set( ZLIB_ROOT "c:\\build\\psibuild\\psideps\\Qt5\\zlib" CACHE STRING "ZLIB root path" )
 	endif()
 	set( qomp_RC ${PROJECT_NAME}.rc )
-endif()
-
-if( UNIX AND NOT (APPLE OR CYGWIN) )
-	set(LINUX ON)
 endif()
 
 if( DEV_MODE )
@@ -139,6 +180,13 @@ if( USE_QT5 )
 	set(qomp_MMEDIA
 		src/qompqtmultimediaplayer.cpp
 		)
+	if( LINUX )
+		find_package(Qt5X11Extras REQUIRED)
+		set(QT_DEPLIBS
+			${QT_DEPLIBS}
+			Qt5::X11Extras
+			)
+	endif()
 else()
 	message(WARNING " Qt4 not longer supported! Last version of qomp with Qt4 support is 1.0")
 	find_package( Qt4 REQUIRED )
@@ -237,6 +285,7 @@ target_link_libraries(
 	${LIBQOMP_LIBRARY}
 	${phonon_LIB}
 	${QT_DEPLIBS}
+	${EXTRA_LIBS}
 	)
 
 add_dependencies( ${PROJECT_NAME} ${LIBQOMP_LIBRARY} )
