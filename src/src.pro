@@ -43,7 +43,10 @@ unix:!android {
         INSTALLS += dt icon icon1 icon2 icon3 icon4 icon5
 }
 
-win32:RC_FILE += $$PWD/../qomp.rc
+win32 {
+    RC_FILE += $$PWD/../qomp.rc
+    QT += winextras
+}
 
 macx {
    ICON = icons/qomp.icns

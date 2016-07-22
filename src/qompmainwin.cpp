@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014  Khryukin Evgeny
+ * Copyright (C) 2013-2016  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,6 +33,9 @@
 #include <QTime>
 #include <QMainWindow>
 #include <QFileDialog>
+#ifdef Q_OS_WIN
+#include <QtWinExtras>
+#endif
 
 class QompMainWin::Private : public QObject
 {
@@ -60,6 +63,7 @@ public slots:
 
 	void updateTuneInfo(Tune *tune);
 	void updateIcons(Qomp::State state);
+	void updateProgress(Qomp::State state);
 
 	void trayWheeled(int delta);
 
@@ -81,6 +85,8 @@ public slots:
 	void showPlaylist();
 	void hidePlaylist();
 
+	void initTaskBar();
+
 public:
 	Ui::QompMainWin *ui;
 	QMainWindow*  mainWin_;
@@ -88,6 +94,9 @@ public:
 	QompMainMenu* mainMenu_;
 	QompMainWin*  parentWin_;
 	QAction* actClearPlaylist_;
+#ifdef Q_OS_WIN
+	QWinTaskbarButton *winTaskBar_;
+#endif
 };
 
 
@@ -98,7 +107,8 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	trayIcon_(new QompTrayIcon(p)),
 	mainMenu_(new QompMainMenu(mainWin_)),
 	parentWin_(p),
-	actClearPlaylist_(0)
+	actClearPlaylist_(nullptr),
+	winTaskBar_(nullptr)
 {
 	ui->setupUi(mainWin_);
 	connectActions();
@@ -122,13 +132,22 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	trayIcon_->setContextMenu(mainMenu_);
 #endif
 
-	connect(ui->seekSlider, SIGNAL(valueChanged(int)), parentWin_, SIGNAL(seekSliderMoved(int)));
-	connect(ui->volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderMoved(int)));
-	connect(mainWin_, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doMainContextMenu()));
-	connect(trayIcon_, SIGNAL(trayWheeled(int)), SLOT(trayWheeled(int)));
-	connect(ui->tb_showPlaylist, SIGNAL(clicked(bool)), SLOT(togglePlaylistVisibility()));
+#ifdef Q_OS_WIN
+	if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
+		winTaskBar_ = new QWinTaskbarButton(this);
+		winTaskBar_->progress()->setMinimum(0);
+	}
+#endif
 
-	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(updateShortcuts()));
+	connect(ui->seekSlider, &QSlider::valueChanged, parentWin_, &QompMainWin::seekSliderMoved);
+	connect(ui->volumeSlider, &QSlider::valueChanged, this, &Private::volumeSliderMoved);
+	connect(mainWin_, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doMainContextMenu()));
+	connect(trayIcon_, &QompTrayIcon::trayWheeled, this, &Private::trayWheeled);
+	connect(ui->tb_showPlaylist, SIGNAL(clicked(bool)), SLOT(togglePlaylistVisibility()));
+//	if(winTaskBar_)
+//		connect(trayIcon_, &QompTrayIcon::iconChanged, winTaskBar_, &QWinTaskbarButton::setOverlayIcon);
+
+	connect(Options::instance(), &Options::updateOptions, this, &Private::updateShortcuts);
 
 	restoreWindowState();
 
@@ -176,8 +195,6 @@ void QompMainWin::Private::updateIcons()
 	ui->tb_save->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/save")));
 	ui->tb_open->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/add")));
 	ui->tb_options->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/options")));
-
-
 }
 
 void QompMainWin::Private::togglePlaylistVisibility()
@@ -216,6 +233,17 @@ void QompMainWin::Private::hidePlaylist()
 	Qomp::forceUpdate(mainWin_);
 	mainWin_->resize( mainWin_->width(), 0 );
 	mainWin_->setMaximumHeight(mainWin_->height());
+}
+
+void QompMainWin::Private::initTaskBar()
+{
+#ifdef Q_OS_WIN
+	static bool inited = false;
+	if(winTaskBar_ && !inited) {
+		winTaskBar_->setWindow(mainWin_->windowHandle());
+		inited = true;
+	}
+#endif
 }
 
 void QompMainWin::Private::connectMainMenu()
@@ -296,6 +324,8 @@ void QompMainWin::Private::bringToFront()
 
 	mainWin_->raise();
 	mainWin_->activateWindow();
+
+	initTaskBar();
 }
 
 void QompMainWin::Private::actOpenActivated()
@@ -389,6 +419,29 @@ void QompMainWin::Private::updateIcons(Qomp::State state)
 		break;
 	}
 	}
+}
+
+void QompMainWin::Private::updateProgress(Qomp::State state)
+{
+#ifdef Q_OS_WIN
+	if(!winTaskBar_)
+		return;
+
+	switch (state) {
+	case Qomp::StatePaused:
+		winTaskBar_->progress()->setVisible(true);
+		winTaskBar_->progress()->pause();
+		break;
+	case Qomp::StatePlaying:
+		winTaskBar_->progress()->setVisible(true);
+		winTaskBar_->progress()->resume();
+		break;
+	default:
+		winTaskBar_->progress()->setVisible(false);
+		winTaskBar_->progress()->stop();
+		break;
+	}
+#endif
 }
 
 void QompMainWin::Private::trayWheeled(int delta)
@@ -501,8 +554,8 @@ void QompMainWin::setModel(QompPlayListModel *model)
 {
 	model_ = model;
 	d->ui->playList->setModel(model_);
-	connect(model_, SIGNAL(currentTuneChanged(Tune*)), d, SLOT(updateTuneInfo(Tune*)));
-	connect(model_, SIGNAL(totalTimeChanged(uint)), d, SLOT(totalDurationChanged(uint)));
+	connect(model_, &QompPlayListModel::currentTuneChanged, d, &QompMainWin::Private::updateTuneInfo);
+	connect(model_, &QompPlayListModel::totalTimeChanged, d, &QompMainWin::Private::totalDurationChanged);
 }
 
 void QompMainWin::setMuteState(bool mute)
@@ -525,6 +578,7 @@ void QompMainWin::playerStateChanged(Qomp::State state)
 		return;
 
 	d->updateIcons(state);
+	d->updateProgress(state);
 	currentState_ = state;
 
 	switch(state) {
@@ -580,11 +634,19 @@ void QompMainWin::setCurrentPosition(qint64 ms)
 	d->ui->seekSlider->blockSignals(true);
 	d->ui->seekSlider->setValue(ms);
 	d->ui->seekSlider->blockSignals(false);
+#ifdef Q_OS_WIN
+	if(d->winTaskBar_)
+		d->winTaskBar_->progress()->setValue(ms / 1000);
+#endif
 }
 
 void QompMainWin::currentTotalTimeChanged(qint64 ms)
 {
 	d->ui->seekSlider->setMaximum(ms);
+#ifdef Q_OS_WIN
+	if(d->winTaskBar_)
+		d->winTaskBar_->progress()->setMaximum(ms / 1000);
+#endif
 
 	if(ms == -1 || ms == 0)
 		return;

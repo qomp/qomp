@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2016  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@ public:
 
 	void setToolTip(const QString& text);
 	void setIcon(const QIcon& ico);
+	const QIcon icon() const;
 	void setContextMenu(QMenu* m);
 
 	void show();
@@ -46,6 +47,7 @@ public:
 signals:
 	void trayContextMenu();
 	void trayWheeled(int delta);
+	void iconChanged(const QIcon&);
 	
 private slots:
 	void trayActivated(QSystemTrayIcon::ActivationReason reason);
