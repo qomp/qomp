@@ -94,6 +94,7 @@ public:
 	QompMainMenu* mainMenu_;
 	QompMainWin*  parentWin_;
 	QAction* actClearPlaylist_;
+	QAction* actRemoveSelected_;
 #ifdef Q_OS_WIN
 	QWinTaskbarButton *winTaskBar_;
 #endif
@@ -107,7 +108,8 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	trayIcon_(new QompTrayIcon(p)),
 	mainMenu_(new QompMainMenu(mainWin_)),
 	parentWin_(p),
-	actClearPlaylist_(nullptr)
+	actClearPlaylist_(nullptr),
+	actRemoveSelected_(nullptr)
 #ifdef Q_OS_WIN
 	, winTaskBar_(nullptr)
 #endif
@@ -277,8 +279,12 @@ void QompMainWin::Private::connectActions()
 	connect(ui->tb_options, SIGNAL(clicked()),   parentWin_, SIGNAL(doOptions()));
 
 	actClearPlaylist_ = new QAction(mainWin_);
-	connect(actClearPlaylist_, SIGNAL(triggered()), parentWin_, SIGNAL(clearPlaylist()));
+	connect(actClearPlaylist_, &QAction::triggered, parentWin_, &QompMainWin::clearPlaylist);
 	mainWin_->addAction(actClearPlaylist_);
+
+	actRemoveSelected_ = new QAction(mainWin_);
+	connect(actRemoveSelected_, &QAction::triggered, this, &Private::removeSelectedIndexes);
+	mainWin_->addAction(actRemoveSelected_);
 }
 
 void QompMainWin::Private::setupPlaylist()
@@ -532,6 +538,7 @@ void QompMainWin::Private::updateShortcuts()
 	ui->tb_shuffle->setShortcut(a->getShortcut(QompActionsList::ActShuffle));
 	ui->tb_options->setShortcut(a->getShortcut(QompActionsList::ActSettings));
 	actClearPlaylist_->setShortcut(a->getShortcut(QompActionsList::ActClearPlaylist));
+	actRemoveSelected_->setShortcut(a->getShortcut(QompActionsList::ActRemoveTune));
 }
 
 

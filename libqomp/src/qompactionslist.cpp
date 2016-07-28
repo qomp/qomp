@@ -98,4 +98,5 @@ void QompActionsList::fillActionsList()
 	actions_.insert("shuffle", QompAction(ActShuffle, tr("Shuffle"), QKeySequence("F")));
 	actions_.insert("mute", QompAction(ActMute, tr("Mute"), QKeySequence("V")));
 	actions_.insert("clearplaylist", QompAction(ActClearPlaylist, tr("Clear Playlist"), QKeySequence("Ctrl+Delete")));
+	actions_.insert("removetune", QompAction(ActRemoveTune, tr("Remove selected"), QKeySequence("Delete")));
 }
