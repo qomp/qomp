@@ -166,7 +166,9 @@ public slots:
 			file_ = nullptr;
 		}
 		downloads_.clear();
+#ifndef QOMP_MOBILE
 		dialog_->hide();
+#endif
 		peekNext();
 	}
 
@@ -181,7 +183,9 @@ public slots:
 			reply_->deleteLater();
 			reply_ = nullptr;
 		}
+#ifndef QOMP_MOBILE
 		dialog_->hide();
+#endif
 		peekNext();
 	}
 
