@@ -588,7 +588,7 @@ void QompCon::actRemoveSelected(const QModelIndexList &list)
 		tl.append(model_->tune(index));
 
 	foreach(Tune* tune, tl)
-		model_->removeTune(tune);
+		actRemoveTune(tune);
 }
 
 void QompCon::actDoSettings()
