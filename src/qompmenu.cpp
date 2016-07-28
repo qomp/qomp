@@ -22,6 +22,7 @@
 #include "tune.h"
 #include "qomppluginaction.h"
 #include "thememanager.h"
+#include "qompplaylistmodel.h"
 
 #include <QApplication>
 
@@ -127,46 +128,74 @@ void QompMainMenu::buildMenu()
 }
 
 
-QompTrackMenu::QompTrackMenu(Tune *tune, QWidget *p) :
+QompTrackMenu::QompTrackMenu(const QModelIndexList &list, QWidget *p) :
 	QompMenu(p),
-	tune_(tune)
+	list_(list)
 {
 }
 
 void QompTrackMenu::actRemoveActivated()
 {
-	emit removeTune(tune_);
+	emit removeTune(list_);
 }
 
 void QompTrackMenu::actCopyUrlActivated()
 {
-	emit copyUrl(tune_);
+	emit copyUrl(list_[0].data(QompPlayListModel::TuneRole).value<Tune*>());
 }
 
 void QompTrackMenu::actSaveActivated()
 {
-	emit saveTune(tune_);
+	emit saveTune(list_);
 }
 
 void QompTrackMenu::actToggleActivated()
 {
-	emit togglePlayState(tune_);
+	emit togglePlayState(list_[0].data(QompPlayListModel::TuneRole).value<Tune*>());
 }
 
 void QompTrackMenu::buildMenu()
 {
-	QAction* act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")), tr("Play/Pause"), this, SLOT(actToggleActivated()));
-	act->setParent(this);
+	if (list_.size() == 0)
+		return;
+
+	QModelIndex first;
+	if(list_.size() == 1)
+		first = list_.at(0);
+
+	bool hasUrl, hasSave;
+	hasUrl = hasSave = false;
+
+	for(const QModelIndex& index: list_) {
+		if(index.data(QompPlayListModel::CanDownloadRole).toBool()) {
+			hasSave = true;
+		}
+
+		if(!index.data(QompPlayListModel::URLRole).toString().isEmpty()) {
+			hasUrl = true;
+		}
+
+		if(hasSave && hasUrl)
+			break;
+	}
+
+	QAction* act;
+	if(first.isValid()) {
+		act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")), tr("Play/Pause"), this, SLOT(actToggleActivated()));
+		act->setParent(this);
+
+		if(hasUrl) {
+			act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/ok")), tr("Copy URL"), this, SLOT(actCopyUrlActivated()));
+			act->setParent(this);
+		}
+	}
 
 	act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/delete")), tr("Remove"), this, SLOT(actRemoveActivated()));
 	act->setParent(this);
 
-	if(!tune_->url.isEmpty()) {
-		act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/ok")), tr("Copy URL"), this, SLOT(actCopyUrlActivated()));
-		act->setParent(this);
-	}
-	if(tune_->canSave()) {
-		act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/save")), tr("Save File"), this, SLOT(actSaveActivated()));
+
+	if(hasSave) {
+		act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/save")), tr("Save File(s)"), this, SLOT(actSaveActivated()));
 		act->setParent(this);
 	}
 }

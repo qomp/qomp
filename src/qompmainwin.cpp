@@ -73,7 +73,7 @@ public slots:
 
 	void actSavePlaylist();
 	void actLoadPlaylist();
-	void actDownloadTune(Tune *tune);
+	void actDownloadTune(const QModelIndexList& list);
 
 	void updateShortcuts();	
 	void updateShuffleIcon();
@@ -296,7 +296,6 @@ void QompMainWin::Private::setupPlaylist()
 	connect(ui->playList, SIGNAL(customContextMenuRequested(QPoint)), SLOT(doTrackContextMenu(QPoint)));
 }
 
-
 void QompMainWin::Private::saveWindowState()
 {
 	Options::instance()->setOption(OPTION_GEOMETRY_X, mainWin_->x());
@@ -377,13 +376,15 @@ void QompMainWin::Private::doTrackContextMenu(const QPoint& val)
 	if(!index.isValid())
 		return;
 
-	ui->playList->setCurrentIndex(index);
-	Tune* tune = parentWin_->model_->tune(index);
-	QompTrackMenu menu(tune, mainWin_);
-	connect(&menu, SIGNAL(saveTune(Tune*)), SLOT(actDownloadTune(Tune*)));
-	connect(&menu, SIGNAL(togglePlayState(Tune*)),	parentWin_, SIGNAL(toggleTuneState(Tune*)));
-	connect(&menu, SIGNAL(removeTune(Tune*)),	parentWin_, SIGNAL(removeTune(Tune*)));
-	connect(&menu, SIGNAL(copyUrl(Tune*)),		parentWin_, SIGNAL(copyUrl(Tune*)));
+	auto list = ui->playList->selectionModel()->selectedIndexes();
+
+//	ui->playList->setCurrentIndex(index);
+//	Tune* tune = parentWin_->model_->tune(index);
+	QompTrackMenu menu(list, mainWin_);
+	connect(&menu, &QompTrackMenu::saveTune,	this,	    &Private::actDownloadTune);
+	connect(&menu, &QompTrackMenu::togglePlayState,	parentWin_, &QompMainWin::toggleTuneState);
+	connect(&menu, &QompTrackMenu::removeTune,	parentWin_, &QompMainWin::removeSelected);
+	connect(&menu, &QompTrackMenu::copyUrl,		parentWin_, &QompMainWin::copyUrl);
 
 	menu.exec(QCursor::pos());
 }
@@ -473,7 +474,6 @@ void QompMainWin::Private::removeSelectedIndexes()
 	emit parentWin_->removeSelected(ui->playList->selectionModel()->selectedIndexes());
 }
 
-
 void QompMainWin::Private::totalDurationChanged(uint time)
 {
 	QTime t = QTime(0,0,0,0).addSecs(time);
@@ -509,7 +509,7 @@ void QompMainWin::Private::actLoadPlaylist()
 	}
 }
 
-void QompMainWin::Private::actDownloadTune(Tune *tune)
+void QompMainWin::Private::actDownloadTune(const QModelIndexList &list)
 {
 	QFileDialog f(0,tr("Select directory"),Options::instance()->getOption(LAST_SAVE_DIR, QDir::homePath()).toString());
 	f.setFileMode(QFileDialog::Directory);
@@ -520,7 +520,10 @@ void QompMainWin::Private::actDownloadTune(Tune *tune)
 			return;
 
 		Options::instance()->setOption(LAST_SAVE_DIR, dir.first());
-		parentWin_->downloadTune(tune, dir.first());
+		for(const QModelIndex& i: list){
+			emit parentWin_->downloadTune(i.data(QompPlayListModel::TuneRole).value<Tune*>(),
+						      dir.first());
+		}
 	}
 }
 

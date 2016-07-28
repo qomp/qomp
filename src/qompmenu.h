@@ -21,6 +21,7 @@
 #define QOMPMENU_H
 
 #include <QMenu>
+#include <QAbstractItemModel>
 
 class Tune;
 
@@ -79,12 +80,12 @@ class QompTrackMenu : public QompMenu
 {
 	Q_OBJECT
 public:
-	QompTrackMenu(Tune* tune, QWidget* p = 0);
+	QompTrackMenu(const QModelIndexList& list, QWidget* p = 0);
 
 signals:
 	void togglePlayState(Tune*);
-	void removeTune(Tune*);
-	void saveTune(Tune*);
+	void removeTune(const QModelIndexList&);
+	void saveTune(const QModelIndexList&);
 	void copyUrl(Tune*);
 
 private slots:
@@ -97,8 +98,9 @@ private:
 	void buildMenu();
 
 private:
-	Tune* tune_;
+	QModelIndexList list_;
 };
+
 
 class QompRemoveTunesMenu : public QompMenu
 {

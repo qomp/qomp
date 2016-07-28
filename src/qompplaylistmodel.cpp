@@ -127,7 +127,7 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	if(!index.isValid() || index.row() >= tunes_.size() || index.column() != 0)
 		return QVariant();
 
-	const Tune* t = tunes_.at(index.row());
+	Tune* t = tunes_.at(index.row());
 	if(role == Qt::DisplayRole) {
 		return  t->displayString();
 	}
@@ -179,6 +179,9 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	}
 	else if(role == CanDownloadRole) {
 		return t->canSave();
+	}
+	else if(role == TuneRole) {
+		return QVariant::fromValue<Tune*>(t);
 	}
 
 	return QVariant();
