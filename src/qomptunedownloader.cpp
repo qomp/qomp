@@ -23,7 +23,9 @@
 #include "gettuneurlhelper.h"
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QCoreApplication>
 #include <QFile>
+#include <QQueue>
 #ifdef QOMP_MOBILE
 #include <QAndroidJniObject>
 #else
@@ -32,27 +34,28 @@
 #endif
 
 
+QompTuneDownloader * QompTuneDownloader::_instance = nullptr;
+
 class QompTuneDownloader::Private : public QObject
 {
 	Q_OBJECT
 public:
 	explicit Private(QompTuneDownloader* p) : QObject(p),
 		nam_(QompNetworkingFactory::instance()->getMainNAM()),
-		file_(0),
-		reply_(0),
-		tune_(nullptr)
+		file_(nullptr),
+		reply_(nullptr)
 	{
 #ifndef QOMP_MOBILE
 		dialog_ = new QProgressDialog();
 		dialog_->setWindowTitle(tr("Download Progress"));
 		dialog_->setRange(0, 100);
-		connect(dialog_, SIGNAL(canceled()), SLOT(abort()));
+		connect(dialog_, &QProgressDialog::canceled, this, &Private::abort);
+		dialog_->resize(dialog_->width() * 1.5, dialog_->height());
 #endif
 	}
 
 	~Private()
 	{
-		delete file_;
 #ifdef QOMP_MOBILE
 		QAndroidJniObject str = QAndroidJniObject::fromString(tr("Download finished"));
 		QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
@@ -78,6 +81,17 @@ public:
 #endif
 	}
 
+	void peekNext() {
+		if(downloads_.isEmpty()) {
+			parent()->deleteLater();
+			return;
+		}
+
+		Download dwd = downloads_.head();
+		GetTuneUrlHelper* helper = new GetTuneUrlHelper(this, "urlFinished", this);
+		helper->getTuneUrlAsynchronously(dwd.first);
+	}
+
 public slots:
 	void downloadProgress(qint64 received, qint64 total)
 	{
@@ -93,12 +107,19 @@ public slots:
 
 	void urlFinished(const QUrl& url)
 	{
+		if(downloads_.isEmpty())
+			return;
+
+		Download dwd = downloads_.dequeue();
+
 		if(url.isEmpty()) {
-			parent()->deleteLater();
+			finished();
 			return;
 		}
 
-		file_ = new QFile(QString("%1/%2-%3.mp3").arg(dir_, tune_->artist, tune_->title));
+		Tune* t = dwd.first;
+
+		file_ = new QFile(QString("%1/%2-%3.mp3").arg(dwd.second, t->artist, t->title));
 		if(!file_->open(QFile::WriteOnly)) {
 #ifdef QOMP_MOBILE
 			QAndroidJniObject str = QAndroidJniObject::fromString(tr("Cann't create file!"));
@@ -109,14 +130,18 @@ public slots:
 #else
 			QMessageBox::warning(0, tr("Error"), tr("Cann't create file!"));
 #endif
+			delete file_;
+			file_ = nullptr;
+
 			return;
 		}
 
 		QNetworkRequest nr(url);
 		reply_ = nam_->get(nr);
-		connect(reply_, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
-		connect(reply_, SIGNAL(readyRead()), SLOT(readyRead()));
-		connect(reply_, SIGNAL(finished()), SLOT(finished()));
+		connect(reply_, &QNetworkReply::downloadProgress, this, &Private::downloadProgress);
+		connect(reply_, &QNetworkReply::readyRead, this, &Private::readyRead);
+		connect(reply_, &QNetworkReply::finished, this, &Private::finished);
+
 		start();
 	}
 
@@ -129,17 +154,35 @@ public slots:
 
 	void abort()
 	{
-		reply_->abort();
-		reply_->deleteLater();
-		file_->remove();
-		parent()->deleteLater();
+		if(reply_) {
+			reply_->disconnect();
+			reply_->abort();
+			reply_->deleteLater();
+			reply_ = nullptr;
+		}
+		if(file_) {
+			file_->remove();
+			file_->deleteLater();
+			file_ = nullptr;
+		}
+		downloads_.clear();
+		dialog_->hide();
+		peekNext();
 	}
 
 	void finished()
 	{
-		file_->close();
-		reply_->deleteLater();
-		parent()->deleteLater();
+		if(file_) {
+			file_->close();
+			file_->deleteLater();
+			file_ = nullptr;
+		}
+		if(reply_) {
+			reply_->deleteLater();
+			reply_ = nullptr;
+		}
+		dialog_->hide();
+		peekNext();
 	}
 
 public:
@@ -149,8 +192,8 @@ public:
 	QNetworkAccessManager* nam_;
 	QFile* file_;
 	QNetworkReply* reply_;
-	QString dir_;
-	Tune* tune_;
+	typedef QPair<Tune*, QString> Download;
+	QQueue<Download> downloads_;
 };
 
 QompTuneDownloader::QompTuneDownloader(QObject *parent) :
@@ -159,17 +202,24 @@ QompTuneDownloader::QompTuneDownloader(QObject *parent) :
 {
 }
 
+QompTuneDownloader *QompTuneDownloader::instance()
+{
+	if(!_instance)
+		_instance = new QompTuneDownloader(qApp);
+
+	return _instance;
+}
+
 QompTuneDownloader::~QompTuneDownloader()
 {
+	_instance = nullptr;
 }
 
 void QompTuneDownloader::download(Tune *tune, const QString &dir)
 {
-	d->dir_ = dir;
-	d->tune_ = tune;
-
-	GetTuneUrlHelper* helper = new GetTuneUrlHelper(d, "urlFinished", this);
-	helper->getTuneUrlAsynchronously(tune);
+	d->downloads_.enqueue({tune, dir});
+	if(d->downloads_.count() == 1)
+		d->peekNext();
 }
 
 #include "qomptunedownloader.moc"

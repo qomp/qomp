@@ -28,12 +28,16 @@ class QompTuneDownloader : public QObject
 {
 	Q_OBJECT
 public:
-	explicit QompTuneDownloader(QObject *parent = 0);
+	static QompTuneDownloader* instance();
 	~QompTuneDownloader();
 
 	void download(Tune* tune, const QString& dir);
 	
 private:
+	explicit QompTuneDownloader(QObject *parent = 0);
+
+	static QompTuneDownloader* _instance;
+
 	class Private;
 	Private* d;
 	friend class Private;

@@ -621,8 +621,7 @@ void QompCon::actBugReport()
 
 void QompCon::actDownloadTune(Tune *tune, const QString &dir)
 {
-	QompTuneDownloader *td = new QompTuneDownloader(this);
-	td->download(tune, dir);
+	QompTuneDownloader::instance()->download(tune, dir);
 }
 
 void QompCon::actToggleTuneState(Tune *tune)
