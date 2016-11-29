@@ -38,7 +38,6 @@ import android.app.Service;
 public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     public static final String NOTIFY = "net.sourceforge.qomp.NOTIFY";
 
-    private static Qomp _instance;
 //    private PowerManager.WakeLock wl;
     private BroadcastReceiver callReceiver_;
     private QompService service_;
@@ -46,7 +45,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     private ServiceConnection sConn_ = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 service_ = ((QompService.QompBinder)binder).getService();
-                _instance.showStatusIcon("");
+                showStatusIcon("");
             }
 
             public void onServiceDisconnected(ComponentName name) {
@@ -58,7 +57,6 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     public void onCreate (Bundle savedInstanceState) {
         // Log.i("Qomp", "onCreated");
         super.onCreate(savedInstanceState);
-        _instance = this;
         registerCallReceiver();
         bindToService();
 
@@ -86,10 +84,10 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
         super.onDestroy();
     }
 
-    public static void deInit() {
-        _instance.unbindService(_instance.sConn_);
-        _instance.unregisterReceiver(_instance.callReceiver_);
-//        _instance.wl.release();
+    public void deInit() {
+        unbindService(sConn_);
+        unregisterReceiver(callReceiver_);
+//        wl.release();
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -145,9 +143,9 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
             service_.showStatusIcon(text);
     }
 
-    public static void showNotification(final String text) {
-        if(_instance.service_ != null)
-            _instance.service_.showToast(text);
+    public void showNotification(final String text) {
+        if(service_ != null)
+            service_.showToast(text);
     }
 
     @Override

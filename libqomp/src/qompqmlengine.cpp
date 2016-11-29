@@ -130,10 +130,8 @@ bool QompQmlEngine::eventFilter(QObject *o, QEvent *e)
 void QompQmlEngine::showConfirmExitMessage()
 {
 	QAndroidJniObject str = QAndroidJniObject::fromString(tr("Press again to exit"));
-	QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
-							"showNotification",
-							"(Ljava/lang/String;)V",
-							str.object<jstring>());
+	QAndroidJniObject act = QtAndroid::androidActivity();
+	act.callMethod<void>("showNotification","(Ljava/lang/String;)V", str.object<jstring>());
 }
 
 void QompQmlEngine::updateMainWindowState()

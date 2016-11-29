@@ -50,6 +50,7 @@
 #include <QGuiApplication>
 #ifdef TEST_ANDROID
 #include <QFile>
+#include <QTime>
 #endif
 #endif
 
@@ -83,7 +84,8 @@ static QtMessageHandler _handler = nullptr;
 static QFile f("/sdcard/.qomp/log.txt");
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-	QString str = QString("Debug: %1 (%2:%3, %4)\n")
+	QString str = QString("Debug [%1]: %2 (%3:%4, %5)\n")
+				.arg(QTime::currentTime().toString())
 				.arg(msg)
 				.arg(context.file)
 				.arg(context.line)
@@ -119,8 +121,8 @@ static void notifyIcon(const QString& text)
 
 static void deInitActivity()
 {
-	QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
-						"deInit", "()V");
+	QAndroidJniObject act = QtAndroid::androidActivity();
+	act.callMethod<void>("deInit", "()V");
 
 }
 

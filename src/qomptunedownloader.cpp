@@ -28,6 +28,7 @@
 #include <QQueue>
 #ifdef QOMP_MOBILE
 #include <QAndroidJniObject>
+#include <QtAndroid>
 #else
 #include <QProgressDialog>
 #include <QMessageBox>
@@ -58,10 +59,8 @@ public:
 	{
 #ifdef QOMP_MOBILE
 		QAndroidJniObject str = QAndroidJniObject::fromString(tr("Download finished"));
-		QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
-								"showNotification",
-								"(Ljava/lang/String;)V",
-								str.object<jstring>());
+		QAndroidJniObject act = QtAndroid::androidActivity();
+		act.callMethod<void>("showNotification", "(Ljava/lang/String;)V", str.object<jstring>());
 #else
 		dialog_->accept();
 		dialog_->deleteLater();
@@ -72,10 +71,8 @@ public:
 	{
 #ifdef QOMP_MOBILE
 		QAndroidJniObject str = QAndroidJniObject::fromString(tr("Download started"));
-		QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
-								"showNotification",
-								"(Ljava/lang/String;)V",
-								str.object<jstring>());
+		QAndroidJniObject act = QtAndroid::androidActivity();
+		act.callMethod<void>("showNotification", "(Ljava/lang/String;)V", str.object<jstring>());
 #else
 		dialog_->show();
 #endif
@@ -123,10 +120,8 @@ public slots:
 		if(!file_->open(QFile::WriteOnly)) {
 #ifdef QOMP_MOBILE
 			QAndroidJniObject str = QAndroidJniObject::fromString(tr("Cann't create file!"));
-			QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
-									"showNotification",
-									"(Ljava/lang/String;)V",
-									str.object<jstring>());
+			QAndroidJniObject act = QtAndroid::androidActivity();
+			act.callMethod<void>("showNotification", "(Ljava/lang/String;)V", str.object<jstring>());
 #else
 			QMessageBox::warning(0, tr("Error"), tr("Cann't create file!"));
 #endif

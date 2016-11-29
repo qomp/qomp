@@ -27,6 +27,7 @@
 
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
+#include <QtAndroid>
 #elif defined HAVE_X11
 #include <QImage>
 #include "dbusnotifier.h"
@@ -68,10 +69,8 @@ public:
 		static const QString title = QString(APPLICATION_NAME).left(1).toUpper() + QString(APPLICATION_NAME).mid(1) + QObject::tr(" now playing:");
 #ifdef Q_OS_ANDROID
 		QAndroidJniObject str = QAndroidJniObject::fromString(text);
-		QAndroidJniObject::callStaticMethod<void>("net/sourceforge/qomp/Qomp",
-								"showNotification",
-								"(Ljava/lang/String;)V",
-								str.object<jstring>());
+		QAndroidJniObject act = QtAndroid::androidActivity();
+		act.callMethod<void>("showNotification", "(Ljava/lang/String;)V", str.object<jstring>());
 #elif defined Q_OS_WIN
 		QSystemTrayIcon* ico = qApp->findChild<QSystemTrayIcon*>();
 		ico->showMessage(title, text, QSystemTrayIcon::Information, 5000);
