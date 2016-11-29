@@ -57,9 +57,59 @@ void MprisPlugin::setEnabled(bool enabled)
 	if(enabled_) {
 		mpris_ = new MprisController(this);
 		tune_ = new QompMetaData();
+		connect(mpris_, SIGNAL(play()), SLOT(play()));
+		connect(mpris_, SIGNAL(pause()), SLOT(pause()));
+		connect(mpris_, SIGNAL(stop()), SLOT(stop()));
+		connect(mpris_, SIGNAL(next()), SLOT(next()));
+		connect(mpris_, SIGNAL(previous()), SLOT(previous()));
+		connect(mpris_, SIGNAL(volumeChanged(double)), SLOT(setVolume(double)));
 	}
 	else {
+		disconnect(mpris_);
 		disableMpris();
+	}
+}
+
+void MprisPlugin::play()
+{
+	if(player_) {
+		player_->play();
+	}
+}
+
+void MprisPlugin::pause()
+{
+	if(player_) {
+		player_->pause();
+	}
+}
+
+void MprisPlugin::stop()
+{
+	if(player_) {
+		player_->stop();
+	}
+}
+
+void MprisPlugin::next()
+{
+	if(player_) {
+		emit player_->mediaFinished(); //Temporary hack, FIXME
+	}
+}
+
+void MprisPlugin::previous()
+{
+	if(player_) {
+		//player_->previous();  //FIXME
+	}
+}
+
+void MprisPlugin::setVolume(const double &volume)
+{
+	if(player_) {
+		player_->setVolume(volume);
+		emit player_->volumeChanged(volume); //Temporary hack, FIXME
 	}
 }
 
@@ -105,10 +155,10 @@ void MprisPlugin::getMetaData(Tune *tune)
 void MprisPlugin::sendMetadata(const QString &status)
 {
 	if (status == STOPPED || status == PAUSED) {
-		mpris_->sendData(status, QompMetaData());
+		mpris_->sendData(status, QompMetaData(), player_->volume());
 	}
 	else if (status == PLAYING){
-		mpris_->sendData(status, *tune_);
+		mpris_->sendData(status, *tune_, player_->volume());
 	}
 }
 

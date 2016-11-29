@@ -31,27 +31,64 @@ struct QompMetaData {
 	int trackNumber;
 };
 
+enum playerActionType {
+	PLAY = 0,
+	PAUSE = 1,
+	STOP = 2,
+	NEXT = 3,
+	PREVIOUS = 4
+};
+
 class MprisAdapter : public QDBusAbstractAdaptor
 {
 	Q_OBJECT
 	Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2.Player")
 	Q_PROPERTY(QVariantMap Metadata READ metadata)
 	Q_PROPERTY(QString PlaybackStatus READ playbackStatus)
+	Q_PROPERTY(bool CanGoNext READ canGoNext)
+	Q_PROPERTY(bool CanGoPrevious READ canGoPrevious)
+	Q_PROPERTY(bool CanPlay READ canPlay)
+	Q_PROPERTY(bool CanPause READ  canPause)
+	Q_PROPERTY(bool CanSeek READ  canSeek)
+	Q_PROPERTY(bool CanControl READ  canControl)
+	Q_PROPERTY(double Volume READ getVolume WRITE setVolume)
+
 public:
 	explicit MprisAdapter(QObject *p);
+
+public slots:
+	void Play();
+	void Pause();
+	void Next();
+	void Previous();
+	void PlayPause();
+	void Stop();
 
 public:
 	QVariantMap metadata() const;
 	QString playbackStatus() const;
+	bool canGoNext() const {return true;}
+	bool canGoPrevious() const {return false;}
+	bool canPlay() const {return true;}
+	bool canPause() const {return true;}
+	bool canSeek() const {return false;}
+	bool canControl() const {return true;}
+	double getVolume();
+	void setVolume(double volume);
 	void setStatus(const QString &status);
 	void setMetadata(const QompMetaData &tune);
 	void updateProperties();
+
+signals:
+	void playbackStateChanged(uint actionType);
+	void volumeChanged(const double &volume);
 
 private:
 	QVariantMap metaDataMap_;
 	QString playerStatus_;
 	bool statusChanged_;
 	bool metadataChanged_;
+	double volume_;
 };
 
 #endif // MPRISADAPTER_H

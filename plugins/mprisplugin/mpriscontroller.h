@@ -31,7 +31,18 @@ public:
 	explicit MprisController(QObject *parent = 0);
 	~MprisController();
 
-	void sendData(const QString &status, const QompMetaData &tune);
+	void sendData(const QString &status, const QompMetaData &tune, const double &volume);
+
+signals:
+	void play();
+	void pause();
+	void next();
+	void previous();
+	void stop();
+	void volumeChanged(const double &volume);
+
+private slots:
+	void playbackStateChanged(uint actionType);
 
 private:
 	MprisAdapter *mprisAdapter_;

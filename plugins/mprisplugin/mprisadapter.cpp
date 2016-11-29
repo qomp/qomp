@@ -28,7 +28,8 @@ MprisAdapter::MprisAdapter(QObject* p) :
 	QDBusAbstractAdaptor(p),
 	playerStatus_("Stopped"),
 	statusChanged_(false),
-	metadataChanged_(false)
+	metadataChanged_(false),
+	volume_(0)
 {
 }
 
@@ -83,6 +84,13 @@ void MprisAdapter::updateProperties()
 		map.insert("Metadata", metadata());
 		metadataChanged_ = false;
 	}
+	map.insert("CanGoNext", canGoNext());
+	map.insert("CanGoPrevious", canGoPrevious());
+	map.insert("CanPlay", canPlay());
+	map.insert("CanPause", canPause());
+	map.insert("CanSeek", canSeek());
+	map.insert("CanControl", canControl());
+	map.insert("Volume", getVolume());
 	if (map.isEmpty()) {
 		return;
 	}
@@ -92,4 +100,65 @@ void MprisAdapter::updateProperties()
 	QVariantList args = QVariantList() << "org.mpris.MediaPlayer2.Player" << map << QStringList();
 	msg.setArguments(args);
 	QDBusConnection::sessionBus().send(msg);
+}
+
+
+void MprisAdapter::Play()
+{
+	if(canPlay()) {
+		emit playbackStateChanged(PLAY);
+	}
+}
+
+void MprisAdapter::Pause()
+{
+	if(canPause()) {
+		emit playbackStateChanged(PAUSE);
+	}
+}
+
+void MprisAdapter::Next()
+{
+	if(canGoNext()) {
+		emit playbackStateChanged(NEXT);
+	}
+}
+
+void MprisAdapter::Previous()
+{
+	if(canGoPrevious()) {
+		emit playbackStateChanged(PREVIOUS);
+	}
+}
+
+void MprisAdapter::PlayPause()
+{
+	if(canPlay() && canPause()) {
+		if(playerStatus_ == "Playing") {
+			emit playbackStateChanged(PAUSE);
+		}
+		else {
+			emit playbackStateChanged(PLAY);
+		}
+	}
+}
+
+void MprisAdapter::Stop()
+{
+	if(canControl()) {
+		emit playbackStateChanged(STOP);
+	}
+}
+
+void MprisAdapter::setVolume(double volume)
+{
+	if( volume >= 0.0 && volume_ != volume) {
+		volume_ = volume;
+		emit volumeChanged(volume);
+	}
+}
+
+double MprisAdapter::getVolume()
+{
+	return volume_;
 }
