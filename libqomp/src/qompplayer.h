@@ -58,6 +58,7 @@ public:
 
 	virtual QStringList audioOutputDevice() const = 0;
 	virtual void setAudioOutputDevice(const QString& devName) = 0;
+	virtual QString defaultAudioDevice() const = 0;
 
 public slots:
 	void setTune(Tune* tune);

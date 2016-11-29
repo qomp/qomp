@@ -27,7 +27,6 @@
 #include "thememanager.h"
 #include "ui_qompoptionsmain.h"
 
-static const QString defaultDevice = QObject::tr("default");
 
 class QompOptionsMain::Private
 {
@@ -65,7 +64,6 @@ void QompOptionsMain::Private::applyOptions()
 	o->setOption(OPTION_PROXY_USER, ui->le_user->text());
 	o->setOption(OPTION_PROXY_USE, ui->gb_proxy->isChecked());
 	o->setOption(OPTION_PROXY_TYPE, ui->cb_proxy_type->currentText());
-	o->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->currentText());
 	o->setOption(OPTION_UPDATE_METADATA, ui->cb_metaData->isChecked());
 	o->setOption(OPTION_HIDE_ON_CLOSE, ui->cb_hideOnClose->isChecked());
 	o->setOption(OPTION_DEFAULT_ENCODING, ui->le_encoding->text().toUtf8());
@@ -77,6 +75,11 @@ void QompOptionsMain::Private::applyOptions()
 	o->setOption(OPTION_REPEAT_LAST_SEARCH, ui->cb_repeatLastSearch->isChecked());
 	o->setOption(OPTION_REMEMBER_POS, ui->cb_rememberPosition->isChecked());
 	o->setOption(OPTION_ONE_COPY, ui->cb_oneCopy->isChecked());
+
+	o->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->currentText());
+	if(page_->player_) {
+		page_->player_->setAudioOutputDevice(ui->cb_output->currentText());
+	}
 }
 
 void QompOptionsMain::Private::restoreOptions()
@@ -96,16 +99,21 @@ void QompOptionsMain::Private::restoreOptions()
 	ui->cb_rememberPosition->setChecked(o->getOption(OPTION_REMEMBER_POS).toBool());
 	ui->cb_oneCopy->setChecked(o->getOption(OPTION_ONE_COPY).toBool());
 
+	int index;
+
 	ui->cb_output->clear();
-	ui->cb_output->addItem(defaultDevice);
-	if(page_->player_)
+	if(page_->player_) {
 		ui->cb_output->addItems(page_->player_->audioOutputDevice());
-	QString dev = o->getOption(OPTION_AUDIO_DEVICE, defaultDevice).toString();
-	int index = ui->cb_output->findText(dev);
-	if(index == -1)
-		ui->cb_output->setCurrentIndex(ui->cb_output->findText(defaultDevice));
-	else
-		ui->cb_output->setCurrentIndex(index);
+
+		QString dev = o->getOption(OPTION_AUDIO_DEVICE, page_->player_->defaultAudioDevice()).toString();
+		index = ui->cb_output->findText(dev);
+		if(index == -1) {
+			if(ui->cb_output->count() > 0)
+				ui->cb_output->setCurrentIndex(0);
+		}
+		else
+			ui->cb_output->setCurrentIndex(index);
+	}
 
 	ui->cb_lang->clear();
 	ui->cb_lang->addItems(Translator::instance()->availableTranslations());
@@ -138,10 +146,9 @@ void QompOptionsMain::Private::restoreOptions()
 
 QompOptionsMain::QompOptionsMain(QObject *parent) :
 	QompOptionsPage(parent),	
-	player_(0)
+	player_(nullptr)
 {	
 	d = new Private(this);
-	restoreOptions();
 }
 
 QompOptionsMain::~QompOptionsMain()
@@ -158,6 +165,7 @@ void QompOptionsMain::retranslate()
 void QompOptionsMain::init(QompPlayer *player)
 {
 	player_ = player;
+	restoreOptions();
 }
 
 QObject *QompOptionsMain::page() const

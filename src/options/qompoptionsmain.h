@@ -35,8 +35,8 @@ public:
 	virtual QString name() const { return tr("Main"); }
 	virtual void retranslate();
 
-	virtual void init(QompPlayer* player);
-	virtual QObject* page() const;
+	virtual void init(QompPlayer* player) override;
+	virtual QObject* page() const override;
 
 public slots:
 	virtual void applyOptions();

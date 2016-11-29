@@ -27,6 +27,7 @@
 #include <QPointer>
 
 class QompMetaDataResolver;
+class QAudioOutputSelectorControl;
 
 class QompQtMultimediaPlayer : public QompPlayer
 {
@@ -50,6 +51,7 @@ public:
 
 	virtual QStringList audioOutputDevice() const;
 	virtual void setAudioOutputDevice(const QString& devName);
+	virtual QString defaultAudioDevice() const;
 
 protected slots:
 	virtual void doSetTune();

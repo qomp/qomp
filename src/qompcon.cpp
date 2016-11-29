@@ -78,6 +78,8 @@ static const int ADDING_INTERVAL = 2000;
 static QompCon* _instance;
 
 #ifdef TEST_ANDROID
+static QtMessageHandler _handler = nullptr;
+
 static QFile f("/sdcard/.qomp/log.txt");
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -87,6 +89,11 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 				.arg(context.line)
 				.arg(context.function);
 	f.write(str.toLocal8Bit());
+
+	if(_handler) {
+		_handler(type, context, msg);
+	}
+
 	if (type == QtFatalMsg) {
 		abort();
 	}
@@ -144,7 +151,7 @@ QompCon::QompCon(QObject *parent) :
 
 #ifdef TEST_ANDROID
 	if(f.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
-		qInstallMessageHandler(myMessageOutput);
+		_handler = qInstallMessageHandler(myMessageOutput);
 	}
 	else {
 		qWarning() << "Error setup message handler!";
@@ -186,6 +193,8 @@ QompCon::QompCon(QObject *parent) :
 QompCon::~QompCon()
 {
 #ifdef TEST_ANDROID
+	qInstallMessageHandler(0);
+
 	f.flush();
 	f.close();
 #endif

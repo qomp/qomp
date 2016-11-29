@@ -24,6 +24,8 @@
 
 #include <QMediaContent>
 //#include <QAudioDeviceInfo>
+#include <QAudioOutputSelectorControl>
+#include <QMediaService>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -197,15 +199,70 @@ QStringList QompQtMultimediaPlayer::audioOutputDevice() const
 //		list.append(info.deviceName());
 //	}
 
+	QMediaService *svc = player_->service();
+	if (svc != nullptr) {
+		QAudioOutputSelectorControl *out = qobject_cast<QAudioOutputSelectorControl *>
+				(svc->requestControl(QAudioOutputSelectorControl_iid));
+
+		if (out != nullptr) {
+			for(const QString& name: out->availableOutputs())
+				list.append(out->outputDescription(name));
+
+			svc->releaseControl(out);
+		}
+	}
+
 	return list;
 }
 
-void QompQtMultimediaPlayer::setAudioOutputDevice(const QString &/*devName*/)
+void QompQtMultimediaPlayer::setAudioOutputDevice(const QString &devName)
 {
-//	if(devName.isEmpty()) {
-//		QAudioDeviceInfo::defaultOutputDevice()
-//	}
+	QMediaService *svc = player_->service();
+	if (svc != nullptr) {
+		player_->blockSignals(true);
+
+		QAudioOutputSelectorControl *out = qobject_cast<QAudioOutputSelectorControl *>
+				(svc->requestControl(QAudioOutputSelectorControl_iid));
+
+		if (out != nullptr) {
+			bool f = false;
+			for(const QString& name: out->availableOutputs()) {
+				if(out->outputDescription(name) == devName) {
+					out->setActiveOutput(name);
+					f = true;
+					break;
+				}
+			}
+
+			if(!f) {
+				out->setActiveOutput(out->outputDescription(defaultAudioDevice()));
+			}
+
+			svc->releaseControl(out);
+		}
+
+		player_->blockSignals(false);
+	}
 }
+
+QString QompQtMultimediaPlayer::defaultAudioDevice() const
+{
+	QString dev;
+
+	QMediaService *svc = player_->service();
+	if (svc != nullptr) {
+		QAudioOutputSelectorControl *out = qobject_cast<QAudioOutputSelectorControl *>
+				(svc->requestControl(QAudioOutputSelectorControl_iid));
+
+		if (out != nullptr) {
+			dev = out->outputDescription(out->defaultOutput());
+			svc->releaseControl(out);
+		}
+	}
+
+	return dev;
+}
+
 
 void QompQtMultimediaPlayer::volumeChanged(int vol)
 {
