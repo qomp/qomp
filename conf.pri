@@ -42,6 +42,9 @@ CONFIG += c++11
 android {
     QT += quick qml androidextras
     DEFINES += QOMP_MOBILE
+    CONFIG(debug, debug|release) {
+        DEFINES += TEST_ANDROID
+    }
 }
 
 CONFIG += warn_on

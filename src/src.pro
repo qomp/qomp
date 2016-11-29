@@ -11,7 +11,7 @@ TEMPLATE = app
 
 
 CONFIG(debug, debug|release) {
-    win32: CONFIG += console
+#    win32: CONFIG += console
     macx:  CONFIG -= app_bundle
 }
 
@@ -55,13 +55,14 @@ macx {
 }
 
 android {
-    LIBS += -L$$OUT_PWD/../bin -lqomp-shared
-    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
-    ANDROID_EXTRA_LIBS += \
+  LIBS += -L$$OUT_PWD/../bin -lqomp-shared
+  ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
+  ANDROID_EXTRA_LIBS += \
         $$TAG_LIB/libtag.so \
         $$CUE_LIB/libcue.so \
         $$OUT_PWD/../bin/libqomp-shared.so
 
+  !CONFIG(debug, debug|release) {
     ANDROID_DEPLOYMENT_DEPENDENCIES = \
         jar/QtAndroid-bundled.jar \
         jar/QtAndroidAccessibility-bundled.jar \
@@ -112,65 +113,24 @@ android {
         qml/QtQuick/Controls/Styles/Android/qmldir \
         qml/QtQuick/Controls/Styles/Android/libqtquickcontrolsandroidstyleplugin.so
 
-    CONFIG(debug, debug|release) {
-        ANDROID_DEPLOYMENT_DEPENDENCIES += \
-            plugins/generic/libqevdevkeyboardplugin.so \
-            plugins/generic/libqevdevmouseplugin.so \
-            plugins/generic/libqevdevtabletplugin.so \
-            plugins/generic/libqevdevtouchplugin.so \            
-            plugins/qmltooling/libqmldbg_tcp.so
-
-        greaterThan(QT_MINOR_VERSION, 5) {
-            ANDROID_DEPLOYMENT_DEPENDENCIES += \
-                plugins/qmltooling/libqmldbg_debugger.so \
-                plugins/qmltooling/libqmldbg_inspector.so \
-                plugins/qmltooling/libqmldbg_local.so \
-                plugins/qmltooling/libqmldbg_native.so \
-                plugins/qmltooling/libqmldbg_profiler.so \
-                plugins/qmltooling/libqmldbg_server.so \
-        }
-        else {
-            ANDROID_DEPLOYMENT_DEPENDENCIES += plugins/qmltooling/libqmldbg_qtquick2.so
-        }
-    }
-
     ANDROID_DEPLOYMENT_DEPENDENCIES += \
         qml/Qt/labs/folderlistmodel/qmldir \
         qml/Qt/labs/folderlistmodel/libqmlfolderlistmodelplugin.so \
         qml/Qt/labs/folderlistmodel/plugins.qmltypes
+  }
 
-#    ANDROID_DEPLOYMENT_DEPENDENCIES += \
-#        qml/QtQml/Models.2/qmldir \
-#        qml/QtQml/Models.2/libmodelsplugin.so \
-#        qml/Qt/labs/settings/qmldir \
-#        qml/Qt/labs/settings/libqmlsettingsplugin.so \
-#        qml/Qt/labs/settings/plugins.qmltypes \
-#        qml/QtQuick/Layouts/libqquicklayoutsplugin.so \
-#        qml/QtQuick/Layouts/qmldir \
-#        qml/QtQuick/Layouts/plugins.qmltypes \
-#        qml/QtQml/StateMachine/qmldir \
-#        qml/QtQml/StateMachine/plugins.qmltypes \
-#        qml/QtQml/StateMachine/libqtqmlstatemachine.so
-
-#    ANDROID_DEPLOYMENT_DEPENDENCIES += \
-#        qml/QtMultimedia/libdeclarative_multimedia.so \
-#        qml/QtMultimedia/plugins.qmltypes \
-#        qml/QtMultimedia/qmldir \
-#        qml/QtMultimedia/Video.qml \
-
-#    ANDROID_DEPLOYMENT_DEPENDENCIES += \
-#        plugins/video/videonode/libqtsgvideonode_android.so \
-#        plugins/playlistformats/libqtmultimedia_m3u.so \
-#        plugins/platforms/libqminimal.so \
-#        plugins/platforms/libqoffscreen.so \
-
-    DISTFILES += \
+  DISTFILES += \
         ../android/gradle/wrapper/gradle-wrapper.jar \
         ../android/gradlew \
         ../android/res/values/libs.xml \
         ../android/build.gradle \
         ../android/gradle/wrapper/gradle-wrapper.properties \
         ../android/gradlew.bat
+
+  OTHER_FILES += $$PWD/../android/AndroidManifest.xml \
+        $$PWD/../android/src/net/sourceforge/qomp/Qomp.java \
+        $$PWD/../android/src/net/sourceforge/qomp/QompService.java
+
 } else {
     LIBS += -L$$OUT_PWD/../bin -lqomp
 }
