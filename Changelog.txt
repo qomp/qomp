@@ -10,7 +10,8 @@ xx.12.2016
   * fix audio device selection (Windows only)
   * updated MPRIS plugin. Added player control via dbus (Linux only)
   * other fixes
-  * update Qt libs to 5.6.2 (Windows, Android, OS X)
+  * update Qt libs to 5.6.2 (Windows, Android)
+  * update Qt libs to 5.7.0 (OS X)
 
 
 
