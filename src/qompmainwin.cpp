@@ -450,6 +450,8 @@ void QompMainWin::Private::updateProgress(Qomp::State state)
 		winTaskBar_->progress()->stop();
 		break;
 	}
+#else
+	Q_UNUSED(state)
 #endif
 }
 

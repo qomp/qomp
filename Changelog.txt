@@ -1,3 +1,19 @@
+Version 1.1.1
+xx.12.2016
+  + add mediakeys support
+  * fixed Shuffle when click "Next" button
+  + add Windows TaskBar progress support
+  + add hotkey for delete tunes from playlist
+  + add context menu on group of tunes at playlist
+  * improve tune downloader
+  * fix Prostopleer URL (now http://pleer.net)
+  * fix audio device selection (Windows only)
+  * updated MPRIS plugin. Added player control via dbus (Linux only)
+  * other fixes
+  * update Qt libs to 5.6.2 (Windows, Android, OS X)
+
+
+
 Version 1.1
 05.07.2016
  + add CUE SHEET support (*.cue files)
