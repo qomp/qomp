@@ -99,6 +99,8 @@ Rectangle {
 		delegate: PlayListDelegate {
 			busy: root.busy && root.visible
 			playing: root.playing
+			width: playlist.width
+
 			onLongTap: {
 				if(!trackMenu.active)
 					trackMenu.active = true

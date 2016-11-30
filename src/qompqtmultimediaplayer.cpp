@@ -48,7 +48,9 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	connect(player_, &QMediaPlayer::mediaStatusChanged, this, &QompQtMultimediaPlayer::mediaStatusChanged);
 	connect(player_, &QMediaPlayer::durationChanged,    this, &QompQtMultimediaPlayer::tuneDurationChanged);
 	connect(player_, &QMediaPlayer::positionChanged,    this, &QompQtMultimediaPlayer::tunePositionChanged);
+#ifndef Q_OS_ANDROID
 	connect(player_, &QMediaPlayer::audioAvailableChanged, this, &QompQtMultimediaPlayer::audioReadyChanged);
+#endif
 
 	//connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 }
@@ -297,10 +299,15 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 	qDebug() << "QompQtMultimediaPlayer::mediaStatusChanged()  " << status;
 #endif
 	switch(status) {
-//	case QMediaPlayer::LoadedMedia:
-//		updatePlayerPosition();
-//		emit QompPlayer::stateChanged(state());
-//		break;
+#ifdef Q_OS_ANDROID
+	case QMediaPlayer::LoadedMedia:
+		emit QompPlayer::stateChanged(state());
+		audioReadyChanged(true);
+//		if(lastAction() == Qomp::StatePlaying) {
+//			player_->play();
+//		}
+		break;
+#endif
 	case QMediaPlayer::LoadingMedia:
 	case QMediaPlayer::StalledMedia:
 		emit stateChanged(Qomp::StateLoading);

@@ -14,7 +14,6 @@ Item {
 	signal activated()
 	signal longTap()
 
-	width: parent.width
 	height: 100 * scaler.scaleY
 
 	MouseArea {

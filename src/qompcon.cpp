@@ -226,14 +226,14 @@ void QompCon::preparePlayback()
 	#endif
 			Options* o = Options::instance();
 
+			if(o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool()) {
+				player_->play();
+			}
+
 			if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
 				const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
 				player_->setPosition(pos);
 				mainWin_->setCurrentPosition(pos);
-			}
-
-			if(o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool()) {
-				player_->play();
 			}
 
 			disconnect(*pConn);
