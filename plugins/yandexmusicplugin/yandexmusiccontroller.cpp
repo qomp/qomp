@@ -160,7 +160,8 @@ YandexMusicController::YandexMusicController(QObject *parent) :
 	albumsModel_(new QompPluginTreeModel(this)),
 	artistsModel_(new QompPluginTreeModel(this)),
 	dlg_(new YandexMusicGettunsDlg()),
-	mainUrl_(YA_MUSIC_URL)
+	mainUrl_(YA_MUSIC_URL),
+	captchaInProgress_(false)
 {
 	init();
 }
@@ -313,6 +314,13 @@ bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray 
 		return true;
 	}
 
+	pendingRequests_.append({replyUrl, slot, model});
+
+	if(captchaInProgress_)
+		return true;
+
+	captchaInProgress_ = true;
+
 	const QString imageURL = captcha.value("img-url").toString();
 	const QString page = captcha.value("captcha-page").toString();
 	const QString ref = QUrl(page).query(QUrl::FullyEncoded);
@@ -327,22 +335,27 @@ bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray 
 	QPixmap px = getCaptcha(imageURL, &key2);
 	QompPluginCaptchaDialog dlg(px, dlg_);
 	if(dlg.start()) {
-		QUrl url(QString("%1://%2/checkcaptcha?key=%3&%4&rep=%5")
-				.arg(replyUrl.scheme(), replyUrl.host(), key, ref,
-				QUrl::toPercentEncoding(dlg.result())), QUrl::StrictMode);
+		for(const PendingRequst& pr: pendingRequests_) {
+			QUrl url(QString("%1://%2/checkcaptcha?key=%3&%4&rep=%5")
+				 .arg(pr.url.scheme(), pr.url.host(), key, ref,
+				      QUrl::toPercentEncoding(dlg.result())), QUrl::StrictMode);
 #ifdef DEBUG_OUTPUT
 	#ifdef HAVE_QT5
-		qDebug() << url.toString(QUrl::FullyEncoded);
+			qDebug() << url.toString(QUrl::FullyEncoded);
 	#else
-		qDebug() << url.toEncoded();
+			qDebug() << url.toEncoded();
 	#endif
 #endif
-		QNetworkRequest nr(url);
-		nr.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-		QNetworkReply* r = nam()->get(nr);
-		connect(r, SIGNAL(finished()), slot);
-		requests_.insert(r, model);
-		dlg_->startBusyWidget();
+			QNetworkRequest nr(url);
+			nr.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+			QNetworkReply* r = nam()->get(nr);
+			connect(r, SIGNAL(finished()), pr.slot);
+			requests_.insert(r, pr.model);
+			dlg_->startBusyWidget();
+		}
+
+		pendingRequests_.clear();
+		captchaInProgress_ = false;
 	}
 
 	return true;

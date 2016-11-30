@@ -22,6 +22,7 @@
 
 #include "qompplugincontroller.h"
 #include <QHash>
+#include <QUrl>
 
 class QompPluginTreeModel;
 class QNetworkReply;
@@ -75,6 +76,19 @@ private:
 	QString mainUrl_;
 	QHash<QString, const char*> queries_;
 	QString searchText_;
+
+	struct PendingRequst {
+		PendingRequst(const QUrl u, const char* s, QompPluginTreeModel* m) :
+			url(u), slot(s), model(m)
+		{}
+
+		QUrl url;
+		const char* slot;
+		QompPluginTreeModel* model;
+	};
+
+	QList<PendingRequst> pendingRequests_;
+	bool captchaInProgress_;
 };
 
 #endif // YANDEXMUSICCONTROLLER_H
