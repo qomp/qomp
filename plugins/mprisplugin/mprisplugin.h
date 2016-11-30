@@ -46,6 +46,12 @@ public:
 
 private slots:
 	void playerStatusChanged(Qomp::State state);
+	void play();
+	void pause();
+	void stop();
+	void next();
+	void previous();
+	void setVolume(const double &volume);
 
 private:
 	void disableMpris();

@@ -29,6 +29,9 @@ MprisController::MprisController(QObject *parent)
 	QDBusConnection qompConnection = QDBusConnection::sessionBus();
 	qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
 	qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
+	connect(mprisAdapter_, SIGNAL(playbackStateChanged(uint)), this, SLOT(playbackStateChanged(uint)));
+	connect(mprisAdapter_, SIGNAL(volumeChanged(double)), this, SIGNAL(volumeChanged(double)));
+
 }
 
 MprisController::~MprisController()
@@ -36,9 +39,31 @@ MprisController::~MprisController()
 	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
 }
 
-void MprisController::sendData(const QString &status, const QompMetaData &tune)
+void MprisController::sendData(const QString &status, const QompMetaData &tune, const double &volume)
 {
 	mprisAdapter_->setStatus(status);
 	mprisAdapter_->setMetadata(tune);
+	mprisAdapter_->setVolume(volume);
 	mprisAdapter_->updateProperties();
+}
+
+void MprisController::playbackStateChanged(uint actionType)
+{
+	switch(actionType) {
+	case PLAY:
+		emit play();
+		break;
+	case PAUSE:
+		emit pause();
+		break;
+	case STOP:
+		emit stop();
+		break;
+	case NEXT:
+		emit next();
+		break;
+	case PREVIOUS:
+		emit previous();
+		break;
+	}
 }
