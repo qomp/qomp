@@ -16,7 +16,7 @@ set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Dire
 if( WIN32 )
 	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
 endif()
-
+set( CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}" )
 if( UNIX AND NOT (APPLE OR CYGWIN) )
 	set(LINUX ON)
 endif()

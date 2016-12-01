@@ -1,5 +1,7 @@
 cmake_minimum_required( VERSION 2.8.12 )
 
+set( CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}" )
+
 set( plugins_list
 	filesystemplugin
 	urlplugin
