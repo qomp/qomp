@@ -23,6 +23,7 @@
 
 MprisController::MprisController(QObject *parent)
 : QObject(parent),
+  rootAdapter_(new RootAdapter(this)),
   mprisAdapter_(new MprisAdapter(this))
 {
 
@@ -31,7 +32,7 @@ MprisController::MprisController(QObject *parent)
 	qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
 	connect(mprisAdapter_, SIGNAL(playbackStateChanged(uint)), this, SLOT(playbackStateChanged(uint)));
 	connect(mprisAdapter_, SIGNAL(volumeChanged(double)), this, SIGNAL(volumeChanged(double)));
-
+	rootAdapter_->setData();
 }
 
 MprisController::~MprisController()
@@ -41,6 +42,7 @@ MprisController::~MprisController()
 
 void MprisController::sendData(const QString &status, const QompMetaData &tune, const double &volume)
 {
+
 	mprisAdapter_->setStatus(status);
 	mprisAdapter_->setMetadata(tune);
 	mprisAdapter_->setVolume(volume);

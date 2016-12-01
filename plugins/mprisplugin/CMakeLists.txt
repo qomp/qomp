@@ -3,21 +3,23 @@ cmake_minimum_required( VERSION 2.8.12 )
 if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
 	cmake_policy(SET CMP0028 OLD)
 endif()
-set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
+
 if( UNIX AND NOT (APPLE OR CYGWIN) )
 	set(LINUX ON)
 endif()
 if( LINUX )
 	set( CMAKE_AUTOMOC TRUE )
-	add_definitions( -Wall -DQT_PLUGIN -DHAVE_DBUS )
+	add_definitions( -DQT_PLUGIN -DHAVE_DBUS )
 	set( mprisplugin_HDRS
 		mprisadapter.h
 		mpriscontroller.h
+		rootadapter.h
 		${PLUGIN}.h
 		)
 	set( mprisplugin_SRCS
 		mprisadapter.cpp
 		mpriscontroller.cpp
+		rootadapter.cpp
 		${PLUGIN}.cpp
 		)
 	include_directories(

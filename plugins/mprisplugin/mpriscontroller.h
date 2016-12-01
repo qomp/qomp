@@ -21,6 +21,7 @@
 #define MPRISCONTROLLER_H
 
 #include "mprisadapter.h"
+#include "rootadapter.h"
 
 #include <QObject>
 
@@ -45,6 +46,7 @@ private slots:
 	void playbackStateChanged(uint actionType);
 
 private:
+	RootAdapter *rootAdapter_;
 	MprisAdapter *mprisAdapter_;
 };
 

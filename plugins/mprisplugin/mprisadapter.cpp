@@ -61,6 +61,7 @@ void MprisAdapter::setMetadata(const QompMetaData &tune)
 	}
 	metaDataMap_["xesam:url"] = tune.url;
 	metaDataMap_["xesam:trackNumber"] = tune.trackNumber;
+	metaDataMap_["mpris:length"] = tune.trackLength;
 	metadataChanged_ = true;
 }
 

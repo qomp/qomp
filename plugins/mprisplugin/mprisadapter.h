@@ -29,6 +29,7 @@ struct QompMetaData {
 	QString album;
 	QString url;
 	int trackNumber;
+	int trackLength;
 };
 
 enum playerActionType {

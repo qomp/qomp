@@ -22,6 +22,9 @@ endif()
 
 set( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
+if( DEV_MODE )
+	set(CMAKE_BUILD_TYPE Debug)
+endif()
 if( NOT CMAKE_BUILD_TYPE )
 	set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -52,7 +55,7 @@ if( WIN32 )
 		)
 endif()
 
-set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
+set( CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}" )
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}

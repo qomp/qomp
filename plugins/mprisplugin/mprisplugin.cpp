@@ -20,6 +20,7 @@
 #include "mprisplugin.h"
 #include "qompplayer.h"
 #include "tune.h"
+#include "common.h"
 
 #include <QTimer>
 #include <QtPlugin>
@@ -148,7 +149,9 @@ void MprisPlugin::getMetaData(Tune *tune)
 		tune_->title= tune->title;
 		tune_->album = tune->album;
 		tune_->trackNumber = num;
-		tune_->url = "";// tune->getUrl().toString();
+		tune_->trackLength = Qomp::durationStringToSeconds(tune->duration)*1e6; //in microseconds
+		QString url = tune->file;
+		tune_->url = (url.isEmpty()) ? "" : url; //Sets URL only for local files
 	}
 }
 
