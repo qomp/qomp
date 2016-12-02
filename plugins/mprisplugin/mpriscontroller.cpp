@@ -23,21 +23,22 @@
 
 MprisController::MprisController(QObject *parent)
 : QObject(parent),
+  signalHandler_(SignalHandler::instance()),
   rootAdapter_(new RootAdapter(this)),
   mprisAdapter_(new MprisAdapter(this))
 {
-
 	QDBusConnection qompConnection = QDBusConnection::sessionBus();
 	qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
 	qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
-	connect(mprisAdapter_, SIGNAL(playbackStateChanged(uint)), this, SLOT(playbackStateChanged(uint)));
-	connect(mprisAdapter_, SIGNAL(volumeChanged(double)), this, SIGNAL(volumeChanged(double)));
+	connect(signalHandler_, &SignalHandler::dataChanged, this, &MprisController::playbackStateChanged);
+	connect(signalHandler_, &SignalHandler::volumeChanged, this, &MprisController::volumeChanged);
 	rootAdapter_->setData();
 }
 
 MprisController::~MprisController()
 {
 	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
+	delete signalHandler_;
 }
 
 void MprisController::sendData(const QString &status, const QompMetaData &tune, const double &volume)
@@ -49,9 +50,9 @@ void MprisController::sendData(const QString &status, const QompMetaData &tune, 
 	mprisAdapter_->updateProperties();
 }
 
-void MprisController::playbackStateChanged(uint actionType)
+void MprisController::playbackStateChanged(SignalType type)
 {
-	switch(actionType) {
+	switch(type) {
 	case PLAY:
 		emit play();
 		break;
@@ -66,6 +67,12 @@ void MprisController::playbackStateChanged(uint actionType)
 		break;
 	case PREVIOUS:
 		emit previous();
+		break;
+	case QUIT:
+		emit sendQuit();
+		break;
+	case RAISE:
+		emit sendRaise();
 		break;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny, Vitaly Tonkacheyev
+ * Copyright (C) 2016  Khryukin Evgeny, Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,41 +17,36 @@
  *
  */
 
-#ifndef MPRISCONTROLLER_H
-#define MPRISCONTROLLER_H
-
-#include "mprisadapter.h"
-#include "rootadapter.h"
-#include "signalhandler.h"
+#ifndef SIGNALHANDLER_H
+#define SIGNALHANDLER_H
 
 #include <QObject>
 
-class MprisController : public QObject
+enum SignalType {
+	PLAY = 0,
+	PAUSE = 1,
+	STOP = 2,
+	NEXT = 3,
+	PREVIOUS = 4,
+	VOLUME = 5,
+	QUIT = 6,
+	RAISE = 7
+};
+
+class SignalHandler : public QObject
 {
 	Q_OBJECT
 public:
-	explicit MprisController(QObject *parent = 0);
-	~MprisController();
-
-	void sendData(const QString &status, const QompMetaData &tune, const double &volume);
+	explicit SignalHandler(QObject *parent = 0);
+	static SignalHandler *instance();
+	void emitSignal(SignalType type, double userValue = 0);
 
 signals:
-	void play();
-	void pause();
-	void next();
-	void previous();
-	void stop();
-	void volumeChanged(const double &volume);
-	void sendQuit();
-	void sendRaise();
-
-private slots:
-	void playbackStateChanged(SignalType type);
+	void dataChanged(SignalType type);
+	void volumeChanged(const double &value);
 
 private:
-	SignalHandler *signalHandler_;
-	RootAdapter *rootAdapter_;
-	MprisAdapter *mprisAdapter_;
+	static SignalHandler *instance_;
 };
 
-#endif // MPRISCONTROLLER_H
+#endif // SIGNALHANDLER_H

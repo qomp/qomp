@@ -36,22 +36,21 @@ class RootAdapter : public QDBusAbstractAdaptor
 
 public:
 	explicit RootAdapter(QObject *p);
-	QStringList getMimeTypes() const {
-		return QStringList() << "audio/aac" << "audio/x-flac"
-		                     << "audio/flac" << "audio/mp3"
-		                     << "audio/mpeg"<< "application/ogg"
-		                     << "audio/x-vorbis+ogg" << "audio/x-ms-wma"
-		                     << "audio/mp4" << "audio/MP4A-LATM"
-		                     << "audio/mpeg4-generic" << "audio/m4a"
-		                     << "audio/ac3";
-	}
+	void setData();
+
+private:
+	QStringList getMimeTypes() const;
 	QString getIdentity() const {return "Qomp";}
 	QString getDesktopEntry() const {return "qomp";}
-	bool canQuit() {return false;}
-	bool canRaise() {return false;} //Can raise player window
-	bool canSetFullscreen() {return false;}
-	bool hasTrackList() {return false;}
-	void setData();
+	bool canQuit() const {return true;}
+	bool canRaise() const {return true;} //Can raise player window
+	bool canSetFullscreen() const {return false;}
+	bool hasTrackList() const {return false;}
+
+public slots:
+	void Raise();
+	void Quit();
+
 };
 
 #endif // ROOTADAPTER_H

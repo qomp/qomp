@@ -32,14 +32,6 @@ struct QompMetaData {
 	int trackLength;
 };
 
-enum playerActionType {
-	PLAY = 0,
-	PAUSE = 1,
-	STOP = 2,
-	NEXT = 3,
-	PREVIOUS = 4
-};
-
 class MprisAdapter : public QDBusAbstractAdaptor
 {
 	Q_OBJECT
@@ -66,6 +58,11 @@ public slots:
 	void Stop();
 
 public:
+	void setVolume(double volume);
+	void setStatus(const QString &status);
+	void setMetadata(const QompMetaData &tune);
+	void updateProperties();
+private:
 	QVariantMap metadata() const;
 	QString playbackStatus() const;
 	bool canGoNext() const {return true;}
@@ -75,14 +72,6 @@ public:
 	bool canSeek() const {return false;}
 	bool canControl() const {return true;}
 	double getVolume();
-	void setVolume(double volume);
-	void setStatus(const QString &status);
-	void setMetadata(const QompMetaData &tune);
-	void updateProperties();
-
-signals:
-	void playbackStateChanged(uint actionType);
-	void volumeChanged(const double &volume);
 
 private:
 	QVariantMap metaDataMap_;

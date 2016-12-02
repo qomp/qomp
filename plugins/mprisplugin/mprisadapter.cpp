@@ -19,9 +19,10 @@
 
 #include "mprisadapter.h"
 #include "tune.h"
+#include "signalhandler.h"
 
 #include <QtDBus/QDBusConnection>
-#include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusMessage>
 #include <QStringList>
 
 MprisAdapter::MprisAdapter(QObject* p) :
@@ -98,8 +99,7 @@ void MprisAdapter::updateProperties()
 	QDBusMessage msg = QDBusMessage::createSignal("/org/mpris/MediaPlayer2",
 						      "org.freedesktop.DBus.Properties",
 						      "PropertiesChanged");
-	QVariantList args = QVariantList() << "org.mpris.MediaPlayer2.Player" << map << QStringList();
-	msg.setArguments(args);
+	msg << "org.mpris.MediaPlayer2.Player" << map << QStringList();
 	QDBusConnection::sessionBus().send(msg);
 }
 
@@ -107,28 +107,28 @@ void MprisAdapter::updateProperties()
 void MprisAdapter::Play()
 {
 	if(canPlay()) {
-		emit playbackStateChanged(PLAY);
+		SignalHandler::instance()->emitSignal(PLAY);
 	}
 }
 
 void MprisAdapter::Pause()
 {
 	if(canPause()) {
-		emit playbackStateChanged(PAUSE);
+		SignalHandler::instance()->emitSignal(PAUSE);
 	}
 }
 
 void MprisAdapter::Next()
 {
 	if(canGoNext()) {
-		emit playbackStateChanged(NEXT);
+		SignalHandler::instance()->emitSignal(NEXT);
 	}
 }
 
 void MprisAdapter::Previous()
 {
 	if(canGoPrevious()) {
-		emit playbackStateChanged(PREVIOUS);
+		SignalHandler::instance()->emitSignal(PREVIOUS);
 	}
 }
 
@@ -136,10 +136,10 @@ void MprisAdapter::PlayPause()
 {
 	if(canPlay() && canPause()) {
 		if(playerStatus_ == "Playing") {
-			emit playbackStateChanged(PAUSE);
+			SignalHandler::instance()->emitSignal(PAUSE);
 		}
 		else {
-			emit playbackStateChanged(PLAY);
+			SignalHandler::instance()->emitSignal(PLAY);
 		}
 	}
 }
@@ -147,7 +147,7 @@ void MprisAdapter::PlayPause()
 void MprisAdapter::Stop()
 {
 	if(canControl()) {
-		emit playbackStateChanged(STOP);
+		SignalHandler::instance()->emitSignal(STOP);
 	}
 }
 
@@ -155,7 +155,7 @@ void MprisAdapter::setVolume(double volume)
 {
 	if( volume >= 0.0 && volume_ != volume) {
 		volume_ = volume;
-		emit volumeChanged(volume);
+		SignalHandler::instance()->emitSignal(VOLUME, volume);
 	}
 }
 
