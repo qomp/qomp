@@ -15,13 +15,7 @@ Window {
 	onHeightChanged: updateScaler()
 
 	function updateScaler() {
-		var w = Math.min(width, height)
-		var h = Math.max(width, height)
-		var myDensity = 9.15
-		var curDensity = Screen.pixelDensity
-		scaler.scaleX = (w / curDensity) / (480 / myDensity)
-		scaler.scaleY = (h / curDensity) / (800 / myDensity)
-		scaler.scaleFont = (400 + width * height * 0.00015) / 457
+		scaler.updateScales()
 	}
 
 	Timer {

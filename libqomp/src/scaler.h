@@ -44,6 +44,9 @@ public:
 	double scaleMargins() const;
 	void setScaleMargins(double scaleMargins);
 
+public slots:
+	void updateScales();
+
 signals:
 	void scaleXChanged(double);
 	void scaleYChanged(double);
