@@ -239,6 +239,7 @@ void QompCon::preparePlayback()
 		disconnect(*pConn);
 	});
 
+#ifndef Q_OS_MACX
 	if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
 		auto sConn = QSharedPointer<QMetaObject::Connection>::create();
 		*sConn = connect(player_, &QompPlayer::stateChanged,
@@ -256,6 +257,7 @@ void QompCon::preparePlayback()
 			}
 		});
 	}
+#endif
 }
 
 void QompCon::processCommandLine()
