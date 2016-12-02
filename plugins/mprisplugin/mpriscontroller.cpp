@@ -18,27 +18,24 @@
  */
 
 #include "mpriscontroller.h"
+#include "rootadapter.h"
 
 #include <QtDBus/QDBusConnection>
 
 MprisController::MprisController(QObject *parent)
 : QObject(parent),
-  signalHandler_(SignalHandler::instance()),
   rootAdapter_(new RootAdapter(this)),
   mprisAdapter_(new MprisAdapter(this))
 {
 	QDBusConnection qompConnection = QDBusConnection::sessionBus();
 	qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
 	qompConnection.registerService("org.mpris.MediaPlayer2.qomp");
-	connect(signalHandler_, &SignalHandler::dataChanged, this, &MprisController::playbackStateChanged);
-	connect(signalHandler_, &SignalHandler::volumeChanged, this, &MprisController::volumeChanged);
 	rootAdapter_->setData();
 }
 
 MprisController::~MprisController()
 {
 	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
-	delete signalHandler_;
 }
 
 void MprisController::sendData(const QString &status, const QompMetaData &tune, const double &volume)
@@ -50,7 +47,7 @@ void MprisController::sendData(const QString &status, const QompMetaData &tune, 
 	mprisAdapter_->updateProperties();
 }
 
-void MprisController::playbackStateChanged(SignalType type)
+void MprisController::emitSignal(SignalType type, double userValue)
 {
 	switch(type) {
 	case PLAY:
@@ -73,6 +70,9 @@ void MprisController::playbackStateChanged(SignalType type)
 		break;
 	case RAISE:
 		emit sendRaise();
+		break;
+	case VOLUME:
+		emit volumeChanged(userValue);
 		break;
 	}
 }

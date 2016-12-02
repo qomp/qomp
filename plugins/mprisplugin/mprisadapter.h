@@ -23,6 +23,8 @@
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QVariantMap>
 
+class MprisController;
+
 struct QompMetaData {
 	QString title;
 	QString artist;
@@ -47,7 +49,7 @@ class MprisAdapter : public QDBusAbstractAdaptor
 	Q_PROPERTY(double Volume READ getVolume WRITE setVolume)
 
 public:
-	explicit MprisAdapter(QObject *p);
+	explicit MprisAdapter(MprisController *p);
 
 public slots:
 	void Play();
@@ -74,6 +76,7 @@ private:
 	double getVolume();
 
 private:
+	MprisController *controller_;
 	QVariantMap metaDataMap_;
 	QString playerStatus_;
 	bool statusChanged_;

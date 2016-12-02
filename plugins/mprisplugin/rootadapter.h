@@ -22,6 +22,8 @@
 
 #include <QtDBus/QDBusAbstractAdaptor>
 
+class MprisController;
+
 class RootAdapter : public QDBusAbstractAdaptor
 {
 	Q_OBJECT
@@ -35,7 +37,7 @@ class RootAdapter : public QDBusAbstractAdaptor
 	Q_PROPERTY(bool HasTrackList READ  hasTrackList)
 
 public:
-	explicit RootAdapter(QObject *p);
+	explicit RootAdapter(MprisController *p);
 	void setData();
 
 private:
@@ -50,6 +52,9 @@ private:
 public slots:
 	void Raise();
 	void Quit();
+
+private:
+	MprisController *controller_;
 
 };
 

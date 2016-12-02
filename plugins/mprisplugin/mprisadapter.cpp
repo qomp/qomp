@@ -19,14 +19,15 @@
 
 #include "mprisadapter.h"
 #include "tune.h"
-#include "signalhandler.h"
+#include "mpriscontroller.h"
 
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
 #include <QStringList>
 
-MprisAdapter::MprisAdapter(QObject* p) :
+MprisAdapter::MprisAdapter(MprisController *p) :
 	QDBusAbstractAdaptor(p),
+	controller_(p),
 	playerStatus_("Stopped"),
 	statusChanged_(false),
 	metadataChanged_(false),
@@ -107,28 +108,28 @@ void MprisAdapter::updateProperties()
 void MprisAdapter::Play()
 {
 	if(canPlay()) {
-		SignalHandler::instance()->emitSignal(PLAY);
+		controller_->emitSignal(PLAY);
 	}
 }
 
 void MprisAdapter::Pause()
 {
 	if(canPause()) {
-		SignalHandler::instance()->emitSignal(PAUSE);
+		controller_->emitSignal(PAUSE);
 	}
 }
 
 void MprisAdapter::Next()
 {
 	if(canGoNext()) {
-		SignalHandler::instance()->emitSignal(NEXT);
+		controller_->emitSignal(NEXT);
 	}
 }
 
 void MprisAdapter::Previous()
 {
 	if(canGoPrevious()) {
-		SignalHandler::instance()->emitSignal(PREVIOUS);
+		controller_->emitSignal(PREVIOUS);
 	}
 }
 
@@ -136,10 +137,10 @@ void MprisAdapter::PlayPause()
 {
 	if(canPlay() && canPause()) {
 		if(playerStatus_ == "Playing") {
-			SignalHandler::instance()->emitSignal(PAUSE);
+			controller_->emitSignal(PAUSE);
 		}
 		else {
-			SignalHandler::instance()->emitSignal(PLAY);
+			controller_->emitSignal(PLAY);
 		}
 	}
 }
@@ -147,7 +148,7 @@ void MprisAdapter::PlayPause()
 void MprisAdapter::Stop()
 {
 	if(canControl()) {
-		SignalHandler::instance()->emitSignal(STOP);
+		controller_->emitSignal(STOP);
 	}
 }
 
@@ -155,7 +156,7 @@ void MprisAdapter::setVolume(double volume)
 {
 	if( volume >= 0.0 && volume_ != volume) {
 		volume_ = volume;
-		SignalHandler::instance()->emitSignal(VOLUME, volume);
+		controller_->emitSignal(VOLUME, volume);
 	}
 }
 

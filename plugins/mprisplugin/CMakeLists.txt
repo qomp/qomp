@@ -14,14 +14,12 @@ if( LINUX )
 		mprisadapter.h
 		mpriscontroller.h
 		rootadapter.h
-		signalhandler.h
 		${PLUGIN}.h
 		)
 	set( mprisplugin_SRCS
 		mprisadapter.cpp
 		mpriscontroller.cpp
 		rootadapter.cpp
-		signalhandler.cpp
 		${PLUGIN}.cpp
 		)
 	include_directories(

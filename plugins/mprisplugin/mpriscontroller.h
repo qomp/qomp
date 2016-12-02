@@ -21,10 +21,20 @@
 #define MPRISCONTROLLER_H
 
 #include "mprisadapter.h"
-#include "rootadapter.h"
-#include "signalhandler.h"
-
 #include <QObject>
+
+class RootAdapter;
+
+enum SignalType {
+	PLAY = 0,
+	PAUSE = 1,
+	STOP = 2,
+	NEXT = 3,
+	PREVIOUS = 4,
+	VOLUME = 5,
+	QUIT = 6,
+	RAISE = 7
+};
 
 class MprisController : public QObject
 {
@@ -33,6 +43,7 @@ public:
 	explicit MprisController(QObject *parent = 0);
 	~MprisController();
 
+	void emitSignal(SignalType type, double userValue = 0);
 	void sendData(const QString &status, const QompMetaData &tune, const double &volume);
 
 signals:
@@ -45,11 +56,7 @@ signals:
 	void sendQuit();
 	void sendRaise();
 
-private slots:
-	void playbackStateChanged(SignalType type);
-
 private:
-	SignalHandler *signalHandler_;
 	RootAdapter *rootAdapter_;
 	MprisAdapter *mprisAdapter_;
 };

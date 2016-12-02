@@ -16,13 +16,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
 #include "rootadapter.h"
-#include "signalhandler.h"
+#include "mpriscontroller.h"
 
 #include <QDBusConnection>
 #include <QDBusMessage>
 
-RootAdapter::RootAdapter(QObject *p):QDBusAbstractAdaptor(p)
+RootAdapter::RootAdapter(MprisController *p)
+ :QDBusAbstractAdaptor(p),
+  controller_(p)
 {
 }
 
@@ -48,14 +51,14 @@ void RootAdapter::setData()
 void RootAdapter::Quit()
 {
 	if(canQuit()) {
-		SignalHandler::instance()->emitSignal(QUIT);
+		controller_->emitSignal(QUIT);
 	}
 }
 
 void RootAdapter::Raise()
 {
 	if(canRaise()) {
-		SignalHandler::instance()->emitSignal(RAISE);
+		controller_->emitSignal(RAISE);
 	}
 }
 
