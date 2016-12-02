@@ -114,8 +114,8 @@ void Scaler::updateScales()
 //	_scaleX = (width / physSize.width()) / (refWidth / refPhysSize.width());
 //	_scaleY = (height / physSize.height()) / (refHeight / refPhysSize.height());
 
-	_scaleX = width*refDpi/(dpi*refWidth) * factorX;
-	_scaleY = height*refDpi/(dpi*refHeight) * factorY;
+	setScaleX(width*refDpi/(dpi*refWidth) * factorX);
+	setScaleY(height*refDpi/(dpi*refHeight) * factorY);
 
 	recalculateMargins();
 #endif
