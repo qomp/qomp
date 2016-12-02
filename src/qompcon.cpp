@@ -218,11 +218,10 @@ void QompCon::applicationStateChanged(Qt::ApplicationState state)
 void QompCon::preparePlayback()
 {
 	Options* o = Options::instance();
-	const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
 
 	auto pConn = QSharedPointer<QMetaObject::Connection>::create();
 	*pConn = connect(player_, &QompPlayer::mediaReady,
-			 [this, pConn, pos, o]()
+			 [this, pConn, o]()
 	{
 #ifdef DEBUG_OUTPUT
 		qDebug() << "QompCon::init lambda AutostartPlay";
@@ -232,6 +231,7 @@ void QompCon::preparePlayback()
 		}
 
 		if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
+			const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
 			player_->setPosition(pos);
 			mainWin_->setCurrentPosition(pos);
 		}
@@ -242,12 +242,13 @@ void QompCon::preparePlayback()
 	if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
 		auto sConn = QSharedPointer<QMetaObject::Connection>::create();
 		*sConn = connect(player_, &QompPlayer::stateChanged,
-				 [this, sConn, pos](Qomp::State state)
+				 [this, sConn, o](Qomp::State state)
 		{
 #ifdef DEBUG_OUTPUT
 			qDebug() << "QompCon::init lambda Search Position" << state;
 #endif
 			if(Qomp::StatePlaying == state) {
+				const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
 				player_->setPosition(pos);
 				mainWin_->setCurrentPosition(pos);
 
@@ -590,6 +591,7 @@ void QompCon::setTunes(const QList<Tune*> &tunes)
 		if(player_->state() != Qomp::StatePaused
 			&& player_->state() != Qomp::StatePlaying)
 		{
+			savePlayerPosition(0);
 			QModelIndex index = model_->indexForTune(tunes.first());
 			model_->setCurrentTune(model_->tune(index));
 			actPlay();
