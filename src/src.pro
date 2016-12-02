@@ -118,6 +118,9 @@ android {
         qml/Qt/labs/folderlistmodel/libqmlfolderlistmodelplugin.so \
         qml/Qt/labs/folderlistmodel/plugins.qmltypes
   }
+  else {
+    QT += xml #for lastfm plugin
+  }
 
   DISTFILES += \
         ../android/gradle/wrapper/gradle-wrapper.jar \

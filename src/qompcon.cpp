@@ -217,28 +217,44 @@ void QompCon::applicationStateChanged(Qt::ApplicationState state)
 
 void QompCon::preparePlayback()
 {
+	Options* o = Options::instance();
+	const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
+
 	auto pConn = QSharedPointer<QMetaObject::Connection>::create();
 	*pConn = connect(player_, &QompPlayer::mediaReady,
-			 [this, pConn]()
+			 [this, pConn, pos, o]()
+	{
+#ifdef DEBUG_OUTPUT
+		qDebug() << "QompCon::init lambda AutostartPlay";
+#endif
+		if(o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool()) {
+			player_->play();
+		}
+
+		if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
+			player_->setPosition(pos);
+			mainWin_->setCurrentPosition(pos);
+		}
+
+		disconnect(*pConn);
+	});
+
+	if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
+		auto sConn = QSharedPointer<QMetaObject::Connection>::create();
+		*sConn = connect(player_, &QompPlayer::stateChanged,
+				 [this, sConn, pos](Qomp::State state)
 		{
-	#ifdef DEBUG_OUTPUT
-			qDebug() << "QompCon::init lambda";
-	#endif
-			Options* o = Options::instance();
-
-			if(o->getOption(OPTION_AUTOSTART_PLAYBACK).toBool()) {
-				player_->play();
-			}
-
-			if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
-				const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
+#ifdef DEBUG_OUTPUT
+			qDebug() << "QompCon::init lambda Search Position" << state;
+#endif
+			if(Qomp::StatePlaying == state) {
 				player_->setPosition(pos);
 				mainWin_->setCurrentPosition(pos);
-			}
 
-			disconnect(*pConn);
-		}
-	);
+				disconnect(*sConn);
+			}
+		});
+	}
 }
 
 void QompCon::processCommandLine()
