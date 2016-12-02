@@ -76,8 +76,11 @@ void QompOptionsMain::Private::applyOptions()
 	o->setOption(OPTION_REMEMBER_POS, ui->cb_rememberPosition->isChecked());
 	o->setOption(OPTION_ONE_COPY, ui->cb_oneCopy->isChecked());
 
-	o->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->currentText());
-	if(page_->player_) {
+	if(page_->player_ &&
+		o->getOption(OPTION_AUDIO_DEVICE, page_->player_->defaultAudioDevice()).toString()
+			!= ui->cb_output->currentText())
+	{
+		o->setOption(OPTION_AUDIO_DEVICE, ui->cb_output->currentText());
 		page_->player_->setAudioOutputDevice(ui->cb_output->currentText());
 	}
 }
