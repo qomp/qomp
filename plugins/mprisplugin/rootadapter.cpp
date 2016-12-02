@@ -17,6 +17,8 @@
  *
  */
 #include "rootadapter.h"
+#include "signalhandler.h"
+
 #include <QDBusConnection>
 #include <QDBusMessage>
 
@@ -37,9 +39,33 @@ void RootAdapter::setData()
 		return;
 	}
 	QDBusMessage msg = QDBusMessage::createSignal("/org/mpris/MediaPlayer2",
-	                                              "org.freedesktop.DBus.Properties",
-	                                              "PropertiesChanged");
-	QVariantList args = QVariantList() << "org.mpris.MediaPlayer2" << map << QStringList();
-	msg.setArguments(args);
+						      "org.freedesktop.DBus.Properties",
+						      "PropertiesChanged");
+	msg << "org.mpris.MediaPlayer2" << map << QStringList();
 	QDBusConnection::sessionBus().send(msg);
+}
+
+void RootAdapter::Quit()
+{
+	if(canQuit()) {
+		SignalHandler::instance()->emitSignal(QUIT);
+	}
+}
+
+void RootAdapter::Raise()
+{
+	if(canRaise()) {
+		SignalHandler::instance()->emitSignal(RAISE);
+	}
+}
+
+QStringList RootAdapter::getMimeTypes() const
+{
+	return QStringList() << "audio/aac" << "audio/x-flac"
+			     << "audio/flac" << "audio/mp3"
+			     << "audio/mpeg"<< "application/ogg"
+			     << "audio/x-vorbis+ogg" << "audio/x-ms-wma"
+			     << "audio/mp4" << "audio/MP4A-LATM"
+			     << "audio/mpeg4-generic" << "audio/m4a"
+			     << "audio/ac3";
 }

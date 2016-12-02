@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny, Vitaly Tonkacheyev
+ * Copyright (C) 2016  Khryukin Evgeny, Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,41 +17,28 @@
  *
  */
 
-#ifndef MPRISCONTROLLER_H
-#define MPRISCONTROLLER_H
-
-#include "mprisadapter.h"
-#include "rootadapter.h"
 #include "signalhandler.h"
 
-#include <QObject>
+SignalHandler::SignalHandler(QObject *parent) : QObject(parent)
+{}
 
-class MprisController : public QObject
+SignalHandler *SignalHandler::instance()
 {
-	Q_OBJECT
-public:
-	explicit MprisController(QObject *parent = 0);
-	~MprisController();
+	if (!instance_) {
+		instance_ = new SignalHandler();
+	}
+	return instance_;
+}
 
-	void sendData(const QString &status, const QompMetaData &tune, const double &volume);
+SignalHandler *SignalHandler::instance_ = nullptr;
 
-signals:
-	void play();
-	void pause();
-	void next();
-	void previous();
-	void stop();
-	void volumeChanged(const double &volume);
-	void sendQuit();
-	void sendRaise();
 
-private slots:
-	void playbackStateChanged(SignalType type);
-
-private:
-	SignalHandler *signalHandler_;
-	RootAdapter *rootAdapter_;
-	MprisAdapter *mprisAdapter_;
-};
-
-#endif // MPRISCONTROLLER_H
+void SignalHandler::emitSignal(SignalType type, double userValue)
+{
+	if (type != VOLUME) {
+		emit dataChanged(type);
+	}
+	else {
+		emit volumeChanged(userValue);
+	}
+}

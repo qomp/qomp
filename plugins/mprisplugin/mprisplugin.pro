@@ -7,11 +7,13 @@ unix:!mac:!android {
     HEADERS += $$PWD/mprisadapter.h \
                $$PWD/mpriscontroller.h \
                $$PWD/rootadapter.h \
+               $$PWD/signalhandler.h \
                $$PWD/mprisplugin.h
 
     SOURCES += $$PWD/mprisadapter.cpp \
                $$PWD/mpriscontroller.cpp \
                $$PWD/rootadapter.cpp \
+               $$PWD/signalhandler.cpp \
                $$PWD/mprisplugin.cpp
 }
 
