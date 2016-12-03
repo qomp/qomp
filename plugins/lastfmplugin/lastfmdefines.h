@@ -20,7 +20,9 @@
 #ifndef LASTFMDEFINES_H
 #define LASTFMDEFINES_H
 
-#define LASTFM_NAME		"LastFm"
+#include <QtGlobal>
+
+#define LASTFM_NAME		QT_TRANSLATE_NOOP("LastFm", "LastFm")
 #define LASTFM_VER		"1.1"
 #define LASTFM_OPT_USER		"plugins.lastfm.user"
 #define LASTFM_OPT_ENABLED	"plugins.lastfm.enabled"

@@ -1,1 +1,5 @@
-{ "name": "LastFm", "description": "LastFm scrobbling", "version": "1.1"  }
+{
+	"name": QT_TRANSLATE_NOOP("LastFm", "LastFm"),
+	"description": QT_TRANSLATE_NOOP("LastFm", "LastFm scrobbling"),
+	"version": "1.1"
+}
