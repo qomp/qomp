@@ -26,6 +26,7 @@
 //#include <QAudioDeviceInfo>
 #include <QAudioOutputSelectorControl>
 #include <QMediaService>
+#include <QSignalBlocker>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -66,9 +67,8 @@ void QompQtMultimediaPlayer::doSetTune()
 	qDebug() << "QompQtMultimediaPlayer::doSetTune()";
 #endif
 	if(!prevTune_ || !prevTune_->sameSource(currentTune())) {
-		player_->blockSignals(true);
+		const QSignalBlocker b(player_);
 		player_->setMedia(QMediaContent());
-		player_->blockSignals(false);
 	}
 
 	if(watcher_) {
@@ -104,9 +104,8 @@ qint64 QompQtMultimediaPlayer::mapPositionFromTrack(qint64 pos) const
 
 void QompQtMultimediaPlayer::setVolume(qreal vol)
 {
-	player_->blockSignals(true);
+	const QSignalBlocker b(player_);
 	player_->setVolume(vol*100);
-	player_->blockSignals(false);
 }
 
 qreal QompQtMultimediaPlayer::volume() const
@@ -116,9 +115,8 @@ qreal QompQtMultimediaPlayer::volume() const
 
 void QompQtMultimediaPlayer::setMute(bool mute)
 {
-	player_->blockSignals(true);
+	const QSignalBlocker b(player_);
 	player_->setMuted(mute);
-	player_->blockSignals(false);
 }
 
 bool QompQtMultimediaPlayer::isMuted() const
@@ -128,9 +126,8 @@ bool QompQtMultimediaPlayer::isMuted() const
 
 void QompQtMultimediaPlayer::setPosition(qint64 pos)
 {
-	player_->blockSignals(true);
+	const QSignalBlocker b(player_);
 	player_->setPosition( mapPositionFromTune(pos) );
-	player_->blockSignals(false);
 }
 
 qint64 QompQtMultimediaPlayer::position() const
@@ -221,7 +218,7 @@ void QompQtMultimediaPlayer::setAudioOutputDevice(const QString &devName)
 {
 	QMediaService *svc = player_->service();
 	if (svc != nullptr) {
-		player_->blockSignals(true);
+		const QSignalBlocker b(player_);
 
 		QAudioOutputSelectorControl *out = qobject_cast<QAudioOutputSelectorControl *>
 				(svc->requestControl(QAudioOutputSelectorControl_iid));
@@ -242,8 +239,6 @@ void QompQtMultimediaPlayer::setAudioOutputDevice(const QString &devName)
 
 			svc->releaseControl(out);
 		}
-
-		player_->blockSignals(false);
 	}
 }
 
@@ -287,9 +282,8 @@ void QompQtMultimediaPlayer::updatePlayerPosition()
 	if(currentTune() && currentTune()->length > 0) {
 		const qint64 pos = currentTune()->start;
 
-		player_->blockSignals(true);
+		const QSignalBlocker b(player_);
 		player_->setPosition(pos);
-		player_->blockSignals(false);
 	}
 }
 
@@ -400,9 +394,8 @@ void QompQtMultimediaPlayer::tunePositionChanged(qint64 pos)
 		emit currentPositionChanged(curPos);
 	}
 	else {
-		player_->blockSignals(true);
+		const QSignalBlocker b(player_);
 		player_->stop();
-		player_->blockSignals(false);
 
 		emit mediaFinished();
 	}

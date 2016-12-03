@@ -756,7 +756,9 @@ void QompCon::setupPlayer()
 
 #ifndef Q_OS_ANDROID
 	player_->setVolume(Options::instance()->getOption(OPTION_VOLUME, 1).toReal());
-	player_->setAudioOutputDevice(Options::instance()->getOption(OPTION_AUDIO_DEVICE).toString());
+	const QString dev = Options::instance()->getOption(OPTION_AUDIO_DEVICE).toString();
+	if(player_->defaultAudioDevice() != dev && !dev.isEmpty())
+		player_->setAudioOutputDevice(Options::instance()->getOption(OPTION_AUDIO_DEVICE).toString());
 	player_->setMute(Options::instance()->getOption(OPTION_MUTED).toBool());
 #endif
 }
