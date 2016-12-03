@@ -27,7 +27,3 @@ SOURCES +=  $$PWD/prostopleerplugin.cpp \
 
 
 OTHER_FILES += $$PWD/metadata.json
-
-lupdate_only {
-    SOURCES += $$PWD/metadata.json
-}

@@ -24,10 +24,6 @@ win32|android {
     INCLUDEPATH += $$CUE_INCLUDE $$TAG_INCLUDE
 }
 
-lupdate_only {
-    SOURCES += $$PWD/metadata.json
-}
-
 LIBS += -lcue
 
 linux:!mac: INCLUDEPATH += /usr/include/libcue-1.4/libcue

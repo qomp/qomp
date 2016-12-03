@@ -19,7 +19,3 @@ android {
 else {
     SOURCES += $$PWD/yandexmusicgettunsdlg.cpp
 }
-
-lupdate_only {
-    SOURCES += $$PWD/metadata.json
-}

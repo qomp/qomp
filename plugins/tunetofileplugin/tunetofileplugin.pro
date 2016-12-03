@@ -9,7 +9,3 @@ SOURCES += $$PWD/tunetofileplugin.cpp \
 FORMS += $$PWD/tunetofilesettings.ui
 
 OTHER_FILES += $$PWD/metadata.json
-
-lupdate_only {
-    SOURCES += $$PWD/metadata.json
-}

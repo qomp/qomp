@@ -20,7 +20,3 @@ android {
 else {
     SOURCES += $$PWD/myzukarugettunesdlg.cpp
 }
-
-lupdate_only {
-    SOURCES += $$PWD/metadata.json
-}
