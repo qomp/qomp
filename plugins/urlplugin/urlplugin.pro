@@ -8,3 +8,7 @@ OTHER_FILES += $$PWD/metadata.json
 android {
     RESOURCES += qml.qrc
 }
+
+lupdate_only {
+    SOURCES += $$PWD/metadata.json
+}

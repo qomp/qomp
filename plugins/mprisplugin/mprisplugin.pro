@@ -17,3 +17,6 @@ unix:!mac:!android {
 
 OTHER_FILES += $$PWD/metadata.json
 
+lupdate_only {
+    SOURCES += $$PWD/metadata.json
+}

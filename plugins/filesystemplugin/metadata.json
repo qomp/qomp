@@ -1,5 +1,6 @@
 {
-	"name": QT_TRANSLATE_NOOP("Filesystem", "File System"),
-	"description": QT_TRANSLATE_NOOP("Filesystem", "Open music from filesystem"),
+	"id":"Filesystem",
+	"name": "File System",
+	"description": "Open music from filesystem",
 	"version": "1.1"
 }

@@ -45,7 +45,8 @@ public:
 	QompOptionsPage* getOptions(const QString& pluginName);
 	QString getVersion(const QString& pluginName) const;
 	QString getDescription(const QString& pluginName) const;
-	bool isPluginEnabled(const QString& pluginName) const;
+	bool isPluginEnabledByName(const QString& pluginName) const;
+	bool isPluginEnabledById(const QString& pluginId) const;
 	void setPluginEnabled(const QString& pluginName, bool enabled);
 	QStringList tunePlugins() const;
 	QList<QompPluginAction*> tunesActions();

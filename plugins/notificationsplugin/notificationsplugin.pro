@@ -20,3 +20,7 @@ else: unix {
     HEADERS += $$PWD/dbusnotifier.h
     SOURCES += $$PWD/dbusnotifier.cpp
 }
+
+lupdate_only {
+    SOURCES += $$PWD/metadata.json
+}

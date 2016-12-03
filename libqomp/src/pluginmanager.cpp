@@ -54,7 +54,7 @@ PluginManager::PluginManager() :
 
 PluginManager::~PluginManager()
 {
-	foreach(const PluginPair& pp, plugins_) {
+	for(PluginPair& pp: plugins_) {
 		delete pp.first;
 	}
 	plugins_.clear();
@@ -75,13 +75,13 @@ void PluginManager::loadStaticPlugins()
 
 void PluginManager::loadPlugins()
 {
-	foreach(const QString& d, pluginsDirs()) {
+	for(const QString& d: pluginsDirs()) {
 		QDir dir(d);
 		if(dir.exists()) {
-			foreach(const QString& file, dir.entryList(QDir::Files)) {
+			for(const QString& file: dir.entryList(QDir::Files)) {
 				PluginHost* host = new PluginHost(d + '/' + file, this);
 				if(host->isValid()) {
-					bool en = isPluginEnabled(host->name());
+					bool en = isPluginEnabledById(host->id());
 					PluginPair pp = qMakePair(host, en);
 					plugins_.append(pp);
 					if(en)
@@ -111,7 +111,7 @@ void PluginManager::sortPlugins()
 
 PluginHost *PluginManager::pluginForName(const QString &pluginName) const
 {
-	foreach(const PluginPair& pp, plugins_) {
+	for(const PluginPair& pp: plugins_) {
 		if(pp.first->name() == pluginName)
 			return pp.first;
 	}
@@ -145,7 +145,7 @@ PluginManager *PluginManager::instance()
 QStringList PluginManager::availablePlugins() const
 {
 	QStringList list;
-	foreach(const PluginPair& pp, plugins_)
+	for(const PluginPair& pp: plugins_)
 		list.append(pp.first->name());
 
 	return list;
@@ -181,17 +181,27 @@ QString PluginManager::getDescription(const QString &pluginName) const
 	return QString();
 }
 
-bool PluginManager::isPluginEnabled(const QString &pluginName) const
+bool PluginManager::isPluginEnabledByName(const QString &pluginName) const
 {
-	return Options::instance()->getOption(PLUGINS_OPTIONS_PREFIX + pluginName, true).toBool();
+	for(const PluginPair& pp: plugins_) {
+		if(pp.first->name() == pluginName) {
+			return isPluginEnabledById(pp.first->id());
+		}
+	}
+
+	return false;
+}
+
+bool PluginManager::isPluginEnabledById(const QString &pluginId) const
+{
+	return Options::instance()->getOption(PLUGINS_OPTIONS_PREFIX + pluginId, true).toBool();
 }
 
 void PluginManager::setPluginEnabled(const QString &pluginName, bool enabled)
 {
-	Options::instance()->setOption(PLUGINS_OPTIONS_PREFIX + pluginName, enabled);
-	for(int i = 0; i < plugins_.size(); i++) {
-		PluginPair& pp = plugins_[i];
+	for(PluginPair& pp: plugins_) {
 		if(pp.first->name() == pluginName) {
+			Options::instance()->setOption(PLUGINS_OPTIONS_PREFIX + pp.first->id(), enabled);
 			if(pp.second != enabled) {
 				pp.second = enabled;
 				if(pp.second)
@@ -201,6 +211,7 @@ void PluginManager::setPluginEnabled(const QString &pluginName, bool enabled)
 
 				emit pluginStatusChanged(pluginName, enabled);
 			}
+			break;
 		}
 	}
 }
@@ -208,7 +219,7 @@ void PluginManager::setPluginEnabled(const QString &pluginName, bool enabled)
 QStringList PluginManager::tunePlugins() const
 {
 	QStringList list;
-	foreach(const PluginPair& pp, plugins_) {
+	for(const PluginPair& pp: plugins_) {
 		if(!pp.second)
 			continue;
 		QompTunePlugin *p = qobject_cast<QompTunePlugin*>(pp.first->instance());
@@ -222,7 +233,7 @@ QStringList PluginManager::tunePlugins() const
 QList<QompPluginAction *> PluginManager::tunesActions()
 {
 	QList<QompPluginAction *> l;
-	foreach(const PluginPair& pp, plugins_) {
+	for(const PluginPair& pp: plugins_) {
 		if(!pp.second)
 			continue;
 		QompTunePlugin *p = qobject_cast<QompTunePlugin*>(pp.first->instance());
@@ -234,7 +245,7 @@ QList<QompPluginAction *> PluginManager::tunesActions()
 
 TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) const
 {
-	foreach(const PluginPair& pp, plugins_) {
+	for(const PluginPair& pp: plugins_) {
 		if(!pp.second)
 			continue;
 		QompTunePlugin *p = qobject_cast<QompTunePlugin*>(pp.first->instance());
@@ -250,7 +261,7 @@ TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) c
 bool PluginManager::processUrl(const QString &url, QList<Tune *> *tunes)
 {
 	bool res = false;
-	foreach(const PluginPair& pp, plugins_) {
+	for(const PluginPair& pp: plugins_) {
 		if(!pp.second)
 			continue;
 
@@ -266,7 +277,7 @@ bool PluginManager::processUrl(const QString &url, QList<Tune *> *tunes)
 
 void PluginManager::qompPlayerChanged(QompPlayer *player)
 {
-	foreach(const PluginPair& pp, plugins_) {
+	for(const PluginPair& pp: plugins_) {
 		if(!pp.second)
 			continue;
 		QompPlayerStatusPlugin *p = qobject_cast<QompPlayerStatusPlugin*>(pp.first->instance());

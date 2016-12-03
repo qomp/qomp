@@ -1,1 +1,6 @@
-{ "name": "Pleer.com", "description": "Listen to the music from Pleer.com", "version": "1.1"  }
+{
+	"id": "Pleer.com",
+	"name": "Pleer.com",
+	"description": "Listen to the music from Pleer.com",
+	"version": "1.1"
+}

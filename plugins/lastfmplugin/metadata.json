@@ -1,5 +1,6 @@
 {
-	"name": QT_TRANSLATE_NOOP("LastFm", "LastFm"),
-	"description": QT_TRANSLATE_NOOP("LastFm", "LastFm scrobbling"),
+	"id":"LastFm",
+	"name": "LastFm",
+	"description": "LastFm scrobbling",
 	"version": "1.1"
 }

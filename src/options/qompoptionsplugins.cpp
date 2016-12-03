@@ -75,7 +75,7 @@ void QompOptionsPlugins::Private::restoreOptions()
 			     Qt::ItemNeverHasChildren |
 #endif
 			     Qt::ItemIsDragEnabled);
-		it->setData(0, Qt::CheckStateRole, PluginManager::instance()->isPluginEnabled(name) ? 2 : 0);
+		it->setData(0, Qt::CheckStateRole, PluginManager::instance()->isPluginEnabledByName(name) ? 2 : 0);
 		it->setText(0, name);
 		it->setText(1, PluginManager::instance()->getVersion(name));
 		it->setText(2, PluginManager::instance()->getDescription(name));

@@ -36,6 +36,7 @@ public:
 	void unload();
 	bool isValid();
 	QString name() const;
+	QString id() const;
 	QString version() const;
 	QString description() const;
 	QObject* instance() const;
@@ -47,6 +48,7 @@ private:
 	QString version_;
 	QString description_;
 	QString name_;
+	QString id_;
 	bool valid_;
 };
 

@@ -43,6 +43,7 @@ PluginHost::PluginHost(const QString &file, QObject *parent) :
 			version_ = md.value("version").toString();
 			name_ = md.value("name").toString();
 			description_ = md.value("description").toString();
+			id_ = md.value("id").toString();
 		}
 	}
 }
@@ -108,6 +109,11 @@ bool PluginHost::isValid()
 QString PluginHost::name() const
 {
 	return name_;
+}
+
+QString PluginHost::id() const
+{
+	return id_;
 }
 
 QString PluginHost::version() const
