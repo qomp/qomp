@@ -55,7 +55,7 @@ private slots:
 	void tracksSearchFinished();
 	void albumUrlFinished();
 	void artistUrlFinished();
-	void makeQuery();
+	void makeQuery(int num);
 
 signals:
 	void queryFinished();
@@ -63,7 +63,7 @@ signals:
 private:
 	void checkAndStopBusyWidget();
 	void search(const QString& text, const QString& type, const char* slot, int page = 0);
-	void searchNextPage(const QByteArray &reply, const QString& type, const char* slot);
+	bool searchNextPage(const QByteArray &reply, const QString& type, const char* slot);
 	QNetworkRequest creatNetworkRequest(const QUrl& url) const;
 	bool checkRedirect(QNetworkReply* reply, const char *slot, QompPluginTreeModel* model = nullptr);
 	bool checkCaptcha(const QUrl& url, const QByteArray& reply, const char *slot, QompPluginTreeModel* model = nullptr);
@@ -74,7 +74,9 @@ private:
 	QHash<QNetworkReply*, void*> requests_;
 	YandexMusicGettunsDlg* dlg_;
 	QString mainUrl_;
-	QHash<QString, const char*> queries_;
+
+	typedef QPair<QString, const char*> Query;
+	QHash<int, Query> queries_;
 	QString searchText_;
 
 	struct PendingRequst {
@@ -89,6 +91,7 @@ private:
 
 	QList<PendingRequst> pendingRequests_;
 	bool captchaInProgress_;
+	QHash<int, bool> searched_;
 };
 
 #endif // YANDEXMUSICCONTROLLER_H

@@ -15,6 +15,9 @@ Item {
 					}
 
 	signal itemCheckClick(var index)
+	signal tabChanged(int tab)
+
+	onCurrentTabChanged: tabChanged(currentTab)
 
 	Rectangle {
 		id: tabs

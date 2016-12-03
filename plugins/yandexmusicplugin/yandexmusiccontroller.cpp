@@ -174,16 +174,22 @@ YandexMusicController::~YandexMusicController()
 void YandexMusicController::init()
 {
 	QompPluginController::init();
+
 	dlg_->setModel(tracksModel_, TabTrack);
 	dlg_->setModel(albumsModel_, TabAlbum);
 	dlg_->setModel(artistsModel_, TabArtist);
 	dlg_->setCuuretnTab(TabArtist);
+
 	QNetworkCookie c("makeyourownkindofmusic", "optin");
 	QList<QNetworkCookie> l;
 	l.append(c);
 	nam()->cookieJar()->setCookiesFromUrl(l, mainUrl_);
 
-	connect(this, SIGNAL(queryFinished()), SLOT(makeQuery()));
+	queries_.insert(0, {ARTISTS_NAME, SLOT(artistsSearchFinished())});
+	queries_.insert(1, {ALBUMS_NAME, SLOT(albumsSearchFinished())});
+	queries_.insert(2, {TRACKS_NAME, SLOT(tracksSearchFinished())});
+
+	connect(dlg_, &YandexMusicGettunsDlg::tabChanged, this, &YandexMusicController::makeQuery);
 }
 
 QList<Tune*> YandexMusicController::prepareTunes() const
@@ -223,13 +229,13 @@ void YandexMusicController::doSearch(const QString& txt)
 	artistsModel_->reset();
 	tracksModel_->reset();
 
-	queries_.insert(ARTISTS_NAME, SLOT(artistsSearchFinished()));
-	queries_.insert(ALBUMS_NAME, SLOT(albumsSearchFinished()));
-	queries_.insert(TRACKS_NAME, SLOT(tracksSearchFinished()));
+	searched_.clear();
+	for(int i=0; i<3; ++i)
+		searched_.insert(i, false);
 
 	searchText_ = txt;
 
-	makeQuery();
+	makeQuery(dlg_->currectTab());
 }
 
 QompPluginGettunesDlg *YandexMusicController::view() const
@@ -250,19 +256,23 @@ void YandexMusicController::search(const QString& text, const QString &type, con
 	dlg_->startBusyWidget();
 }
 
-void YandexMusicController::searchNextPage(const QByteArray &reply, const QString &type, const char *slot)
+bool YandexMusicController::searchNextPage(const QByteArray &reply, const QString &type, const char *slot)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(reply);
 	QJsonObject root = doc.object();
 	if(!root.contains("pager"))
-		return;
+		return false;
 
 	QJsonObject pages = root.value("pager").toObject();
 	int curPage = pages.value("page").toInt();
 	int total = pages.value("total").toInt();
 	int perPage = pages.value("perPage").toInt();
-	if (total / perPage >= curPage)
+	if (total / perPage >= curPage) {
 		search(root.value("text").toString(), type, slot, ++curPage);
+		return true;
+	}
+
+	return false;
 }
 
 QNetworkRequest YandexMusicController::creatNetworkRequest(const QUrl &url) const
@@ -436,7 +446,8 @@ void YandexMusicController::artistsSearchFinished()
 			artistsModel_->addTopLevelItems(artists);
 		}
 
-		searchNextPage(ba, ARTISTS_NAME, SLOT(artistsSearchFinished()));
+		if(searchNextPage(ba, ARTISTS_NAME, SLOT(artistsSearchFinished())))
+			return;
 	}
 #ifdef DEBUG_OUTPUT
 	else {
@@ -468,7 +479,8 @@ void YandexMusicController::albumsSearchFinished()
 		QJsonArray arr = ByteArrayToJsonArray(ALBUMS_NAME, ba);
 		albumsModel_->addTopLevelItems(parseAlbums(arr));
 
-		searchNextPage(ba, ALBUMS_NAME, SLOT(albumsSearchFinished()));
+		if(searchNextPage(ba, ALBUMS_NAME, SLOT(albumsSearchFinished())))
+			return;
 	}
 	else {
 #ifdef DEBUG_OUTPUT
@@ -499,7 +511,8 @@ void YandexMusicController::tracksSearchFinished()
 		QJsonArray arr = ByteArrayToJsonArray(TRACKS_NAME, ba);
 		tracksModel_->addTopLevelItems(parseTunes(arr));
 
-		searchNextPage(ba, TRACKS_NAME, SLOT(tracksSearchFinished()));
+		if(searchNextPage(ba, TRACKS_NAME, SLOT(tracksSearchFinished())))
+			return;
 	}
 	else {
 #ifdef DEBUG_OUTPUT
@@ -557,13 +570,17 @@ void YandexMusicController::artistUrlFinished()
 	}
 }
 
-void YandexMusicController::makeQuery()
+void YandexMusicController::makeQuery(int num)
 {
-	if(queries_.isEmpty())
+	if(queries_.count() <= num || searched_.count() <= num)
 		return;
 
-	const QString key = queries_.keys().first();
-	search(searchText_, key, queries_.take(key));
+	if(!searched_.value(num)) {
+		const Query& q = queries_.value(num);
+		search(searchText_, q.first, q.second);
+
+		searched_[num] = true;
+	}
 }
 
 void YandexMusicController::albumUrlFinished()
@@ -698,17 +715,17 @@ void YandexMusicController::checkAndStopBusyWidget()
 
 	dlg_->stopBusyWidget();
 
-	//this is not the best place for this, but....
-	if(dlg_->currentTabRows() != 0)
-		return;
+//	//this is not the best place for this, but....
+//	if(dlg_->currentTabRows() != 0)
+//		return;
 
-	if(artistsModel_->rowCount()) {
-		dlg_->setCuuretnTab(TabArtist);
-	}
-	else if(albumsModel_->rowCount()) {
-		dlg_->setCuuretnTab(TabAlbum);
-	}
-	else if(tracksModel_->rowCount()) {
-		dlg_->setCuuretnTab(TabTrack);
-	}
+//	if(artistsModel_->rowCount()) {
+//		dlg_->setCuuretnTab(TabArtist);
+//	}
+//	else if(albumsModel_->rowCount()) {
+//		dlg_->setCuuretnTab(TabAlbum);
+//	}
+//	else if(tracksModel_->rowCount()) {
+//		dlg_->setCuuretnTab(TabTrack);
+//	}
 }

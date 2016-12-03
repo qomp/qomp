@@ -34,6 +34,7 @@ public:
 		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/YandexMusicResultsView.qml"));
 		connect(item_, SIGNAL(itemCheckClick(QVariant)), SLOT(clicked(QVariant)));
 		connect(this, SIGNAL(itemClicked(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
+		connect(item_, SIGNAL(tabChanged(int)), p, SIGNAL(tabChanged(int)));
 
 		p->setResultsWidget(item_);
 	}
@@ -90,6 +91,11 @@ int YandexMusicGettunsDlg::currentTabRows() const
 		return model->rowCount();
 	}
 	return 0;
+}
+
+int YandexMusicGettunsDlg::currectTab() const
+{
+	return p->item_->property("currentTab").toInt();
 }
 
 #include "yandexmusicgettunsdlg_mobile.moc"

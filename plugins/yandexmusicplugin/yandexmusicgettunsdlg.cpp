@@ -40,8 +40,12 @@ public:
 			connect(view, SIGNAL(clicked(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
 			connect(view, SIGNAL(expanded(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
 		}
+
+		connect(tabWidget_, &QTabWidget::currentChanged, p, &YandexMusicGettunsDlg::tabChanged);
 	}
 
+
+public:
 	QTabWidget* tabWidget_;
 	QompPluginTreeView *artistsView_, *albumsView_, *tracksView_;
 };
@@ -82,4 +86,9 @@ void YandexMusicGettunsDlg::setModel(QAbstractItemModel *model, YandexMusicTabKi
 int YandexMusicGettunsDlg::currentTabRows() const
 {
 	return static_cast<QompPluginTreeView*>(p->tabWidget_->currentWidget())->model()->rowCount();
+}
+
+int YandexMusicGettunsDlg::currectTab() const
+{
+	return p->tabWidget_->currentIndex();
 }

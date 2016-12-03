@@ -66,7 +66,7 @@ void QompOptionsPlugins::Private::restoreOptions()
 					  Q_ARG(QVariant,name),
 					  Q_ARG(QVariant, PluginManager::instance()->getDescription(name)),
 					  Q_ARG(QVariant, PluginManager::instance()->getVersion(name)),
-					  Q_ARG(QVariant, PluginManager::instance()->isPluginEnabled(name)));
+					  Q_ARG(QVariant, PluginManager::instance()->isPluginEnabledByName(name)));
 	}
 }
 

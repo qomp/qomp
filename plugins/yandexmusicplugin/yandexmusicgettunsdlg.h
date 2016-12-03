@@ -36,7 +36,10 @@ public:
 	void setCuuretnTab(YandexMusicTabKind kind);
 	void setModel(QAbstractItemModel* model, YandexMusicTabKind kind);
 	int currentTabRows() const;
-	
+	int currectTab() const;
+
+signals:
+	void tabChanged(int tab);
 
 private:
 	class Private;
