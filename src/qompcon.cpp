@@ -116,7 +116,7 @@ static void notifyIcon(const QString& text)
 {
 	QAndroidJniObject str = QAndroidJniObject::fromString(text);
 	QAndroidJniObject act = QtAndroid::androidActivity();
-	act.callObjectMethod("showStatusIcon", "(Ljava/lang/String;)V", str.object<jstring>());
+	act.callMethod<void>("showStatusIcon", "(Ljava/lang/String;)V", str.object<jstring>());
 }
 
 static void deInitActivity()
