@@ -49,8 +49,10 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	connect(player_, &QMediaPlayer::mediaStatusChanged, this, &QompQtMultimediaPlayer::mediaStatusChanged);
 	connect(player_, &QMediaPlayer::durationChanged,    this, &QompQtMultimediaPlayer::tuneDurationChanged);
 	connect(player_, &QMediaPlayer::positionChanged,    this, &QompQtMultimediaPlayer::tunePositionChanged);
+#ifdef HAVE_X11
 	connect(player_, &QMediaPlayer::audioAvailableChanged, this, &QompQtMultimediaPlayer::audioReadyChanged);
 	connect(player_, &QMediaPlayer::seekableChanged, this, &QompQtMultimediaPlayer::seekableChanged);
+#endif
 
 	//connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 }
