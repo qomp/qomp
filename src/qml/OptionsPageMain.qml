@@ -37,7 +37,7 @@ Item {
 				anchors.fill: parent
 				anchors.leftMargin: autoplay.width
 				text: qsTr("Automatically start playback")
-				font.pixelSize: 22 * scaler.scaleFont
+				font.pointSize: 18
 				wrapMode: Text.WordWrap
 				verticalAlignment: Text.AlignVCenter
 			}
@@ -56,7 +56,7 @@ Item {
 				anchors.fill: parent
 				anchors.leftMargin: autoplay.width
 				text: qsTr("Remember track position")
-				font.pixelSize: 22 * scaler.scaleFont
+				font.pointSize: 18
 				wrapMode: Text.WordWrap
 				verticalAlignment: Text.AlignVCenter
 			}
@@ -86,7 +86,7 @@ Item {
 				height: parent.height
 				verticalAlignment: Text.AlignVCenter
 				horizontalAlignment: Text.AlignRight
-				font.pixelSize: 22 * scaler.scaleFont
+				font.pointSize: 18
 			}
 
 			QompComboBox {

@@ -31,7 +31,7 @@ Item {
 				horizontalAlignment: Text.AlignRight
 				wrapMode: Text.WordWrap
 				text: qsTr("Authorized User Name:")
-				font.pixelSize: parent.height / 4.5
+				font.pointSize: 18
 			}
 
 			Text {
@@ -41,7 +41,7 @@ Item {
 				anchors.left: txt.right
 				clip: true
 				anchors.leftMargin: 10 * scaler.scaleX
-				font.pixelSize: parent.height / 5
+				font.pointSize: 18
 			}
 		}
 

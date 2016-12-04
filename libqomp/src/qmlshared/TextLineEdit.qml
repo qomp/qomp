@@ -7,6 +7,7 @@ FocusScope {
 	property alias value: lineedit.text;
 	property alias input: lineedit.input
 	property real textRatio: 1 / 3
+	property alias textFontSize: label.font.pointSize
 
 	height: 68 * scaler.scaleY
 
@@ -28,7 +29,8 @@ FocusScope {
 				margins: 8 * scaler.scaleMargins
 				rightMargin: rectangle.width * (1 - textRatio)
 			}
-			font.pixelSize: textlineedit.height / 3
+
+			font.pointSize: 18
 		}
 
 		LineEdit {

@@ -39,29 +39,32 @@ Item {
 				anchors.leftMargin: enbl.width
 				clip: true
 
-				Text {
-					id: name
-					anchors.top: parent.top
-					height: parent.height * 3 / 5
-					font.pixelSize: 22 * scaler.scaleFont
-					verticalAlignment: Text.AlignBottom
-				}
-				Text {
-					id: ver
-					anchors.top: parent.top
-					anchors.left: name.right
-					height: name.height
-					anchors.leftMargin: 10 * scaler.scaleX
-					font.pixelSize: name.font.pixelSize
-					verticalAlignment: name.verticalAlignment
-				}
-				Text {
-					id: descr
-					anchors.top: name.bottom
-					height: parent.height * 2 / 5
-					font.pixelSize: 18 * scaler.scaleFont
-					verticalAlignment: Text.AlignTop
-					wrapMode: Text.WordWrap
+				Column {
+					width: parent.width
+					anchors.verticalCenter: parent.verticalCenter
+
+					Row {
+						spacing: 10 * scaler.scaleX
+
+						Text {
+							id: name
+							font.pointSize: 18
+							verticalAlignment: Text.AlignBottom
+						}
+						Text {
+							id: ver
+							font.pointSize: name.font.pointSize
+							verticalAlignment: name.verticalAlignment
+						}
+					}
+
+					Text {
+						id: descr
+						font.pointSize: 15
+						width: parent.width
+						verticalAlignment: Text.AlignTop
+						wrapMode: Text.WordWrap
+					}
 				}
 			}
 		}
