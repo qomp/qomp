@@ -176,7 +176,7 @@ Item {
 				horizontalAlignment: Text.AlignLeft
 				verticalAlignment: Text.AlignTop
 				clip: true
-				font.pixelSize: parent.height / 5.5
+				font.pixelSize: parent.height / 5
 			}
 		}
 
