@@ -64,6 +64,7 @@ private slots:
 	void tuneDurationChanged(qint64 dur);
 	void tunePositionChanged(qint64 pos);
 	void audioReadyChanged(bool ready);
+	void seekableChanged(bool seekable);
 
 protected:
 	virtual QompMetaDataResolver* metaDataResolver() const;
@@ -80,6 +81,7 @@ private:
 	void updatePlayerPosition();
 	void setPlayerMediaContent(const QUrl &url);
 	bool isTuneChangeFinished() const;
+	void processMediaState(bool audioReady, bool seekable);
 
 private:
 	QMediaPlayer* player_;

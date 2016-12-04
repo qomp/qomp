@@ -49,9 +49,8 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	connect(player_, &QMediaPlayer::mediaStatusChanged, this, &QompQtMultimediaPlayer::mediaStatusChanged);
 	connect(player_, &QMediaPlayer::durationChanged,    this, &QompQtMultimediaPlayer::tuneDurationChanged);
 	connect(player_, &QMediaPlayer::positionChanged,    this, &QompQtMultimediaPlayer::tunePositionChanged);
-//#ifndef Q_OS_ANDROID
-//	connect(player_, &QMediaPlayer::audioAvailableChanged, this, &QompQtMultimediaPlayer::audioReadyChanged);
-//#endif
+	connect(player_, &QMediaPlayer::audioAvailableChanged, this, &QompQtMultimediaPlayer::audioReadyChanged);
+	connect(player_, &QMediaPlayer::seekableChanged, this, &QompQtMultimediaPlayer::seekableChanged);
 
 	//connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 }
@@ -295,7 +294,6 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 	switch(status) {
 	case QMediaPlayer::LoadedMedia:
 		emit QompPlayer::stateChanged(state());
-		audioReadyChanged(true);
 #ifndef Q_OS_ANDROID
 		switch (lastAction()) {
 		case Qomp::StatePlaying: player_->play();
@@ -306,6 +304,7 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 			break;
 		}
 #endif
+		audioReadyChanged(player_->isAudioAvailable());
 		break;
 	case QMediaPlayer::LoadingMedia:
 	case QMediaPlayer::StalledMedia:
@@ -347,6 +346,13 @@ bool QompQtMultimediaPlayer::isTuneChangeFinished() const
 	return prevTune_ == currentTune();
 }
 
+void QompQtMultimediaPlayer::processMediaState(bool audioReady, bool seekable)
+{
+
+	if(audioReady && seekable)
+		emit mediaReady();
+}
+
 void QompQtMultimediaPlayer::audioReadyChanged(bool ready)
 {
 #ifdef DEBUG_OUTPUT
@@ -355,8 +361,14 @@ void QompQtMultimediaPlayer::audioReadyChanged(bool ready)
 	if(ready) {
 		tuneDurationChanged(player_->duration());
 		updatePlayerPosition();
-		emit mediaReady();
 	}
+
+	processMediaState(ready, player_->isSeekable());
+}
+
+void QompQtMultimediaPlayer::seekableChanged(bool seekable)
+{
+	processMediaState(player_->isAudioAvailable(), seekable);
 }
 
 void QompQtMultimediaPlayer::tuneUrlReady(const QUrl &url)

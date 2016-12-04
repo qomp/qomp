@@ -233,7 +233,7 @@ void QompCon::preparePlayback()
 		if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
 			const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
 			player_->setPosition(pos);
-			mainWin_->setCurrentPosition(pos);
+			QMetaObject::invokeMethod(mainWin_, "setCurrentPosition", Qt::QueuedConnection, Q_ARG(qint64,pos));
 		}
 
 		disconnect(*pConn);

@@ -33,6 +33,7 @@
 #include <QTime>
 #include <QMainWindow>
 #include <QFileDialog>
+#include <QSignalBlocker>
 #ifdef Q_OS_WIN
 #include <QtWinExtras>
 #endif
@@ -580,10 +581,9 @@ void QompMainWin::setMuteState(bool mute)
 
 void QompMainWin::volumeChanged(qreal vol)
 {
-	d->ui->volumeSlider->blockSignals(true);
+	QSignalBlocker b(d->ui->volumeSlider);
 	d->ui->volumeSlider->setValue(vol*1000);
 	d->updateVolumSliderToolTip();
-	d->ui->volumeSlider->blockSignals(false);
 }
 
 void QompMainWin::playerStateChanged(Qomp::State state)
@@ -645,9 +645,8 @@ bool QompMainWin::eventFilter(QObject *o, QEvent *e)
 void QompMainWin::setCurrentPosition(qint64 ms)
 {
 	d->ui->lcd->display(Qomp::durationMiliSecondsToString(ms));
-	d->ui->seekSlider->blockSignals(true);
+	QSignalBlocker b(d->ui->seekSlider);
 	d->ui->seekSlider->setValue(ms);
-	d->ui->seekSlider->blockSignals(false);
 #ifdef Q_OS_WIN
 	if(d->winTaskBar_)
 		d->winTaskBar_->progress()->setValue(ms / 1000);
