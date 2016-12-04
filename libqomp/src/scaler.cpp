@@ -108,8 +108,8 @@ void Scaler::updateScales()
 	qreal physHeight = qMax(physSize.width(), physSize.height());
 	qreal physWidth = qMin(physSize.width(), physSize.height());
 
-	qreal factorX = sqrt(physWidth / refPhysSize.width());
-	qreal factorY = sqrt(physHeight / refPhysSize.height());
+	qreal factorX = pow( (physWidth / refPhysSize.width()), 1.0 / 3.0);
+	qreal factorY = pow( (physHeight / refPhysSize.height()), 1.0 / 3.0);
 
 //	_scaleX = (width / physSize.width()) / (refWidth / refPhysSize.width());
 //	_scaleY = (height / physSize.height()) / (refHeight / refPhysSize.height());
