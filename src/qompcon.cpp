@@ -233,6 +233,11 @@ void QompCon::preparePlayback()
 		if(o->getOption(OPTION_REMEMBER_POS).toBool()) {
 			const qint64 pos = o->getOption(OPTION_LAST_POS).toLongLong();
 			player_->setPosition(pos);
+#ifdef HAVE_X11
+			//Without this evil hack position at main window will be at begining
+			qApp->processEvents();
+			QThread::msleep(1);
+#endif
 			QMetaObject::invokeMethod(mainWin_, "setCurrentPosition", Qt::QueuedConnection, Q_ARG(qint64,pos));
 		}
 

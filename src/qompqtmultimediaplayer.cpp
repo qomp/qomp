@@ -351,7 +351,7 @@ bool QompQtMultimediaPlayer::isTuneChangeFinished() const
 void QompQtMultimediaPlayer::processMediaState(bool audioReady, bool seekable)
 {
 
-	if(audioReady && seekable)
+	if(audioReady && seekable && player_->mediaStatus() == QMediaPlayer::LoadedMedia)
 		emit mediaReady();
 }
 
