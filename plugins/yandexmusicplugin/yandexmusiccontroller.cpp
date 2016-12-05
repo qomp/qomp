@@ -363,10 +363,10 @@ bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray 
 			requests_.insert(r, pr.model);
 			dlg_->startBusyWidget();
 		}
-
-		pendingRequests_.clear();
-		captchaInProgress_ = false;
 	}
+
+	pendingRequests_.clear();
+	captchaInProgress_ = false;
 
 	return true;
 }
