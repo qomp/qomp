@@ -33,7 +33,8 @@ enum SignalType {
 	PREVIOUS = 4,
 	VOLUME = 5,
 	QUIT = 6,
-	RAISE = 7
+	RAISE = 7,
+	POSITION = 8
 };
 
 class MprisController : public QObject
@@ -43,8 +44,12 @@ public:
 	explicit MprisController(QObject *parent = 0);
 	~MprisController();
 
-	void emitSignal(SignalType type, double userValue = 0);
-	void sendData(const QString &status, const QompMetaData &tune, const double &volume);
+	void emitSignal(SignalType type, const qreal &userValue = 0);
+	void sendData(const QString &status, const QompMetaData &tune);
+	qreal getVolume();
+	qreal getPosition();
+	void setVolume(const qreal &volume);
+	void setPosition(const qreal &pos);
 
 signals:
 	void play();
@@ -52,13 +57,18 @@ signals:
 	void next();
 	void previous();
 	void stop();
-	void volumeChanged(const double &volume);
+	void volumeChanged(const qreal &volume);
 	void sendQuit();
 	void sendRaise();
+	void updateVolume();
+	void updatePosition();
+	void positionChanged(const qreal &position);
 
 private:
 	RootAdapter *rootAdapter_;
 	MprisAdapter *mprisAdapter_;
+	qreal volume_;
+	qreal position_;
 };
 
 #endif // MPRISCONTROLLER_H

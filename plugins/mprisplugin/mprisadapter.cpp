@@ -23,6 +23,7 @@
 
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
+#include <QtDBus/QDBusObjectPath>
 #include <QStringList>
 
 MprisAdapter::MprisAdapter(MprisController *p) :
@@ -30,8 +31,7 @@ MprisAdapter::MprisAdapter(MprisController *p) :
 	controller_(p),
 	playerStatus_("Stopped"),
 	statusChanged_(false),
-	metadataChanged_(false),
-	volume_(0)
+        metadataChanged_(false)
 {
 }
 
@@ -64,6 +64,8 @@ void MprisAdapter::setMetadata(const QompMetaData &tune)
 	metaDataMap_["xesam:url"] = tune.url;
 	metaDataMap_["xesam:trackNumber"] = tune.trackNumber;
 	metaDataMap_["mpris:length"] = tune.trackLength;
+	trackId_ = QDBusObjectPath(QString("/org/qomp/MediaPlayer2/Track/%1").arg(qrand()));
+	metaDataMap_["mpris:trackid"] = QVariant::fromValue<QDBusObjectPath>(trackId_);
 	metadataChanged_ = true;
 }
 
@@ -94,6 +96,7 @@ void MprisAdapter::updateProperties()
 	map.insert("CanSeek", canSeek());
 	map.insert("CanControl", canControl());
 	map.insert("Volume", getVolume());
+	map.insert("Position", getPosition());
 	if (map.isEmpty()) {
 		return;
 	}
@@ -152,15 +155,26 @@ void MprisAdapter::Stop()
 	}
 }
 
-void MprisAdapter::setVolume(double volume)
+void MprisAdapter::setVolume(const qreal &volume)
 {
-	if( volume >= 0.0 && volume_ != volume) {
-		volume_ = volume;
+	if( volume >= 0.0 ) {
 		controller_->emitSignal(VOLUME, volume);
 	}
 }
 
-double MprisAdapter::getVolume()
+void MprisAdapter::SetPosition(const QDBusObjectPath &TrackId, qlonglong Position)
 {
-	return volume_;
+	if (trackId_ == TrackId && Position > 0.0) {
+		controller_->emitSignal(POSITION, Position);
+	}
+}
+
+qreal MprisAdapter::getVolume()
+{
+	return controller_->getVolume();
+}
+
+qreal MprisAdapter::getPosition()
+{
+	return controller_->getPosition();
 }
