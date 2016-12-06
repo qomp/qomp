@@ -69,6 +69,9 @@ void MprisPlugin::setEnabled(bool enabled)
 		connect(mpris_, &MprisController::volumeChanged, this, &MprisPlugin::setVolume);
 		connect(mpris_, &MprisController::sendQuit, this, &MprisPlugin::doQuit);
 		connect(mpris_, &MprisController::sendRaise, this, &MprisPlugin::doRaise);
+		connect(mpris_, &MprisController::updateVolume, this, &MprisPlugin::updateVolume);
+		connect(mpris_, &MprisController::updatePosition, this, &MprisPlugin::updatePosition);
+		connect(mpris_, &MprisController::positionChanged, this, &MprisPlugin::setPosition);
 	}
 	else {
 		disconnect(mpris_);
@@ -111,7 +114,7 @@ void MprisPlugin::previous()
 	}
 }
 
-void MprisPlugin::setVolume(const double &volume)
+void MprisPlugin::setVolume(const qreal &volume)
 {
 	if(player_) {
 		player_->setVolume(volume);
@@ -127,7 +130,7 @@ void MprisPlugin::doQuit()
 void MprisPlugin::doRaise()
 {
 	//Dirty hack to show main window
-	if (!mainWin_) {
+	if(!mainWin_) {
 		QWidgetList wl = qApp->allWidgets();
 		foreach (QWidget *w, wl) {
 			if (w->objectName() == "QompMainWin") {
@@ -136,10 +139,31 @@ void MprisPlugin::doRaise()
 			}
 		}
 	}
-	if (mainWin_) {
+	if(mainWin_) {
 		if(mainWin_->isHidden()) {
 			mainWin_->show();
 		}
+	}
+}
+
+void MprisPlugin::updateVolume()
+{
+	if(player_) {
+		mpris_->setVolume(player_->volume());
+	}
+}
+
+void MprisPlugin::updatePosition()
+{
+	if(player_) {
+		mpris_->setPosition(player_->position()*1000); //microseconds
+	}
+}
+
+void MprisPlugin::setPosition(const qreal &position)
+{
+	if(player_) {
+		player_->setPosition(position); //miliseconds
 	}
 }
 
@@ -187,10 +211,10 @@ void MprisPlugin::getMetaData(Tune *tune)
 void MprisPlugin::sendMetadata(const QString &status)
 {
 	if (status == STOPPED || status == PAUSED) {
-		mpris_->sendData(status, QompMetaData(), player_->volume());
+		mpris_->sendData(status, QompMetaData());
 	}
 	else if (status == PLAYING){
-		mpris_->sendData(status, *tune_, player_->volume());
+		mpris_->sendData(status, *tune_);
 	}
 }
 

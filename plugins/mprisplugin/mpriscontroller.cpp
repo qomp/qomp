@@ -25,7 +25,9 @@
 MprisController::MprisController(QObject *parent)
 : QObject(parent),
   rootAdapter_(new RootAdapter(this)),
-  mprisAdapter_(new MprisAdapter(this))
+  mprisAdapter_(new MprisAdapter(this)),
+  volume_(0.0),
+  position_(0.0)
 {
 	QDBusConnection qompConnection = QDBusConnection::sessionBus();
 	qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
@@ -38,16 +40,15 @@ MprisController::~MprisController()
 	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
 }
 
-void MprisController::sendData(const QString &status, const QompMetaData &tune, const double &volume)
+void MprisController::sendData(const QString &status, const QompMetaData &tune)
 {
 
 	mprisAdapter_->setStatus(status);
 	mprisAdapter_->setMetadata(tune);
-	mprisAdapter_->setVolume(volume);
 	mprisAdapter_->updateProperties();
 }
 
-void MprisController::emitSignal(SignalType type, double userValue)
+void MprisController::emitSignal(SignalType type, const qreal &userValue)
 {
 	switch(type) {
 	case PLAY:
@@ -74,5 +75,30 @@ void MprisController::emitSignal(SignalType type, double userValue)
 	case VOLUME:
 		emit volumeChanged(userValue);
 		break;
+	case POSITION:
+		emit positionChanged(userValue/1000.0);
+		break;
 	}
+}
+
+qreal MprisController::getVolume()
+{
+	emit updateVolume();
+	return volume_;
+}
+
+qreal MprisController::getPosition()
+{
+	emit updatePosition();
+	return position_;
+}
+
+void MprisController::setVolume(const qreal &volume)
+{
+	volume_ = volume;
+}
+
+void MprisController::setPosition(const qreal &pos)
+{
+	position_ = pos;
 }

@@ -54,9 +54,12 @@ private slots:
 	void stop();
 	void next();
 	void previous();
-	void setVolume(const double &volume);
+	void setVolume(const qreal &volume);
 	void doQuit();
 	void doRaise();
+	void updateVolume();
+	void updatePosition();
+	void setPosition(const qreal &position);
 
 private:
 	void disableMpris();

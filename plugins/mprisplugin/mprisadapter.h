@@ -21,6 +21,7 @@
 #define MPRISADAPTER_H
 
 #include <QtDBus/QDBusAbstractAdaptor>
+#include <QtDBus/QDBusObjectPath>
 #include <QVariantMap>
 
 class MprisController;
@@ -43,10 +44,11 @@ class MprisAdapter : public QDBusAbstractAdaptor
 	Q_PROPERTY(bool CanGoNext READ canGoNext)
 	Q_PROPERTY(bool CanGoPrevious READ canGoPrevious)
 	Q_PROPERTY(bool CanPlay READ canPlay)
-	Q_PROPERTY(bool CanPause READ  canPause)
-	Q_PROPERTY(bool CanSeek READ  canSeek)
-	Q_PROPERTY(bool CanControl READ  canControl)
-	Q_PROPERTY(double Volume READ getVolume WRITE setVolume)
+	Q_PROPERTY(bool CanPause READ canPause)
+	Q_PROPERTY(bool CanSeek READ canSeek)
+	Q_PROPERTY(bool CanControl READ canControl)
+	Q_PROPERTY(qreal Volume READ getVolume WRITE setVolume)
+	Q_PROPERTY(qlonglong Position READ getPosition)
 
 public:
 	explicit MprisAdapter(MprisController *p);
@@ -58,12 +60,13 @@ public slots:
 	void Previous();
 	void PlayPause();
 	void Stop();
+	void SetPosition(const QDBusObjectPath &TrackId, qlonglong Position);
 
 public:
-	void setVolume(double volume);
 	void setStatus(const QString &status);
 	void setMetadata(const QompMetaData &tune);
 	void updateProperties();
+
 private:
 	QVariantMap metadata() const;
 	QString playbackStatus() const;
@@ -71,9 +74,11 @@ private:
 	bool canGoPrevious() const {return false;}
 	bool canPlay() const {return true;}
 	bool canPause() const {return true;}
-	bool canSeek() const {return false;}
+	bool canSeek() const {return true;}
 	bool canControl() const {return true;}
-	double getVolume();
+	void setVolume(const qreal &volume);
+	qreal getVolume();
+	qreal getPosition();
 
 private:
 	MprisController *controller_;
@@ -81,7 +86,7 @@ private:
 	QString playerStatus_;
 	bool statusChanged_;
 	bool metadataChanged_;
-	double volume_;
+	QDBusObjectPath trackId_;
 };
 
 #endif // MPRISADAPTER_H
