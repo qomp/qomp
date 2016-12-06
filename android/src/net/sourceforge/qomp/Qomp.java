@@ -31,14 +31,14 @@ import android.content.ComponentName;
 import android.app.Service;
 
 //For PowerManager
-//import android.os.PowerManager;
-//import android.os.PowerManager.WakeLock;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 
 
 public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     public static final String NOTIFY = "net.sourceforge.qomp.NOTIFY";
 
-//    private PowerManager.WakeLock wl;
+    private PowerManager.WakeLock wl_;
     private BroadcastReceiver callReceiver_;
     private QompService service_;
 
@@ -60,10 +60,8 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
         registerCallReceiver();
         bindToService();
 
-//        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-//        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
-//        wl.acquire();
-
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wl_ = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
     }
 
     public String checkIntent() {
@@ -87,7 +85,16 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     public void deInit() {
         unbindService(sConn_);
         unregisterReceiver(callReceiver_);
-//        wl.release();
+        if(wl_.isHeld())
+            wl_.release();
+    }
+
+    public void makeWakeLock(int timeout) {
+//        Log.i("Qomp", "makeWakeLock " + Integer.toString(timeout));
+        if(wl_.isHeld())
+            wl_.release();
+
+        wl_.acquire(timeout);
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {

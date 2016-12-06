@@ -891,6 +891,13 @@ void QompCon::mediaFinished(bool afterError)
 	mainWin_->setCurrentPosition(0);
 	savePlayerPosition();
 
+#ifdef Q_OS_ANDROID
+	if(qApp->applicationState() != Qt::ApplicationActive) {
+		QAndroidJniObject act = QtAndroid::androidActivity();
+		act.callMethod<void>("makeWakeLock", "(I)V", 20*1000);
+	}
+#endif
+
 	findNextMedia(afterError);
 }
 
