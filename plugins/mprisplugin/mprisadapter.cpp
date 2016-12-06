@@ -31,7 +31,7 @@ MprisAdapter::MprisAdapter(MprisController *p) :
 	controller_(p),
 	playerStatus_("Stopped"),
 	statusChanged_(false),
-        metadataChanged_(false)
+	metadataChanged_(false)
 {
 }
 
@@ -94,9 +94,7 @@ void MprisAdapter::updateProperties()
 	map.insert("CanPlay", canPlay());
 	map.insert("CanPause", canPause());
 	map.insert("CanSeek", canSeek());
-	map.insert("CanControl", canControl());
 	map.insert("Volume", getVolume());
-	map.insert("Position", getPosition());
 	if (map.isEmpty()) {
 		return;
 	}
