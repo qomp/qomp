@@ -1,5 +1,5 @@
 Version 1.1.1
-xx.12.2016
+15.12.2016
   + add mediakeys support
   * fixed Shuffle when click "Next" button
   + add Windows TaskBar progress support

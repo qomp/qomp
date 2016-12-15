@@ -21,7 +21,7 @@
 #define MYZUKARUDEFINES_H
 
 #define MYZUKA_PLUGIN_NAME "Myzuka.ru"
-#define MYZUKA_PLUGIN_VERSION "1.1"
+#define MYZUKA_PLUGIN_VERSION "1.1.1"
 #define MYZUKA_URL "https://myzuka.fm/"
 
 

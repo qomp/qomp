@@ -40,7 +40,7 @@ public:
 	explicit MprisPlugin();
 	~MprisPlugin() {}
 	virtual QString name() const { return tr("MPRIS Plugin"); }
-	virtual QString version() const { return "1.1"; }
+	virtual QString version() const { return "1.1.1"; }
 	virtual QString description() const { return tr("Interface to MPRIS"); }
 	virtual QompOptionsPage* options() { return 0; }
 	virtual void qompPlayerChanged(QompPlayer* player);

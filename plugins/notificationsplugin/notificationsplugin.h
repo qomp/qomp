@@ -38,7 +38,7 @@ public:
 	~NotificationsPlugin();
 
 	virtual QString name() const { return tr("Notifications"); }
-	virtual QString version() const { return "1.1"; }
+	virtual QString version() const { return "1.1.1"; }
 	virtual QString description() const { return tr("Shows baloon notifications about current track"); }
 	virtual QompOptionsPage* options();
 	virtual void qompPlayerChanged(QompPlayer* player);
