@@ -21,6 +21,8 @@
 #include "qompplaylistmodel.h"
 #include "tune.h"
 
+#include <QDropEvent>
+
 QompPlaylistView::QompPlaylistView(QWidget *parent) :
 	QListView(parent)
 {
