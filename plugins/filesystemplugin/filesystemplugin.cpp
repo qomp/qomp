@@ -35,10 +35,12 @@
 #include <QFileDialog>
 #include <QMenu>
 #endif
+#include <QMediaPlaylist>
 
 #include <QtPlugin>
 
 static const QString CUE_SUFFIX = "cue";
+static const QString M3U_SUFFIX = "m3u";
 
 static QList<Tune*> getTunesRecursive(const QString& folder)
 {
@@ -55,6 +57,23 @@ static QList<Tune*> getTunesRecursive(const QString& folder)
 			QString song = fi.absoluteFilePath();
 			if(songRe.indexIn(song) != -1)
 				list.append(Qomp::tuneFromFile(song));
+		}
+	}
+
+	return list;
+}
+
+static QList<Tune*> m3uToTunes(const QString& file)
+{
+	QList<Tune*> list;
+
+	if(QFile::exists(file)) {
+		QMediaPlaylist p;
+		p.load(QUrl::fromLocalFile(file));
+		if (!p.isEmpty()) {
+			for(int i = 0; i < p.mediaCount(); ++i) {
+				list.append(Qomp::tuneFromFile(p.media(i).canonicalUrl().toLocalFile()));
+			}
 		}
 	}
 
@@ -103,6 +122,7 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 						));
 	item_->setProperty("filter", QStringList()
 				<< tr("Audio files (*.mp3, *.ogg, *.wav, *.flac, *.cue)")
+				<< tr("Playlists (*.m3u)")
 				<< tr("All files (*.*)") );
 	QompQmlEngine::instance()->addItem(item_);
 	connect(item_, SIGNAL(accepted()), loop_, SLOT(quit()));
@@ -121,6 +141,9 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 				if(fi.suffix() == CUE_SUFFIX) {
 					list.append(CueParser::parseTunes(str));
 				}
+				else if(fi.suffix() == M3U_SUFFIX) {
+					list.append(m3uToTunes(str));
+				}
 				else {
 					list.append(Qomp::tuneFromFile(str));
 				}
@@ -131,7 +154,7 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 #else
 	QFileDialog f(0, tr("Select file(s)"),
 		      Options::instance()->getOption("filesystemplugin.lastdir", QDir::homePath()).toString(),
-		      tr("Audio files(*.mp3 *.ogg *.wav *.flac *.cue);;All files(*)"));
+		      tr("Audio files(*.mp3 *.ogg *.wav *.flac *.cue);;Playlists (*.m3u);;All files(*)"));
 	f.setFileMode(QFileDialog::ExistingFiles);
 	f.setViewMode(QFileDialog::List);
 	f.setAcceptMode(QFileDialog::AcceptOpen);
@@ -148,6 +171,9 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 			QFileInfo fi(file);
 			if(fi.suffix() == CUE_SUFFIX) {
 				list.append(CueParser::parseTunes(file));
+			}
+			else if(fi.suffix() == M3U_SUFFIX) {
+				list.append(m3uToTunes(file));
 			}
 			else {
 				list.append(Qomp::tuneFromFile(file));
@@ -271,6 +297,9 @@ bool FilesystemPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 		const QString file = fi.canonicalFilePath();
 		if(fi.suffix() == CUE_SUFFIX) {
 			tunes->append(CueParser::parseTunes(file));
+		}
+		else if(fi.suffix() == M3U_SUFFIX) {
+			tunes->append(m3uToTunes(file));
 		}
 		else {
 			tunes->append(Qomp::tuneFromFile(file));

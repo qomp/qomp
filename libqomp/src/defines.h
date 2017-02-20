@@ -72,4 +72,6 @@
 
 #define OPTION_THEME	"main.theme"
 
+#define PLAYLIST_EXTENTION "qomp"
+
 #endif // DEFINES_H

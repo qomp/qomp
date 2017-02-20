@@ -24,6 +24,8 @@ win32|android {
     INCLUDEPATH += $$CUE_INCLUDE $$TAG_INCLUDE
 }
 
+QT += multimedia
+
 LIBS += -lcue
 
 linux:!mac: INCLUDEPATH += /usr/include/libcue-1.4/libcue

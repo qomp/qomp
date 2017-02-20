@@ -500,7 +500,8 @@ void QompMainWin::Private::actSavePlaylist()
 void QompMainWin::Private::actLoadPlaylist()
 {
 	QFileDialog f(0,tr("Select Playlist"),
-		      Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), tr("qomp playlist (*.qomp)"));
+		      Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(),
+			tr("qomp playlist (*.%1);;M3U Playlist (*.m3u)").arg(PLAYLIST_EXTENTION));
 	f.setFileMode(QFileDialog::ExistingFile);
 	f.setViewMode(QFileDialog::List);
 	f.setAcceptMode(QFileDialog::AcceptOpen);

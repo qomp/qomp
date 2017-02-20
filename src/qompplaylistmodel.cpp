@@ -22,6 +22,7 @@
 #include "options.h"
 #include "defines.h"
 #include "common.h"
+#include "pluginmanager.h"
 
 #include <QFileInfo>
 #include <QStringList>
@@ -333,8 +334,14 @@ void QompPlayListModel::loadTunes(const QString &fileName)
 	if(fileName.isEmpty())
 		return;
 
-	QList<Tune*> tl = Tune::tunesFromFile(fileName);
-	addTunes(tl);
+	QList<Tune*> tl;
+	if (QFileInfo(fileName).suffix() == PLAYLIST_EXTENTION)
+		tl = Tune::tunesFromFile(fileName);
+	else
+		PluginManager::instance()->processUrl(fileName, &tl);
+
+	if(!tl.isEmpty())
+		addTunes(tl);
 }
 
 QHash<int, QByteArray> QompPlayListModel::roleNames() const
