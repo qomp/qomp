@@ -24,6 +24,10 @@
 QompPlaylistView::QompPlaylistView(QWidget *parent) :
 	QListView(parent)
 {
+	setDragEnabled(true);
+	setSelectionMode(ExtendedSelection);
+	setDragDropMode(DragDrop);
+	setDefaultDropAction(Qt::MoveAction);
 }
 
 void QompPlaylistView::startDrag(Qt::DropActions supportedActions)
@@ -38,14 +42,17 @@ void QompPlaylistView::startDrag(Qt::DropActions supportedActions)
 void QompPlaylistView::dropEvent(QDropEvent *e)
 {
 	QListView::dropEvent(e);
-	QItemSelection sel;
-	foreach(Tune* t, selected_) {
-		sel.append(QItemSelectionRange(static_cast<QompPlayListModel*>(model())->indexForTune(t)));
+
+	if(e->dropAction() == Qt::MoveAction) {
+		QItemSelection sel;
+		foreach(Tune* t, selected_) {
+			sel.append(QItemSelectionRange(static_cast<QompPlayListModel*>(model())->indexForTune(t)));
+		}
+		if(!sel.isEmpty()) {
+			selectionModel()->select(sel,QItemSelectionModel::ClearAndSelect);
+		}
+		selected_.clear();
 	}
-	if(!sel.isEmpty()) {
-		selectionModel()->select(sel,QItemSelectionModel::ClearAndSelect);
-	}
-	selected_.clear();
 }
 
 QSize QompPlaylistView::minimumSizeHint() const

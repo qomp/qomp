@@ -52,15 +52,17 @@ public:
 	bool allTunesPlayed() const;
 	void unsetAllTunesPlayed();
 
-	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-	virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
+	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+	virtual int rowCount(const QModelIndex& parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-	Qt::DropActions supportedDropActions() const;
-	Qt::ItemFlags flags(const QModelIndex &index) const;
-	QStringList mimeTypes() const;
-	QMimeData *mimeData(const QModelIndexList &indexes) const;
-	bool dropMimeData(const QMimeData *data,
-	     Qt::DropAction action, int row, int column, const QModelIndex &parent);
+	virtual Qt::DropActions supportedDropActions() const Q_DECL_OVERRIDE;
+	virtual Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
+	virtual QStringList mimeTypes() const Q_DECL_OVERRIDE;
+	virtual QMimeData *mimeData(const QModelIndexList &indexes) const Q_DECL_OVERRIDE;
+	virtual bool canDropMimeData(const QMimeData *data,
+	      Qt::DropAction action, int row, int column, const QModelIndex &parent) const Q_DECL_OVERRIDE;
+	virtual bool dropMimeData(const QMimeData *data,
+	     Qt::DropAction action, int row, int column, const QModelIndex &parent) Q_DECL_OVERRIDE;
 
 	void clear();
 	void saveState();
@@ -84,6 +86,8 @@ public slots:
 private:
 	uint totalTime() const;
 	void updateTuneTracks();
+	void processTunesDrop(int row, const QMimeData *data);
+	void processUrilistDrop(int row, const QMimeData *data);
 
 private:
 	QList<Tune*> tunes_;

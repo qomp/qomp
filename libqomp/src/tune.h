@@ -82,6 +82,7 @@ public:
 	static QList<Tune*> tunesFromFile(const QString& fileName);
 
 	static const Tune* emptyTune() { return empty_; }
+	static QString mimeDataName() { return "qomp/tune"; }
 
 	bool sameSource(const Tune* other) const;
 

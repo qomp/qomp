@@ -32,6 +32,7 @@
 
 
 static const QString cachedPlayListFileName = "/qomp-cached-playlist.qomp";
+static const QString uriListMimeType = "text/uri-list";
 
 
 
@@ -195,7 +196,7 @@ int QompPlayListModel::rowCount(const QModelIndex &/*parent*/) const
 
 Qt::DropActions QompPlayListModel::supportedDropActions() const
 {
-	return Qt::MoveAction;
+	return Qt::MoveAction | Qt::CopyAction;
 }
 
 Qt::ItemFlags QompPlayListModel::flags(const QModelIndex &index) const
@@ -203,7 +204,7 @@ Qt::ItemFlags QompPlayListModel::flags(const QModelIndex &index) const
 	Qt::ItemFlags defaultFlags = QAbstractListModel::flags(index);
 
 	if (index.isValid())
-		return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+		return Qt::ItemIsDragEnabled | defaultFlags;
 	else
 		return Qt::ItemIsDropEnabled | defaultFlags;
 }
@@ -211,7 +212,7 @@ Qt::ItemFlags QompPlayListModel::flags(const QModelIndex &index) const
 QStringList QompPlayListModel::mimeTypes() const
 {
 	QStringList list;
-	list.append("qomp/tune");
+	list << Tune::mimeDataName() << uriListMimeType;
 	return list;
 }
 
@@ -227,21 +228,32 @@ QMimeData *QompPlayListModel::mimeData(const QModelIndexList &indexes) const
 			stream << index.row();
 		}
 	}
-	mimeData->setData("qomp/tune", encodedData);
+	mimeData->setData(Tune::mimeDataName(), encodedData);
 	return mimeData;
+}
+
+bool QompPlayListModel::canDropMimeData(const QMimeData *data, Qt::DropAction action,
+					int /*row*/, int column, const QModelIndex &/*parent*/) const
+{
+	if (!data->hasFormat(Tune::mimeDataName()) && !data->hasFormat(uriListMimeType))
+		return false;
+
+	if(column > 0)
+		return false;
+
+	if(action != Qt::MoveAction && action != Qt::CopyAction)
+		return false;
+
+	return true;
 }
 
 bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
+	if(!canDropMimeData(data, action, row, column, parent))
+		return false;
+
 	if (action == Qt::IgnoreAction)
 		return true;
-
-	if (!data->hasFormat("qomp/tune"))
-		return false;
-
-	if (column > 0)
-		return false;
-
 
 	if (row == -1) {
 		if(parent.isValid()) {
@@ -252,8 +264,22 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 		}
 	}
 
+	if (data->hasFormat(Tune::mimeDataName()) && action == Qt::MoveAction) {
+		processTunesDrop(row, data);
+		return true;
+	}
+	else if (data->hasFormat(uriListMimeType) && action == Qt::CopyAction) {
+		processUrilistDrop(row, data);
+		return true;
+	}
+
+	return false;
+}
+
+void QompPlayListModel::processTunesDrop(int row, const QMimeData *data)
+{
 	Tune* t = tune(index(row));
-	QByteArray encodedData = data->data("qomp/tune");
+	QByteArray encodedData = data->data(Tune::mimeDataName());
 	QDataStream stream(&encodedData, QIODevice::ReadOnly);
 	QList<Tune*> tl;
 	while (!stream.atEnd()) {
@@ -274,7 +300,23 @@ bool QompPlayListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 	}
 	emit layoutChanged();
 	updateTuneTracks();
-	return true;
+}
+
+void QompPlayListModel::processUrilistDrop(int row, const QMimeData *data)
+{
+	QList<Tune*> tl;
+	for(const QUrl url: data->urls()) {
+		PluginManager::instance()->processUrl(url.toLocalFile(), &tl);
+	}
+
+	emit layoutAboutToBeChanged();
+
+	for (Tune* t: tl) {
+		tunes_.insert(row++,t);
+	}
+
+	emit layoutChanged();
+	updateTuneTracks();
 }
 
 void QompPlayListModel::clear()
