@@ -486,7 +486,8 @@ void QompMainWin::Private::totalDurationChanged(uint time)
 void QompMainWin::Private::actSavePlaylist()
 {
 	QFileDialog f(0, tr("Select Playlist"),
-		      Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(), tr("qomp playlist (*.qomp)"));
+		      Options::instance()->getOption(LAST_DIR, QDir::homePath()).toString(),
+					tr("qomp playlist (*.%1)").arg(PLAYLIST_EXTENTION));
 	f.setViewMode(QFileDialog::List);
 	f.setAcceptMode(QFileDialog::AcceptSave);
 	if (f.exec() == QFileDialog::Accepted) {
