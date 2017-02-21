@@ -63,6 +63,12 @@ qtmultimedia_backend {
        # $$PWD/qompqtmultimediametadataresolver.cpp
 }
 
+win32 {
+    SOURCES += $$PWD/qompthumbnailtoolbar.cpp
+
+    HEADERS += $$PWD/qompthumbnailtoolbar.h
+}
+
 mac {
     HEADERS += $$PWD/CocoaTrayClick.h
 

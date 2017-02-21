@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016  Khryukin Evgeny
+ * Copyright (C) 2013-2017  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@
 #include <QSignalBlocker>
 #ifdef Q_OS_WIN
 #include <QtWinExtras>
+#include "qompthumbnailtoolbar.h"
 #endif
 
 class QompMainWin::Private : public QObject
@@ -98,6 +99,7 @@ public:
 	QAction* actRemoveSelected_;
 #ifdef Q_OS_WIN
 	QWinTaskbarButton *winTaskBar_;
+	QompThumbnailToolBar *thumbBar_;
 #endif
 };
 
@@ -112,7 +114,8 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	actClearPlaylist_(nullptr),
 	actRemoveSelected_(nullptr)
 #ifdef Q_OS_WIN
-	, winTaskBar_(nullptr)
+	, winTaskBar_(nullptr),
+	thumbBar_(nullptr)
 #endif
 {
 	ui->setupUi(mainWin_);
@@ -141,6 +144,11 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
 		winTaskBar_ = new QWinTaskbarButton(this);
 		winTaskBar_->progress()->setMinimum(0);
+
+		thumbBar_ = new QompThumbnailToolBar(this);
+		connect(thumbBar_, &QompThumbnailToolBar::prev, parentWin_, &QompMainWin::actPrevActivated);
+		connect(thumbBar_, &QompThumbnailToolBar::play, parentWin_, &QompMainWin::actPlayActivated);
+		connect(thumbBar_, &QompThumbnailToolBar::next, parentWin_, &QompMainWin::actNextActivated);
 	}
 #endif
 
@@ -244,8 +252,13 @@ void QompMainWin::Private::initTaskBar()
 {
 #ifdef Q_OS_WIN
 	static bool inited = false;
-	if(winTaskBar_ && !inited) {
-		winTaskBar_->setWindow(mainWin_->windowHandle());
+	if(!inited) {
+		if(winTaskBar_)
+			winTaskBar_->setWindow(mainWin_->windowHandle());
+
+		if(thumbBar_)
+			thumbBar_->setWindow(mainWin_->windowHandle());
+
 		inited = true;
 	}
 #endif
@@ -595,6 +608,10 @@ void QompMainWin::playerStateChanged(Qomp::State state)
 
 	d->updateIcons(state);
 	d->updateProgress(state);
+
+#ifdef Q_OS_WIN
+	d->thumbBar_->setCurrentState(state);
+#endif
 	currentState_ = state;
 
 	switch(state) {
