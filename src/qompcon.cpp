@@ -454,23 +454,27 @@ void QompCon::checkVersion()
 void QompCon::connectMediaKeys()
 {
 #ifndef QOMP_MOBILE
-		QHotkey *keyPlayPause = new QHotkey(Qt::Key_MediaTogglePlayPause, true, this);
-		connect(keyPlayPause, &QHotkey::activated, this, &QompCon::actPlay);
+#ifndef DEBUG_OUTPUT
+	QLoggingCategory::setFilterRules(QStringLiteral("QHotkey.warning=false"));
+#endif
 
-		QHotkey *keyPlay = new QHotkey(Qt::Key_MediaPlay, true, this);
-		connect(keyPlay, &QHotkey::activated, this, &QompCon::actPlay);
+	QHotkey *keyPlayPause = new QHotkey(Qt::Key_MediaTogglePlayPause, true, this);
+	connect(keyPlayPause, &QHotkey::activated, this, &QompCon::actPlay);
 
-		QHotkey *keyPause = new QHotkey(Qt::Key_MediaPause, true, this);
-		connect(keyPause, &QHotkey::activated, this, &QompCon::actPause);
+	QHotkey *keyPlay = new QHotkey(Qt::Key_MediaPlay, true, this);
+	connect(keyPlay, &QHotkey::activated, this, &QompCon::actPlay);
 
-		QHotkey *keyNext = new QHotkey(Qt::Key_MediaNext, true, this);
-		connect(keyNext, &QHotkey::activated, this, &QompCon::actPlayNext);
+	QHotkey *keyPause = new QHotkey(Qt::Key_MediaPause, true, this);
+	connect(keyPause, &QHotkey::activated, this, &QompCon::actPause);
 
-		QHotkey *keyPrev = new QHotkey(Qt::Key_MediaPrevious, true, this);
-		connect(keyPrev, &QHotkey::activated, this, &QompCon::actPlayPrev);
+	QHotkey *keyNext = new QHotkey(Qt::Key_MediaNext, true, this);
+	connect(keyNext, &QHotkey::activated, this, &QompCon::actPlayNext);
 
-		QHotkey *keyStop = new QHotkey(Qt::Key_MediaStop, true, this);
-		connect(keyStop, &QHotkey::activated, this, &QompCon::actStop);
+	QHotkey *keyPrev = new QHotkey(Qt::Key_MediaPrevious, true, this);
+	connect(keyPrev, &QHotkey::activated, this, &QompCon::actPlayPrev);
+
+	QHotkey *keyStop = new QHotkey(Qt::Key_MediaStop, true, this);
+	connect(keyStop, &QHotkey::activated, this, &QompCon::actStop);
 #endif
 }
 
