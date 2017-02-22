@@ -32,14 +32,14 @@ include_directories(
 	${PROJECT_BINARY_DIR}/libqomp/include
 )
 
-find_package( Qt5Widgets REQUIRED )
+find_package( Qt5 REQUIRED Widgets Multimedia)
 add_definitions(
 	-DHAVE_QT5
 )
 set( QT_DEPLIBS
 	Qt5::Widgets
+	Qt5::Multimedia
 )
-
 add_library(
 	${PLUGIN}
 	SHARED
