@@ -34,8 +34,7 @@ int main(int argc, char *argv[])
 #ifdef QOMP_MOBILE
 	QGuiApplication* a = new QGuiApplication(argc, argv);
 #else
-	SingleApplication::setAllowSecondary(true);
-	SingleApplication* a = new SingleApplication(argc, argv, std::numeric_limits<uint8_t>::max());
+	SingleApplication* a = new SingleApplication(argc, argv, true, SingleApplication::SecondaryNotification);
 #endif
 	a->setQuitOnLastWindowClosed(false);
 	QompCon* qomp = new QompCon;

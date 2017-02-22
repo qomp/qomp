@@ -78,3 +78,5 @@ lupdate_only {
     SOURCES += $$PWD/qml/*.qml
 }
 include (options/options.pri)
+
+DEFINES += QAPPLICATION_CLASS=QApplication

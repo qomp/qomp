@@ -40,7 +40,7 @@ signals:
 	void commandTune(const QString& url);
 
 private slots:
-	void incommingCommand(const QJsonObject& obj);
+	void incommingCommand(quint32 instanceId, const QByteArray &message);
 };
 
 #endif // QOMPINSTANCEWATCHER_H
