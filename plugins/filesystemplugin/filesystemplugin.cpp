@@ -36,26 +36,32 @@
 #include <QMenu>
 #endif
 #include <QMediaPlaylist>
+#include <QMimeDatabase>
 
 #include <QtPlugin>
 
-static const QString CUE_SUFFIX = "cue";
-static const QString M3U_SUFFIX = "m3u";
+static const QString CUE_TYPE = "application/x-cue";
+static const QString M3U_TYPE = "audio/x-mpegurl";
+static const QStringList supportedMimeTypes = QStringList() << "audio/mpeg" << "audio/vorbis"
+							    << "audio/x-vorbis+ogg" << "audio/ogg"
+							    << "audio/flac" << CUE_TYPE
+							    << M3U_TYPE;
 
 static QList<Tune*> getTunesRecursive(const QString& folder)
 {
 	QList<Tune*> list;
 
 	QDir dir(folder);
+	QMimeDatabase mimeDb;
 	foreach(const QString& entry, dir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)) {
 		QFileInfo fi(dir.absolutePath() + "/" +entry);
 		if(fi.isDir()) {
 			list.append(getTunesRecursive(fi.absoluteFilePath()));
 		}
 		else  {
-			static const QRegExp songRe("\\.(mp3|ogg|flac|wav|mp4)$");
+			QString mimeType = mimeDb.mimeTypeForFile(fi).name();
 			QString song = fi.absoluteFilePath();
-			if(songRe.indexIn(song) != -1)
+			if (supportedMimeTypes.contains(mimeType))
 				list.append(Qomp::tuneFromFile(song));
 		}
 	}
@@ -110,6 +116,7 @@ private:
 
 QList<Tune*> FilesystemPlugin::Private::getTunes()
 {
+	QMimeDatabase mimeDb;
 	QList<Tune*> list;
 #ifdef QOMP_MOBILE
 	item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/QompFileDlg.qml"));
@@ -138,10 +145,11 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 			const QString str = var.toUrl().toLocalFile();
 			if(!str.isEmpty()) {
 				QFileInfo fi(str);
-				if(fi.suffix() == CUE_SUFFIX) {
+				QString mimeType = mimeDb.mimeTypeForFile(fi).name();
+				if(mimeType == CUE_TYPE) {
 					list.append(CueParser::parseTunes(str));
 				}
-				else if(fi.suffix() == M3U_SUFFIX) {
+				else if(mimeType == M3U_TYPE) {
 					list.append(m3uToTunes(str));
 				}
 				else {
@@ -165,14 +173,15 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 		if(!files.isEmpty()) {
 			QFileInfo fi (files.first());
 			Options::instance()->setOption("filesystemplugin.lastdir", fi.dir().path());
-		} 
+		}
 
 		foreach(const QString& file, files) {
 			QFileInfo fi(file);
-			if(fi.suffix() == CUE_SUFFIX) {
+			QString mimeType = mimeDb.mimeTypeForFile(fi).name();
+			if(mimeType == CUE_TYPE) {
 				list.append(CueParser::parseTunes(file));
 			}
-			else if(fi.suffix() == M3U_SUFFIX) {
+			else if(mimeType == M3U_TYPE) {
 				list.append(m3uToTunes(file));
 			}
 			else {
@@ -285,6 +294,7 @@ QList<QompPluginAction *> FilesystemPlugin::getTunesActions()
 
 bool FilesystemPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 {
+	QMimeDatabase mimeDb;
 	QFileInfo fi(url);
 	if(!fi.exists()) {
 		QUrl u(url);
@@ -294,20 +304,28 @@ bool FilesystemPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 	}
 
 	if(fi.exists()) {
-		const QString file = fi.canonicalFilePath();
-		if(fi.suffix() == CUE_SUFFIX) {
+		bool result = false;
+		const QString file = fi.canonicalFilePath().toUtf8();
+		const QString mimeType = mimeDb.mimeTypeForFile(fi).name();
+		if (fi.isDir()) {
+			tunes->append(getTunesRecursive(file));
+			result = true;
+		}
+		if (mimeType == CUE_TYPE) {
 			tunes->append(CueParser::parseTunes(file));
+			result = true;
 		}
-		else if(fi.suffix() == M3U_SUFFIX) {
+		else if(mimeType == M3U_TYPE) {
 			tunes->append(m3uToTunes(file));
+			result = true;
 		}
-		else {
+		else if(supportedMimeTypes.contains(mimeType)) {
 			tunes->append(Qomp::tuneFromFile(file));
+			result = true;
 		}
-		return true;
+		return result;
 	}
-	else
-		return false;
+	return false;
 }
 
 

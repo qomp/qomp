@@ -132,6 +132,12 @@ set( qomp_SRCS
 	${hotkey_SRCS}
 	${hotkey_HDRS}
 	)
+if( WIN32 )
+	set( qomp_SRCS
+		${qomp_SRCS}
+		src/qompthumbnailtoolbar.cpp
+		)
+endif()
 set( qomp_UIS
 	src/qompmainwin.ui
 	src/aboutdlg.ui
@@ -280,7 +286,7 @@ endif()
 
 if( LINUX )
 	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-	
+
 	set( DESKTOP_PATH ${DATADIR_PATH}/applications )
 	set( DESKTOPFILES ${PROJECT_NAME}.desktop )
 	set( ICONS_PREFIX ${DATADIR_PATH}/icons/hicolor )
