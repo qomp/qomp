@@ -305,7 +305,7 @@ bool FilesystemPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 
 	if(fi.exists()) {
 		bool result = false;
-		const QString file = fi.canonicalFilePath().toUtf8();
+		const QString file = fi.canonicalFilePath();
 		const QString mimeType = mimeDb.mimeTypeForFile(fi).name();
 		if (fi.isDir()) {
 			tunes->append(getTunesRecursive(file));
