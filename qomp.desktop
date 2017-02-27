@@ -10,4 +10,4 @@ Exec=qomp %F
 Categories=AudioVideo;Audio;Player;Qt;
 Terminal=false
 
-MimeType=audio/mpeg;audio/ogg;audio/flac;application/x-cue
+MimeType=audio/mpeg;audio/ogg;audio/flac;audio/vorbis;audio/x-vorbis;audio/x-vorbis+ogg;application/x-cue;audio/x-mpegurl;
