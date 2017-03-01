@@ -22,15 +22,20 @@
 #include "common.h"
 
 #include <QString>
+#include <QImage>
 
 #ifndef Q_OS_MAC
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 #include <taglib/audioproperties.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/attachedpictureframe.h>
 #else
 #include <tag/fileref.h>
 #include <tag/tag.h>
 #include <tag/audioproperties.h>
+#include <tag/id3v2tag.h>
+#include <tag/attachedpictureframe.h>
 #endif
 
 namespace Qomp {
@@ -60,6 +65,21 @@ Tune* tuneFromFile(const QString& file)
 			tune->album = safeTagLibString2QString( tag->album() );
 			tune->title = safeTagLibString2QString( tag->title() );
 			tune->trackNumber = QString::number( tag->track() );
+
+			TagLib::ID3v2::Tag* tag2 = dynamic_cast<TagLib::ID3v2::Tag*>(tag);
+			if(tag2) {
+
+				TagLib::ID3v2::FrameList frameList = tag2->frameList("APIC");
+				if(!frameList.isEmpty()) {
+
+					TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
+
+					QImage coverQImg;
+					coverQImg.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
+					qDebug() << coverQImg;
+					//return coverQImg;
+				}
+			}
 		}
 
 		if(ref.audioProperties()) {

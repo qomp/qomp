@@ -22,15 +22,29 @@
 #include "tune.h"
 #include "common.h"
 
+#ifndef Q_OS_MAC
 #include <taglib/tbytevectorstream.h>
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 #include <taglib/audioproperties.h>
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2framefactory.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/attachedpictureframe.h>
+#else
+#include <tag/tbytevectorstream.h>
+#include <tag/fileref.h>
+#include <tag/tag.h>
+#include <tag/audioproperties.h>
+#include <tag/mpegfile.h>
+#include <tag/id3v2framefactory.h>
+#include <tag/id3v2tag.h>
+#include <tag/attachedpictureframe.h>
+#endif
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QUrl>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -41,7 +55,7 @@ static const uint tagSize = 5000;
 
 QompTagLibMetaDataResolver::QompTagLibMetaDataResolver(QObject *parent) :
 	QompMetaDataResolver(parent),
-	nam_(QompNetworkingFactory::instance()->getNetworkAccessManager())
+	nam_(QompNetworkingFactory::instance()->getMainNAM())
 {
 }
 
@@ -66,14 +80,27 @@ void QompTagLibMetaDataResolver::dataReady()
 		TagLib::FileRef ref(createFile(r->url().toDisplayString(), &stream));
 		if(!ref.isNull()) {
 			if(ref.tag()) {
-				TagLib::Tag* tag = ref.tag();
+				TagLib::ID3v2::Tag* tag = dynamic_cast<TagLib::ID3v2::Tag*>(ref.tag());
+				if(tag) {
 #ifdef DEBUG_OUTPUT
-	qDebug() << "QompTagLibMetaDataResolver::dataReady()  not null tag";
+					qDebug() << "QompTagLibMetaDataResolver::dataReady()  not null tag";
 #endif
-				tune->artist = Qomp::fixEncoding( tag->artist() );
-				tune->album = Qomp::fixEncoding( tag->album() );
-				tune->title = Qomp::fixEncoding( tag->title() );
-				tune->trackNumber = QString::number( tag->track() );
+//					tune->artist = safeTagLibString2QString( tag->artist() );
+//					tune->album = safeTagLibString2QString( tag->album() );
+//					tune->title = safeTagLibString2QString( tag->title() );
+//					tune->trackNumber = QString::number( tag->track() );
+
+					TagLib::ID3v2::FrameList frameList = tag->frameList("APIC");
+					if(!frameList.isEmpty()) {
+
+						TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
+
+//						QImage coverQImg;
+//						coverQImg.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
+//						qDebug() << coverQImg;
+						//return coverQImg;
+					}
+				}
 			}
 
 			if(ref.audioProperties()) {				
@@ -102,9 +129,16 @@ void QompTagLibMetaDataResolver::resolveNextMedia()
 #endif
 	if(!isDataEmpty()) {
 		Tune* t = get();
-		QNetworkReply* r = nam_->get(QNetworkRequest(t->getUrl()));
-		connect(r, SIGNAL(readyRead()), SLOT(dataReady()));
-		connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+		QUrl u(t->getUrl());
+		if(!u.isLocalFile()) {
+			QNetworkReply* r = nam_->get(QNetworkRequest(u));
+			connect(r, SIGNAL(readyRead()), SLOT(dataReady()));
+			connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+		}
+		else {
+			tuneFinished();
+			resolveNextMedia();
+		}
 	}
 }
 
