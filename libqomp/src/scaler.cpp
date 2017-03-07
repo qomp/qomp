@@ -102,6 +102,8 @@ void Scaler::updateScales()
 	qreal dpr = qApp->primaryScreen()->devicePixelRatio();
 
 	QSizeF physSize = qApp->primaryScreen()->physicalSize();
+	qreal physHeight = qMax(physSize.width(), physSize.height());
+	qreal physWidth = qMin(physSize.width(), physSize.height());
 
 	Q_UNUSED(refDpi)
 	Q_UNUSED(dpi)
@@ -114,11 +116,11 @@ void Scaler::updateScales()
 	qDebug() << "physSize:" << physSize;
 #endif
 
-	setScaleX((width / physSize.width()) / (refWidth / refPhysSize.width()));
-	setScaleY((height / physSize.height()) / (refHeight / refPhysSize.height()));
+	qreal dx =(width / physWidth) / (refWidth / refPhysSize.width());
+	qreal dy = (height / physHeight) / (refHeight / refPhysSize.height());
+	setScaleX(dx);
+	setScaleY(dy);
 
-//	qreal physHeight = qMax(physSize.width(), physSize.height());
-//	qreal physWidth = qMin(physSize.width(), physSize.height());
 //	qreal factorX = pow( (physWidth / refPhysSize.width()), 1.0 / 3.0);
 //	qreal factorY = pow( (physHeight / refPhysSize.height()), 1.0 / 3.0);
 
