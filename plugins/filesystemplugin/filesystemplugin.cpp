@@ -37,7 +37,6 @@
 #include <QMenu>
 #endif
 #include <QMimeDatabase>
-#include <QTextCodec>
 #include <QTextStream>
 
 #include <QtPlugin>
@@ -71,18 +70,11 @@ static QList<Tune*> m3uToTunes(const QString& file)
 {
 	QList<Tune*> list;
 
-	//Next peace of code partially get from qtmultimedia m3u plugin
-	//It's adapted to use apropriate codecs.
+	//Next piece of code partially get from qtmultimedia m3u plugin
 	if(QFile::exists(file)) {
 		QFile f(file);
 		if (f.open(QFile::ReadOnly)) {
 			QTextStream ts(&f);
-			const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray();
-			QTextCodec *c = QTextCodec::codecForName(decoding);
-			if(c)
-				ts.setCodec(c);
-
-			ts.setAutoDetectUnicode(true);
 			QUrl nextResource;
 			QUrl fileLocation = QUrl::fromLocalFile(file);
 
