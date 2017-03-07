@@ -23,6 +23,10 @@
 #include <QRect>
 #include <QScreen>
 
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
+
 Scaler::Scaler(QObject *parent) :
 	QObject(parent)
 {
@@ -85,37 +89,41 @@ void Scaler::setScaleMargins(double scaleMargins)
 void Scaler::updateScales()
 {
 #ifdef Q_OS_ANDROID
-//	var w = Math.min(width, height)
-//	var h = Math.max(width, height)
-//	var myDensity =  onDesktop ? 1 : 9.15
-//	var curDensity = onDesktop ? 1 : Screen.pixelDensity
-//	scaler.scaleX = (w / curDensity) / (480 / myDensity)
-//	scaler.scaleY = (h / curDensity) / (800 / myDensity)
-//	scaler.scaleFont = (400 + width * height * 0.00015) / 457
-
 	QSizeF refPhysSize(49, 80);
 	qreal refDpi = 108.;
 	qreal refHeight = 800.;
 	qreal refWidth = 480.;
 
-	QRect rect = qApp->primaryScreen()->geometry();
-	qreal height = qMax(rect.width(), rect.height());
-	qreal width = qMin(rect.width(), rect.height());
+	QRect geometry = qApp->primaryScreen()->geometry();
+	qreal height = qMax(geometry.width(), geometry.height());
+	qreal width = qMin(geometry.width(), geometry.height());
 
 	qreal dpi = qApp->primaryScreen()->logicalDotsPerInch();
+	qreal dpr = qApp->primaryScreen()->devicePixelRatio();
 
 	QSizeF physSize = qApp->primaryScreen()->physicalSize();
-	qreal physHeight = qMax(physSize.width(), physSize.height());
-	qreal physWidth = qMin(physSize.width(), physSize.height());
 
-	qreal factorX = pow( (physWidth / refPhysSize.width()), 1.0 / 3.0);
-	qreal factorY = pow( (physHeight / refPhysSize.height()), 1.0 / 3.0);
+	Q_UNUSED(refDpi)
+	Q_UNUSED(dpi)
+	Q_UNUSED(dpr)
 
-//	_scaleX = (width / physSize.width()) / (refWidth / refPhysSize.width());
-//	_scaleY = (height / physSize.height()) / (refHeight / refPhysSize.height());
+#ifdef DEBUG_OUTPUT
+	qDebug() << "dpi:" << dpi;
+	qDebug() << "dpr:" << dpr;
+	qDebug() << "geometry:" << geometry;
+	qDebug() << "physSize:" << physSize;
+#endif
 
-	setScaleX(width*refDpi/(dpi*refWidth) * factorX);
-	setScaleY(height*refDpi/(dpi*refHeight) * factorY);
+	setScaleX((width / physSize.width()) / (refWidth / refPhysSize.width()));
+	setScaleY((height / physSize.height()) / (refHeight / refPhysSize.height()));
+
+//	qreal physHeight = qMax(physSize.width(), physSize.height());
+//	qreal physWidth = qMin(physSize.width(), physSize.height());
+//	qreal factorX = pow( (physWidth / refPhysSize.width()), 1.0 / 3.0);
+//	qreal factorY = pow( (physHeight / refPhysSize.height()), 1.0 / 3.0);
+
+//	setScaleX(width*refDpi/(dpi*refWidth) * factorX * dpr);
+//	setScaleY(height*refDpi/(dpi*refHeight) * factorY * dpr);
 
 	recalculateMargins();
 #endif
@@ -128,6 +136,3 @@ void Scaler::recalculateMargins()
 	setScaleFont( scaleMargins() );
 #endif
 }
-
-
-
