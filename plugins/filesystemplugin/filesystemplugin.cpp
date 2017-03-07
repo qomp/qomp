@@ -23,6 +23,7 @@
 #include "qomppluginaction.h"
 #include "cueparser.h"
 #include "filesystemcommon.h"
+#include "defines.h"
 
 
 #ifdef QOMP_MOBILE
@@ -35,8 +36,9 @@
 #include <QFileDialog>
 #include <QMenu>
 #endif
-#include <QMediaPlaylist>
 #include <QMimeDatabase>
+#include <QTextCodec>
+#include <QTextStream>
 
 #include <QtPlugin>
 
@@ -69,12 +71,58 @@ static QList<Tune*> m3uToTunes(const QString& file)
 {
 	QList<Tune*> list;
 
+	//Next peace of code partially get from qtmultimedia m3u plugin
+	//It's adapted to use apropriate codecs.
 	if(QFile::exists(file)) {
-		QMediaPlaylist p;
-		p.load(QUrl::fromLocalFile(file));
-		if (!p.isEmpty()) {
-			for(int i = 0; i < p.mediaCount(); ++i) {
-				list.append(Qomp::tuneFromFile(p.media(i).canonicalUrl().toLocalFile()));
+		QFile f(file);
+		if (f.open(QFile::ReadOnly)) {
+			QTextStream ts(&f);
+			const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray();
+			QTextCodec *c = QTextCodec::codecForName(decoding);
+			if(c)
+				ts.setCodec(c);
+
+			ts.setAutoDetectUnicode(true);
+			QUrl nextResource;
+			QUrl fileLocation = QUrl::fromLocalFile(file);
+
+			while (!ts.atEnd()) {
+				QString line = ts.readLine().trimmed();
+				if (line.isEmpty() || line[0] == '#' || line.size() > 4096)
+					continue;
+
+				QUrl fileUrl = QUrl::fromLocalFile(line);
+				QUrl url(line);
+
+				//m3u may contain url encoded entries or absolute/relative file names
+				//prefer existing file if any
+				QList<QUrl> candidates;
+				if (!fileLocation.isEmpty()) {
+					candidates << fileLocation.resolved(fileUrl);
+					candidates << fileLocation.resolved(url);
+				}
+				candidates << fileUrl;
+				candidates << url;
+
+				for (const QUrl &candidate : candidates) {
+					if (QFile::exists(candidate.toLocalFile())) {
+						nextResource = candidate;
+						break;
+					}
+				}
+
+				if (nextResource.isEmpty()) {
+					//assume the relative urls are file names, not encoded urls if m3u is local file
+					if (!fileLocation.isEmpty() && url.isRelative()) {
+						if (fileLocation.scheme() == QLatin1String("file"))
+							nextResource = fileLocation.resolved(fileUrl);
+						else
+							nextResource = fileLocation.resolved(url);
+					}
+				}
+
+				if(!nextResource.isEmpty())
+					list.append(Qomp::tuneFromFile(nextResource.toLocalFile()));
 			}
 		}
 	}
