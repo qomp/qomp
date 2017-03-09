@@ -47,6 +47,8 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private:
+	enum class WinAction{None, Dragging, Resizing};
+
 	void updateHeaderState();
 	void updateCursor(Qt::WindowFrameSection region, QWidget* window);
 	void doWindowResize(QWidget* window, const QPoint& eventPos, Qt::WindowFrameSection region);
@@ -57,9 +59,9 @@ private:
 	Qt::WindowFlags _deltaFlags;
 #endif
 	QPoint _movePath;
-	bool _isResize;
-	bool _isDrag;
+	WinAction _action;
 	bool _border;
+	Qt::WindowFrameSection _region;
 };
 
 #endif

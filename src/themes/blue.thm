@@ -1,3 +1,21 @@
+/*
+UseWindowBorder {
+        use: 0;
+}
+*/
+
+QFrame#headerFrame {
+    background: SteelBlue;
+    padding: 2px;
+}
+
+WindowHeader QToolButton {
+    width: 15px;
+    height: 15px;
+    icon-size: 12px;
+    padding: 2px, 1px, 1px, 2px;
+}
+
 QMainWindow {
     color: black;
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,

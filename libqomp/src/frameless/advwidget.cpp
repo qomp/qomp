@@ -29,12 +29,13 @@
 #include <QDialog>
 
 
-static const int resizeAccuracy = 5;
+static const int resizeAccuracy = 10;
 
 
 template<class BaseClass>
 AdvancedWidget<BaseClass>::AdvancedWidget(QWidget *parent, Qt::WindowFlags f)
 	: BaseClass(parent, f),
+	  _action(WinAction::None),
 	  _border(true)
 {
 }
@@ -98,18 +99,17 @@ bool AdvancedWidget<BaseClass>::isUseBorder()
 template<class BaseClass>
 void AdvancedWidget<BaseClass>::mousePressEvent(QMouseEvent *event)
 {
-	if (!_border && (event->button()==Qt::LeftButton)) {
+	if (!_border && (event->button() == Qt::LeftButton)) {
 		QWidget *window = BaseClass::window();
 
-		Qt::WindowFrameSection region = getMouseRegion(event->globalPos().x(), event->globalPos().y(), window->geometry());
-		if (region != Qt::NoSection) {
-			_isResize = true;
+		_region = getMouseRegion(event->globalPos().x(), event->globalPos().y(), window->geometry());
+		if (_region != Qt::NoSection) {
+			_action = WinAction::Resizing;
 		}
 		else {
 			_movePath = event->globalPos() - window->pos();
-			_isResize = false;
+			_action = WinAction::Dragging;
 		}
-		_isDrag = true;
 	}
 
 	BaseClass::mousePressEvent(event);
@@ -123,16 +123,17 @@ void AdvancedWidget<BaseClass>::mouseMoveEvent(QMouseEvent *event)
 		const QPoint pg = event->globalPos();
 		QWidget *window = BaseClass::window();
 
-		Qt::WindowFrameSection region = getMouseRegion(pg.x(), pg.y(), window->geometry());
+		if(!isLeftButton) {
+			Qt::WindowFrameSection region = getMouseRegion(pg.x(), pg.y(), window->geometry());
 
-		updateCursor(region, window);
-
-		if (isLeftButton && _isResize) {
-			doWindowResize(window, pg, region);
+			updateCursor(region, window);
 		}
-		else if(isLeftButton && _isDrag && !_isResize) {
+		else if (isLeftButton && _action == WinAction::Resizing) {
+			doWindowResize(window, pg, _region);
+		}
+		else if(isLeftButton && _action == WinAction::Dragging) {
 			window->setCursor(QCursor(Qt::SizeAllCursor));
-			window->move(pg - _movePath );
+			window->move(pg - _movePath);
 		}
 	}
 
@@ -142,12 +143,11 @@ void AdvancedWidget<BaseClass>::mouseMoveEvent(QMouseEvent *event)
 template<class BaseClass>
 void AdvancedWidget<BaseClass>::mouseReleaseEvent(QMouseEvent *event)
 {
-	if (!_border && (event->button() == Qt::LeftButton) && _isDrag) {
+	if (!_border && (event->button() == Qt::LeftButton) && _action == WinAction::Dragging) {
 		QWidget *window = BaseClass::window();
 
 		_movePath = QPoint(0,0);
-		_isDrag = false;
-		_isResize = false;
+		_action = WinAction::None;
 		window->setCursor(QCursor(Qt::ArrowCursor));
 	}
 
@@ -162,11 +162,10 @@ Qt::WindowFrameSection AdvancedWidget<BaseClass>::getMouseRegion(const int mouse
 	const int left = geom.left();
 	const int right = geom.right();
 	const int maxtop = top + resizeAccuracy;
-	const int minbottom = bottom -resizeAccuracy;
+	const int minbottom = bottom - resizeAccuracy;
 
-	if(mouse_y <= bottom
-			&& mouse_y >= minbottom
-			&& qAbs(mouse_x - left) < resizeAccuracy)
+	if(qAbs(bottom - mouse_y) < resizeAccuracy
+		&& qAbs(mouse_x - left) < resizeAccuracy)
 	{
 		return Qt::BottomLeftSection;
 	}
@@ -176,35 +175,35 @@ Qt::WindowFrameSection AdvancedWidget<BaseClass>::getMouseRegion(const int mouse
 	{
 		return Qt::BottomSection;
 	}
-	else if ((bottom - mouse_y) < resizeAccuracy
+	else if (qAbs(bottom - mouse_y) < resizeAccuracy
 		     && qAbs(mouse_x - right) < resizeAccuracy)
 	{
 		return Qt::BottomRightSection;
 	}
-	else if ((right - mouse_x) < resizeAccuracy
+	else if (qAbs(right - mouse_x) < resizeAccuracy
 		 &&  mouse_y > maxtop
 		 && mouse_y < minbottom)
 	{
 		return Qt::RightSection;
 	}
-	else if ((mouse_x - left) < resizeAccuracy
+	else if (qAbs(mouse_x - left) < resizeAccuracy
 		 &&  mouse_y > maxtop
 		 && mouse_y < minbottom)
 	{
 		return Qt::LeftSection;
 	}
-	else if ((mouse_y - top) < resizeAccuracy
+	else if (qAbs(mouse_y - top) < resizeAccuracy
 		 && mouse_x > (left + resizeAccuracy)
 		 && mouse_x < (right -resizeAccuracy))
 	{
 		return Qt::TopSection;
 	}
-	else if ((top - mouse_y) < resizeAccuracy
+	else if (qAbs(top - mouse_y) < resizeAccuracy
 		 && qAbs(mouse_x - right) < resizeAccuracy)
 	{
 		return Qt::TopRightSection;
 	}
-	else if ((top - mouse_y) < resizeAccuracy
+	else if (qAbs(top - mouse_y) < resizeAccuracy
 		 && qAbs(mouse_x - left) < resizeAccuracy)
 	{
 		return Qt::TopLeftSection;
