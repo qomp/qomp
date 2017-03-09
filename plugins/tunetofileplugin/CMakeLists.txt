@@ -20,7 +20,7 @@ set( tunetofileplugin_UIS
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${PROJECT_BINARY_DIR}/libqomp/include
+	${PROJECT_BINARY_DIR}/include
 )
 
 find_package( Qt5Widgets REQUIRED )
