@@ -19,14 +19,15 @@
  */
 
 
-#ifndef PSIWINDOWHEADER_H
-#define PSIWINDOWHEADER_H
+#ifndef WINDOWHEADER_H
+#define WINDOWHEADER_H
 
 #include "ui_windowheader.h"
 
-#include <QToolButton>
-#include <QMouseEvent>
 #include <QRect>
+
+class QMouseEvent;
+class QEvent;
 
 class WindowHeader : public QWidget
 {
@@ -35,31 +36,17 @@ public:
 	WindowHeader(QWidget* p);
 	~WindowHeader();
 
-private:
-	Ui::WindowHeader ui_;
-	QWidget *parent_;
-	QPoint movepath;
-	bool isDrag;
-	bool isResize;
-	bool inVRect;
-	bool inLDRect;
-	bool inRDRect;
-	bool maximized;
-	QRect oldSize;
-	QSize defaultSize;
-	void mouseEnterEvent(const int mouse_x, const int mouse_y, const QRect &geom);
-
 private slots:
 	void hidePressed();
 	void closePressed();
 	void maximizePressed();
 
 protected:
-	void mouseMoveEvent(QMouseEvent *e);
-	void mousePressEvent(QMouseEvent *e);
-	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseDoubleClickEvent(QMouseEvent *e);
+	bool eventFilter(QObject *watched, QEvent *event);
 
+private:
+	Ui::WindowHeader _ui;
 };
 
-#endif // PSIWINDOWHEADER_H
+#endif // WINDOWHEADER_H

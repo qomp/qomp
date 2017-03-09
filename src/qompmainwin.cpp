@@ -319,10 +319,14 @@ void QompMainWin::Private::setupPlaylist()
 
 void QompMainWin::Private::saveWindowState()
 {
-	Options::instance()->setOption(OPTION_GEOMETRY_X, mainWin_->x());
-	Options::instance()->setOption(OPTION_GEOMETRY_Y, mainWin_->y());
-	Options::instance()->setOption(OPTION_GEOMETRY_HEIGHT, mainWin_->height());
-	Options::instance()->setOption(OPTION_GEOMETRY_WIDTH, mainWin_->width());
+	const QRect r = mainWin_->normalGeometry();
+	Options* o = Options::instance();
+
+	o->setOption(OPTION_GEOMETRY_X, r.x());
+	o->setOption(OPTION_GEOMETRY_Y, r.y());
+	o->setOption(OPTION_GEOMETRY_HEIGHT, r.height());
+	o->setOption(OPTION_GEOMETRY_WIDTH, r.width());
+	o->setOption(OPTION_GEOMETRY_STATE, (int)mainWin_->windowState());
 }
 
 void QompMainWin::Private::restoreWindowState()
@@ -330,11 +334,15 @@ void QompMainWin::Private::restoreWindowState()
 	if (!Options::instance()->getOption(OPTION_PLAYLIST_VISIBLE).toBool())
 		hidePlaylist();
 
-	mainWin_->resize(Options::instance()->getOption(OPTION_GEOMETRY_WIDTH, mainWin_->width()).toInt(),
-		Options::instance()->getOption(OPTION_GEOMETRY_HEIGHT, mainWin_->height()).toInt());
+	Options* o = Options::instance();
 
-	mainWin_->move(Options::instance()->getOption(OPTION_GEOMETRY_X, 10).toInt(),
-		Options::instance()->getOption(OPTION_GEOMETRY_Y, 50).toInt());
+	mainWin_->setWindowState((Qt::WindowState)o->getOption(OPTION_GEOMETRY_STATE,
+							       (int)mainWin_->windowState()).toInt());
+
+	mainWin_->setGeometry(o->getOption(OPTION_GEOMETRY_X, 10).toInt(),
+			      o->getOption(OPTION_GEOMETRY_Y, 50).toInt(),
+			      o->getOption(OPTION_GEOMETRY_WIDTH, mainWin_->width()).toInt(),
+			      o->getOption(OPTION_GEOMETRY_HEIGHT, mainWin_->height()).toInt());
 }
 
 

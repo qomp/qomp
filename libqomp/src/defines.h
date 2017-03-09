@@ -44,6 +44,7 @@
 #define OPTION_GEOMETRY_Y	"main.mainwin-y"
 #define OPTION_GEOMETRY_HEIGHT	"main.mainwin-height"
 #define OPTION_GEOMETRY_WIDTH	"main.mainwin-width"
+#define OPTION_GEOMETRY_STATE   "main.mainwin-state"
 #define OPTION_HIDE_ON_CLOSE	"main.hide-on-close"
 #define OPTION_PLAYLIST_HEIGHT	"main.playlist-height"
 #define OPTION_PLAYLIST_VISIBLE	"main.playlist-visible"
