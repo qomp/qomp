@@ -39,6 +39,9 @@ signals:
 	void play();
 	void prev();
 
+private slots:
+	void updateIcons();
+
 private:
 	QWinThumbnailToolButton* _prev;
 	QWinThumbnailToolButton* _play;

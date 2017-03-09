@@ -29,20 +29,21 @@ QompThumbnailToolBar::QompThumbnailToolBar(QObject *p) :
 	_next(new QWinThumbnailToolButton(this)),
 	_state(Qomp::StateStopped)
 {
-	_prev->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/prev")));
 	_prev->setToolTip(tr("Previous"));
-	_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")));
 	_play->setToolTip(tr("Play/Pause"));
-	_next->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/next")));
 	_next->setToolTip(tr("Next"));
 
 	connect(_prev, &QWinThumbnailToolButton::clicked, this, &QompThumbnailToolBar::prev);
 	connect(_play, &QWinThumbnailToolButton::clicked, this, &QompThumbnailToolBar::play);
 	connect(_next, &QWinThumbnailToolButton::clicked, this, &QompThumbnailToolBar::next);
 
+	updateIcons();
+
 	addButton(_prev);
 	addButton(_play);
 	addButton(_next);
+
+	connect(ThemeManager::instance(), &ThemeManager::themeChanged, this, &QompThumbnailToolBar::updateIcons);
 }
 
 void QompThumbnailToolBar::setCurrentState(Qomp::State state)
@@ -62,4 +63,11 @@ void QompThumbnailToolBar::setCurrentState(Qomp::State state)
 		break;
 	}
 	}
+}
+
+void QompThumbnailToolBar::updateIcons()
+{
+	_prev->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/prev")));
+	_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")));
+	_next->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/next")));
 }
