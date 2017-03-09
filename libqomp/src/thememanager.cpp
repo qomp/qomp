@@ -31,6 +31,7 @@
 
 
 static const QString iconsExpression = "Icons\\s*\\{\\s*path:\\s*(\\S+[^;]*);\\s*\\}";
+static const QString borderExpression = "UseWindowBorder\\s*\\{\\s*use:\\s*([\\d]);\\s*\\}";
 static const QString themePathExpression = "<theme_path>";
 static const QString resourceFileName = "*.rcc";
 
@@ -84,11 +85,22 @@ void ThemeManager::prepareTheme(QFile *file)
 					fi.absoluteDir().absolutePath().toLatin1());
 
 	QRegExp re(iconsExpression);
+	re.setMinimal(true);
+
 	if(re.indexIn(content) != -1) {
 		iconPath_ = re.cap(1);
 	}
 	else {
 		iconPath_.clear();
+	}
+
+	re.setPattern(borderExpression);
+	if(re.indexIn(content) != -1) {
+		const QString u = re.cap(1);
+		useBorder_ = u.compare(QStringLiteral("0")) != 0;
+	}
+	else {
+		useBorder_ = true;
 	}
 
 	qApp->setStyleSheet(content);
@@ -130,8 +142,14 @@ QString ThemeManager::getIconFromTheme(const QString &file) const
 	return file;
 }
 
+bool ThemeManager::isWindowBorderEnabled() const
+{
+	return useBorder_;
+}
+
 ThemeManager::ThemeManager() :
-	QObject(qApp)
+	QObject(qApp),
+	useBorder_(true)
 {
 	loadExternResources();
 	loadThemes();

@@ -126,7 +126,11 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	updateShortcuts();
 	updateIcons();
 
-	mainWin_->setUseBorder(false);
+	mainWin_->setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
+	connect(ThemeManager::instance(), &ThemeManager::themeChanged, parentWin_, &QompMainWin::updateButtonIcons);
+	connect(ThemeManager::instance(), &ThemeManager::themeChanged, [this](){
+		mainWin_->setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
+	});
 
 	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());
 	ui->tb_shuffle->setChecked(Options::instance()->getOption(OPTION_SHUFFLE).toBool());

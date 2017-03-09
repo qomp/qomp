@@ -741,10 +741,6 @@ void QompCon::connectMainWin()
 #ifdef Q_OS_MAC
 	connect(CocoaTrayClick::instance(), SIGNAL(trayClicked()), mainWin_, SLOT(toggleVisibility()));
 #endif
-
-#ifndef QOMP_MOBILE
-	connect(ThemeManager::instance(), SIGNAL(themeChanged()), mainWin_, SLOT(updateButtonIcons()));
-#endif
 }
 
 void QompCon::disconnectMainWin()

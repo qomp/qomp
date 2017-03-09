@@ -38,24 +38,17 @@ public:
 
 	virtual ~AdvancedWidget();
 
-//	void setWindowIcon(const QIcon& icon);
-//	void setWindowTitle( const QString &c );
 	void setUseBorder(bool isDecorated);
 	bool isUseBorder();
 
 protected:
-//	void changeEvent(QEvent *event);
-//	void setWindowFlags(Qt::WindowFlags flags);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseEnterEvent(const int mouse_x, const int mouse_y, const QRect &geom);
-//	void moveEvent( QMoveEvent *e );
-//#ifdef Q_OS_WIN
-//	bool winEvent(MSG* msg, long* result);
-//#endif
-	void showEvent(QShowEvent *event);
 
+private:
+	void updateHeaderState();
 
 private:
 #ifdef Q_OS_WIN
@@ -65,7 +58,6 @@ private:
 	bool isResize;
 	bool isDrag;
 	bool border;
-	bool showed;
 	Qt::WindowFrameSection region;
 };
 

@@ -36,6 +36,7 @@ public:
 	void setTheme(const QString& theme);
 	QStringList availableThemes() const;
 	QString getIconFromTheme(const QString& file) const;
+	bool isWindowBorderEnabled() const;
 
 signals:
 	void themeChanged();
@@ -54,6 +55,7 @@ private:
 	QMap<QString,QString> themes_;
 	QString currentTheme_;
 	QString iconPath_;
+	bool useBorder_;
 };
 
 #endif // THEMEMANAGER_H

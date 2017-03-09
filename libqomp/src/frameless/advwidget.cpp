@@ -32,8 +32,7 @@
 template<class BaseClass>
 AdvancedWidget<BaseClass>::AdvancedWidget(QWidget *parent, Qt::WindowFlags f)
 	: BaseClass(parent, f),
-	  border(true),
-	  showed(false)
+	  border(true)
 {
 }
 
@@ -43,40 +42,14 @@ AdvancedWidget<BaseClass>::~AdvancedWidget()
 
 }
 
-//template<class BaseClass>
-//void AdvancedWidget<BaseClass>::setWindowIcon(const QIcon &icon)
-//{
-//#ifdef Q_OS_MAC
-//	Q_UNUSED(icon);
-//#else
-//	BaseClass::setWindowIcon(icon);
-//#endif
-//}
-
-//#ifdef Q_OS_WIN
-//template<class BaseClass>
-//bool AdvancedWidget<BaseClass>::winEvent(MSG *msg, long *result)
-//{
-//	return BaseClass::winEvent(msg, result);
-//}
-//#endif
-
-//template<class BaseClass>
-//void AdvancedWidget<BaseClass>::moveEvent(QMoveEvent *e)
-//{
-//	return BaseClass::moveEvent(e);
-//}
-
-//template<class BaseClass>
-//void AdvancedWidget<BaseClass>::setWindowTitle(const QString &c)
-//{
-//	BaseClass::setWindowTitle( c );
-//}
-
 template<class BaseClass>
 void AdvancedWidget<BaseClass>::setUseBorder(bool isDecorated)
 {
+	if(isDecorated == isUseBorder())
+		return;
+
 	Qt::WindowFlags flags = BaseClass::windowFlags();
+	bool visible = BaseClass::isVisible();
 #ifdef Q_OS_WIN
 	if (deltaflags == 0) {
 		deltaflags = flags;
@@ -109,6 +82,9 @@ void AdvancedWidget<BaseClass>::setUseBorder(bool isDecorated)
 	}
 #endif
 	border = isDecorated;
+
+	updateHeaderState();
+	BaseClass::setVisible(visible);
 }
 
 template<class BaseClass>
@@ -116,19 +92,6 @@ bool AdvancedWidget<BaseClass>::isUseBorder()
 {
 	return border;
 }
-
-//template<class BaseClass>
-//void AdvancedWidget<BaseClass>::changeEvent(QEvent *event)
-
-//{
-//	BaseClass::changeEvent(event);
-//}
-
-//template<class BaseClass>
-//void AdvancedWidget<BaseClass>::setWindowFlags(Qt::WindowFlags flags)
-//{
-//	BaseClass::setWindowFlags(flags);
-//}
 
 template<class BaseClass>
 void AdvancedWidget<BaseClass>::mousePressEvent(QMouseEvent *event)
@@ -311,25 +274,32 @@ void AdvancedWidget<BaseClass>::mouseEnterEvent(const int mouse_x, const int mou
 }
 
 template<class BaseClass>
-void AdvancedWidget<BaseClass>::showEvent(QShowEvent *event)
+void AdvancedWidget<BaseClass>::updateHeaderState()
 {
-	if(!showed) {
-		if(!isUseBorder()) {
-			QBoxLayout* bl = qobject_cast<QBoxLayout*>(BaseClass::layout());
-			if(!bl) {
-				QMainWindow* mw = qobject_cast<QMainWindow*>(this);
-				if (mw)
-					bl = qobject_cast<QBoxLayout*>(mw->centralWidget()->layout());
-			}
-
-			if(bl) {
-				bl->insertWidget(0, new WindowHeader(this));
-			}
-		}
-		showed = true;
+	QBoxLayout* bl = qobject_cast<QBoxLayout*>(BaseClass::layout());
+	if(!bl) {
+		QMainWindow* mw = qobject_cast<QMainWindow*>(this);
+		if (mw)
+			bl = qobject_cast<QBoxLayout*>(mw->centralWidget()->layout());
 	}
-	BaseClass::showEvent(event);
+
+	if(!bl) {
+		return;
+	}
+
+	if(isUseBorder()) {
+		WindowHeader *wh = qobject_cast<WindowHeader*>(bl->itemAt(0)->widget());
+		if (wh) {
+			bl->removeWidget(wh);
+			wh->deleteLater();
+		}
+
+	}
+	else {
+		bl->insertWidget(0, new WindowHeader(this));
+	}
 }
+
 
 // explicit instantiations
 // we will only be able to use AdvancedWidget with next types
