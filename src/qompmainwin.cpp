@@ -27,6 +27,7 @@
 #include "tune.h"
 #include "qompactionslist.h"
 #include "thememanager.h"
+#include "advwidget.h"
 
 #include "ui_qompmainwin.h"
 
@@ -91,7 +92,7 @@ public slots:
 
 public:
 	Ui::QompMainWin *ui;
-	QMainWindow*  mainWin_;
+	AdvancedWidget<QMainWindow>*  mainWin_;
 	QompTrayIcon* trayIcon_;
 	QompMainMenu* mainMenu_;
 	QompMainWin*  parentWin_;
@@ -107,7 +108,7 @@ public:
 QompMainWin::Private::Private(QompMainWin *p) :
 	QObject(p),
 	ui(new Ui::QompMainWin),
-	mainWin_(new QMainWindow),
+	mainWin_(new AdvancedWidget<QMainWindow>),
 	trayIcon_(new QompTrayIcon(p)),
 	mainMenu_(new QompMainMenu(mainWin_)),
 	parentWin_(p),
@@ -124,6 +125,8 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	setupPlaylist();
 	updateShortcuts();
 	updateIcons();
+
+	mainWin_->setUseBorder(false);
 
 	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());
 	ui->tb_shuffle->setChecked(Options::instance()->getOption(OPTION_SHUFFLE).toBool());

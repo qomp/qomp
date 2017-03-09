@@ -51,3 +51,4 @@ lupdate_only {
 
 include(plugins/plugins.pri)
 include(options/options.pri)
+include(frameless/frameless.pri)
