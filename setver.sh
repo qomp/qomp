@@ -53,16 +53,26 @@ do_libqomp()
 	for deffile in ${libqomp_defines}; do
 		if [ -f "${deffile}" ];then
 			echo -e "${blue}Patching file ${yellow}${deffile}${blue}...${nocolor}"
-			sed -e 's/_VERSION[[:space:]]\"\([0-9]\.\)\+[0-9][[:space:]]beta\"/_VERSION \"'${version}' beta\"/' -i ${deffile}
+			sed -e 's/_VERSION[[:space:]]\"\([0-9]\.\)\+[0-9]\"/_VERSION \"'${version}'\"/' -i ${deffile}
 		fi
 	done
+	libqomp_cmake_file=${qomp_path}/libqomp/CMakeLists.txt
+	if [ -f ${libqomp_cmake_file} ]; then
+		maj_ver=${version:0:1}
+		min_ver=${version:2:1}
+		patch_ver=${version:4:1}
+		echo -e "${blue}Patching file ${yellow}${libqomp_cmake_file}${blue}...${nocolor}"
+		sed -e 's/QOMP_LIB_VERSION_MAJOR[[:space:]][0-9]/QOMP_LIB_VERSION_MAJOR '${maj_ver}'/' -i ${libqomp_cmake_file}
+		sed -e 's/QOMP_LIB_VERSION_MINOR[[:space:]][0-9]/QOMP_LIB_VERSION_MINOR '${min_ver}'/' -i ${libqomp_cmake_file}
+		sed -e 's/QOMP_LIB_VERSION_PATCH[[:space:]][0-9]/QOMP_LIB_VERSION_PATCH '${patch_ver}'/' -i ${libqomp_cmake_file}
+	fi
 }
 
 do_macx()
 {
 	if [ -f "${macx_file}" ];then
 		echo -e "${blue}Patching file ${yellow}${macx_file}${blue}...${nocolor}"
-		sed -e 's/<string>qomp[[:space:]]\([0-9]\.\)\+[0-9][[:space:]]beta<\/string>/<string>qomp '${version}' beta<\/string>/' -i ${macx_file}
+		sed -e 's/<string>qomp[[:space:]]\([0-9]\.\)\+[0-9]<\/string>/<string>qomp '${version}'<\/string>/' -i ${macx_file}
 	fi
 }
 
@@ -70,7 +80,7 @@ do_android()
 {
 	if [ -f "${android_file}" ];then
 		echo -e "${blue}Patching file ${yellow}${android_file}${blue}...${nocolor}"
-		sed -e 's/android:versionName=\"\([0-9]\.\)\+[0-9][[:space:]]beta\"/android:versionName=\"'${version}' beta\"/' -i ${android_file}
+		sed -e 's/android:versionName=\"\([0-9]\.\)\+[0-9]\"/android:versionName=\"'${version}'\"/' -i ${android_file}
 		cd ${qomp_path}/android
 		old_ver=$(grep 'android:versionCode' *.xml | cut -d '"' -f 8 | cut -d " " -f 1)
 		let new_ver=10#$old_ver+1
