@@ -1,8 +1,8 @@
 set( PLUGIN lastfmplugin )
 cmake_minimum_required( VERSION 2.8.12 )
-if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
-	cmake_policy(SET CMP0028 OLD)
-endif()
+#if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
+#	cmake_policy(SET CMP0028 OLD)
+#endif()
 set( CMAKE_AUTOMOC ON )
 add_definitions( -DQT_PLUGIN )
 if( UNIX AND NOT (APPLE OR CYGWIN) )
@@ -26,7 +26,7 @@ set( lastfmplugin_UIS
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${PROJECT_BINARY_DIR}/libqomp/include
+	${PROJECT_BINARY_DIR}/include
 )
 
 find_package( Qt5 REQUIRED Widgets Network Xml)

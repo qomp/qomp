@@ -1,8 +1,6 @@
 set( QOMP_LIB libqomp )
 cmake_minimum_required( VERSION 2.8.12 )
-if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
-	cmake_policy(SET CMP0028 OLD)
-endif()
+
 set( CMAKE_AUTOMOC ON )
 add_definitions( -DLIBQOMP_LIBRARY )
 set( QOMP_LIB_VERSION_MAJOR 1 )
@@ -40,6 +38,14 @@ set( plugins_SRCS
 set( options_HDRS
 	src/options/qompoptionspage.h
 )
+set( frameless_HDRS
+	src/frameless/advwidget.h
+	src/frameless/windowheader.h
+)
+set( frameless_SRCS
+	src/frameless/advwidget.cpp
+	src/frameless/windowheader.cpp
+)
 set( libqomp_HDRS
 	src/options.h
 	src/pluginhost.h
@@ -53,6 +59,7 @@ set( libqomp_HDRS
 	src/tune.h
 	${plugins_HDRS}
 	${options_HDRS}
+	${frameless_HDRS}
 )
 
 set( libqomp_INCLUDE_HDRS
@@ -72,6 +79,7 @@ set( libqomp_INCLUDE_HDRS
 	src/qompmetadataresolver.h
 	src/options.h
 	src/defines.h
+	src/frameless/advwidget.h
 	src/plugins/qompplugingettunesdlg.h
 	src/plugins/qompplayerstatusplugin.h
 	src/plugins/qompplugintypes.h
@@ -98,13 +106,15 @@ set( libqomp_SRCS
 	src/tune.cpp
 	src/tuneurlchecker.cpp
 	${plugins_SRCS}
+	${frameless_SRCS}
 )
 set( libqomp_UIFILES
 	src/plugins/qompplugingettunesdlg.ui
+	src/frameless/windowheader.ui
 )
 find_package( TagLib REQUIRED )
 #copy include headers
-file( COPY ${libqomp_INCLUDE_HDRS} DESTINATION include )
+file( COPY ${libqomp_INCLUDE_HDRS} DESTINATION ${PROJECT_BINARY_DIR}/include )
 #
 if( LINUX )
 	if(DEV_MODE)
@@ -124,8 +134,9 @@ include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${TAGLIB_INCLUDE_DIR}
-	include
+	${PROJECT_BINARY_DIR}/include
 	src
+	src/frameless
 	src/plugins
 	src/options
 )
@@ -154,7 +165,7 @@ add_library(
 )
 set_target_properties(
 	${QOMP_LIB}
-	PROPERTIES 
+	PROPERTIES
 	OUTPUT_NAME qomp
 	CLEAN_DIRECT_OUTPUT 1
 	VERSION
@@ -184,6 +195,5 @@ if( WIN32 )
 		DESTINATION
 		${CMAKE_INSTALL_PREFIX}
 		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}
-		#ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}
 	)
 endif()
