@@ -113,7 +113,7 @@ void WindowHeader::mousePressEvent(QMouseEvent *e)
 		if (inVRect || inLDRect || inRDRect) {
 			isResize = true;
 		}
-		else{
+		else {
 			movepath = e->pos();
 			isResize = false;
 		}

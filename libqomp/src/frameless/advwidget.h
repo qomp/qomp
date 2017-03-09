@@ -42,24 +42,24 @@ public:
 	bool isUseBorder();
 
 protected:
-	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseEnterEvent(const int mouse_x, const int mouse_y, const QRect &geom);
+	virtual void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+	virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+	virtual void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private:
 	void updateHeaderState();
+	void updateCursor(Qt::WindowFrameSection region, QWidget* window);
+	void doWindowResize(QWidget* window, const QPoint& eventPos, Qt::WindowFrameSection region);
+	Qt::WindowFrameSection getMouseRegion(const int mouse_x, const int mouse_y, const QRect &geom) const;
 
 private:
 #ifdef Q_OS_WIN
-	Qt::WindowFlags deltaflags;
+	Qt::WindowFlags _deltaFlags;
 #endif
-	QPoint movepath;
-	bool isResize;
-	bool isDrag;
-	bool border;
-	Qt::WindowFrameSection region;
+	QPoint _movePath;
+	bool _isResize;
+	bool _isDrag;
+	bool _border;
 };
-
 
 #endif

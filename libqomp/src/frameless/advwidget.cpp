@@ -29,17 +29,19 @@
 #include <QDialog>
 
 
+static const int resizeAccuracy = 5;
+
+
 template<class BaseClass>
 AdvancedWidget<BaseClass>::AdvancedWidget(QWidget *parent, Qt::WindowFlags f)
 	: BaseClass(parent, f),
-	  border(true)
+	  _border(true)
 {
 }
 
 template<class BaseClass>
 AdvancedWidget<BaseClass>::~AdvancedWidget()
 {
-
 }
 
 template<class BaseClass>
@@ -51,14 +53,14 @@ void AdvancedWidget<BaseClass>::setUseBorder(bool isDecorated)
 	Qt::WindowFlags flags = BaseClass::windowFlags();
 	bool visible = BaseClass::isVisible();
 #ifdef Q_OS_WIN
-	if (deltaflags == 0) {
-		deltaflags = flags;
+	if (_deltaFlags == 0) {
+		_deltaFlags = flags;
 	}
 	if (isDecorated) {
-		if (flags != deltaflags) {
+		if (flags != _deltaFlags) {
 			flags |= Qt::WindowTitleHint;
 			flags &= ~Qt::FramelessWindowHint;
-			deltaflags = 0;
+			_deltaFlags = 0;
 			if (flags != BaseClass::windowFlags()) {
 				BaseClass::setWindowFlags(flags);
 			}
@@ -81,7 +83,7 @@ void AdvancedWidget<BaseClass>::setUseBorder(bool isDecorated)
 		BaseClass::setWindowFlags(flags);
 	}
 #endif
-	border = isDecorated;
+	_border = isDecorated;
 
 	updateHeaderState();
 	BaseClass::setVisible(visible);
@@ -90,187 +92,125 @@ void AdvancedWidget<BaseClass>::setUseBorder(bool isDecorated)
 template<class BaseClass>
 bool AdvancedWidget<BaseClass>::isUseBorder()
 {
-	return border;
+	return _border;
 }
 
 template<class BaseClass>
 void AdvancedWidget<BaseClass>::mousePressEvent(QMouseEvent *event)
 {
-	QWidget *window = BaseClass::window();
-	if (!border && (event->button()==Qt::LeftButton)) {
-		mouseEnterEvent(event->globalPos().x(), event->globalPos().y(), window->geometry());
+	if (!_border && (event->button()==Qt::LeftButton)) {
+		QWidget *window = BaseClass::window();
+
+		Qt::WindowFrameSection region = getMouseRegion(event->globalPos().x(), event->globalPos().y(), window->geometry());
 		if (region != Qt::NoSection) {
-			isResize = true;
+			_isResize = true;
 		}
-		else{
-			movepath = event->globalPos() - window->pos();
-			isResize = false;
+		else {
+			_movePath = event->globalPos() - window->pos();
+			_isResize = false;
 		}
-		isDrag = true;
-		BaseClass::mousePressEvent(event);
+		_isDrag = true;
 	}
+
+	BaseClass::mousePressEvent(event);
 }
 
 template<class BaseClass>
 void AdvancedWidget<BaseClass>::mouseMoveEvent(QMouseEvent *event)
 {
-	bool isLeftButton = (event->buttons() & Qt::LeftButton);
-	const QPoint pg = event->globalPos();
-	QWidget *window = BaseClass::window();
-	int ypath = 0;
-	int xpath = 0;
-	const int right = window->geometry().right();
-	const int left =  window->geometry().left();
-	const int top =  window->geometry().top();
-	const int bottom = window->geometry().bottom();
-	if (isLeftButton && isResize && !border) {
-		switch (region) {
-		case Qt::BottomLeftSection:
-			window->setCursor(QCursor(Qt::SizeBDiagCursor));
-			ypath =  pg.y() - bottom;
-			xpath = left - pg.x();
-			if ((window->width() + xpath) < window->minimumWidth()) {
-				xpath = window->minimumWidth() - window->width();
-			}
-			window->setGeometry(window->x() - xpath, window->y(),
-					    window->width() + xpath, window->height() + ypath);
-			break;
-		case Qt::BottomRightSection:
-			window->setCursor(QCursor(Qt::SizeFDiagCursor));
-			ypath = pg.y() - bottom;
-			xpath = pg.x() - right;
-			window->resize(window->width() + xpath, window->height() + ypath);
-			break;
-		case Qt::TopLeftSection:
-			window->setCursor(QCursor(Qt::SizeFDiagCursor));
-			ypath =  top - pg.y();
-			xpath = left - pg.x();
-			if ((window->width() + xpath) < window->minimumWidth()) {
-				xpath = window->minimumWidth() - window->width();
-			}
-			if ((window->height() + ypath) < window->minimumHeight()) {
-				ypath = window->minimumHeight() - window->height();
-			}
-			window->setGeometry(window->x() - xpath, window->y() - ypath,
-					    window->width() + xpath, window->height() + ypath);
-			break;
-		case Qt::TopRightSection:
-			window->setCursor(QCursor(Qt::SizeBDiagCursor));
-			ypath =  top - pg.y();
-			xpath = pg.x() - right;
-			if ((window->width() + xpath) < window->minimumWidth()) {
-				xpath = window->minimumWidth() - window->width();
-			}
-			if ((window->height() + ypath) < window->minimumHeight()) {
-				ypath = window->minimumHeight() - window->height();
-			}
-			window->setGeometry(window->x(), window->y() - ypath,
-					    window->width() + xpath, window->height() + ypath);
-			break;
-		case Qt::BottomSection:
-			window->setCursor(QCursor(Qt::SizeVerCursor));
-			ypath =  pg.y() - bottom;
-			window->resize(window->width(), window->height() + ypath);
-			break;
-		case Qt::RightSection:
-			window->setCursor(QCursor(Qt::SizeHorCursor));
-			xpath =  pg.x() - right;
-			window->resize(window->width() + xpath, window->height());
-			break;
-		case Qt::LeftSection:
-			window->setCursor(QCursor(Qt::SizeHorCursor));
-			xpath =  left - pg.x();
-			if ((window->width() + xpath) < window->minimumWidth()) {
-				xpath = window->minimumWidth() - window->width();
-			}
-			window->setGeometry(window->x() - xpath, window->y(),
-					    window->width() + xpath, window->height());
-			break;
-		case Qt::TopSection:
-			window->setCursor(QCursor(Qt::SizeVerCursor));
-			ypath =  top - pg.y();
-			if ((window->height() + ypath) < window->minimumHeight()) {
-				ypath = window->minimumHeight() - window->height();
-			}
-			window->setGeometry(window->x(), window->y() - ypath,
-					    window->width(), window->height() + ypath);
-			break;
-		case Qt::NoSection:
-		default:
-			break;
+	if(!isUseBorder()) {
+		bool isLeftButton = (event->buttons() & Qt::LeftButton);
+		const QPoint pg = event->globalPos();
+		QWidget *window = BaseClass::window();
+
+		Qt::WindowFrameSection region = getMouseRegion(pg.x(), pg.y(), window->geometry());
+
+		updateCursor(region, window);
+
+		if (isLeftButton && _isResize) {
+			doWindowResize(window, pg, region);
+		}
+		else if(isLeftButton && _isDrag && !_isResize) {
+			window->setCursor(QCursor(Qt::SizeAllCursor));
+			window->move(pg - _movePath );
 		}
 	}
-	else if(isLeftButton && isDrag && !isResize && !border) {
-		window->setCursor(QCursor(Qt::ArrowCursor));
-		window->move( event->globalPos() - movepath );
-	}
+
 	BaseClass::mouseMoveEvent(event);
 }
 
 template<class BaseClass>
 void AdvancedWidget<BaseClass>::mouseReleaseEvent(QMouseEvent *event)
 {
-	QWidget *window = BaseClass::window();
-	if (!border && (event->button() == Qt::LeftButton) && isDrag) {
-		movepath = QPoint(0,0);
-		isDrag = false;
-		isResize = false;
+	if (!_border && (event->button() == Qt::LeftButton) && _isDrag) {
+		QWidget *window = BaseClass::window();
+
+		_movePath = QPoint(0,0);
+		_isDrag = false;
+		_isResize = false;
 		window->setCursor(QCursor(Qt::ArrowCursor));
-		BaseClass::mouseReleaseEvent(event);
 	}
+
+	BaseClass::mouseReleaseEvent(event);
 }
 
 template<class BaseClass>
-void AdvancedWidget<BaseClass>::mouseEnterEvent(const int mouse_x, const int mouse_y, const QRect &geom)
+Qt::WindowFrameSection AdvancedWidget<BaseClass>::getMouseRegion(const int mouse_x, const int mouse_y, const QRect &geom) const
 {
 	const int top = geom.top();
 	const int bottom = geom.bottom();
 	const int left = geom.left();
 	const int right = geom.right();
-	const int delta = 10;
-	const int maxtop = top + delta;
-	const int minbottom = bottom -delta;
+	const int maxtop = top + resizeAccuracy;
+	const int minbottom = bottom -resizeAccuracy;
+
 	if(mouse_y <= bottom
 			&& mouse_y >= minbottom
-			&& qAbs(mouse_x - left) < delta) {
-		region = Qt::BottomLeftSection;
+			&& qAbs(mouse_x - left) < resizeAccuracy)
+	{
+		return Qt::BottomLeftSection;
 	}
-	else if (mouse_x > (left + delta)
-		 && mouse_x < (right - delta)
-		 && qAbs(mouse_y - bottom) < delta) {
-		region = Qt::BottomSection;
+	else if (mouse_x > (left + resizeAccuracy)
+		 && mouse_x < (right - resizeAccuracy)
+		 && qAbs(mouse_y - bottom) < resizeAccuracy)
+	{
+		return Qt::BottomSection;
 	}
-	else if ((bottom - mouse_y) < delta
-		     && qAbs(mouse_x - right) < delta){
-		region = Qt::BottomRightSection;
+	else if ((bottom - mouse_y) < resizeAccuracy
+		     && qAbs(mouse_x - right) < resizeAccuracy)
+	{
+		return Qt::BottomRightSection;
 	}
-	else if ((right - mouse_x) < delta
+	else if ((right - mouse_x) < resizeAccuracy
 		 &&  mouse_y > maxtop
-		 && mouse_y < minbottom) {
-		region = Qt::RightSection;
+		 && mouse_y < minbottom)
+	{
+		return Qt::RightSection;
 	}
-	else if ((mouse_x - left) < delta
+	else if ((mouse_x - left) < resizeAccuracy
 		 &&  mouse_y > maxtop
-		 && mouse_y < minbottom) {
-		region = Qt::LeftSection;
+		 && mouse_y < minbottom)
+	{
+		return Qt::LeftSection;
 	}
-	else if ((mouse_y - top) < delta
-		 && mouse_x > (left + delta)
-		 && mouse_x < (right -delta)){
-		region = Qt::TopSection;
+	else if ((mouse_y - top) < resizeAccuracy
+		 && mouse_x > (left + resizeAccuracy)
+		 && mouse_x < (right -resizeAccuracy))
+	{
+		return Qt::TopSection;
 	}
-	else if ((top - mouse_y) < delta
-		 && qAbs(mouse_x - right) < delta){
+	else if ((top - mouse_y) < resizeAccuracy
+		 && qAbs(mouse_x - right) < resizeAccuracy)
+	{
+		return Qt::TopRightSection;
+	}
+	else if ((top - mouse_y) < resizeAccuracy
+		 && qAbs(mouse_x - left) < resizeAccuracy)
+	{
+		return Qt::TopLeftSection;
+	}
 
-		region = Qt::TopRightSection;
-	}
-	else if ((top - mouse_y) < delta
-		 && qAbs(mouse_x - left) < delta){
-		region = Qt::TopLeftSection;
-	}
-	else {
-		region = Qt::NoSection;
-	}
+	return Qt::NoSection;
 }
 
 template<class BaseClass>
@@ -294,9 +234,130 @@ void AdvancedWidget<BaseClass>::updateHeaderState()
 			wh->deleteLater();
 		}
 
+		bl->parentWidget()->setMouseTracking(false);
+		BaseClass::setMouseTracking(false);
+
 	}
 	else {
 		bl->insertWidget(0, new WindowHeader(this));
+
+		bl->parentWidget()->setMouseTracking(true);
+		BaseClass::setMouseTracking(true);
+	}
+}
+
+template<class BaseClass>
+void AdvancedWidget<BaseClass>::updateCursor(Qt::WindowFrameSection region, QWidget *window)
+{
+	switch (region) {
+	case Qt::BottomLeftSection:
+		window->setCursor(QCursor(Qt::SizeBDiagCursor));
+		break;
+	case Qt::BottomRightSection:
+		window->setCursor(QCursor(Qt::SizeFDiagCursor));
+		break;
+	case Qt::TopLeftSection:
+		window->setCursor(QCursor(Qt::SizeFDiagCursor));
+		break;
+	case Qt::TopRightSection:
+		window->setCursor(QCursor(Qt::SizeBDiagCursor));
+		break;
+	case Qt::BottomSection:
+		window->setCursor(QCursor(Qt::SizeVerCursor));
+		break;
+	case Qt::RightSection:
+		window->setCursor(QCursor(Qt::SizeHorCursor));
+		break;
+	case Qt::LeftSection:
+		window->setCursor(QCursor(Qt::SizeHorCursor));
+		break;
+	case Qt::TopSection:
+		window->setCursor(QCursor(Qt::SizeVerCursor));
+		break;
+	case Qt::NoSection:
+	default:
+		window->setCursor(QCursor(Qt::ArrowCursor));
+		break;
+	}
+}
+
+template<class BaseClass>
+void AdvancedWidget<BaseClass>::doWindowResize(QWidget *window, const QPoint &eventPos, Qt::WindowFrameSection region)
+{
+	int ypath = 0;
+	int xpath = 0;
+	const QRect winGeom = window->geometry();
+	const int right = winGeom.right();
+	const int left =  winGeom.left();
+	const int top =  winGeom.top();
+	const int bottom = winGeom.bottom();
+
+	switch (region) {
+	case Qt::BottomLeftSection:
+		ypath =  eventPos.y() - bottom;
+		xpath = left - eventPos.x();
+		if ((window->width() + xpath) < window->minimumWidth()) {
+			xpath = window->minimumWidth() - window->width();
+		}
+		window->setGeometry(window->x() - xpath, window->y(),
+				    window->width() + xpath, window->height() + ypath);
+		break;
+	case Qt::BottomRightSection:
+		ypath = eventPos.y() - bottom;
+		xpath = eventPos.x() - right;
+		window->resize(window->width() + xpath, window->height() + ypath);
+		break;
+	case Qt::TopLeftSection:
+		ypath =  top - eventPos.y();
+		xpath = left - eventPos.x();
+		if ((window->width() + xpath) < window->minimumWidth()) {
+			xpath = window->minimumWidth() - window->width();
+		}
+		if ((window->height() + ypath) < window->minimumHeight()) {
+			ypath = window->minimumHeight() - window->height();
+		}
+		window->setGeometry(window->x() - xpath, window->y() - ypath,
+				    window->width() + xpath, window->height() + ypath);
+		break;
+	case Qt::TopRightSection:
+		ypath =  top - eventPos.y();
+		xpath = eventPos.x() - right;
+		if ((window->width() + xpath) < window->minimumWidth()) {
+			xpath = window->minimumWidth() - window->width();
+		}
+		if ((window->height() + ypath) < window->minimumHeight()) {
+			ypath = window->minimumHeight() - window->height();
+		}
+		window->setGeometry(window->x(), window->y() - ypath,
+				    window->width() + xpath, window->height() + ypath);
+		break;
+	case Qt::BottomSection:
+		ypath =  eventPos.y() - bottom;
+		window->resize(window->width(), window->height() + ypath);
+		break;
+	case Qt::RightSection:
+		xpath =  eventPos.x() - right;
+		window->resize(window->width() + xpath, window->height());
+		break;
+	case Qt::LeftSection:
+		xpath =  left - eventPos.x();
+		if ((window->width() + xpath) < window->minimumWidth()) {
+			xpath = window->minimumWidth() - window->width();
+		}
+		window->setGeometry(window->x() - xpath, window->y(),
+				    window->width() + xpath, window->height());
+		break;
+	case Qt::TopSection:
+		ypath =  top - eventPos.y();
+		if ((window->height() + ypath) < window->minimumHeight()) {
+			ypath = window->minimumHeight() - window->height();
+		}
+		window->setGeometry(window->x(), window->y() - ypath,
+				    window->width(), window->height() + ypath);
+		break;
+	case Qt::NoSection:
+	default:
+		break;
 	}
 }
 
