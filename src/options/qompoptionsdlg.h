@@ -40,7 +40,6 @@ private slots:
 
 private:
 	void addPluginPage(const QString& name);
-
 	
 private:
 	class Private;

@@ -21,6 +21,7 @@
 #define QOMP_H
 
 #include <QModelIndex>
+#include <QPointer>
 
 #include "common.h"
 #include "qompinstancewatcher.h"
@@ -30,6 +31,7 @@ class QompPlayListModel;
 class QompPlayer;
 class Tune;
 class QompCommandLine;
+class QompOptionsDlg;
 
 
 class QompCon : public QObject
@@ -114,6 +116,7 @@ private:
 	QompPlayListModel* model_;
 	QompPlayer* player_;
 	QompCommandLine* commandLine_;
+	QPointer<QompOptionsDlg> optionsDlg_;
 #ifndef QOMP_MOBILE
 	QompInstanceWatcher watcher_;
 #endif

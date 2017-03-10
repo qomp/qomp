@@ -633,8 +633,12 @@ void QompCon::actRemoveSelected(const QModelIndexList &list)
 
 void QompCon::actDoSettings()
 {
-	QompOptionsDlg dlg(player_);
-	dlg.exec();
+	if(optionsDlg_)
+		return;
+
+	optionsDlg_ = new QompOptionsDlg(player_);
+	optionsDlg_->exec();
+	optionsDlg_->deleteLater();
 }
 
 void QompCon::actCheckForUpdates()

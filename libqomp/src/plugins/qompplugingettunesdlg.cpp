@@ -64,7 +64,7 @@ public:
 QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	QObject(p),
 	ui(new Ui::QompPluginGettunesDlg),
-	dialog_(new AdvancedWidget<QDialog>),
+	dialog_(new AdvancedWidget<QDialog>(nullptr,  Qt::Dialog | Qt::WindowCloseButtonHint)),
 	suggestionsMenu_(new QMenu(dialog_)),
 	sugTimer_(new QTimer(this)),
 	mainDlg_(p),
