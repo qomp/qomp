@@ -146,17 +146,32 @@ list(APPEND FILE_LIST
 	libcue.dll
 )
 
-macro(find_lib)
-	set(LIBLIST ${ARGN})
-		set( inc 1 )
-		foreach(_liba ${LIBLIST})
-			find_file( ${_liba}${inc} ${_liba} )
-			if( NOT "${${_liba}${inc}}" STREQUAL "${_liba}${inc}-NOTFOUND" )
-				copy("${${_liba}${inc}}" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
+set(ZLIB_ROOT "c:/build/zlib/" CACHE PATH "Path to zlib root dir")
+set(OPENSSL_ROOT "c:/build/openssl/" CACHE PATH "Path to zlib root dir")
+
+set(LIB_PATHES
+	"${TAGLIB_ROOT}/bin"
+	"${LIBCUE_ROOT}/bin"
+	"${ZLIB_ROOT}/bin"
+	"${OPENSSL_ROOT}/bin"
+)
+
+function(find_lib LIBLIST PATHES)
+	set(FIXED_PATHES "")
+	foreach(_path ${PATHES})
+		string(REGEX REPLACE "[\\]" "/" tmp_path "${_path}")
+		list(APPEND FIXED_PATHES ${tmp_path})
+	endforeach()
+	set( inc 1 )
+	foreach(_liba ${LIBLIST})
+		find_file( ${_liba}${inc} ${_liba} PATHS ${FIXED_PATHES})
+		if( NOT "${${_liba}${inc}}" STREQUAL "${_liba}${inc}-NOTFOUND" )
+			message("Library found at ${${_liba}${inc}}")
+			copy("${${_liba}${inc}}" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
 		endif()
 		math( EXPR inc ${inc}+1)
 	endforeach()
-endmacro()
+endfunction()
 
 find_lib(${FILE_LIST})
 
