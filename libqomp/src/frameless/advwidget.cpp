@@ -20,7 +20,8 @@
 
 
 #include "advwidget.h"
-#include <windowheader.h>
+#include "windowheader.h"
+#include "thememanager.h"
 
 #include <QMouseEvent>
 #include <QWidget>
@@ -38,6 +39,10 @@ AdvancedWidget<BaseClass>::AdvancedWidget(QWidget *parent, Qt::WindowFlags f)
 	  _action(WinAction::None),
 	  _border(true)
 {
+	QObject::connect(ThemeManager::instance(), &ThemeManager::themeChanged, [this](){
+		setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
+	});
+
 	QObject::connect(this, &BaseClass::windowTitleChanged, [this](const QString& title){
 		setCaption(title);
 	});

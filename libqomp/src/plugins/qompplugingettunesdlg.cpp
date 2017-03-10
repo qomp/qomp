@@ -23,6 +23,7 @@
 #include "options.h"
 #include "tune.h"
 #include "thememanager.h"
+#include "advwidget.h"
 
 #include "ui_qompplugingettunesdlg.h"
 
@@ -53,7 +54,7 @@ protected:
 
 public:
 	Ui::QompPluginGettunesDlg *ui;
-	QDialog* dialog_;
+	AdvancedWidget<QDialog>* dialog_;
 	QMenu *suggestionsMenu_;
 	QTimer* sugTimer_;
 	QompPluginGettunesDlg* mainDlg_;
@@ -63,13 +64,15 @@ public:
 QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	QObject(p),
 	ui(new Ui::QompPluginGettunesDlg),
-	dialog_(new QDialog),
+	dialog_(new AdvancedWidget<QDialog>),
 	suggestionsMenu_(new QMenu(dialog_)),
 	sugTimer_(new QTimer(this)),
 	mainDlg_(p),
 	waitForSuggestions_(false)
 {
 	ui->setupUi(dialog_);
+	dialog_->setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
+
 	QStringList searchHistory = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
 
 	ui->cb_search->addItems(searchHistory);
