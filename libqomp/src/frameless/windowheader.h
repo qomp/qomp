@@ -36,6 +36,8 @@ public:
 	WindowHeader(QWidget* p);
 	~WindowHeader();
 
+	void setCaption(const QString& caption);
+
 private slots:
 	void hidePressed();
 	void closePressed();

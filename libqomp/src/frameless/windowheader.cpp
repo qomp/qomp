@@ -26,12 +26,10 @@
 WindowHeader::WindowHeader(QWidget *p)
 	: QWidget(p)
 {
-	_ui.setupUi(this);
 #ifdef Q_OS_MAC
-	ui_.horiz->insertWidget(0, ui_.closeButton);
-	ui_.horiz->insertWidget(1, ui_.hideButton);
-	ui_.horiz->insertWidget(2, ui_.maximizeButton);
+	setLayoutDirection(Qt::RightToLeft);
 #endif
+	_ui.setupUi(this);
 
 	_ui.closeButton->setIcon(qApp->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
 	_ui.hideButton->setIcon(qApp->style()->standardIcon(QStyle::SP_TitleBarMinButton));
@@ -48,6 +46,11 @@ WindowHeader::WindowHeader(QWidget *p)
 
 WindowHeader::~WindowHeader()
 {
+}
+
+void WindowHeader::setCaption(const QString &caption)
+{
+	_ui.lblCaption->setText(caption);
 }
 
 void WindowHeader::hidePressed()

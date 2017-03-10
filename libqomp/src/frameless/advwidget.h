@@ -28,6 +28,8 @@ class QShowEvent;
 class QMouseEvent;
 class QRect;
 class QWidget;
+class QBoxLayout;
+class WindowHeader;
 
 
 template <class BaseClass>
@@ -39,7 +41,7 @@ public:
 	virtual ~AdvancedWidget();
 
 	void setUseBorder(bool isDecorated);
-	bool isUseBorder();
+	bool isUseBorder() const;
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
@@ -53,6 +55,9 @@ private:
 	void updateCursor(Qt::WindowFrameSection region, QWidget* window);
 	void doWindowResize(QWidget* window, const QPoint& eventPos, Qt::WindowFrameSection region);
 	Qt::WindowFrameSection getMouseRegion(const int mouse_x, const int mouse_y, const QRect &geom) const;
+	QBoxLayout* getMainLayout() const;
+	WindowHeader* getWindowHeader() const;
+	void setCaption(const QString& title);
 
 private:
 #ifdef Q_OS_WIN

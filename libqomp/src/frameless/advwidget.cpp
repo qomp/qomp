@@ -38,6 +38,9 @@ AdvancedWidget<BaseClass>::AdvancedWidget(QWidget *parent, Qt::WindowFlags f)
 	  _action(WinAction::None),
 	  _border(true)
 {
+	QObject::connect(this, &BaseClass::windowTitleChanged, [this](const QString& title){
+		setCaption(title);
+	});
 }
 
 template<class BaseClass>
@@ -91,9 +94,18 @@ void AdvancedWidget<BaseClass>::setUseBorder(bool isDecorated)
 }
 
 template<class BaseClass>
-bool AdvancedWidget<BaseClass>::isUseBorder()
+bool AdvancedWidget<BaseClass>::isUseBorder() const
 {
 	return _border;
+}
+
+template<class BaseClass>
+void AdvancedWidget<BaseClass>::setCaption(const QString &title)
+{
+	WindowHeader *wh = getWindowHeader();
+	if (wh) {
+		wh->setCaption(title);
+	}
 }
 
 template<class BaseClass>
@@ -213,21 +225,43 @@ Qt::WindowFrameSection AdvancedWidget<BaseClass>::getMouseRegion(const int mouse
 }
 
 template<class BaseClass>
-void AdvancedWidget<BaseClass>::updateHeaderState()
+QBoxLayout *AdvancedWidget<BaseClass>::getMainLayout() const
 {
 	QBoxLayout* bl = qobject_cast<QBoxLayout*>(BaseClass::layout());
 	if(!bl) {
-		QMainWindow* mw = qobject_cast<QMainWindow*>(this);
+		const QMainWindow* mw = qobject_cast<const QMainWindow*>(this);
 		if (mw)
 			bl = qobject_cast<QBoxLayout*>(mw->centralWidget()->layout());
 	}
+
+	return bl;
+}
+
+template<class BaseClass>
+WindowHeader *AdvancedWidget<BaseClass>::getWindowHeader() const
+{
+	WindowHeader *wh = nullptr;
+	if(!isUseBorder()) {
+		QBoxLayout* bl = getMainLayout();
+
+		if(bl) {
+			wh = qobject_cast<WindowHeader*>(bl->itemAt(0)->widget());
+		}
+	}
+	return wh;
+}
+
+template<class BaseClass>
+void AdvancedWidget<BaseClass>::updateHeaderState()
+{
+	QBoxLayout* bl = getMainLayout();
 
 	if(!bl) {
 		return;
 	}
 
 	if(isUseBorder()) {
-		WindowHeader *wh = qobject_cast<WindowHeader*>(bl->itemAt(0)->widget());
+		WindowHeader *wh = getWindowHeader();
 		if (wh) {
 			bl->removeWidget(wh);
 			wh->deleteLater();
@@ -238,7 +272,9 @@ void AdvancedWidget<BaseClass>::updateHeaderState()
 
 	}
 	else {
-		bl->insertWidget(0, new WindowHeader(this));
+		WindowHeader* wh = new WindowHeader(this);
+		wh->setCaption(BaseClass::windowTitle());
+		bl->insertWidget(0, wh);
 
 		bl->parentWidget()->setMouseTracking(true);
 		BaseClass::setMouseTracking(true);
