@@ -246,13 +246,12 @@ template<class BaseClass>
 WindowHeader *AdvancedWidget<BaseClass>::getWindowHeader() const
 {
 	WindowHeader *wh = nullptr;
-	if(!isUseBorder()) {
-		QBoxLayout* bl = getMainLayout();
 
-		if(bl) {
-			wh = qobject_cast<WindowHeader*>(bl->itemAt(0)->widget());
-		}
+	QBoxLayout* bl = getMainLayout();
+	if(bl) {
+		wh = qobject_cast<WindowHeader*>(bl->itemAt(0)->widget());
 	}
+
 	return wh;
 }
 

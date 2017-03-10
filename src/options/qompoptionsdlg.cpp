@@ -38,7 +38,7 @@ public:
 	explicit Private(QompOptionsDlg* p) :
 		QObject(p),
 		parentDialog_(p),
-		dlg_(new QDialog),
+		dlg_(new QDialog(nullptr, Qt::Dialog | Qt::WindowCloseButtonHint)),
 		ui(new Ui::QompOptionsDlg)
 	{
 		ui->setupUi(dlg_);
