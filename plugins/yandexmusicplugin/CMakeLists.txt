@@ -35,7 +35,7 @@ set( QT_DEPLIBS
 	Qt5::Network
 )
 
-add_library( ${PLUGIN} SHARED ${yandexmusicplugin_SRCS} )
+add_library( ${PLUGIN} MODULE ${yandexmusicplugin_SRCS} )
 target_link_libraries(
 	${PLUGIN}
 	${QT_DEPLIBS}

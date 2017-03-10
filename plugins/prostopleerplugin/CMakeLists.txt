@@ -41,7 +41,7 @@ set( QT_DEPLIBS
 
 add_library(
 	${PLUGIN}
-	SHARED
+	MODULE
 	${prostopleerplugin_SRCS}
 	${UIS}
 )

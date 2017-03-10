@@ -34,7 +34,7 @@ if( LINUX )
 		)
 	add_library(
 		${PLUGIN}
-		SHARED
+		MODULE
 		${mprisplugin_SRCS}
 		)
 	target_link_libraries(

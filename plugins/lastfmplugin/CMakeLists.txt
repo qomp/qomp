@@ -38,7 +38,7 @@ set( QT_DEPLIBS
 	Qt5::Xml
 )
 
-add_library( ${PLUGIN} SHARED ${lastfmplugin_SRCS} ${UIS} )
+add_library( ${PLUGIN} MODULE ${lastfmplugin_SRCS} ${UIS} )
 target_link_libraries(
 	${PLUGIN}
 	${QT_DEPLIBS}

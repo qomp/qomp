@@ -40,7 +40,7 @@ set( QT_DEPLIBS
 )
 add_library(
 	${PLUGIN}
-	SHARED
+	MODULE
 	${filesystemplugin_SRCS}
 )
 target_link_libraries(

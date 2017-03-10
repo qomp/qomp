@@ -27,7 +27,7 @@ set( QT_DEPLIBS
 
 add_library(
 	${PLUGIN}
-	SHARED
+	MODULE
 	${urlplugin_SRCS}
 )
 target_link_libraries(

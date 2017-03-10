@@ -51,7 +51,7 @@ endif()
 
 add_library(
 	${PLUGIN}
-	SHARED
+	MODULE
 	${notificationsplugin_SRCS}
 	)
 target_link_libraries(

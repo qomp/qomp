@@ -37,7 +37,7 @@ set( QT_DEPLIBS
 
 add_library(
 	${PLUGIN}
-	SHARED
+	MODULE
 	${myzukaruplugin_SRCS}
 )
 target_link_libraries(

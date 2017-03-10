@@ -6,7 +6,6 @@ set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
 option( USE_QT5 "Use Qt5" ON ) #Was left for compatibility with build scripts
-option( INSTALL_DEPS "Install win32 qomp dependencies" OFF )
 option( DEV_MODE "Enable development mode" OFF )
 option( BUILD_THEMES "Build qomp themes" ON )
 set( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
@@ -20,9 +19,6 @@ endif()
 
 set( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
-if( DEV_MODE )
-	set(CMAKE_BUILD_TYPE Debug)
-endif()
 if( NOT CMAKE_BUILD_TYPE )
 	set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -156,6 +152,7 @@ if( DEV_MODE )
 	set( EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/${PROJECT_NAME}" )
 	file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
 	file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/translations")
+	file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/plugins")
 	set_property( SOURCE ${qomp_TRS} PROPERTY OUTPUT_LOCATION "${EXECUTABLE_OUTPUT_PATH}/translations" )
 	set( QOMP_DATADIR ${EXECUTABLE_OUTPUT_PATH} )
 endif()
@@ -201,6 +198,13 @@ if( WIN32 )
 	list(APPEND QT_DEPLIBS
 		Qt5::WinExtras
 	)
+endif()
+
+find_program(CCACHE_PATH ccache DOC "Path to ccache")
+if(CCACHE_PATH)
+	message(STATUS "Found ccache at ${CCACHE_PATH}")
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE_PATH})
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE_PATH})
 endif()
 
 add_executable(
@@ -259,7 +263,7 @@ add_dependencies( ${PROJECT_NAME} ${LIBQOMP_LIBRARY} )
 
 if( WIN32 )
 	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} )
-	if( INSTALL_DEPS )
+	if( DEV_MODE )
 		include( Win32Qt5Install_files )
 	endif()
 	set( TRS_PATH ${CMAKE_INSTALL_PREFIX}/translations )

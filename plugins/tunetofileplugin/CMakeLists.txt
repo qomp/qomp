@@ -34,7 +34,7 @@ set( QT_DEPLIBS
 
 add_library(
 	${PLUGIN}
-	SHARED
+	MODULE
 	${tunetofileplugin_SRCS}
 	${UIS}
 )
