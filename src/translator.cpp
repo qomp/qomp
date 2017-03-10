@@ -88,6 +88,7 @@ void Translator::retranslate(const QString& fileName)
 	if(!foundFile) {
 		qApp->removeTranslator(this);
 		qApp->removeTranslator(qtTrans_);
+		currentTrans_ = QString();
 	}
 }
 
