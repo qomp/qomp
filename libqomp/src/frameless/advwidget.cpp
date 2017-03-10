@@ -148,7 +148,7 @@ void AdvancedWidget<BaseClass>::mouseMoveEvent(QMouseEvent *event)
 		else if (isLeftButton && _action == WinAction::Resizing) {
 			doWindowResize(window, pg, _region);
 		}
-		else if(isLeftButton && _action == WinAction::Dragging) {
+		else if(isLeftButton && _action == WinAction::Dragging && !window->isMaximized()) {
 			window->setCursor(QCursor(Qt::SizeAllCursor));
 			window->move(pg - _movePath);
 		}
@@ -288,6 +288,11 @@ void AdvancedWidget<BaseClass>::updateHeaderState()
 template<class BaseClass>
 void AdvancedWidget<BaseClass>::updateCursor(Qt::WindowFrameSection region, QWidget *window)
 {
+	if(window->isMaximized()) {
+		window->setCursor(QCursor(Qt::ArrowCursor));
+		return;
+	}
+
 	switch (region) {
 	case Qt::BottomLeftSection:
 		window->setCursor(QCursor(Qt::SizeBDiagCursor));
@@ -323,6 +328,9 @@ void AdvancedWidget<BaseClass>::updateCursor(Qt::WindowFrameSection region, QWid
 template<class BaseClass>
 void AdvancedWidget<BaseClass>::doWindowResize(QWidget *window, const QPoint &eventPos, Qt::WindowFrameSection region)
 {
+	if(window->isMaximized())
+		return;
+
 	int ypath = 0;
 	int xpath = 0;
 	const QRect winGeom = window->geometry();
