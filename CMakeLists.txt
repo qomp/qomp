@@ -1,14 +1,11 @@
 project( qomp )
 cmake_minimum_required( VERSION 2.8.12 )
-if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
-	cmake_policy(SET CMP0028 OLD)
-endif()
+
 #common part
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
 option( USE_QT5 "Use Qt5" ON ) #Was left for compatibility with build scripts
-option( INSTALL_DEPS "Install win32 qomp dependencies" OFF )
 option( DEV_MODE "Enable development mode" OFF )
 option( BUILD_THEMES "Build qomp themes" ON )
 set( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
@@ -22,9 +19,6 @@ endif()
 
 set( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
-if( DEV_MODE )
-	set(CMAKE_BUILD_TYPE Debug)
-endif()
 if( NOT CMAKE_BUILD_TYPE )
 	set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -59,59 +53,56 @@ set( CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}" )
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${CMAKE_BINARY_DIR}/libqomp/include
+	${PROJECT_BINARY_DIR}/include
 	src/options
 	src
 	thirdparty/QHotkey
-	)
+)
 
 set( qomp_RSCS
 	src/${PROJECT_NAME}.qrc
 	src/themes.qrc
-	)
+)
 set( qomp_TRS
 	translations/translations/${PROJECT_NAME}_ru.ts
-	)
+)
 set( options_SRCS
 	src/options/qompoptionsdlg.cpp
 	src/options/qompoptionskeys.cpp
 	src/options/qompoptionsmain.cpp
 	src/options/qompoptionsplugins.cpp
-	)
+)
 set( options_UIS
 	src/options/qompoptionsdlg.ui
 	src/options/qompoptionskeys.ui
 	src/options/qompoptionsmain.ui
 	src/options/qompoptionsplugins.ui
-	)
+)
 set( singleapp_SRCS
 	src/singleapplication/singleapplication.cpp
-	)
+)
 set( hotkey_SRCS
 	thirdparty/QHotkey/qhotkey.cpp
-	)
+)
 if( WIN32 )
-	set( hotkey_SRCS
-		${hotkey_SRCS}
+	list(APPEND hotkey_SRCS
 		thirdparty/QHotkey/qhotkey_win.cpp
 	)
 endif()
 if( APPLE )
-	set( hotkey_SRCS
-		${hotkey_SRCS}
+	list(APPEND hotkey_SRCS
 		thirdparty/QHotkey/qhotkey_mac.cpp
 	)
 endif()
 if( LINUX )
-	set( hotkey_SRCS
-		${hotkey_SRCS}
+	list(APPEND hotkey_SRCS
 		thirdparty/QHotkey/qhotkey_x11.cpp
 	)
 endif()
 set( hotkey_HDRS
 	thirdparty/QHotkey/qhotkey.h
 	thirdparty/QHotkey/qhotkey_p.h
-	)
+)
 set( qomp_SRCS
 	src/main.cpp
 	src/qompmainwin.cpp
@@ -127,22 +118,22 @@ set( qomp_SRCS
 	src/updateschecker.cpp
 	src/qompplaylistview.cpp
 	src/qompmenu.cpp
+	src/qompqtmultimediaplayer.cpp
 	${options_SRCS}
 	${singleapp_SRCS}
 	${hotkey_SRCS}
 	${hotkey_HDRS}
-	)
+)
 if( WIN32 )
-	set( qomp_SRCS
-		${qomp_SRCS}
+	list(APPEND qomp_SRCS
 		src/qompthumbnailtoolbar.cpp
-		)
+	)
 endif()
 set( qomp_UIS
 	src/qompmainwin.ui
 	src/aboutdlg.ui
 	${options_UIS}
-	)
+)
 
 if( WIN32 )
 	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
@@ -161,6 +152,7 @@ if( DEV_MODE )
 	set( EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/${PROJECT_NAME}" )
 	file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
 	file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/translations")
+	file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/plugins")
 	set_property( SOURCE ${qomp_TRS} PROPERTY OUTPUT_LOCATION "${EXECUTABLE_OUTPUT_PATH}/translations" )
 	set( QOMP_DATADIR ${EXECUTABLE_OUTPUT_PATH} )
 endif()
@@ -184,46 +176,46 @@ else()
 endif()
 qt5_wrap_ui(main_UIS
 	${qomp_UIS}
-	)
+)
 add_definitions(
 	-DHAVE_QT5
 	-DHAVE_QTMULTIMEDIA
-	)
+)
 set(QT_DEPLIBS
 	Qt5::Widgets
 	Qt5::Network
 	Qt5::Multimedia
 	Qt5::Concurrent
-	)
-set(qomp_MMEDIA
-	src/qompqtmultimediaplayer.cpp
-	)
+)
 if( LINUX )
 	find_package(Qt5X11Extras REQUIRED)
-	set(QT_DEPLIBS
-		${QT_DEPLIBS}
+	list(APPEND QT_DEPLIBS
 		Qt5::X11Extras
-		)
+	)
 endif()
 if( WIN32 )
 	find_package(Qt5WinExtras REQUIRED)
-	set(QT_DEPLIBS
-		${QT_DEPLIBS}
+	list(APPEND QT_DEPLIBS
 		Qt5::WinExtras
-		)
+	)
+endif()
+
+find_program(CCACHE_PATH ccache DOC "Path to ccache")
+if(CCACHE_PATH)
+	message(STATUS "Found ccache at ${CCACHE_PATH}")
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE_PATH})
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE_PATH})
 endif()
 
 add_executable(
 	${PROJECT_NAME}
 	WIN32
 	${qomp_SRCS}
-	${qomp_phonon_SRCS}
-	${qomp_MMEDIA}
 	${main_UIS}
 	${RSCS}
 	${TRS}
 	${qomp_RC}
-	)
+)
 
 macro(create_themes _sources _output)
 	if(${Qt5Core_VERSION} VERSION_LESS 5.5.0)
@@ -245,7 +237,7 @@ if(BUILD_THEMES)
 		set(THEMES_EXISTS ON)
 		set( THEMES_QRC
 			${PROJECT_SOURCE_DIR}/themes/themes.qrc
-			)
+		)
 		if(DEV_MODE)
 			file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/themes")
 			set(THEMES_RCC "${EXECUTABLE_OUTPUT_PATH}/themes/themes.rcc")
@@ -259,21 +251,19 @@ if(BUILD_THEMES)
 endif()
 
 set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-#set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
 
 target_link_libraries(
 	${PROJECT_NAME}
 	${LIBQOMP_LIBRARY}
-	${phonon_LIB}
 	${QT_DEPLIBS}
 	${EXTRA_LIBS}
-	)
+)
 
 add_dependencies( ${PROJECT_NAME} ${LIBQOMP_LIBRARY} )
 
 if( WIN32 )
 	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} )
-	if( INSTALL_DEPS )
+	if( DEV_MODE )
 		include( Win32Qt5Install_files )
 	endif()
 	set( TRS_PATH ${CMAKE_INSTALL_PREFIX}/translations )

@@ -69,9 +69,5 @@ Usefull cmake flags:
 **set build qomp themes:
    -DBUILD_THEMES=ON
    set this flag to compile qomp themes
-   WARNING you need to copy/clone themes sources into qomp sources directory
-   For exmaple:
-     # cd ~/sources/qomp
-     # git clone https://github.com/qomp/themes.git
-   default value is OFF
+   default value is ON
   

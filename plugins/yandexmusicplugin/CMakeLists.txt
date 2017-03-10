@@ -1,8 +1,6 @@
 set( PLUGIN yandexmusicplugin )
 cmake_minimum_required( VERSION 2.8.12 )
-if( CMAKE_VERSION VERSION_GREATER 3.0.0 )
-	cmake_policy(SET CMP0028 OLD)
-endif()
+
 set( CMAKE_AUTOMOC ON )
 add_definitions( -DQT_PLUGIN )
 if( UNIX AND NOT (APPLE OR CYGWIN) )
@@ -23,7 +21,7 @@ set( yandexmusicplugin_SRCS
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${PROJECT_BINARY_DIR}/libqomp/include
+	${PROJECT_BINARY_DIR}/include
 )
 set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 
@@ -37,7 +35,7 @@ set( QT_DEPLIBS
 	Qt5::Network
 )
 
-add_library( ${PLUGIN} SHARED ${yandexmusicplugin_SRCS} )
+add_library( ${PLUGIN} MODULE ${yandexmusicplugin_SRCS} )
 target_link_libraries(
 	${PLUGIN}
 	${QT_DEPLIBS}
