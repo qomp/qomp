@@ -41,6 +41,12 @@ WindowHeader::WindowHeader(QWidget *p)
 	connect(_ui.closeButton, SIGNAL(clicked()), SLOT(closePressed()));
 	connect(_ui.maximizeButton, SIGNAL(clicked()), SLOT(maximizePressed()));
 
+	if(! (parentWidget()->window()->windowFlags() & Qt::WindowMaximizeButtonHint))
+		_ui.maximizeButton->hide();
+
+	if(! (parentWidget()->window()->windowFlags() & Qt::WindowMinimizeButtonHint))
+		_ui.hideButton->hide();
+
 	parentWidget()->window()->installEventFilter(this);
 }
 
@@ -76,9 +82,13 @@ void WindowHeader::maximizePressed()
 
 void WindowHeader::mouseDoubleClickEvent(QMouseEvent *e)
 {
-	if (e->button() == Qt::LeftButton) {
+	if (e->button() == Qt::LeftButton
+		&& (parentWidget()->window()->windowFlags() & Qt::WindowMaximizeButtonHint)) {
 		maximizePressed();
 		e->accept();
+	}
+	else {
+		QWidget::mouseDoubleClickEvent(e);
 	}
 }
 
