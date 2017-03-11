@@ -638,7 +638,6 @@ void QompCon::actDoSettings()
 
 	optionsDlg_ = new QompOptionsDlg(player_);
 	optionsDlg_->exec();
-	optionsDlg_->deleteLater();
 }
 
 void QompCon::actCheckForUpdates()

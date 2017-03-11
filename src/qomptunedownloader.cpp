@@ -47,7 +47,7 @@ public:
 		reply_(nullptr)
 	{
 #ifndef QOMP_MOBILE
-		dialog_ = new QProgressDialog();
+		dialog_ = new QProgressDialog(nullptr, Qt::Dialog | Qt::WindowCloseButtonHint);
 		dialog_->setWindowTitle(tr("Download Progress"));
 		dialog_->setRange(0, 100);
 		connect(dialog_, &QProgressDialog::canceled, this, &Private::abort);

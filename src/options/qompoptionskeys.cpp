@@ -34,7 +34,7 @@ class GrepShortcutKeyDialog : public QDialog
 	Q_OBJECT
 public:
 	GrepShortcutKeyDialog(QTreeWidgetItem *i, QWidget* p = 0):
-		QDialog(p),
+		QDialog(p, Qt::Dialog | Qt::WindowCloseButtonHint),
 		gotKey(false),
 		item_(i)
 	{

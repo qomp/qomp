@@ -23,6 +23,9 @@
 #include <QString>
 
 #include "libqomp_global.h"
+#ifndef QOMP_MOBILE
+#include <QMainWindow>
+#endif
 
 namespace TagLib {
 class String;
@@ -52,6 +55,7 @@ LIBQOMPSHARED_EXPORT QString safeDir(const QString& dir);
  * Forces the given widget to update, even if it's hidden.
  */
 LIBQOMPSHARED_EXPORT void forceUpdate(QWidget *widget);
+LIBQOMPSHARED_EXPORT QMainWindow* getMainWindow();
 #endif
 
 

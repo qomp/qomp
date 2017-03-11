@@ -23,7 +23,7 @@
 #include "defines.h"
 
 AboutDlg::AboutDlg(QWidget *p)
-	: QDialog(p)
+	: QDialog(p, Qt::Dialog | Qt::WindowCloseButtonHint)
 	, ui_(new Ui::AboutDlg)
 {
 	setAttribute(Qt::WA_DeleteOnClose);

@@ -31,6 +31,7 @@
 #else
 #include <QWidget>
 #include <QLayout>
+#include <QApplication>
 #endif
 
 #ifndef Q_OS_MAC
@@ -249,6 +250,17 @@ void forceUpdate(QWidget *widget)
 		invalidateLayout(widget->layout());
 	}
 }
+
+QMainWindow *getMainWindow()
+{
+	for(QWidget* w: qApp->topLevelWidgets()) {
+		QMainWindow *win = qobject_cast<QMainWindow*>(w);
+		if(win)
+			return win;
+	}
+	return nullptr;
+}
+
 #endif
 } //namespace Qomp
 

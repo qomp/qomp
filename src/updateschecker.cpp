@@ -69,7 +69,7 @@ public:
 
 		if(interactive_) {
 #ifndef QOMP_MOBILE
-			progressDialog_ = new QProgressDialog();
+			progressDialog_ = new QProgressDialog(nullptr, Qt::Dialog | Qt::WindowCloseButtonHint);
 			progressDialog_->setWindowTitle(APPLICATION_NAME);
 			progressDialog_->setWindowModality(Qt::ApplicationModal);
 			progressDialog_->show();

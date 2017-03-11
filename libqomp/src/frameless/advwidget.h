@@ -21,6 +21,7 @@
 #ifndef ADVWIDGET_H
 #define ADVWIDGET_H
 
+#include <QObject>
 #include <QPoint>
 #include "libqomp_global.h"
 
@@ -58,6 +59,7 @@ private:
 	QBoxLayout* getMainLayout() const;
 	WindowHeader* getWindowHeader() const;
 	void setCaption(const QString& title);
+	Q_SLOT void themeChanged();
 
 private:
 	QPoint _movePath;

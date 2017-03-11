@@ -39,9 +39,7 @@ AdvancedWidget<BaseClass>::AdvancedWidget(QWidget *parent, Qt::WindowFlags f)
 	  _action(WinAction::None),
 	  _border(true)
 {
-	QObject::connect(ThemeManager::instance(), &ThemeManager::themeChanged, [this](){
-		setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
-	});
+	QObject::connect(ThemeManager::instance(), &ThemeManager::themeChanged, this, &AdvancedWidget::themeChanged);
 
 	QObject::connect(this, &BaseClass::windowTitleChanged, [this](const QString& title){
 		setCaption(title);
@@ -78,8 +76,8 @@ void AdvancedWidget<BaseClass>::setUseBorder(bool useBorder)
 	BaseClass::setWindowFlags(flags);
 
 	_border = useBorder;
-
 	updateHeaderState();
+
 	BaseClass::setVisible(visible);
 }
 
@@ -96,6 +94,12 @@ void AdvancedWidget<BaseClass>::setCaption(const QString &title)
 	if (wh) {
 		wh->setCaption(title);
 	}
+}
+
+template<class BaseClass>
+void AdvancedWidget<BaseClass>::themeChanged()
+{
+	setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
 }
 
 template<class BaseClass>

@@ -24,6 +24,8 @@
 #include "options.h"
 #include "qompoptionsplugins.h"
 #include "qompoptionskeys.h"
+#include "advwidget.h"
+#include "thememanager.h"
 
 #include "ui_qompoptionsdlg.h"
 
@@ -38,10 +40,15 @@ public:
 	explicit Private(QompOptionsDlg* p) :
 		QObject(p),
 		parentDialog_(p),
-		dlg_(new QDialog(nullptr, Qt::Dialog | Qt::WindowCloseButtonHint)),
+		dlg_(new AdvancedWidget<QDialog>(nullptr, Qt::Dialog | Qt::WindowCloseButtonHint)),
 		ui(new Ui::QompOptionsDlg)
 	{
+		dlg_->setAttribute(Qt::WA_DeleteOnClose);
+		dlg_->setModal(true);
 		ui->setupUi(dlg_);
+		dlg_->setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
+
+		connect(dlg_, SIGNAL(destroyed(QObject*)), p, SLOT(deleteLater()));
 
 		QompOptionsMain* om = new QompOptionsMain(this);
 		QompOptionsPlugins* op = new QompOptionsPlugins(this);
@@ -137,7 +144,7 @@ private:
 
 public:
 	QompOptionsDlg* parentDialog_;
-	QDialog* dlg_;
+	AdvancedWidget<QDialog>* dlg_;
 	Ui::QompOptionsDlg *ui;
 	QList<QompOptionsPage*> pages_;
 };
@@ -155,12 +162,11 @@ QompOptionsDlg::QompOptionsDlg(QompPlayer *player, QObject *parent) :
 QompOptionsDlg::~QompOptionsDlg()
 {
 	delete d->ui;
-	delete d->dlg_;
 }
 
 void QompOptionsDlg::exec()
 {
-	d->dlg_->exec();
+	d->dlg_->show();
 }
 
 void QompOptionsDlg::applyOptions()

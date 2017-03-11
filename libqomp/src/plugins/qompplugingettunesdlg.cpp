@@ -32,6 +32,7 @@
 #include <QTimer>
 #include <QDialog>
 #include <QMessageBox>
+#include <QEventLoop>
 
 static const int sugTimerInterval = 500;
 
@@ -61,6 +62,8 @@ public:
 	bool waitForSuggestions_;
 };
 
+
+
 QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	QObject(p),
 	ui(new Ui::QompPluginGettunesDlg),
@@ -70,8 +73,12 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	mainDlg_(p),
 	waitForSuggestions_(false)
 {
+	dialog_->setAttribute(Qt::WA_DeleteOnClose);
+	dialog_->setModal(true);
 	ui->setupUi(dialog_);
 	dialog_->setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
+
+	connect(dialog_, SIGNAL(destroyed(QObject*)), p, SLOT(deleteLater()));
 
 	QStringList searchHistory = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
 
@@ -107,7 +114,6 @@ QompPluginGettunesDlg::Private::~Private()
 	}
 	Options::instance()->setOption(OPTION_SEARCH_HISTORY, searchHistory);
 	delete ui;
-	delete dialog_;
 }
 
 void QompPluginGettunesDlg::Private::suggestionActionTriggered(QAction *a)
@@ -123,8 +129,6 @@ void QompPluginGettunesDlg::Private::suggestionActionTriggered(QAction *a)
 		ui->cb_search->blockSignals(false);
 	}
 }
-
-
 
 void QompPluginGettunesDlg::Private::search()
 {
@@ -198,9 +202,6 @@ bool QompPluginGettunesDlg::Private::eventFilter(QObject *o, QEvent *e)
 
 
 
-
-
-
 QompPluginGettunesDlg::QompPluginGettunesDlg(QObject *parent) :
 	QObject(parent)
 
@@ -216,7 +217,13 @@ QompPluginGettunesDlg::~QompPluginGettunesDlg()
 
 QompPluginGettunesDlg::Result QompPluginGettunesDlg::go()
 {
-	if(d->dialog_->exec() == QDialog::Accepted)
+	//We can not use here QDialog::exec() because of when
+	//we use QDialog::setWindowFlags() exec call is interrupted.
+	QEventLoop l;
+	connect(d->dialog_, SIGNAL(finished(int)), &l, SLOT(quit()));
+	d->dialog_->show();
+	l.exec();
+	if(d->dialog_->result() == QDialog::Accepted)
 		return ResultOK;
 
 	return ResultCancel;
