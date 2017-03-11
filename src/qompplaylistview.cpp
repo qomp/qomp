@@ -57,6 +57,15 @@ void QompPlaylistView::dropEvent(QDropEvent *e)
 	}
 }
 
+void QompPlaylistView::mouseMoveEvent(QMouseEvent *event)
+{
+	//without this QListView accepts the event so it is not propogadet to paren widget
+	if(event->button() == Qt::NoButton)
+		event->ignore();
+	else
+		QListView::mouseMoveEvent(event);
+}
+
 QSize QompPlaylistView::minimumSizeHint() const
 {
 	QSize sz = QListView::minimumSizeHint();

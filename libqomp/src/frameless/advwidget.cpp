@@ -30,7 +30,7 @@
 #include <QDialog>
 
 
-static const int resizeAccuracy = 10;
+static const int resizeAccuracy = 5;
 
 
 template<class BaseClass>
@@ -54,45 +54,30 @@ AdvancedWidget<BaseClass>::~AdvancedWidget()
 }
 
 template<class BaseClass>
-void AdvancedWidget<BaseClass>::setUseBorder(bool isDecorated)
+void AdvancedWidget<BaseClass>::setUseBorder(bool useBorder)
 {
-	if(isDecorated == isUseBorder())
+	if(useBorder == isUseBorder())
 		return;
 
 	Qt::WindowFlags flags = BaseClass::windowFlags();
 	bool visible = BaseClass::isVisible();
-#ifdef Q_OS_WIN
-	if (_deltaFlags == 0) {
-		_deltaFlags = flags;
-	}
-	if (isDecorated) {
-		if (flags != _deltaFlags) {
-			flags |= Qt::WindowTitleHint;
-			flags &= ~Qt::FramelessWindowHint;
-			_deltaFlags = 0;
-			if (flags != BaseClass::windowFlags()) {
-				BaseClass::setWindowFlags(flags);
-			}
-		}
-	} else {
-		flags &= ~Qt::WindowTitleHint;
-		flags |= Qt::FramelessWindowHint;
-		if (flags != BaseClass::windowFlags()) {
-			BaseClass::setWindowFlags(flags);
-		}
 
-	}
-#else
-	if (isDecorated) {
+	if (useBorder) {
+//#ifdef Q_OS_WIN
+//		flags |= Qt::WindowTitleHint;
+//#endif
 		flags &= ~Qt::FramelessWindowHint;
-	} else {
+	}
+	else {
+//#ifdef Q_OS_WIN
+//		flags &= ~Qt::WindowTitleHint;
+//#endif
 		flags |= Qt::FramelessWindowHint;
 	}
-	if (flags != BaseClass::windowFlags()) {
-		BaseClass::setWindowFlags(flags);
-	}
-#endif
-	_border = isDecorated;
+
+	BaseClass::setWindowFlags(flags);
+
+	_border = useBorder;
 
 	updateHeaderState();
 	BaseClass::setVisible(visible);
@@ -255,6 +240,14 @@ WindowHeader *AdvancedWidget<BaseClass>::getWindowHeader() const
 	return wh;
 }
 
+static void setMousetTrackingForWidgetWithChildren(QWidget* widget, bool enabled)
+{
+	widget->setMouseTracking(enabled);
+	for(QWidget* w: widget->findChildren<QWidget*>()) {
+		w->setMouseTracking(enabled);
+	}
+}
+
 template<class BaseClass>
 void AdvancedWidget<BaseClass>::updateHeaderState()
 {
@@ -271,8 +264,7 @@ void AdvancedWidget<BaseClass>::updateHeaderState()
 			wh->deleteLater();
 		}
 
-		bl->parentWidget()->setMouseTracking(false);
-		BaseClass::setMouseTracking(false);
+		setMousetTrackingForWidgetWithChildren(this, false);
 
 	}
 	else {
@@ -280,8 +272,7 @@ void AdvancedWidget<BaseClass>::updateHeaderState()
 		wh->setCaption(BaseClass::windowTitle());
 		bl->insertWidget(0, wh);
 
-		bl->parentWidget()->setMouseTracking(true);
-		BaseClass::setMouseTracking(true);
+		setMousetTrackingForWidgetWithChildren(this, true);
 	}
 }
 

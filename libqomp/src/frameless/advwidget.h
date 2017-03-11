@@ -60,9 +60,6 @@ private:
 	void setCaption(const QString& title);
 
 private:
-#ifdef Q_OS_WIN
-	Qt::WindowFlags _deltaFlags;
-#endif
 	QPoint _movePath;
 	WinAction _action;
 	bool _border;

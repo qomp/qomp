@@ -36,6 +36,7 @@ public:
 protected:
 	virtual void startDrag(Qt::DropActions supportedActions) Q_DECL_OVERRIDE;
 	virtual void dropEvent(QDropEvent *e) Q_DECL_OVERRIDE;
+	virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private:
 	QList<Tune*> selected_;
