@@ -90,6 +90,15 @@ void QompPluginTreeView::mousePressEvent(QMouseEvent *e)
 	setCurrentIndex(index);
 }
 
+void QompPluginTreeView::mouseMoveEvent(QMouseEvent *e)
+{
+	//without this QTreeView accepts the event so it is not propogadet to paren widget
+	if(e->button() == Qt::NoButton)
+		e->ignore();
+	else
+		QTreeView::mouseMoveEvent(e);
+}
+
 void QompPluginTreeView::updateIndexes()
 {
 	foreach (const QModelIndex& ind, indexes_) {

@@ -76,7 +76,6 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	dialog_->setAttribute(Qt::WA_DeleteOnClose);
 	dialog_->setModal(true);
 	ui->setupUi(dialog_);
-	dialog_->setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
 
 	connect(dialog_, SIGNAL(destroyed(QObject*)), p, SLOT(deleteLater()));
 
@@ -240,6 +239,8 @@ void QompPluginGettunesDlg::setResultsWidget(QObject *widget)
 	Q_ASSERT(w);
 	if(w)
 		d->ui->mainLayout->insertWidget(1, w);
+
+	d->dialog_->setupFinished();
 }
 
 QString QompPluginGettunesDlg::currentSearchText() const

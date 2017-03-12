@@ -46,7 +46,7 @@ public:
 		dlg_->setAttribute(Qt::WA_DeleteOnClose);
 		dlg_->setModal(true);
 		ui->setupUi(dlg_);
-		dlg_->setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
+		dlg_->setupFinished();
 
 		connect(dlg_, SIGNAL(destroyed(QObject*)), p, SLOT(deleteLater()));
 

@@ -52,6 +52,12 @@ AdvancedWidget<BaseClass>::~AdvancedWidget()
 }
 
 template<class BaseClass>
+void AdvancedWidget<BaseClass>::setupFinished()
+{
+	themeChanged();
+}
+
+template<class BaseClass>
 void AdvancedWidget<BaseClass>::setUseBorder(bool useBorder)
 {
 	if(useBorder == isUseBorder())

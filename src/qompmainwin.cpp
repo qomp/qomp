@@ -126,7 +126,7 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	updateShortcuts();
 	updateIcons();
 
-	mainWin_->setUseBorder(ThemeManager::instance()->isWindowBorderEnabled());
+	mainWin_->setupFinished();
 	connect(ThemeManager::instance(), &ThemeManager::themeChanged, parentWin_, &QompMainWin::updateButtonIcons);
 
 	ui->tb_repeatAll->setChecked(Options::instance()->getOption(OPTION_REPEAT_ALL).toBool());

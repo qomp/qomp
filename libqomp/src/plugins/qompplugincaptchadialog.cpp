@@ -118,7 +118,7 @@ public:
 			_res = item->property("text").toString();
 		}
 #else
-		QDialog dlg;
+		QDialog dlg(nullptr, Qt::Dialog | Qt::WindowCloseButtonHint);
 
 		dlg.setWindowTitle(tr("Enter the text from the image"));
 

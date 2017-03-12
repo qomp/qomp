@@ -34,7 +34,7 @@ public:
 	explicit Private(LastFmAuthDlg* p) :
 		parent_(p),
 		ui(new Ui::LastFmAuthDlg),
-		dialog_(new QDialog)
+		dialog_(new QDialog(nullptr, Qt::Dialog | Qt::WindowCloseButtonHint))
 	{
 		ui->setupUi(dialog_);
 		ui->stackedWidget->setCurrentIndex(0);

@@ -41,8 +41,8 @@ public:
 
 	virtual ~AdvancedWidget();
 
-	void setUseBorder(bool isDecorated);
-	bool isUseBorder() const;
+	//Call this after ui ready (e.g. after call ui.setupUi(...);)
+	void setupFinished();
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
@@ -60,6 +60,9 @@ private:
 	WindowHeader* getWindowHeader() const;
 	void setCaption(const QString& title);
 	Q_SLOT void themeChanged();
+
+	void setUseBorder(bool useBorder);
+	bool isUseBorder() const;
 
 private:
 	QPoint _movePath;

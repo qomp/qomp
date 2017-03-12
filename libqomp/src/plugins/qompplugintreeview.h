@@ -36,9 +36,10 @@ public:
 	explicit QompPluginTreeView(QWidget *parent = 0);
 	
 protected:
-	void keyPressEvent(QKeyEvent *ke);
-	void mouseDoubleClickEvent(QMouseEvent *e);
-	void mousePressEvent(QMouseEvent *e);
+	virtual void keyPressEvent(QKeyEvent *ke) Q_DECL_OVERRIDE;
+	virtual void mouseDoubleClickEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+	virtual void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+	virtual void mouseMoveEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
 
 private slots:
 	void updateIndexes();
