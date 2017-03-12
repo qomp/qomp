@@ -25,19 +25,21 @@
 #include <QTimer>
 #include <QtPlugin>
 #include <QApplication>
-#include <QWidget>
+#include <QMainWindow>
+#include <QToolButton>
 
 #define STOPPED "Stopped"
 #define PAUSED "Paused"
 #define PLAYING "Playing"
+#define nextButtonName "tb_next"
+#define prevButtonName "tb_prev"
 
 MprisPlugin::MprisPlugin() :
 	player_(0),
 	enabled_(true),
 	mpris_(0),
 	tune_(0),
-	lastTune_(0),
-	mainWin_(0)
+	lastTune_(0)
 {
 }
 
@@ -103,14 +105,26 @@ void MprisPlugin::stop()
 void MprisPlugin::next()
 {
 	if(player_) {
-		emit player_->mediaFinished(); //Temporary hack, FIXME
+		QMainWindow *mainWin = Qomp::getMainWindow();
+		if (mainWin) {
+			QToolButton *nextBtn = mainWin->findChild<QToolButton *>(nextButtonName);
+			if(nextBtn) {
+				nextBtn->clicked();
+			}
+		}
 	}
 }
 
 void MprisPlugin::previous()
 {
 	if(player_) {
-		//FIXME
+		QMainWindow *mainWin = Qomp::getMainWindow();
+		if (mainWin) {
+			QToolButton *prevBtn = mainWin->findChild<QToolButton *>(prevButtonName);
+			if(prevBtn) {
+				prevBtn->clicked();
+			}
+		}
 	}
 }
 
@@ -129,19 +143,10 @@ void MprisPlugin::doQuit()
 
 void MprisPlugin::doRaise()
 {
-	//Dirty hack to show main window
-	if(!mainWin_) {
-		QWidgetList wl = qApp->allWidgets();
-		foreach (QWidget *w, wl) {
-			if (w->objectName() == "QompMainWin") {
-				mainWin_ = w;
-				break;
-			}
-		}
-	}
-	if(mainWin_) {
-		if(mainWin_->isHidden()) {
-			mainWin_->show();
+	QMainWindow *mainWin = Qomp::getMainWindow();
+	if(mainWin) {
+		if(mainWin->isHidden()) {
+			mainWin->show();
 		}
 	}
 }

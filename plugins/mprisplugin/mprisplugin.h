@@ -25,9 +25,6 @@
 #include "mpriscontroller.h"
 #include "tune.h"
 #include "common.h"
-#include <QPointer>
-
-class QWidget;
 
 class MprisPlugin : public QObject, public QompPlugin, public QompPlayerStatusPlugin
 {
@@ -72,7 +69,6 @@ private:
 	MprisController* mpris_;
 	QompMetaData *tune_;
 	Tune *lastTune_;
-	QPointer<QWidget> mainWin_;
 };
 
 #endif // MPRISPLUGIN_H

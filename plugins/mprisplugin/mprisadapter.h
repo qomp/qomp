@@ -71,7 +71,7 @@ private:
 	QVariantMap metadata() const;
 	QString playbackStatus() const;
 	bool canGoNext() const {return true;}
-	bool canGoPrevious() const {return false;}
+	bool canGoPrevious() const {return true;}
 	bool canPlay() const {return true;}
 	bool canPause() const {return true;}
 	bool canSeek() const {return true;}
