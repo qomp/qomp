@@ -23,13 +23,27 @@
 #include <QGuiApplication>
 #include <QMouseEvent>
 
+
 WindowHeader::WindowHeader(QWidget *p)
 	: QWidget(p)
 {
-#ifdef Q_OS_MAC
-	setLayoutDirection(Qt::RightToLeft);
-#endif
 	_ui.setupUi(this);
+
+	bool swapLayout = false;
+#ifdef Q_OS_MAC
+	swapLayout = true;
+#elseif defined HAVE_X11
+	QString desk(getenv("XDG_CURRENT_DESKTOP"));
+	swapLayout = (desk.compare(QStringLiteral("Unity"), Qt::CaseInsensitive) == 0);
+#endif
+
+	if(swapLayout) {
+		QBoxLayout* l = static_cast<QBoxLayout*>(_ui.headerFrame->layout());
+		l->removeWidget(_ui.hideButton);
+		int ind = l->indexOf(_ui.maximizeButton);
+		l->insertWidget(ind+1, _ui.hideButton);
+		setLayoutDirection(Qt::RightToLeft);
+	}
 
 	_ui.closeButton->setIcon(qApp->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
 	_ui.hideButton->setIcon(qApp->style()->standardIcon(QStyle::SP_TitleBarMinButton));
