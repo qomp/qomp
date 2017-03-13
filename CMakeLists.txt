@@ -24,6 +24,8 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 if( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 	add_definitions( -DQT_NO_DEBUG )
+else()
+	add_definitions( -DDEBUG_OUTPUT )
 endif()
 
 set( LIBQOMP_LIBRARY libqomp )
