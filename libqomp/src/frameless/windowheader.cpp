@@ -32,7 +32,7 @@ WindowHeader::WindowHeader(QWidget *p)
 	bool swapLayout = false;
 #ifdef Q_OS_MAC
 	swapLayout = true;
-#elseif defined HAVE_X11
+#elif defined HAVE_X11
 	QString desk(getenv("XDG_CURRENT_DESKTOP"));
 	swapLayout = (desk.compare(QStringLiteral("Unity"), Qt::CaseInsensitive) == 0);
 #endif
