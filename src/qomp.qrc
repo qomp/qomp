@@ -38,5 +38,9 @@
         <file alias="branch-open">icons/buttons/branch-open.png</file>
         <file alias="linear">icons/buttons/linear.png</file>
         <file alias="random">icons/buttons/random.png</file>
+        <file alias="window_close">icons/buttons/window_close.png</file>
+        <file alias="window_maximize">icons/buttons/window_maximize.png</file>
+        <file alias="window_minimize">icons/buttons/window_minimize.png</file>
+        <file alias="window_restore">icons/buttons/window_restore.png</file>
     </qresource>
 </RCC>

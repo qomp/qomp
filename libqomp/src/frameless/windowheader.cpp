@@ -19,6 +19,7 @@
  */
 
 #include "windowheader.h"
+#include "thememanager.h"
 
 #include <QGuiApplication>
 #include <QMouseEvent>
@@ -45,21 +46,20 @@ WindowHeader::WindowHeader(QWidget *p)
 		setLayoutDirection(Qt::RightToLeft);
 	}
 
-	_ui.closeButton->setIcon(qApp->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
-	_ui.hideButton->setIcon(qApp->style()->standardIcon(QStyle::SP_TitleBarMinButton));
-	_ui.maximizeButton->setIcon(qApp->style()->standardIcon(QStyle::SP_TitleBarMaxButton));
-
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
 	connect(_ui.hideButton, SIGNAL(clicked()), SLOT(hidePressed()));
 	connect(_ui.closeButton, SIGNAL(clicked()), SLOT(closePressed()));
 	connect(_ui.maximizeButton, SIGNAL(clicked()), SLOT(maximizePressed()));
+	connect(ThemeManager::instance(), &ThemeManager::themeChanged, this, &WindowHeader::updateIcons);
 
 	if(! (parentWidget()->window()->windowFlags() & Qt::WindowMaximizeButtonHint))
 		_ui.maximizeButton->hide();
 
 	if(! (parentWidget()->window()->windowFlags() & Qt::WindowMinimizeButtonHint))
 		_ui.hideButton->hide();
+
+	updateIcons();
 
 	parentWidget()->window()->installEventFilter(this);
 }
@@ -109,13 +109,23 @@ void WindowHeader::mouseDoubleClickEvent(QMouseEvent *e)
 bool WindowHeader::eventFilter(QObject *watched, QEvent *event)
 {
 	if(watched == parentWidget()->window() && event->type() == QEvent::WindowStateChange) {
-		if (parentWidget()->window()->windowState() == Qt::WindowMaximized) {
-			_ui.maximizeButton->setIcon(qApp->style()->standardIcon(QStyle::SP_TitleBarNormalButton));
-		}
-		else {
-			_ui.maximizeButton->setIcon(qApp->style()->standardIcon(QStyle::SP_TitleBarMaxButton));
-		}
+		updateIcons();
 	}
 
 	return QWidget::eventFilter(watched, event);
+}
+
+
+void WindowHeader::updateIcons()
+{
+	_ui.closeButton->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_close")));
+	_ui.hideButton->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_minimize")));
+
+	if (parentWidget()->window()->windowState() == Qt::WindowMaximized) {
+		_ui.maximizeButton->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_restore")));
+	}
+	else {
+		_ui.maximizeButton->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_maximize")));
+	}
+
 }

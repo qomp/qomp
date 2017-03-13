@@ -42,7 +42,8 @@ private slots:
 	void hidePressed();
 	void closePressed();
 	void maximizePressed();
-
+        void updateIcons();
+        
 protected:
 	void mouseDoubleClickEvent(QMouseEvent *e);
 	bool eventFilter(QObject *watched, QEvent *event);
