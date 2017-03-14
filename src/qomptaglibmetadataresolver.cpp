@@ -45,6 +45,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QUrl>
+#include <QImage>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -72,50 +73,48 @@ void QompTagLibMetaDataResolver::dataReady()
 	qDebug() << "QompTagLibMetaDataResolver::dataReady()  size=" << QString::number(size);
 #endif
 	if(size >= tagSize) {
-		Tune *tune = get();
-
 		TagLib::ByteVector bv(r->readAll().constData(), size);
-		TagLib::ByteVectorStream stream(bv);
-
-		TagLib::FileRef ref(createFile(r->url().toDisplayString(), &stream));
-		if(!ref.isNull()) {
-			if(ref.tag()) {
-				TagLib::ID3v2::Tag* tag = dynamic_cast<TagLib::ID3v2::Tag*>(ref.tag());
-				if(tag) {
-#ifdef DEBUG_OUTPUT
-					qDebug() << "QompTagLibMetaDataResolver::dataReady()  not null tag";
-#endif
-//					tune->artist = safeTagLibString2QString( tag->artist() );
-//					tune->album = safeTagLibString2QString( tag->album() );
-//					tune->title = safeTagLibString2QString( tag->title() );
-//					tune->trackNumber = QString::number( tag->track() );
-
-					TagLib::ID3v2::FrameList frameList = tag->frameList("APIC");
-					if(!frameList.isEmpty()) {
-
-						TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
-
-//						QImage coverQImg;
-//						coverQImg.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
-//						qDebug() << coverQImg;
-						//return coverQImg;
-					}
-				}
-			}
-
-			if(ref.audioProperties()) {				
-				TagLib::AudioProperties *prop = ref.audioProperties();
-				if(prop->length())
-					tune->duration = Qomp::durationSecondsToString( prop->length() );
-
-				if(prop->bitrate())
-					tune->bitRate = QString::number( prop->bitrate() );
-			}
-		}
 
 		r->abort();
 		r->disconnect();
 		r->deleteLater();
+
+		Tune *tune = get();
+
+		TagLib::ByteVectorStream stream(bv);
+
+		auto tagFile = createFile(r->url().toDisplayString(), &stream);
+		TagLib::FileRef ref(tagFile);
+		if(tagFile->isValid() && !ref.isNull()) {
+
+		TagLib::ID3v2::Tag *tag = tagFile->ID3v2Tag(false);
+		if(tag) {
+#ifdef DEBUG_OUTPUT
+			qDebug() << "QompTagLibMetaDataResolver::dataReady()  not null tag";
+#endif
+			TagLib::ID3v2::FrameList frameList = tag->frameList("APIC");
+			if(!frameList.isEmpty()) {
+
+				TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
+
+				QImage coverQImg;
+				coverQImg.loadFromData((const uchar *) coverImg->picture().data(),
+						       coverImg->picture().size());
+				qDebug() << coverQImg;
+//				return coverQImg;
+			}
+		}
+
+		if(ref.audioProperties()) {
+			qDebug() << "props";
+			TagLib::AudioProperties *prop = ref.audioProperties();
+			if(prop->length())
+				tune->duration = Qomp::durationSecondsToString( prop->length() );
+
+			if(prop->bitrate())
+				tune->bitRate = QString::number( prop->bitrate() );
+		}
+		}
 
 		tuneFinished();
 		resolveNextMedia();
@@ -142,7 +141,7 @@ void QompTagLibMetaDataResolver::resolveNextMedia()
 	}
 }
 
-TagLib::File *QompTagLibMetaDataResolver::createFile(const QString& url, TagLib::IOStream* stream)
+TagLib::MPEG::File *QompTagLibMetaDataResolver::createFile(const QString& url, TagLib::IOStream* stream)
 {
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompTagLibMetaDataResolver::createFile   url=" << url;

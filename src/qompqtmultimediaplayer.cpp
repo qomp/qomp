@@ -28,8 +28,8 @@
 #include <QMediaService>
 #include <QSignalBlocker>
 
-//#include <QMediaService>
-//#include <QMetaDataReaderControl>
+#include <QMediaService>
+#include <QMetaDataReaderControl>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -57,12 +57,12 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	connect(player_, &QMediaPlayer::seekableChanged, this, &QompQtMultimediaPlayer::seekableChanged);
 #endif
 
-//	QMetaDataReaderControl *c = qobject_cast<QMetaDataReaderControl*>(player_->service()->requestControl(QMetaDataReaderControl_iid));
-//	if(c) {
-//		connect(c, &QMetaDataReaderControl::metaDataAvailableChanged, [c](bool) {
-//			qDebug() << c->availableMetaData();//metaData("ThumbnailImage" /*"CoverArtImage"*/);
-//		});
-//	}
+	QMetaDataReaderControl *c = qobject_cast<QMetaDataReaderControl*>(player_->service()->requestControl(QMetaDataReaderControl_iid));
+	if(c) {
+		connect(c, &QMetaDataReaderControl::metaDataAvailableChanged, [c](bool) {
+			qDebug() << c->availableMetaData();//metaData("ThumbnailImage" /*"CoverArtImage"*/);
+		});
+	}
 
 	connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 }

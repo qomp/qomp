@@ -30,6 +30,7 @@
 #include <taglib/audioproperties.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/attachedpictureframe.h>
+#include <taglib/mpegfile.h>
 #else
 #include <tag/fileref.h>
 #include <tag/tag.h>
@@ -66,18 +67,21 @@ Tune* tuneFromFile(const QString& file)
 			tune->title = safeTagLibString2QString( tag->title() );
 			tune->trackNumber = QString::number( tag->track() );
 
-			TagLib::ID3v2::Tag* tag2 = dynamic_cast<TagLib::ID3v2::Tag*>(tag);
-			if(tag2) {
+			auto mpeg = dynamic_cast<TagLib::MPEG::File*>(ref.file());
 
-				TagLib::ID3v2::FrameList frameList = tag2->frameList("APIC");
-				if(!frameList.isEmpty()) {
+			if(mpeg) {
+				TagLib::ID3v2::Tag* tag2 = mpeg->ID3v2Tag();
+				if(tag2) {
+					TagLib::ID3v2::FrameList frameList = tag2->frameList("APIC");
+					if(!frameList.isEmpty()) {
 
-					TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
+						TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
 
-					QImage coverQImg;
-					coverQImg.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
-					qDebug() << coverQImg;
-					//return coverQImg;
+						QImage cover;
+						cover.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
+						qDebug() << cover;
+						tune->setCover(cover);
+					}
 				}
 			}
 		}

@@ -205,5 +205,15 @@ bool Tune::sameSource(const Tune *other) const
 	return QString::compare(other->file, file) == 0 && QString::compare(other->url, url) == 0;
 }
 
+const QImage &Tune::cover() const
+{
+	return cover_;
+}
+
+void Tune::setCover(const QImage &cover)
+{
+	cover_ = cover;
+}
+
 int Tune::lastId_ = 0;
 const Tune* Tune::empty_ = new Tune(false);
