@@ -71,7 +71,6 @@ endfunction()
 
 
 #install Qt5 libs and plugins
-set(LIBS_LIST "")
 copy("${QT_BIN_DIR}/Qt5Core${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
 copy("${QT_BIN_DIR}/Qt5Gui${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
 copy("${QT_BIN_DIR}/Qt5Widgets${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
@@ -149,7 +148,7 @@ list(APPEND FILE_LIST
 set(ZLIB_ROOT "c:/build/zlib/" CACHE PATH "Path to zlib root dir")
 set(OPENSSL_ROOT "c:/build/openssl/" CACHE PATH "Path to zlib root dir")
 
-set(LIB_PATHES
+set(LIB_PATHS
 	"${TAGLIB_ROOT}/bin"
 	"${LIBCUE_ROOT}/bin"
 	"${ZLIB_ROOT}/bin"
@@ -157,14 +156,16 @@ set(LIB_PATHES
 )
 
 function(find_lib LIBLIST PATHES)
-	set(FIXED_PATHES "")
+	set(FIXED_PATHS "")
 	foreach(_path ${PATHES})
 		string(REGEX REPLACE "[\\]" "/" tmp_path "${_path}")
-		list(APPEND FIXED_PATHES ${tmp_path})
+		if(EXISTS "${tmp_path}")
+			list(APPEND FIXED_PATHS ${tmp_path})
+		endif()
 	endforeach()
 	set( inc 1 )
 	foreach(_liba ${LIBLIST})
-		find_file( ${_liba}${inc} ${_liba} PATHS ${FIXED_PATHES})
+		find_file( ${_liba}${inc} ${_liba} PATHS ${FIXED_PATHS})
 		if( NOT "${${_liba}${inc}}" STREQUAL "${_liba}${inc}-NOTFOUND" )
 			message("Library found at ${${_liba}${inc}}")
 			copy("${${_liba}${inc}}" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
@@ -173,5 +174,5 @@ function(find_lib LIBLIST PATHES)
 	endforeach()
 endfunction()
 
-find_lib(${FILE_LIST})
+find_lib("${FILE_LIST}" "${LIB_PATHS}")
 
