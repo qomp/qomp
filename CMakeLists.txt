@@ -22,13 +22,13 @@ set( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake
 if( NOT CMAKE_BUILD_TYPE )
 	set(CMAKE_BUILD_TYPE Release)
 endif()
-if( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
-	message("Build type - Release")
-	add_definitions( -DQT_NO_DEBUG )
-else()
-	message("Build type - Debug")
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
 	add_definitions( -DDEBUG_OUTPUT )
+else()
+	add_definitions( -DQT_NO_DEBUG )
 endif()
+message("Build type - ${CMAKE_BUILD_TYPE}")
 
 set( LIBQOMP_LIBRARY libqomp )
 add_subdirectory( ${LIBQOMP_LIBRARY} )

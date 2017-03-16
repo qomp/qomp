@@ -45,6 +45,9 @@ private slots:
 	void getFileName();
 
 private:
+	QString getProfileDir() const;
+
+private:
 	class Private;
 	Private* d;
 };

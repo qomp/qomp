@@ -23,6 +23,9 @@
 #include "ui_tunetofilesettings.h"
 
 #include <QFileDialog>
+#ifdef Q_OS_WIN
+#include <QProcessEnvironment>
+#endif
 
 class TuneToFileSettings::Private
 {
@@ -85,10 +88,20 @@ void TuneToFileSettings::restoreOptions()
 void TuneToFileSettings::getFileName()
 {
 	QString file = QFileDialog::getSaveFileName(d->widget_, tr("Store tune into file"),
-				Options::instance()->getOption(T2FOPT_LAST_DIR, QDir::homePath()).toString());
+				Options::instance()->getOption(T2FOPT_LAST_DIR, getProfileDir()).toString());
 	if(!file.isEmpty())
 	{
 		d->ui->le_file->setText(QDir::toNativeSeparators(file));
 		Options::instance()->setOption(T2FOPT_LAST_DIR, QFileInfo(file).filePath());
 	}
+}
+
+QString TuneToFileSettings::getProfileDir() const
+{
+#if defined Q_OS_UNIX
+	return QDir::homePath()+ "/.cache";
+#elif defined Q_OS_WIN
+	return QProcessEnvironment::systemEnvironment().value("LOCALAPPDATA", QDir::homePath());
+#endif
+	return QDir::homePath();
 }
