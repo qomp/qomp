@@ -37,6 +37,7 @@
 #include <tag/audioproperties.h>
 #include <tag/id3v2tag.h>
 #include <tag/attachedpictureframe.h>
+#include <tag/mpegfile.h>
 #endif
 
 namespace Qomp {
@@ -74,12 +75,10 @@ Tune* tuneFromFile(const QString& file)
 				if(tag2) {
 					TagLib::ID3v2::FrameList frameList = tag2->frameList("APIC");
 					if(!frameList.isEmpty()) {
-
 						TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
 
 						QImage cover;
 						cover.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
-						qDebug() << cover;
 						tune->setCover(cover);
 					}
 				}

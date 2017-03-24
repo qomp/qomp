@@ -27,6 +27,7 @@ class QNetworkReply;
 
 namespace TagLib {
 class IOStream;
+class ByteVector;
 namespace MPEG {
 class File;
 }
@@ -47,9 +48,13 @@ private slots:
 private:
 	void resolveNextMedia();
 	TagLib::MPEG::File* createFile(const QString &url, TagLib::IOStream *stream);
+	void processData(const QUrl& url, const TagLib::ByteVector& data);
+	void loadFullSize(const QUrl& url, const QByteArray& data);
 
 private:
 	QNetworkAccessManager* nam_;
+	quint32 fullSize_;
+	char step_;
 
 };
 

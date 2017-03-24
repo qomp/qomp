@@ -31,6 +31,7 @@
 #include <taglib/id3v2framefactory.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/attachedpictureframe.h>
+#include <taglib/id3v2frame.h>
 #else
 #include <tag/tbytevectorstream.h>
 #include <tag/fileref.h>
@@ -40,6 +41,7 @@
 #include <tag/id3v2framefactory.h>
 #include <tag/id3v2tag.h>
 #include <tag/attachedpictureframe.h>
+#include <tag/id3v2frame.h>
 #endif
 
 #include <QNetworkAccessManager>
@@ -51,12 +53,14 @@
 #include <QDebug>
 #endif
 
-static const uint tagSize = 5000;
+static const uint tagSize = 100;
 
 
 QompTagLibMetaDataResolver::QompTagLibMetaDataResolver(QObject *parent) :
 	QompMetaDataResolver(parent),
-	nam_(QompNetworkingFactory::instance()->getMainNAM())
+	nam_(QompNetworkingFactory::instance()->getMainNAM()),
+	fullSize_(tagSize),
+	step_(0)
 {
 }
 
@@ -72,50 +76,20 @@ void QompTagLibMetaDataResolver::dataReady()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompTagLibMetaDataResolver::dataReady()  size=" << QString::number(size);
 #endif
-	if(size >= tagSize) {
+	if (step_ == 0) {
+		if(size > tagSize) {
+			loadFullSize(r->url(), r->peek(size));
+			step_ = 1;
+		}
+	}
+	else if(size >= fullSize_) {
 		TagLib::ByteVector bv(r->readAll().constData(), size);
 
-		r->abort();
 		r->disconnect();
+		r->abort();
 		r->deleteLater();
 
-		Tune *tune = get();
-
-		TagLib::ByteVectorStream stream(bv);
-
-		auto tagFile = createFile(r->url().toDisplayString(), &stream);
-		TagLib::FileRef ref(tagFile);
-		if(tagFile->isValid() && !ref.isNull()) {
-
-		TagLib::ID3v2::Tag *tag = tagFile->ID3v2Tag(false);
-		if(tag) {
-#ifdef DEBUG_OUTPUT
-			qDebug() << "QompTagLibMetaDataResolver::dataReady()  not null tag";
-#endif
-			TagLib::ID3v2::FrameList frameList = tag->frameList("APIC");
-			if(!frameList.isEmpty()) {
-
-				TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
-
-				QImage coverQImg;
-				coverQImg.loadFromData((const uchar *) coverImg->picture().data(),
-						       coverImg->picture().size());
-				qDebug() << coverQImg;
-//				return coverQImg;
-			}
-		}
-
-		if(ref.audioProperties()) {
-			qDebug() << "props";
-			TagLib::AudioProperties *prop = ref.audioProperties();
-			if(prop->length())
-				tune->duration = Qomp::durationSecondsToString( prop->length() );
-
-			if(prop->bitrate())
-				tune->bitRate = QString::number( prop->bitrate() );
-		}
-		}
-
+		processData(r->url(), bv);
 		tuneFinished();
 		resolveNextMedia();
 	}
@@ -131,13 +105,22 @@ void QompTagLibMetaDataResolver::resolveNextMedia()
 		QUrl u(t->getUrl());
 		if(!u.isLocalFile()) {
 			QNetworkReply* r = nam_->get(QNetworkRequest(u));
-			connect(r, SIGNAL(readyRead()), SLOT(dataReady()));
-			connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+
+			connect(r, &QNetworkReply::readyRead, this, &QompTagLibMetaDataResolver::dataReady);
+
+			//for some cases if some went wrong
+			connect(r, &QNetworkReply::finished, [r, this]() {
+				r->disconnect();
+				r->deleteLater();
+				tuneFinished();
+				resolveNextMedia();
+			});
 		}
 		else {
 			tuneFinished();
 			resolveNextMedia();
 		}
+		step_ = 0;
 	}
 }
 
@@ -147,7 +130,55 @@ TagLib::MPEG::File *QompTagLibMetaDataResolver::createFile(const QString& url, T
 	qDebug() << "QompTagLibMetaDataResolver::createFile   url=" << url;
 #endif
 	//if(url.endsWith("mp3", Qt::CaseInsensitive)) {
+		stream->seek(0);
 		return new TagLib::MPEG::File(stream, TagLib::ID3v2::FrameFactory::instance());
 	//}
-	return 0;
+		return 0;
+}
+
+void QompTagLibMetaDataResolver::processData(const QUrl &url, const TagLib::ByteVector &data)
+{
+	TagLib::ByteVectorStream stream(data);
+	auto tagFile = createFile(url.toDisplayString(), &stream);
+
+	TagLib::FileRef ref(tagFile);
+	if(tagFile->isValid() && !ref.isNull()) {
+		Tune *tune = get();
+
+		TagLib::ID3v2::Tag *tag = tagFile->ID3v2Tag(false);
+		if(tag) {
+			TagLib::ID3v2::FrameList frameList = tag->frameList("APIC");
+			if(!frameList.isEmpty()) {
+				TagLib::ID3v2::AttachedPictureFrame *coverImg =
+						static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
+
+				QImage coverQImg;
+				coverQImg.loadFromData((const uchar *) coverImg->picture().data(),
+								     coverImg->picture().size());
+				tune->setCover(coverQImg);
+			}
+		}
+
+		if(ref.audioProperties()) {
+			TagLib::AudioProperties *prop = ref.audioProperties();
+			if(prop->length())
+				tune->duration = Qomp::durationSecondsToString( prop->length() );
+
+			if(prop->bitrate())
+				tune->bitRate = QString::number( prop->bitrate() );
+		}
+	}
+}
+
+void QompTagLibMetaDataResolver::loadFullSize(const QUrl& url, const QByteArray &data)
+{
+	TagLib::ByteVector bv(data.constData(), data.size());
+	TagLib::ByteVectorStream stream(bv);
+
+	auto tagFile = createFile(url.toDisplayString(), &stream);
+	TagLib::FileRef ref(tagFile);
+	if(!ref.isNull()) {
+		auto tag = tagFile->ID3v2Tag(false);
+		fullSize_ = tag->header()->completeTagSize();
+	}
 }
