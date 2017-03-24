@@ -121,6 +121,7 @@ set( qomp_SRCS
 	src/aboutdlg.cpp
 	src/qompcommandline.cpp
 	src/qompinstancewatcher.cpp
+	src/qomptaglibmetadataresolver.cpp
 	src/qomptunedownloader.cpp
 	src/qompplaylistdelegate.cpp
 	src/translator.cpp
