@@ -19,6 +19,7 @@
 
 #include "tune.h"
 #include "pluginmanager.h"
+#include "covercache.h"
 
 #include <QStringList>
 #include <QFile>
@@ -123,6 +124,10 @@ QString Tune::toString() const
 	list << artist << title << trackNumber << album << duration << url << file
 	     << strategy()->name() << (canSave_ ? "true" : "false") << bitRate
 	     << QString::number(start) << QString::number(length);
+
+	if(!cover_.isNull())
+		list.append( *cover_.data() );
+
 	return list.join(separator);
 }
 
@@ -156,6 +161,12 @@ bool Tune::fromString(const QString &str)
 		start = list.takeFirst().toLongLong();
 	if(!list.isEmpty())
 		length = list.takeFirst().toLongLong();
+	if(!list.isEmpty())
+		cover_ = CoverCache::instance()->restore(list.takeFirst());
+
+	if(!cover_.isNull())
+		metadataResolved_ = true;
+
 	return true;
 }
 
@@ -206,14 +217,19 @@ bool Tune::sameSource(const Tune *other) const
 	return QString::compare(other->file, file) == 0 && QString::compare(other->url, url) == 0;
 }
 
-const QImage &Tune::cover() const
+const QImage Tune::cover() const
 {
-	return cover_;
+	if(!cover_.isNull()) {
+		QString* hash = cover_.data();
+		return CoverCache::instance()->get(*hash);
+	}
+
+	return QImage();
 }
 
 void Tune::setCover(const QImage &cover)
 {
-	cover_ = cover;
+	cover_ = CoverCache::instance()->put(cover);
 }
 
 void Tune::setMetadataResolved(bool resolved)

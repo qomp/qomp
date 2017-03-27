@@ -87,7 +87,7 @@ public:
 
 	bool sameSource(const Tune* other) const;
 
-	const QImage& cover() const;
+	const QImage cover() const;
 	void setCover(const QImage& cover);
 
 	bool isMetadataResolved() const { return metadataResolved_; }
@@ -99,7 +99,7 @@ private:
 	int id_;
 	bool canSave_;
 	mutable QPointer<TuneURLResolveStrategy> strategy_;
-	QImage cover_;
+	QSharedPointer<QString> cover_;
 	bool metadataResolved_;
 
 	static const Tune* empty_;

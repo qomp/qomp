@@ -71,6 +71,7 @@ bool QompPlaylistView::viewportEvent(QEvent *e)
 			if(!img.isNull()) {
 				QByteArray data;
 				QBuffer buffer(&data);
+				buffer.open(QBuffer::ReadWrite);
 				img.scaled(64, 64, Qt::KeepAspectRatio,
 					   Qt::SmoothTransformation).save(&buffer, "PNG", 100);
 				html = QString("<table><tr>"
