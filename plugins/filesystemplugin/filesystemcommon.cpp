@@ -23,6 +23,7 @@
 
 #include <QString>
 #include <QImage>
+#include <QFileInfo>
 
 #ifndef Q_OS_MAC
 #include <taglib/fileref.h>
@@ -53,6 +54,24 @@ static TagLib::FileRef getTaglibRef(const QString& file)
 	return TagLib::FileRef(fname, true, TagLib::AudioProperties::Accurate);
 }
 
+static bool searchLocalCover(Tune* t)
+{
+	static const QStringList coverList{"front", "cover", "albumart"};
+	static const QStringList coverExt{"jpg", "jpeg", "png"};
+	for(const QString& cover: coverList)
+		for(const QString& ext: coverExt) {
+			const QString file = QFileInfo(t->file).absolutePath() + "/" + cover + "." + ext;
+			if(QFile::exists(file)) {
+				QImage i(file);
+				if(!i.isNull()) {
+					t->setCover(i);
+					return true;
+				}
+			}
+		}
+
+	return false;
+}
 
 Tune* tuneFromFile(const QString& file)
 {
@@ -68,18 +87,20 @@ Tune* tuneFromFile(const QString& file)
 			tune->title = safeTagLibString2QString( tag->title() );
 			tune->trackNumber = QString::number( tag->track() );
 
-			auto mpeg = dynamic_cast<TagLib::MPEG::File*>(ref.file());
+			if (!searchLocalCover(tune)) {
+				auto mpeg = dynamic_cast<TagLib::MPEG::File*>(ref.file());
 
-			if(mpeg) {
-				TagLib::ID3v2::Tag* tag2 = mpeg->ID3v2Tag();
-				if(tag2) {
-					TagLib::ID3v2::FrameList frameList = tag2->frameList("APIC");
-					if(!frameList.isEmpty()) {
-						TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
+				if(mpeg) {
+					TagLib::ID3v2::Tag* tag2 = mpeg->ID3v2Tag();
+					if(tag2) {
+						TagLib::ID3v2::FrameList frameList = tag2->frameList("APIC");
+						if(!frameList.isEmpty()) {
+							TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
 
-						QImage cover;
-						cover.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
-						tune->setCover(cover);
+							QImage cover;
+							cover.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
+							tune->setCover(cover);
+						}
 					}
 				}
 			}
