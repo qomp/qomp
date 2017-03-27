@@ -76,7 +76,8 @@ Tune::Tune(bool canSave) :
 	length(0),
 	played(false),
 	canSave_(canSave),
-	strategy_(0)
+	strategy_(0),
+	metadataResolved_(false)
 {
 	id_ = lastId_++;
 	setUrlResolveStrategy(SimpleStrategy::instance());
@@ -213,6 +214,11 @@ const QImage &Tune::cover() const
 void Tune::setCover(const QImage &cover)
 {
 	cover_ = cover;
+}
+
+void Tune::setMetadataResolved(bool resolved)
+{
+	metadataResolved_ = resolved;
 }
 
 int Tune::lastId_ = 0;

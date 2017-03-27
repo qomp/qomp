@@ -102,6 +102,12 @@ void QompTagLibMetaDataResolver::resolveNextMedia()
 #endif
 	if(!isDataEmpty()) {
 		Tune* t = get();
+		if(t->isMetadataResolved()) {
+			tuneFinished();
+			resolveNextMedia();
+			return;
+		}
+
 		QUrl u(t->getUrl());
 		if(!u.isLocalFile()) {
 			QNetworkReply* r = nam_->get(QNetworkRequest(u));

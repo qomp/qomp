@@ -610,7 +610,7 @@ void QompCon::setTunes(const QList<Tune*> &tunes)
 
 //		if(Options::instance()->getOption(OPTION_UPDATE_METADATA).toBool())
 //		{
-			player_->resolveMetadata(tunes);
+//			player_->resolveMetadata(tunes);
 //		}
 	}
 }

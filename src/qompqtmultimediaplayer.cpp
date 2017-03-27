@@ -23,13 +23,10 @@
 #include "gettuneurlhelper.h"
 
 #include <QMediaContent>
-//#include <QAudioDeviceInfo>
 #include <QAudioOutputSelectorControl>
 #include <QMediaService>
 #include <QSignalBlocker>
 
-#include <QMediaService>
-#include <QMetaDataReaderControl>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -56,14 +53,6 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	connect(player_, &QMediaPlayer::audioAvailableChanged, this, &QompQtMultimediaPlayer::audioReadyChanged);
 	connect(player_, &QMediaPlayer::seekableChanged, this, &QompQtMultimediaPlayer::seekableChanged);
 #endif
-
-	QMetaDataReaderControl *c = qobject_cast<QMetaDataReaderControl*>(player_->service()->requestControl(QMetaDataReaderControl_iid));
-	if(c) {
-		connect(c, &QMetaDataReaderControl::metaDataAvailableChanged, [c](bool) {
-			qDebug() << c->availableMetaData();//metaData("ThumbnailImage" /*"CoverArtImage"*/);
-		});
-	}
-
 	connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 }
 
@@ -88,6 +77,9 @@ void QompQtMultimediaPlayer::doSetTune()
 
 	GetTuneUrlHelper* helper = new GetTuneUrlHelper(this, "tuneUrlReady", this);
 	watcher_ = helper->getTuneUrlAsynchronously(currentTune());
+	if(resolver_) {
+		resolver_->resolve( {currentTune()} );
+	}
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const

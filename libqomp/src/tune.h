@@ -90,6 +90,9 @@ public:
 	const QImage& cover() const;
 	void setCover(const QImage& cover);
 
+	bool isMetadataResolved() const { return metadataResolved_; }
+	void setMetadataResolved(bool resolved);
+
 private:
 	Q_DISABLE_COPY(Tune)
 	static int lastId_;
@@ -97,6 +100,7 @@ private:
 	bool canSave_;
 	mutable QPointer<TuneURLResolveStrategy> strategy_;
 	QImage cover_;
+	bool metadataResolved_;
 
 	static const Tune* empty_;
 };
