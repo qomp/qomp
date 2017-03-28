@@ -129,6 +129,7 @@ void QompTagLibMetaDataResolver::resolveNextMedia()
 
 TagLib::MPEG::File *QompTagLibMetaDataResolver::createFile(const QString& url, TagLib::IOStream* stream)
 {
+	Q_UNUSED(url)
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompTagLibMetaDataResolver::createFile   url=" << url;
 #endif

@@ -27,8 +27,13 @@
 namespace TagLib {
 class String;
 class File;
+#ifdef Q_OS_WIN
 class FileName;
+#else
+typedef const char *FileName;
+#endif
 }
+
 
 class QWidget;
 class Tune;
