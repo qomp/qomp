@@ -47,6 +47,7 @@ set( frameless_SRCS
 	src/frameless/windowheader.cpp
 )
 set( libqomp_HDRS
+	src/covercache.h
 	src/options.h
 	src/pluginhost.h
 	src/pluginmanager.h
@@ -55,6 +56,7 @@ set( libqomp_HDRS
 	src/qompmetadataresolver.h
 	src/qompnetworkingfactory.h
 	src/qompplayer.h
+	src/taghelpers.h
 	src/thememanager.h
 	src/tune.h
 	${plugins_HDRS}
@@ -72,6 +74,7 @@ set( libqomp_INCLUDE_HDRS
 	src/pluginmanager.h
 	src/libqomp_global.h
 	src/qompactionslist.h
+	src/taghelpers.h
 	src/thememanager.h
 	src/tuneurlchecker.h
 	src/qompbusylabel.h
@@ -93,6 +96,7 @@ set( libqomp_INCLUDE_HDRS
 )
 set( libqomp_SRCS
 	src/common.cpp
+	src/covercache.cpp
 	src/gettuneurlhelper.cpp
 	src/options.cpp
 	src/pluginhost.cpp
@@ -102,6 +106,7 @@ set( libqomp_SRCS
 	src/qompmetadataresolver.cpp
 	src/qompnetworkingfactory.cpp
 	src/qompplayer.cpp
+	src/taghelpers.cpp
 	src/thememanager.cpp
 	src/tune.cpp
 	src/tuneurlchecker.cpp
@@ -119,11 +124,10 @@ file( COPY ${libqomp_INCLUDE_HDRS} DESTINATION ${PROJECT_BINARY_DIR}/include )
 if( LINUX )
 	if(DEV_MODE)
 		set( LIBQOMP_DATADIR ${PROJECT_BINARY_DIR}/qomp )
-		set( LIBQOMP_PLUGSDIR ${PROJECT_BINARY_DIR}/qomp/plugins )
 	else()
 		set( LIBQOMP_DATADIR ${CMAKE_INSTALL_PREFIX}/share/qomp )
-		set( LIBQOMP_PLUGSDIR ${LIB_INSTALL_DIR}/qomp/plugins )
 	endif()
+	set( LIBQOMP_PLUGSDIR ${LIB_INSTALL_DIR}/qomp/plugins )
 	add_definitions(
 		-DHAVE_X11
 		-DQOMP_DATADIR="${LIBQOMP_DATADIR}"

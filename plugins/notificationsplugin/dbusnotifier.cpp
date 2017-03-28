@@ -102,7 +102,7 @@ void DBusNotifier::doPopup(const QString &title, const QString &message, QImage 
 	if(!image.isNull()) {
 		QImage im = image.scaledToWidth(defaultSize.width());
 		iiibiiay i(&im);
-		hints.insert("icon_data", QVariant(iiibiiay::id, &i));
+		hints.insert("image-data", QVariant(iiibiiay::id, &i));
 	}
 	int lifeTime = minLifeTime;
 	/*if (capabilities().contains(markupCaps)) {
