@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Khryukin Evgeny
+ * Copyright (C) 2014-2017  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@
 #include "qomptaglibmetadataresolver.h"
 #include "qompnetworkingfactory.h"
 #include "tune.h"
+#include "taghelpers.h"
 #include "common.h"
 
 #ifndef Q_OS_MAC

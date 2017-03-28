@@ -20,6 +20,7 @@
 #include "filesystemcommon.h"
 #include "tune.h"
 #include "common.h"
+#include "taghelpers.h"
 
 #include <QString>
 

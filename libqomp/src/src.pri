@@ -10,7 +10,8 @@ SOURCES += $$PWD/common.cpp \
         $$PWD/pluginhost.cpp \
         $$PWD/tuneurlchecker.cpp \
         $$PWD/gettuneurlhelper.cpp \
-        $$PWD/covercache.cpp
+        $$PWD/covercache.cpp \
+        $$PWD/taghelpers.cpp
 
 HEADERS += $$PWD/libqomp_global.h \
         $$PWD/common.h \
@@ -24,7 +25,8 @@ HEADERS += $$PWD/libqomp_global.h \
         $$PWD/pluginhost.h \
         $$PWD/tuneurlchecker.h \
         $$PWD/gettuneurlhelper.h \
-        $$PWD/covercache.h
+        $$PWD/covercache.h \
+        $$PWD/taghelpers.h
 
 
 android {
