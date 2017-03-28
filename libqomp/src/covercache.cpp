@@ -30,6 +30,8 @@
 
 static const QString cacheName = "/image_cache";
 
+typedef QPair<QWeakPointer<QString>, QImage> CoverPair;
+
 class CoverCache::Private
 {
 public:
@@ -40,7 +42,7 @@ public:
 	void saveCache();
 	void cleanup();
 
-	QList< QPair<QWeakPointer<QString>, QImage> > data;
+	QHash<QString, CoverPair> data;
 	QFile* cache;
 };
 
@@ -49,7 +51,10 @@ public:
 CoverCache::Private::Private()
 {
 	cache = new QFile(Qomp::cacheDir() + cacheName);
-	if(!cache->open(QFile::ReadWrite)) {
+	if(cache->open(QFile::ReadWrite)) {
+		loadCache();
+	}
+	else {
 		delete cache;
 		cache = nullptr;
 	}
@@ -65,13 +70,12 @@ void CoverCache::Private::loadCache()
 {
 	if(cache) {
 		QDataStream ds(cache);
-		QHash<QString,QImage> hash;
-		ds >> hash;
-
-		for(auto& pair: data) {
-			if(!pair.first.isNull() && hash.contains(*pair.first.data())) {
-				pair.second = hash.value(*pair.first.data());
-			}
+		while(!ds.atEnd()) {
+			QString hash;
+			QImage img;
+			ds >> hash >> img;
+			CoverPair pair{ QWeakPointer<QString>(), img };
+			data.insert(hash, pair);
 		}
 	}
 }
@@ -81,20 +85,20 @@ void CoverCache::Private::saveCache()
 	if(cache) {
 		cache->resize(0);
 		QDataStream ds(cache);
-		QHash<QString,QImage> hash;
-		for(const auto& pair: data) {
+		for(const QString& hash: data.keys()) {
+			const CoverPair pair = data.value(hash);
 			if(!pair.first.isNull())
-				hash.insert(*pair.first.data(), pair.second);
+				ds << hash << pair.second;
 		}
-		ds << hash;
 	}
 }
 
 void CoverCache::Private::cleanup()
 {
-	for(int i = data.count()-1; i>=0; i--) {
-		if (data.at(i).first.isNull())
-			data.removeAt(i);
+	for(const QString& hash: data.keys()) {
+		const CoverPair pair = data.value(hash);
+		if(pair.first.isNull())
+			data.remove(hash);
 	}
 }
 
@@ -134,23 +138,27 @@ QSharedPointer<QString> CoverCache::put(const QImage &img)
 
 	QCryptographicHash hash(QCryptographicHash::Sha1);
 	hash.addData(imagetToBytes(img));
-	QByteArray res = hash.result();
+	const QString res(hash.result());
 
-	for(const auto& pair: d->data) {
-		if(!pair.first.isNull() && pair.first.data()->compare(res) == 0) {
+	if(d->data.contains(res)) {
+		const CoverPair pair = d->data.value(res);
+		if(!pair.first.isNull()) {
 			return pair.first.toStrongRef();
-		}
+		}		
 	}
 
 	QSharedPointer<QString> p(new QString(res));
-	d->data.append({ p.toWeakRef(), img });
+	const CoverPair pair{ p.toWeakRef(), img };
+	d->data.insert(res, pair);
+
 	return p;
 }
 
 const QImage CoverCache::get(const QString &hash) const
 {
-	for(const auto& pair: d->data) {
-		if(!pair.first.isNull() && pair.first.data()->compare(hash) == 0) {
+	if(d->data.contains(hash)) {
+		const CoverPair pair = d->data.value(hash);
+		if(!pair.first.isNull()) {
 			return pair.second;
 		}
 	}
@@ -160,17 +168,12 @@ const QImage CoverCache::get(const QString &hash) const
 
 QSharedPointer<QString> CoverCache::restore(const QString &hash)
 {
-	if(d->cache) {
-		d->cache->seek(0);
-		QDataStream ds(d->cache);
-		QHash<QString,QImage> h;
-		ds >> h;
-
-		for(const QString& key: h.keys()) {
-			if(key.compare(hash) == 0) {
-				return put(h.value(key));
-			}
-		}
+	if(d->data.contains(hash)) {
+		CoverPair pair = d->data.value(hash);
+		QSharedPointer<QString> p(new QString(hash));
+		pair.first = p.toWeakRef();
+		d->data.insert(hash, pair);
+		return p;
 	}
 
 	return QSharedPointer<QString>();
