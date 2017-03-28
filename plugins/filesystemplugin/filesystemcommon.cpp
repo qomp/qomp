@@ -53,15 +53,17 @@ Tune* tuneFromFile(const QString& file)
 			tune->album = safeTagLibString2QString( tag->album() );
 			tune->title = safeTagLibString2QString( tag->title() );
 			tune->trackNumber = QString::number( tag->track() );
-
-			Qomp::loadCover(tune, ref.file());
 		}
+
+		Qomp::loadCover(tune, ref.file());
 
 		if(ref.audioProperties()) {
 			TagLib::AudioProperties *prop = ref.audioProperties();
 			tune->duration = Qomp::durationSecondsToString( prop->length() );
 			tune->bitRate = QString::number( prop->bitrate() );
 		}
+
+		tune->setMetadataResolved(true);
 	}
 
 	return tune;
