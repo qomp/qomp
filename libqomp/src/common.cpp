@@ -253,11 +253,17 @@ void loadCover(Tune *tune, TagLib::File *file)
 			if(tag2) {
 				TagLib::ID3v2::FrameList frameList = tag2->frameList("APIC");
 				if(!frameList.isEmpty()) {
-					TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
-
-					QImage cover;
-					cover.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
-					tune->setCover(cover);
+					for(unsigned int i = 0; i < frameList.size(); ++i) {
+						TagLib::ID3v2::Frame* pic = frameList[i];
+						TagLib::ID3v2::AttachedPictureFrame *coverImg = dynamic_cast<TagLib::ID3v2::AttachedPictureFrame *>(pic);
+						if(coverImg) {
+							QImage cover;
+							if(cover.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size())) {
+								tune->setCover(cover);
+								break;
+							}
+						}
+					}
 				}
 			}
 		}
