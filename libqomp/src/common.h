@@ -29,9 +29,17 @@
 
 namespace TagLib {
 class String;
+class File;
+#ifdef Q_OS_WIN
+class FileName;
+#else
+typedef const char *FileName;
+#endif
 }
 
+
 class QWidget;
+class Tune;
 
 namespace Qomp {
 
@@ -44,6 +52,9 @@ LIBQOMPSHARED_EXPORT uint durationStringToSeconds(const QString& dur);
 
 LIBQOMPSHARED_EXPORT QString unescape(const QString& escaped);
 LIBQOMPSHARED_EXPORT QString safeTagLibString2QString(const TagLib::String& string);
+LIBQOMPSHARED_EXPORT TagLib::FileName fileName2TaglibFileName(const QString& file);
+
+LIBQOMPSHARED_EXPORT void loadCover(Tune* tune, TagLib::File* file);
 
 LIBQOMPSHARED_EXPORT QString cacheDir();
 LIBQOMPSHARED_EXPORT QString dataDir();

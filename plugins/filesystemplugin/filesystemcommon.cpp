@@ -37,15 +37,8 @@ namespace Qomp {
 
 static TagLib::FileRef getTaglibRef(const QString& file)
 {
-	TagLib::String str( file.toUtf8().constData(), TagLib::String::UTF8 );
-#ifdef Q_OS_WIN
-	TagLib::FileName fname(str.toCWString());
-#else
-	TagLib::FileName fname(str.toCString(true));
-#endif
-	return TagLib::FileRef(fname, true, TagLib::AudioProperties::Accurate);
+	return TagLib::FileRef(Qomp::fileName2TaglibFileName(file), true, TagLib::AudioProperties::Accurate);
 }
-
 
 Tune* tuneFromFile(const QString& file)
 {
@@ -60,6 +53,8 @@ Tune* tuneFromFile(const QString& file)
 			tune->album = safeTagLibString2QString( tag->album() );
 			tune->title = safeTagLibString2QString( tag->title() );
 			tune->trackNumber = QString::number( tag->track() );
+
+			Qomp::loadCover(tune, ref.file());
 		}
 
 		if(ref.audioProperties()) {

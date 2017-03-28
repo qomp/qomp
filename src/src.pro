@@ -138,5 +138,17 @@ android {
     LIBS += -L$$OUT_PWD/../bin -lqomp
 }
 
+win32|android {
+    LIBS += -L$$TAG_LIB
+    INCLUDEPATH += $$TAG_INCLUDE
+}
+
+mac {
+    QMAKE_LFLAGS += -framework tag
+}
+else {
+    LIBS += -ltag
+}
+
 INCLUDEPATH += $$PWD/../libqomp/include
 DEPENDPATH += $$PWD/../libqomp/include

@@ -22,6 +22,7 @@
 
 #include <QUrl>
 #include <QPointer>
+#include <QImage>
 
 #include "libqomp_global.h"
 
@@ -86,12 +87,20 @@ public:
 
 	bool sameSource(const Tune* other) const;
 
+	const QImage cover() const;
+	void setCover(const QImage& cover);
+
+	bool isMetadataResolved() const { return metadataResolved_; }
+	void setMetadataResolved(bool resolved);
+
 private:
 	Q_DISABLE_COPY(Tune)
 	static int lastId_;
 	int id_;
 	bool canSave_;
 	mutable QPointer<TuneURLResolveStrategy> strategy_;
+	QSharedPointer<QString> cover_;
+	bool metadataResolved_;
 
 	static const Tune* empty_;
 };

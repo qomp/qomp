@@ -54,8 +54,10 @@ void QompMetaDataResolver::tuneFinished()
 		t = data_.takeFirst();
 	}
 
-	if(t != Tune::emptyTune())
+	if(t != Tune::emptyTune() && !t->isMetadataResolved()) {
+		t->setMetadataResolved(true);
 		emit tuneUpdated(t);
+	}
 }
 
 bool QompMetaDataResolver::isDataEmpty() const

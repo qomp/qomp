@@ -7,8 +7,8 @@ SOURCES += $$PWD/main.cpp \
     $$PWD/updateschecker.cpp \
     $$PWD/qomptunedownloader.cpp \
     $$PWD/translator.cpp \
+    $$PWD/qomptaglibmetadataresolver.cpp \
     $$PWD/qompcommandline.cpp
-#    $$PWD/qomptaglibmetadataresolver.cpp \
 
 
 HEADERS  += $$PWD/qompmainwin.h \
@@ -17,8 +17,8 @@ HEADERS  += $$PWD/qompmainwin.h \
     $$PWD/updateschecker.h \
     $$PWD/qomptunedownloader.h \
     $$PWD/translator.h \
+    $$PWD/qomptaglibmetadataresolver.h \
     $$PWD/qompcommandline.h
-#    $$PWD/qomptaglibmetadataresolver.h \
 
 RESOURCES+= $$PWD/qomp.qrc
 

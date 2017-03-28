@@ -152,18 +152,17 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	else if(role == Qt::ToolTipRole) {
 		QString ret;
 		if(!t->artist.isEmpty()) {
-			ret += tr("Artist: %1\n").arg(t->artist);
+			ret += tr("<div><nobr><b>Artist</b>: %1</nobr></div>").arg(t->artist);
 		}
 		if(!t->title.isEmpty()) {
-			ret += tr("Title: %1\n").arg(t->title);
+			ret += tr("<div><nobr><b>Title</b>: %1</nobr></div>").arg(t->title);
 		}
 		if(!t->album.isEmpty()) {
-			ret += tr("Album: %1\n").arg(t->album);
+			ret += tr("<div><nobr><b>Album</b>: %1</nobr></div>").arg(t->album);
 		}
 		if(!t->bitRate.isEmpty()) {
-			ret += tr("Bitrate: %1\n").arg(t->bitRate);
+			ret += tr("<div><nobr><b>Bitrate</b>: %1</nobr></div>").arg(t->bitRate);
 		}
-		ret.chop(1);
 		return ret;
 	}
 
@@ -184,6 +183,9 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	}
 	else if(role == TuneRole) {
 		return QVariant::fromValue<Tune*>(t);
+	}
+	else if(role == CoverRole) {
+		return t->cover();
 	}
 
 	return QVariant();

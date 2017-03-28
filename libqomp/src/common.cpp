@@ -20,6 +20,7 @@
 #include "common.h"
 #include "defines.h"
 #include "options.h"
+#include "tune.h"
 
 #include <QTime>
 #include <QTextDocument>
@@ -36,8 +37,14 @@
 
 #ifndef Q_OS_MAC
 #include <taglib/tstring.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/attachedpictureframe.h>
+#include <taglib/mpegfile.h>
 #else
 #include <tag/tstring.h>
+#include <tag/id3v2tag.h>
+#include <tag/attachedpictureframe.h>
+#include <tag/mpegfile.h>
 #endif
 
 
@@ -214,6 +221,60 @@ QString safeTagLibString2QString(const TagLib::String& string)
 	return ret;
 }
 
+static bool searchLocalCover(Tune* t)
+{
+	if(t->file.isEmpty())
+		return false;
+
+	static const QStringList coverList{"front", "cover", "albumart"};
+	static const QStringList coverExt{"jpg", "jpeg", "png"};
+	for(const QString& cover: coverList)
+		for(const QString& ext: coverExt) {
+			const QString file = QFileInfo(t->file).absolutePath() + "/" + cover + "." + ext;
+			if(QFile::exists(file)) {
+				QImage i(file);
+				if(!i.isNull()) {
+					t->setCover(i);
+					return true;
+				}
+			}
+		}
+
+	return false;
+}
+
+void loadCover(Tune *tune, TagLib::File *file)
+{
+	if (!searchLocalCover(tune)) {
+		auto mpeg = dynamic_cast<TagLib::MPEG::File*>(file);
+
+		if(mpeg) {
+			TagLib::ID3v2::Tag* tag2 = mpeg->ID3v2Tag();
+			if(tag2) {
+				TagLib::ID3v2::FrameList frameList = tag2->frameList("APIC");
+				if(!frameList.isEmpty()) {
+					TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
+
+					QImage cover;
+					cover.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
+					tune->setCover(cover);
+				}
+			}
+		}
+	}
+}
+
+TagLib::FileName fileName2TaglibFileName(const QString &file)
+{
+	TagLib::String str( file.toUtf8().constData(), TagLib::String::UTF8 );
+#ifdef Q_OS_WIN
+	TagLib::FileName fname(str.toCWString());
+#else
+	TagLib::FileName fname(str.toCString(true));
+#endif
+	return fname;
+}
+
 /**
  * Helper function for forceUpdate().
  */
@@ -260,7 +321,6 @@ QMainWindow *getMainWindow()
 	}
 	return nullptr;
 }
-
 #endif
 } //namespace Qomp
 

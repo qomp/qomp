@@ -22,6 +22,8 @@
 #include "tune.h"
 
 #include <QDropEvent>
+#include <QBuffer>
+#include <QToolTip>
 
 QompPlaylistView::QompPlaylistView(QWidget *parent) :
 	QListView(parent)
@@ -64,6 +66,44 @@ void QompPlaylistView::mouseMoveEvent(QMouseEvent *event)
 		event->ignore();
 	else
 		QListView::mouseMoveEvent(event);
+}
+
+bool QompPlaylistView::viewportEvent(QEvent *e)
+{
+	if(e->type() == QEvent::ToolTip) {
+		QHelpEvent *he = static_cast<QHelpEvent*>(e);
+		const QModelIndex ind = indexAt(he->pos());
+
+		if(ind.isValid()) {
+			QString html;
+			const QImage img = ind.data(QompPlayListModel::CoverRole).value<QImage>();
+			if(!img.isNull()) {
+				QByteArray data;
+				QBuffer buffer(&data);
+				buffer.open(QBuffer::ReadWrite);
+				img.scaled(64, 64, Qt::KeepAspectRatio,
+					   Qt::SmoothTransformation).save(&buffer, "PNG", 100);
+				html = QString("<table><tr>"
+					       "<td><img src='data:image/png;base64, %1'></td>"
+					       "<td>&nbsp;&nbsp;</td>"
+					       "<td>%2</td>"
+					       "</tr></table>")
+						.arg(QString(data.toBase64()))
+						.arg(ind.data(Qt::ToolTipRole).toString());
+			}
+			else
+				html = ind.data(Qt::ToolTipRole).toString();
+
+			QToolTip::showText(he->globalPos(), html, this, QRect(), 5000);
+		}
+		else {
+			QToolTip::hideText();
+			e->ignore();
+		}
+
+		return true;
+	}
+	return QListView::viewportEvent(e);
 }
 
 QSize QompPlaylistView::minimumSizeHint() const

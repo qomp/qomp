@@ -18,15 +18,15 @@
  */
 
 #include "qompqtmultimediaplayer.h"
-//#include "qomptaglibmetadataresolver.h"
+#include "qomptaglibmetadataresolver.h"
 #include "tune.h"
 #include "gettuneurlhelper.h"
 
 #include <QMediaContent>
-//#include <QAudioDeviceInfo>
 #include <QAudioOutputSelectorControl>
 #include <QMediaService>
 #include <QSignalBlocker>
+
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -35,7 +35,7 @@
 QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	QompPlayer(),
 	player_(new QMediaPlayer(this)),
-	resolver_(0/*new QompTagLibMetaDataResolver(this)*/),
+	resolver_(new QompTagLibMetaDataResolver(this)),
 	watcher_(0),
 	prevTune_(Tune::emptyTune())
 {
@@ -53,8 +53,7 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	connect(player_, &QMediaPlayer::audioAvailableChanged, this, &QompQtMultimediaPlayer::audioReadyChanged);
 	connect(player_, &QMediaPlayer::seekableChanged, this, &QompQtMultimediaPlayer::seekableChanged);
 #endif
-
-	//connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
+	connect(resolver_, SIGNAL(tuneUpdated(Tune*)), SIGNAL(tuneDataUpdated(Tune*)), Qt::QueuedConnection);
 }
 
 QompQtMultimediaPlayer::~QompQtMultimediaPlayer()
@@ -78,6 +77,9 @@ void QompQtMultimediaPlayer::doSetTune()
 
 	GetTuneUrlHelper* helper = new GetTuneUrlHelper(this, "tuneUrlReady", this);
 	watcher_ = helper->getTuneUrlAsynchronously(currentTune());
+	if(resolver_) {
+		resolver_->resolve( {currentTune()} );
+	}
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const

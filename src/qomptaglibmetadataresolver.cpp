@@ -22,26 +22,40 @@
 #include "tune.h"
 #include "common.h"
 
+#ifndef Q_OS_MAC
 #include <taglib/tbytevectorstream.h>
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 #include <taglib/audioproperties.h>
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2framefactory.h>
+#include <taglib/id3v2tag.h>
+#else
+#include <tag/tbytevectorstream.h>
+#include <tag/fileref.h>
+#include <tag/tag.h>
+#include <tag/audioproperties.h>
+#include <tag/mpegfile.h>
+#include <tag/id3v2framefactory.h>
+#include <tag/id3v2tag.h>
+#endif
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QUrl>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
 #endif
 
-static const uint tagSize = 5000;
+static const uint tagSize = 100;
 
 
 QompTagLibMetaDataResolver::QompTagLibMetaDataResolver(QObject *parent) :
 	QompMetaDataResolver(parent),
-	nam_(QompNetworkingFactory::instance()->getNetworkAccessManager())
+	nam_(QompNetworkingFactory::instance()->getMainNAM()),
+	fullSize_(tagSize),
+	step_(0)
 {
 }
 
@@ -57,39 +71,20 @@ void QompTagLibMetaDataResolver::dataReady()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompTagLibMetaDataResolver::dataReady()  size=" << QString::number(size);
 #endif
-	if(size >= tagSize) {
-		Tune *tune = get();
-
-		TagLib::ByteVector bv(r->readAll().constData(), size);
-		TagLib::ByteVectorStream stream(bv);
-
-		TagLib::FileRef ref(createFile(r->url().toDisplayString(), &stream));
-		if(!ref.isNull()) {
-			if(ref.tag()) {
-				TagLib::Tag* tag = ref.tag();
-#ifdef DEBUG_OUTPUT
-	qDebug() << "QompTagLibMetaDataResolver::dataReady()  not null tag";
-#endif
-				tune->artist = Qomp::fixEncoding( tag->artist() );
-				tune->album = Qomp::fixEncoding( tag->album() );
-				tune->title = Qomp::fixEncoding( tag->title() );
-				tune->trackNumber = QString::number( tag->track() );
-			}
-
-			if(ref.audioProperties()) {				
-				TagLib::AudioProperties *prop = ref.audioProperties();
-				if(prop->length())
-					tune->duration = Qomp::durationSecondsToString( prop->length() );
-
-				if(prop->bitrate())
-					tune->bitRate = QString::number( prop->bitrate() );
-			}
+	if (step_ == 0) {
+		if(size > tagSize) {
+			loadFullSize(r->url(), r->peek(size));
+			step_ = 1;
 		}
+	}
+	else if(size >= fullSize_) {
+		TagLib::ByteVector bv(r->readAll().constData(), size);
 
-		r->abort();
 		r->disconnect();
+		r->abort();
 		r->deleteLater();
 
+		processData(r->url(), bv);
 		tuneFinished();
 		resolveNextMedia();
 	}
@@ -102,19 +97,79 @@ void QompTagLibMetaDataResolver::resolveNextMedia()
 #endif
 	if(!isDataEmpty()) {
 		Tune* t = get();
-		QNetworkReply* r = nam_->get(QNetworkRequest(t->getUrl()));
-		connect(r, SIGNAL(readyRead()), SLOT(dataReady()));
-		connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+		if(t->isMetadataResolved()) {
+			tuneFinished();
+			resolveNextMedia();
+			return;
+		}
+
+		QUrl u(t->getUrl());
+		if(!u.isLocalFile()) {
+			QNetworkReply* r = nam_->get(QNetworkRequest(u));
+
+			connect(r, &QNetworkReply::readyRead, this, &QompTagLibMetaDataResolver::dataReady);
+
+			//for some cases if some went wrong
+			connect(r, &QNetworkReply::finished, [r, this]() {
+				r->disconnect();
+				r->deleteLater();
+				tuneFinished();
+				resolveNextMedia();
+			});
+		}
+		else {
+			auto ref = TagLib::FileRef(Qomp::fileName2TaglibFileName(u.toLocalFile()), false);
+			Qomp::loadCover(t, ref.file());
+			tuneFinished();
+			resolveNextMedia();
+		}
+		step_ = 0;
 	}
 }
 
-TagLib::File *QompTagLibMetaDataResolver::createFile(const QString& url, TagLib::IOStream* stream)
+TagLib::MPEG::File *QompTagLibMetaDataResolver::createFile(const QString& url, TagLib::IOStream* stream)
 {
+	Q_UNUSED(url)
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompTagLibMetaDataResolver::createFile   url=" << url;
 #endif
 	//if(url.endsWith("mp3", Qt::CaseInsensitive)) {
+		stream->seek(0);
 		return new TagLib::MPEG::File(stream, TagLib::ID3v2::FrameFactory::instance());
 	//}
-	return 0;
+		return 0;
+}
+
+void QompTagLibMetaDataResolver::processData(const QUrl &url, const TagLib::ByteVector &data)
+{
+	TagLib::ByteVectorStream stream(data);
+	auto tagFile = createFile(url.toDisplayString(), &stream);
+
+	TagLib::FileRef ref(tagFile);
+	if(tagFile->isValid() && !ref.isNull()) {
+		Tune *tune = get();
+		Qomp::loadCover(tune, tagFile);
+
+		if(ref.audioProperties()) {
+			TagLib::AudioProperties *prop = ref.audioProperties();
+			if(prop->length())
+				tune->duration = Qomp::durationSecondsToString( prop->length() );
+
+			if(prop->bitrate())
+				tune->bitRate = QString::number( prop->bitrate() );
+		}
+	}
+}
+
+void QompTagLibMetaDataResolver::loadFullSize(const QUrl& url, const QByteArray &data)
+{
+	TagLib::ByteVector bv(data.constData(), data.size());
+	TagLib::ByteVectorStream stream(bv);
+
+	auto tagFile = createFile(url.toDisplayString(), &stream);
+	TagLib::FileRef ref(tagFile);
+	if(!ref.isNull()) {
+		auto tag = tagFile->ID3v2Tag(false);
+		fullSize_ = tag->header()->completeTagSize();
+	}
 }

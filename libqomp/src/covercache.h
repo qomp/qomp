@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2017  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,31 +17,31 @@
  *
  */
 
-#ifndef QOMPPLAYLISTVIEW_H
-#define QOMPPLAYLISTVIEW_H
+#ifndef COVERCACHE_H
+#define COVERCACHE_H
 
-#include <QListView>
+#include <QObject>
 
-class Tune;
+class QImage;
 
-class QompPlaylistView : public QListView
+class CoverCache : public QObject
 {
 	Q_OBJECT
 public:
-	explicit QompPlaylistView(QWidget *parent = 0);
+	static CoverCache* instance();
+	~CoverCache();
 
-	virtual QSize minimumSizeHint() const Q_DECL_OVERRIDE;
-	virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-	
-protected:
-	virtual void startDrag(Qt::DropActions supportedActions) Q_DECL_OVERRIDE;
-	virtual void dropEvent(QDropEvent *e) Q_DECL_OVERRIDE;
-	virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-	virtual bool viewportEvent(QEvent *e) Q_DECL_OVERRIDE;
+	QSharedPointer<QString> put(const QImage& img);
+	const QImage get(const QString& hash) const;
+	QSharedPointer<QString> restore(const QString& hash);
 
 private:
-	QList<Tune*> selected_;
-	
+	CoverCache();
+	QByteArray imageToBytes(const QImage &img) const;
+	static CoverCache* _instance;
+
+	class Private;
+	Private* d;
 };
 
-#endif // QOMPPLAYLISTVIEW_H
+#endif // COVERCACHE_H

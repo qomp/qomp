@@ -39,7 +39,8 @@ public:
 		FileRole = Qt::UserRole+6,
 		IsCurrentTuneRole = Qt::UserRole+7,
 		CanDownloadRole = Qt::UserRole+8,
-		TuneRole = Qt::UserRole+9
+		TuneRole = Qt::UserRole+9,
+		CoverRole = Qt::UserRole+10
 	};
 
 	void addTunes(const QList<Tune*>& tunes);
