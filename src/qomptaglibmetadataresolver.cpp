@@ -30,8 +30,6 @@
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2framefactory.h>
 #include <taglib/id3v2tag.h>
-#include <taglib/attachedpictureframe.h>
-#include <taglib/id3v2frame.h>
 #else
 #include <tag/tbytevectorstream.h>
 #include <tag/fileref.h>
@@ -40,14 +38,11 @@
 #include <tag/mpegfile.h>
 #include <tag/id3v2framefactory.h>
 #include <tag/id3v2tag.h>
-#include <tag/attachedpictureframe.h>
-#include <tag/id3v2frame.h>
 #endif
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QUrl>
-#include <QImage>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -123,6 +118,8 @@ void QompTagLibMetaDataResolver::resolveNextMedia()
 			});
 		}
 		else {
+			auto ref = TagLib::FileRef(Qomp::fileName2TaglibFileName(u.toLocalFile()), false);
+			Qomp::loadCover(t, ref.file());
 			tuneFinished();
 			resolveNextMedia();
 		}
@@ -150,20 +147,7 @@ void QompTagLibMetaDataResolver::processData(const QUrl &url, const TagLib::Byte
 	TagLib::FileRef ref(tagFile);
 	if(tagFile->isValid() && !ref.isNull()) {
 		Tune *tune = get();
-
-		TagLib::ID3v2::Tag *tag = tagFile->ID3v2Tag(false);
-		if(tag) {
-			TagLib::ID3v2::FrameList frameList = tag->frameList("APIC");
-			if(!frameList.isEmpty()) {
-				TagLib::ID3v2::AttachedPictureFrame *coverImg =
-						static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
-
-				QImage coverQImg;
-				coverQImg.loadFromData((const uchar *) coverImg->picture().data(),
-								     coverImg->picture().size());
-				tune->setCover(coverQImg);
-			}
-		}
+		Qomp::loadCover(tune, tagFile);
 
 		if(ref.audioProperties()) {
 			TagLib::AudioProperties *prop = ref.audioProperties();

@@ -22,55 +22,22 @@
 #include "common.h"
 
 #include <QString>
-#include <QImage>
-#include <QFileInfo>
 
 #ifndef Q_OS_MAC
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 #include <taglib/audioproperties.h>
-#include <taglib/id3v2tag.h>
-#include <taglib/attachedpictureframe.h>
-#include <taglib/mpegfile.h>
 #else
 #include <tag/fileref.h>
 #include <tag/tag.h>
 #include <tag/audioproperties.h>
-#include <tag/id3v2tag.h>
-#include <tag/attachedpictureframe.h>
-#include <tag/mpegfile.h>
 #endif
 
 namespace Qomp {
 
 static TagLib::FileRef getTaglibRef(const QString& file)
 {
-	TagLib::String str( file.toUtf8().constData(), TagLib::String::UTF8 );
-#ifdef Q_OS_WIN
-	TagLib::FileName fname(str.toCWString());
-#else
-	TagLib::FileName fname(str.toCString(true));
-#endif
-	return TagLib::FileRef(fname, true, TagLib::AudioProperties::Accurate);
-}
-
-static bool searchLocalCover(Tune* t)
-{
-	static const QStringList coverList{"front", "cover", "albumart"};
-	static const QStringList coverExt{"jpg", "jpeg", "png"};
-	for(const QString& cover: coverList)
-		for(const QString& ext: coverExt) {
-			const QString file = QFileInfo(t->file).absolutePath() + "/" + cover + "." + ext;
-			if(QFile::exists(file)) {
-				QImage i(file);
-				if(!i.isNull()) {
-					t->setCover(i);
-					return true;
-				}
-			}
-		}
-
-	return false;
+	return TagLib::FileRef(Qomp::fileName2TaglibFileName(file), true, TagLib::AudioProperties::Accurate);
 }
 
 Tune* tuneFromFile(const QString& file)
@@ -87,23 +54,7 @@ Tune* tuneFromFile(const QString& file)
 			tune->title = safeTagLibString2QString( tag->title() );
 			tune->trackNumber = QString::number( tag->track() );
 
-			if (!searchLocalCover(tune)) {
-				auto mpeg = dynamic_cast<TagLib::MPEG::File*>(ref.file());
-
-				if(mpeg) {
-					TagLib::ID3v2::Tag* tag2 = mpeg->ID3v2Tag();
-					if(tag2) {
-						TagLib::ID3v2::FrameList frameList = tag2->frameList("APIC");
-						if(!frameList.isEmpty()) {
-							TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
-
-							QImage cover;
-							cover.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
-							tune->setCover(cover);
-						}
-					}
-				}
-			}
+			Qomp::loadCover(tune, ref.file());
 		}
 
 		if(ref.audioProperties()) {

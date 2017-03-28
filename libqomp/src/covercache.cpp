@@ -111,10 +111,10 @@ CoverCache::CoverCache() :
 {
 }
 
-QByteArray CoverCache::imagetToBytes(const QImage &img) const
+QByteArray CoverCache::imageToBytes(const QImage &img) const
 {
 	QByteArray ba;
-	QDataStream ds(ba);
+	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << img;
 	return ba;
 }
@@ -137,7 +137,7 @@ QSharedPointer<QString> CoverCache::put(const QImage &img)
 	d->cleanup();
 
 	QCryptographicHash hash(QCryptographicHash::Sha1);
-	hash.addData(imagetToBytes(img));
+	hash.addData(imageToBytes(img));
 	const QString res(hash.result());
 
 	if(d->data.contains(res)) {

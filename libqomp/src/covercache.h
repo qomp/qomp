@@ -37,7 +37,7 @@ public:
 
 private:
 	CoverCache();
-	QByteArray imagetToBytes(const QImage &img) const;
+	QByteArray imageToBytes(const QImage &img) const;
 	static CoverCache* _instance;
 
 	class Private;
