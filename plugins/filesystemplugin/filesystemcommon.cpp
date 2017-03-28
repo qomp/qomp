@@ -36,17 +36,12 @@
 
 namespace Qomp {
 
-static TagLib::FileRef getTaglibRef(const QString& file)
-{
-	return TagLib::FileRef(Qomp::fileName2TaglibFileName(file), true, TagLib::AudioProperties::Accurate);
-}
-
 Tune* tuneFromFile(const QString& file)
 {
 	Tune* tune = new Tune(false);
 	tune->file = file;
 
-	TagLib::FileRef ref = getTaglibRef(file);
+	TagLib::FileRef ref = fileName2TaglibRef(file);
 	if(!ref.isNull()) {
 		if(ref.tag()) {
 			TagLib::Tag* tag = ref.tag();
@@ -72,7 +67,7 @@ Tune* tuneFromFile(const QString& file)
 
 bool getAudioInfo(const QString &file, qint64 *durationMiliSecs, int *bitrate)
 {
-	TagLib::FileRef ref = getTaglibRef(file);
+	TagLib::FileRef ref = Qomp::fileName2TaglibRef(file);
 	if(!ref.isNull() && ref.audioProperties()) {
 		TagLib::AudioProperties *prop = ref.audioProperties();
 

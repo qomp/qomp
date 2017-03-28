@@ -119,7 +119,7 @@ void QompTagLibMetaDataResolver::resolveNextMedia()
 			});
 		}
 		else {
-			auto ref = TagLib::FileRef(Qomp::fileName2TaglibFileName(u.toLocalFile()), false);
+			auto ref = Qomp::fileName2TaglibRef(u.toLocalFile(), false);
 			Qomp::loadCover(t, ref.file());
 			tuneFinished();
 			resolveNextMedia();

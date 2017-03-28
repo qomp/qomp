@@ -21,23 +21,19 @@
 #define TAGHELPERS_H
 
 #include "libqomp_global.h"
-#ifndef Q_OS_MAC
-#include <taglib/tiostream.h>
-#else
-#include <tag/tiostream.h>
-#endif
 
 class Tune;
 
 namespace TagLib {
 class String;
 class File;
+class FileRef;
 }
 
 namespace Qomp {
 
 LIBQOMPSHARED_EXPORT QString safeTagLibString2QString(const TagLib::String& string);
-LIBQOMPSHARED_EXPORT TagLib::FileName fileName2TaglibFileName(const QString& file);
+LIBQOMPSHARED_EXPORT TagLib::FileRef fileName2TaglibRef(const QString& file, bool getAudioProps = true);
 
 LIBQOMPSHARED_EXPORT void loadCover(Tune* tune, TagLib::File* file);
 

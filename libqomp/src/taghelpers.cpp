@@ -29,11 +29,13 @@
 #include <taglib/id3v2tag.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/mpegfile.h>
+#include <taglib/fileref.h>
 #else
 #include <tag/tstring.h>
 #include <tag/id3v2tag.h>
 #include <tag/attachedpictureframe.h>
 #include <tag/mpegfile.h>
+#include <tag/fileref.h>
 #endif
 
 namespace Qomp {
@@ -95,11 +97,12 @@ void loadCover(Tune *tune, TagLib::File *file)
 				TagLib::ID3v2::FrameList frameList = tag2->frameList("APIC");
 				if(!frameList.isEmpty()) {
 					for(unsigned int i = 0; i < frameList.size(); ++i) {
-						TagLib::ID3v2::Frame* pic = frameList[i];
-						TagLib::ID3v2::AttachedPictureFrame *coverImg = dynamic_cast<TagLib::ID3v2::AttachedPictureFrame *>(pic);
+						auto *coverImg = dynamic_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList[i]);
 						if(coverImg) {
 							QImage cover;
-							if(cover.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size())) {
+							if(cover.loadFromData(reinterpret_cast<const uchar*>(coverImg->picture().data()),
+									      coverImg->picture().size()))
+							{
 								tune->setCover(cover);
 								break;
 							}
@@ -111,7 +114,7 @@ void loadCover(Tune *tune, TagLib::File *file)
 	}
 }
 
-TagLib::FileName fileName2TaglibFileName(const QString &file)
+TagLib::FileRef fileName2TaglibRef(const QString &file, bool getAudioProps)
 {
 	TagLib::String str( file.toUtf8().constData(), TagLib::String::UTF8 );
 #ifdef Q_OS_WIN
@@ -119,7 +122,10 @@ TagLib::FileName fileName2TaglibFileName(const QString &file)
 #else
 	TagLib::FileName fname(str.toCString(true));
 #endif
-	return fname;
+	if(getAudioProps)
+		return TagLib::FileRef(fname, true, TagLib::AudioProperties::Accurate);
+	else
+		return TagLib::FileRef(fname, false);
 }
 
 }
