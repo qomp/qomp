@@ -9,7 +9,7 @@ option(USE_MXE "Use MXE toolkit" OFF)
 string(REGEX REPLACE "([^ ]+)[/\\].*" "\\1" QT_BIN_DIR_TMP "${QT_MOC_EXECUTABLE}")
 string(REGEX REPLACE "\\\\" "/" QT_BIN_DIR "${QT_BIN_DIR_TMP}")
 unset(QT_BIN_DIR_TMP)
-get_filename_component(QT_DIR ${QT_BIN_DIR} DIRECTORY)
+get_filename_component(QT_DIR "${QT_BIN_DIR}" DIRECTORY)
 set(QT_PLUGINS_DIR ${QT_DIR}/plugins)
 
 function(copy SOURCE DEST TARGET)
