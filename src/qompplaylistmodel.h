@@ -40,7 +40,7 @@ public:
 		FileRole     = Qt::UserRole+7,
 		IsCurrentTuneRole = Qt::UserRole+8,
 		CanDownloadRole   = Qt::UserRole+89,
-		//TuneRole     = Qt::UserRole+10,
+		TuneRole     = Qt::UserRole+10,
 		CoverRole    = Qt::UserRole+11,
 		BitrateRole  = Qt::UserRole+12
 	};

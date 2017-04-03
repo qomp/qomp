@@ -187,9 +187,9 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	else if(role == CanDownloadRole) {
 		return t->canSave();
 	}
-//	else if(role == TuneRole) {
-//		return QVariant::fromValue<Tune*>(t);
-//	}
+	else if(role == TuneRole) {
+		return QVariant::fromValue<Tune*>(t);
+	}
 	else if(role == CoverRole) {
 		return t->cover();
 	}
