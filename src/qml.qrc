@@ -8,5 +8,6 @@
         <file>qml/AboutDlg.qml</file>
         <file>qml/MainWinSideBar.qml</file>
         <file>qml/OptionsPagePlugins.qml</file>
+        <file>qml/TuneInfoDlg.qml</file>
     </qresource>
 </RCC>

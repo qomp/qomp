@@ -31,16 +31,18 @@ public:
 	explicit QompPlayListModel(QObject *parent = 0);
 
 	enum QompPlayListModelRole {
-		ArtistRole = Qt::UserRole+1,
-		TitleRole = Qt::UserRole+2,
-		TrackRole = Qt::UserRole+3,
-		DurationRole = Qt::UserRole+4,
-		URLRole = Qt::UserRole+5,
-		FileRole = Qt::UserRole+6,
-		IsCurrentTuneRole = Qt::UserRole+7,
-		CanDownloadRole = Qt::UserRole+8,
-		TuneRole = Qt::UserRole+9,
-		CoverRole = Qt::UserRole+10
+		ArtistRole   = Qt::UserRole+1,
+		AlbumRole    = Qt::UserRole+2,
+		TitleRole    = Qt::UserRole+3,
+		TrackRole    = Qt::UserRole+4,
+		DurationRole = Qt::UserRole+5,
+		URLRole      = Qt::UserRole+6,
+		FileRole     = Qt::UserRole+7,
+		IsCurrentTuneRole = Qt::UserRole+8,
+		CanDownloadRole   = Qt::UserRole+89,
+		//TuneRole     = Qt::UserRole+10,
+		CoverRole    = Qt::UserRole+11,
+		BitrateRole  = Qt::UserRole+12
 	};
 
 	void addTunes(const QList<Tune*>& tunes);

@@ -117,6 +117,11 @@ android {
         qml/Qt/labs/folderlistmodel/qmldir \
         qml/Qt/labs/folderlistmodel/libqmlfolderlistmodelplugin.so \
         qml/Qt/labs/folderlistmodel/plugins.qmltypes
+
+    ANDROID_DEPLOYMENT_DEPENDENCIES += \
+        qml/QtQuick/Layouts/libqquicklayoutsplugin.so \
+        qml/QtQuick/Layouts/qmldir \
+        qml/QtQuick/Layouts/plugins.qmltypes
   }
   else {
     QT += xml #for lastfm plugin

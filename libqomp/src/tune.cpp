@@ -217,6 +217,17 @@ bool Tune::sameSource(const Tune *other) const
 	return QString::compare(other->file, file) == 0 && QString::compare(other->url, url) == 0;
 }
 
+#ifdef	QOMP_MOBILE
+const QString Tune::cover() const
+{
+	if(!cover_.isNull()) {
+		QString* hash = cover_.data();
+		return QStringLiteral("image://tune/") + *hash;
+	}
+
+	return QString();
+}
+#else
 const QImage Tune::cover() const
 {
 	if(!cover_.isNull()) {
@@ -226,7 +237,7 @@ const QImage Tune::cover() const
 
 	return QImage();
 }
-
+#endif
 void Tune::setCover(const QImage &cover)
 {
 	cover_ = CoverCache::instance()->put(cover);

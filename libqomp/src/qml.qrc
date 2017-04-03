@@ -26,5 +26,6 @@
         <file>qmlshared/QompComboBox.qml</file>
         <file>qmlshared/QompFileDlg.qml</file>
         <file>qmlshared/QompCaptchaDlg.qml</file>
+        <file>qmlshared/QompBaseDialog.qml</file>
     </qresource>
 </RCC>

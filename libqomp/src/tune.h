@@ -86,8 +86,11 @@ public:
 	static QString mimeDataName() { return "qomp/tune"; }
 
 	bool sameSource(const Tune* other) const;
-
+#ifdef QOMP_MOBILE
+	const QString cover() const;
+#else
 	const QImage cover() const;
+#endif
 	void setCover(const QImage& cover);
 
 	bool isMetadataResolved() const { return metadataResolved_; }

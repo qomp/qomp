@@ -136,6 +136,9 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	else if(role == ArtistRole) {
 		return t->artist;
 	}
+	else if(role == AlbumRole) {
+		return t->album;
+	}
 	else if(role == TitleRole) {
 		QString title = t->title;
 		if(title.isEmpty()) {
@@ -148,6 +151,9 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	}
 	else if(role == TrackRole) {
 		return t->trackNumber;
+	}
+	else if(role == BitrateRole) {
+		return t->bitRate;
 	}
 	else if(role == Qt::ToolTipRole) {
 		QString ret;
@@ -181,9 +187,9 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	else if(role == CanDownloadRole) {
 		return t->canSave();
 	}
-	else if(role == TuneRole) {
-		return QVariant::fromValue<Tune*>(t);
-	}
+//	else if(role == TuneRole) {
+//		return QVariant::fromValue<Tune*>(t);
+//	}
 	else if(role == CoverRole) {
 		return t->cover();
 	}
@@ -390,16 +396,21 @@ void QompPlayListModel::loadTunes(const QString &fileName)
 
 QHash<int, QByteArray> QompPlayListModel::roleNames() const
 {
-	QHash<int, QByteArray> roles;
-	roles[Qt::DisplayRole] = "text";
-	roles[ArtistRole] = "artist";
-	roles[TitleRole] = "title";
-	roles[TrackRole] = "track";
-	roles[DurationRole] = "duration";
-	roles[URLRole] = "url";
-	roles[FileRole] = "file";
-	roles[IsCurrentTuneRole] = "current";
-	roles[CanDownloadRole] = "canDownload";
+	static const QHash<int, QByteArray> roles{
+		{Qt::DisplayRole,"text"},
+		{Qt::ToolTipRole,"tooltip"},
+		{ArtistRole,"artist"},
+		{AlbumRole, "album"},
+		{TrackRole,"track"},
+		{BitrateRole,"bitrate"},
+		{TitleRole, "title"},
+		{DurationRole,"duration"},
+		{URLRole,"url"},
+		{FileRole,"file"},
+		{IsCurrentTuneRole,"current"},
+		{CanDownloadRole,"canDownload"},
+		{CoverRole,"cover"}
+	};
 	return roles;
 }
 

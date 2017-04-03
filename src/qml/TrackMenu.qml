@@ -7,6 +7,7 @@ Menu {
 	signal toggle()
 	signal download()
 	signal remove()
+	signal tuneInfo()
 
 	property alias canDownload: dwnld.visible
 
@@ -24,5 +25,10 @@ Menu {
 	MenuItem {
 		text: qsTr("Remove")
 		onTriggered: root.remove()
+	}
+
+	MenuItem {
+		text: qsTr("Tune information")
+		onTriggered: root.tuneInfo()
 	}
 }

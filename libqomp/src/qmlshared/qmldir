@@ -21,6 +21,7 @@ QompSlider                  1.0 QompSlider.qml
 QompStackView               1.0 QompStackView.qml
 QompComboBox                1.0 QompComboBox.qml
 QompFileDlg                 1.0 QompFileDlg.qml
+QompBaseDialog              1.0 QompBaseDialog.qml
 
 internal GetTunesDlg    GetTunesDlg.qml
 internal QompAppWindow  QompAppWindow.qml

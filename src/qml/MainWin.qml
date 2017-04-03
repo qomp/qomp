@@ -97,6 +97,8 @@ Rectangle {
 		model: []
 
 		delegate: PlayListDelegate {
+			property variant curData: model
+
 			busy: root.busy && root.visible
 			playing: root.playing
 			width: playlist.width
@@ -326,6 +328,7 @@ Rectangle {
 				fileDialog.item.visible = true
 				fileDialog.item.forceActiveFocus()
 			}
+			onTuneInfo: root.doTuneInfo()
 		}
 	}
 
@@ -358,8 +361,39 @@ Rectangle {
 		}
 	}
 
+	Loader {
+		id: tuneInfoLoader
+		sourceComponent: tuneInfoComp
+		active: false
+		anchors.fill: parent
+	}
+
+	Component {
+		id: tuneInfoComp
+
+		TuneInfoDlg {
+
+		}
+	}
+
 	function enshureItemVisible(index) {
 		playlist.currentIndex = index
 		playlist.positionViewAtIndex(index, ListView.Contain)
+	}
+
+	function doTuneInfo() {
+		if (!tuneInfoLoader.active)
+			tuneInfoLoader.active = true
+
+		var cur = playlist.currentItem.curData
+
+		tuneInfoLoader.item.artist = cur.artist
+		tuneInfoLoader.item.album = cur.album
+		tuneInfoLoader.item.title = cur.title
+		tuneInfoLoader.item.bitrate = cur.bitrate
+		tuneInfoLoader.item.cover = cur.cover
+		console.log(cur.cover)
+		tuneInfoLoader.item.open()
+		tuneInfoLoader.item.forceActiveFocus()
 	}
 }

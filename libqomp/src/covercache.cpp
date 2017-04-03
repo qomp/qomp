@@ -32,6 +32,7 @@ static const QString cacheName = "/image_cache";
 
 typedef QPair<QWeakPointer<QString>, QImage> CoverPair;
 
+
 class CoverCache::Private
 {
 public:
@@ -138,7 +139,7 @@ QSharedPointer<QString> CoverCache::put(const QImage &img)
 
 	QCryptographicHash hash(QCryptographicHash::Sha1);
 	hash.addData(imageToBytes(img));
-	const QString res(hash.result());
+	const QString res(hash.result().toHex());
 
 	if(d->data.contains(res)) {
 		const CoverPair pair = d->data.value(res);

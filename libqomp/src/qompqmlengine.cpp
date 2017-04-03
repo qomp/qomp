@@ -19,6 +19,7 @@
 
 #include "qompqmlengine.h"
 #include "scaler.h"
+#include "covercache.h"
 
 #include <QGuiApplication>
 #include <QQuickItem>
@@ -46,26 +47,26 @@ static void menuKeyDown(JNIEnv */*env*/, jobject /*thiz*/)
 }
 #endif
 
-//class QompImageProvider : public QQuickImageProvider
-//{
-//public:
-//	QompImageProvider() : QQuickImageProvider(QQmlImageProviderBase::Pixmap){}
 
-//	virtual QPixmap	requestPixmap(const QString &id, QSize */*size*/, const QSize &/*requestedSize*/)
-//	{
-//		QPixmap pix;
-//		if(QPixmapCache::find(id, &pix))
-//			return pix.copy();
+class QompTuneCoveImageProvider : public QQuickImageProvider
+{
+public:
+	QompTuneCoveImageProvider() : QQuickImageProvider(QQmlImageProviderBase::Pixmap){}
 
-//		return QPixmap();
-//	}
+	virtual QPixmap	requestPixmap(const QString &id, QSize */*size*/, const QSize &/*requestedSize*/)
+	{
+		const QImage img = CoverCache::instance()->get(id);
+		QPixmap pix = QPixmap::fromImage(img);
+//		*size = pix.size();
+		return pix;
+	}
 
-//	static const QString& name()
-//	{
-//		static const QString n = QStringLiteral("qomp");
-//		return n;
-//	}
-//};
+	static const QString& name()
+	{
+		static const QString n = QStringLiteral("tune");
+		return n;
+	}
+};
 
 
 QompQmlEngine *QompQmlEngine::instance()
@@ -81,7 +82,7 @@ QompQmlEngine::~QompQmlEngine()
 	QMetaObject::invokeMethod(window_, "beforeClose");
 	window_->update();
 	qApp->processEvents();
-	//removeImageProvider(QompImageProvider::name());
+	removeImageProvider(QompTuneCoveImageProvider::name());
 	delete scaler_;
 	clearComponentCache();
 	collectGarbage();
@@ -160,7 +161,7 @@ QompQmlEngine::QompQmlEngine() :
 	scaler_(new Scaler)
 {
 	qmlRegisterType<Scaler>("net.sourceforge.qomp", 1, 0, "Scaler");
-	//addImageProvider(QompImageProvider::name(), new QompImageProvider);
+	addImageProvider(QompTuneCoveImageProvider::name(), new QompTuneCoveImageProvider);
 	rootContext()->setContextProperty("scaler", scaler_);
 
 	load(QUrl("qrc:///qmlshared/QompAppWindow.qml"));
