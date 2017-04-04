@@ -100,7 +100,9 @@ void QompPluginTreeView::activateItem(QompCon::DataSelection action)
 	for(const QModelIndex& i: selectionModel()->selectedIndexes()) {
 		if(i.isValid() && (i.flags() & Qt::ItemIsUserCheckable)) {
 			model()->setData(i, action, Qt::CheckStateRole);
-			emit itemActivated(i);
+
+			if(i.data(Qt::CheckStateRole) == Qt::Checked)
+				emit itemActivated(i);
 		}
 	}
 }
