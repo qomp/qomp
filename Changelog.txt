@@ -1,3 +1,20 @@
+Version 1.2
+xx.04.17
+  + add m3u playlists support
+  + add drag-n-drop files into playlist support
+  + add thumbnail toolbar (Windows only)
+  * improved Filesystem Plugin
+  * fix scaling UI on Android
+  + add Cover art (album art) support. If picture present it will displayed at song tooltip
+  + add Track info dialog (for Android only)
+  + improved themes: add frameless windows support (desktop only)
+  * improved MPRIS Plugin (Linux only)
+  + add multiselect support at tune search dialogs, add context menu at tune search dialogs
+  * update Qt libs to 5.8.0 (OS X, Windows). For now OS X 10.9 and Windows 7 are minimal supported OS versions
+  * update TagLib to 1.11.1 (Windows, OS X)
+  * various fixes and improvements
+
+
 Version 1.1.1
 15.12.2016
   + add mediakeys support
