@@ -2,6 +2,9 @@ Quick(Qt) Online Music Player
 
 Dependences:
 	Qt 5.x.x, taglib, libcue
+	gstreamer (Linux OS)
+	gstreamer-soup-plugin (Linux OS, part of GStreamer good plugins pack)
+	gstreamer-libav (Linux OS)
 
 
 Get sources:
