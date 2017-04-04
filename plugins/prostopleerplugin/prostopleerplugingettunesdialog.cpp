@@ -51,7 +51,7 @@ ProstoPleerPluginGetTunesDialog::ProstoPleerPluginGetTunesDialog(QObject *parent
 	p->ui->lb_pages->hide();
 	p->ui->lb_total->hide();
 
-	connect(p->ui->tv_results, SIGNAL(clicked(QModelIndex)), SLOT(itemSelected(QModelIndex)));
+	connect(p->ui->tv_results, SIGNAL(itemActivated(QModelIndex)), SLOT(itemSelected(QModelIndex)));
 	connect(p->ui->tb_next, SIGNAL(clicked()), SIGNAL(next()));
 	connect(p->ui->tb_prev, SIGNAL(clicked()), SIGNAL(prev()));
 }

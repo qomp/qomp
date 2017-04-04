@@ -45,8 +45,7 @@ public:
 
 		QList<QompPluginTreeView*> list = QList<QompPluginTreeView*> () << artistsView_ << albumsView_ << tracksView_;
 		foreach(QompPluginTreeView* view, list) {
-			QObject::connect(view, SIGNAL(clicked(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
-			QObject::connect(view, SIGNAL(expanded(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
+			QObject::connect(view, SIGNAL(itemActivated(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
 		}
 
 	}

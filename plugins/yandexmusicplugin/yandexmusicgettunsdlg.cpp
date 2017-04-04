@@ -37,8 +37,7 @@ public:
 
 		QList<QompPluginTreeView*> list = QList<QompPluginTreeView*> () << artistsView_ << albumsView_ << tracksView_;
 		foreach(QompPluginTreeView* view, list) {
-			connect(view, SIGNAL(clicked(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
-			connect(view, SIGNAL(expanded(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
+			connect(view, SIGNAL(itemActivated(QModelIndex)), p, SLOT(itemSelected(QModelIndex)));
 		}
 
 		connect(tabWidget_, &QTabWidget::currentChanged, p, &YandexMusicGettunsDlg::tabChanged);

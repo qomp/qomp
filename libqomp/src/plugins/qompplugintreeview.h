@@ -22,6 +22,7 @@
 
 #include <QTreeView>
 #include "libqomp_global.h"
+#include "qompplugintypes.h"
 
 class LIBQOMPSHARED_EXPORT QompPluginTreeView : public QTreeView
 {
@@ -38,18 +39,15 @@ public:
 protected:
 	virtual void keyPressEvent(QKeyEvent *ke) Q_DECL_OVERRIDE;
 	virtual void mouseDoubleClickEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
-	virtual void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
 	virtual void mouseMoveEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
+	virtual void contextMenuEvent(QContextMenuEvent *e) Q_DECL_OVERRIDE;
 
-private slots:
-	void updateIndexes();
-
-private:
-	void itemActivated();
-	QRect checkBoxRectAt(const QModelIndex& index) const;
+signals:
+	void itemActivated(const QModelIndex& );
 
 private:
-	QModelIndexList indexes_;
+	void activateItem(QompCon::DataSelection action = QompCon::DataToggle);
+	QRect branchIndicatorRectAt(const QModelIndex& index) const;
 };
 
 #endif // QompPluginTreeView_H

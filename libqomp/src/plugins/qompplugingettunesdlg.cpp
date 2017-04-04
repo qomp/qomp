@@ -287,7 +287,7 @@ void QompPluginGettunesDlg::itemSelected(const QModelIndex &ind)
 	if(!view)
 		return;
 
-	QompPluginTreeModel* model = qobject_cast<QompPluginTreeModel*>(view->model());
+	QompPluginTreeModel* model = static_cast<QompPluginTreeModel*>(view->model());
 	QompPluginModelItem* item = model->item(ind);
 
 	emit itemSelected(item);
