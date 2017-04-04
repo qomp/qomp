@@ -11,6 +11,9 @@ QompBaseDialog {
 	property alias bitrate: bitrateTxt.text
 	property alias cover: img.source
 
+	preferredWidth: parent.height > parent.width ? parent.width * 0.9 : parent.width * (img.visible ? 0.8 : 0.7)
+	preferredHeight: parent.height > parent.width ? parent.height * (img.visible ? 0.7 : 0.5) : parent.height * 0.7
+
 	content: GridLayout {
 		id: gr
 

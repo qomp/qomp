@@ -5,6 +5,8 @@ Item {
 	id: root
 
 	property alias content: placeHolder.children
+	property alias preferredWidth: placeHolder.width
+	property alias preferredHeight: placeHolder.height
 
 	anchors.fill: parent
 
