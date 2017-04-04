@@ -55,11 +55,14 @@ private slots:
 private:
 	void doLogin();
 	void doSearchStepTwo();
+	void startBusy();
+	void stopBusy();
 
 private:
 	QompPluginTreeModel* model_;
 	QString lastSearchStr_;
 	ProstoPleerPluginGetTunesDialog* dlg_;
+	int searchesCount_;
 };
 
 #endif // PROSTOPLEERCONTROLLER_H

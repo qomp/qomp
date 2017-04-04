@@ -55,7 +55,8 @@ public:
 ProstoPleerController::ProstoPleerController(QObject *parent) :
 	QompPluginController(parent),
 	model_(new QompPluginTreeModel(this)),
-	dlg_(new ProstoPleerPluginGetTunesDialog())
+	dlg_(new ProstoPleerPluginGetTunesDialog()),
+	searchesCount_(0)
 {
 	init();	
 }
@@ -119,14 +120,26 @@ void ProstoPleerController::doSearchStepTwo()
 	QNetworkRequest nr(url);
 	QNetworkReply *reply = nam()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(searchFinished()));
+	startBusy();
+}
+
+void ProstoPleerController::startBusy()
+{
+	++searchesCount_;
 	dlg_->startBusyWidget();
+}
+
+void ProstoPleerController::stopBusy()
+{
+	if(--searchesCount_ == 0)
+		dlg_->stopBusyWidget();
 }
 
 void ProstoPleerController::searchFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
-	dlg_->stopBusyWidget();
+	stopBusy();
 	if(reply->error() == QNetworkReply::NoError) {
 		QRegExp re("<li duration=\"([\\d]+)\"\\s+file_id=\"([^\"]+)\"\\s+singer=\"([^\"]+)\"\\s+"
 			   "song=\"([^\"]+)\"\\s+link=\"([^\"]+)\"");
@@ -193,12 +206,14 @@ void ProstoPleerController::itemSelected(QompPluginModelItem* item)
 	QNetworkReply *reply = nam()->post(nr, ba);
 	reply->setProperty("id", pt->internalId);
 	connect(reply, SIGNAL(finished()), SLOT(urlFinished()));
+	startBusy();
 }
 
 void ProstoPleerController::urlFinished()
 {
 	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 	reply->deleteLater();
+	stopBusy();
 	if(reply->error() == QNetworkReply::NoError) {
 		QString id = reply->property("id").toString();
 		QRegExp re("http://[^\"]+");
