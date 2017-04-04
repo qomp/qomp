@@ -28,7 +28,7 @@ Menu {
 	}
 
 	MenuItem {
-		text: qsTr("Tune information")
+		text: qsTr("Track information")
 		onTriggered: root.tuneInfo()
 	}
 }
