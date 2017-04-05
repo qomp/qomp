@@ -22,7 +22,6 @@
 
 #include <QTreeView>
 #include "libqomp_global.h"
-#include "qompplugintypes.h"
 
 class LIBQOMPSHARED_EXPORT QompPluginTreeView : public QTreeView
 {
@@ -45,8 +44,10 @@ protected:
 signals:
 	void itemActivated(const QModelIndex& );
 
+private slots:
+	void activateItem(int action);
+
 private:
-	void activateItem(QompCon::DataSelection action = QompCon::DataToggle);
 	QRect branchIndicatorRectAt(const QModelIndex& index) const;
 };
 

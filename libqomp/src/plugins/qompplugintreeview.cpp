@@ -18,11 +18,13 @@
  */
 
 #include "qompplugintreeview.h"
+#include "qompplugintypes.h"
 
 #include <QKeyEvent>
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QTimer>
+#include <QSignalMapper>
 
 
 QompPluginTreeView::QompPluginTreeView(QWidget *parent) :
@@ -40,7 +42,7 @@ QompPluginTreeView::QompPluginTreeView(QWidget *parent) :
 void QompPluginTreeView::keyPressEvent(QKeyEvent *ke)
 {
 	if(ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Space) {
-		activateItem();
+		activateItem(QompCon::DataToggle);
 		ke->accept();
 		return;
 	}
@@ -54,7 +56,7 @@ void QompPluginTreeView::mouseDoubleClickEvent(QMouseEvent *e)
 	const QRect r = branchIndicatorRectAt(i);
 	if(i.isValid() && (i.flags() & Qt::ItemIsUserCheckable) && r.contains(e->pos())) {
 		setCurrentIndex(i);
-		activateItem();
+		activateItem(QompCon::DataToggle);
 		e->accept();
 		return;
 	}
@@ -77,15 +79,16 @@ void QompPluginTreeView::contextMenuEvent(QContextMenuEvent *e)
 	if(i.isValid() && (i.flags() & Qt::ItemIsUserCheckable)) {
 
 		QMenu m;
-		m.addAction(tr("Select items"),[this](){
-			activateItem(QompCon::DataSelect);
-		});
-		m.addAction(tr("Unselect items"),[this](){
-			activateItem(QompCon::DataUnselect);
-		});
-		m.addAction(tr("Toggle items"),[this](){
-			activateItem(QompCon::DataToggle);
-		});
+		QSignalMapper map;
+
+		m.addAction(tr("Select items"), &map, SLOT(map()));
+		map.setMapping(m.actions().last(), QompCon::DataSelect);
+		m.addAction(tr("Unselect items"), &map, SLOT(map()));
+		map.setMapping(m.actions().last(), QompCon::DataUnselect);
+		m.addAction(tr("Toggle items"), &map, SLOT(map()));
+		map.setMapping(m.actions().last(), QompCon::DataToggle);
+
+		connect(&map, SIGNAL(mapped(int)), this, SLOT(activateItem(int)));
 
 		m.exec(e->globalPos());
 		e->accept();
@@ -95,7 +98,7 @@ void QompPluginTreeView::contextMenuEvent(QContextMenuEvent *e)
 	QTreeView::contextMenuEvent(e);
 }
 
-void QompPluginTreeView::activateItem(QompCon::DataSelection action)
+void QompPluginTreeView::activateItem(int action)
 {
 	for(const QModelIndex& i: selectionModel()->selectedIndexes()) {
 		if(i.isValid() && (i.flags() & Qt::ItemIsUserCheckable)) {

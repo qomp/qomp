@@ -62,6 +62,12 @@ android {
         $$CUE_LIB/libcue.so \
         $$OUT_PWD/../bin/libqomp-shared.so
 
+  !isEmpty(SSL_PATH) {
+    ANDROID_EXTRA_LIBS += \
+        $$SSL_PATH/lib/libcrypto.so \
+        $$SSL_PATH/lib/libssl.so
+  }
+
   !CONFIG(debug, debug|release) {
     ANDROID_DEPLOYMENT_DEPENDENCIES = \
         jar/QtAndroid-bundled.jar \
