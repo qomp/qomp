@@ -4,8 +4,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND WIN32)
 	add_definitions(-DALLOW_QT_PLUGINS_DIR)
 endif()
 
-option(USE_MXE "Use MXE toolkit" OFF)
-
 string(REGEX REPLACE "([^ ]+)[/\\].*" "\\1" QT_BIN_DIR_TMP "${QT_MOC_EXECUTABLE}")
 string(REGEX REPLACE "\\\\" "/" QT_BIN_DIR "${QT_BIN_DIR_TMP}")
 unset(QT_BIN_DIR_TMP)
@@ -140,6 +138,7 @@ if(USE_MXE)
 endif()
 
 list(APPEND FILE_LIST
+	libzlib.dll
 	zlib1.dll
 	libeay32.dll
 	ssleay32.dll
