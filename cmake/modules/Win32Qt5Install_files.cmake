@@ -91,6 +91,8 @@ copy("${QT_PLUGINS_DIR}/bearer/qnativewifibearer${D}.dll" "${EXECUTABLE_OUTPUT_P
 copy("${QT_PLUGINS_DIR}/playlistformats/qtmultimedia_m3u${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/playlistformats/" prepare-bin)
 copy("${QT_PLUGINS_DIR}/mediaservice/dsengine${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/mediaservice/" prepare-bin)
 copy("${QT_PLUGINS_DIR}/mediaservice/qtmedia_audioengine${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/mediaservice/" prepare-bin)
+copy("${QT_PLUGINS_DIR}/imageformats/qgif${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/imageformats/" prepare-bin)
+copy("${QT_PLUGINS_DIR}/imageformats/qjpeg${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/imageformats/" prepare-bin)
 
 #install mingw and other needed libs
 set( FILE_LIST
