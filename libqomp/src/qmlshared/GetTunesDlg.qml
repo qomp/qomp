@@ -55,9 +55,12 @@ ButtonsPage {
 
 				focus: true
 				onClicked: {
+					items.inserting = true
+					Qt.inputMethod.commit()
 					Qt.inputMethod.hide()
 					root.waitForSuggestions = false
 					root.doSearch()
+					items.inserting = false
 				}
 			}
 
