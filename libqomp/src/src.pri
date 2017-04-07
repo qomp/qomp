@@ -28,6 +28,7 @@ HEADERS += $$PWD/libqomp_global.h \
         $$PWD/covercache.h \
         $$PWD/taghelpers.h
 
+RESOURCES += $$PWD/icons.qrc
 
 android {
     HEADERS += $$PWD/qompqmlengine.h  \
@@ -36,8 +37,7 @@ android {
     SOURCES += $$PWD/qompqmlengine.cpp  \
          $$PWD/scaler.cpp \
 
-    RESOURCES += $$PWD/qml.qrc \
-             $$PWD/icons.qrc
+    RESOURCES += $$PWD/qml.qrc
 }
 else {
     HEADERS += $$PWD/qompbusylabel.h \

@@ -164,7 +164,13 @@ const QImage CoverCache::get(const QString &hash) const
 		}
 	}
 
-	return QImage();
+	return defaultImage();
+}
+
+const QImage CoverCache::defaultImage() const
+{
+	static const QImage vinyl(":/vinyl");
+	return vinyl;
 }
 
 QSharedPointer<QString> CoverCache::restore(const QString &hash)

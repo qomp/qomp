@@ -225,7 +225,7 @@ const QString Tune::cover() const
 		return QStringLiteral("image://tune/") + *hash;
 	}
 
-	return QString();
+	return QString("image://tune/default"); //this may be any string
 }
 #else
 const QImage Tune::cover() const
@@ -235,7 +235,7 @@ const QImage Tune::cover() const
 		return CoverCache::instance()->get(*hash);
 	}
 
-	return QImage();
+	return CoverCache::instance()->defaultImage();
 }
 #endif
 void Tune::setCover(const QImage &cover)

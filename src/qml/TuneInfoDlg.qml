@@ -20,7 +20,7 @@ QompBaseDialog {
 		anchors.fill: parent
 		anchors.margins: 15 * scaler.scaleMargins
 		columns: (parent.height >= parent.width || !img.visible) ? 1 : 2
-		rows: (parent.height < parent.width || !img.visible) ? 1 : 2
+//		rows: (parent.height < parent.width || !img.visible) ? 1 : 2
 		rowSpacing: 10 * scaler.scaleMargins
 		columnSpacing: rowSpacing
 		clip: true
@@ -42,7 +42,6 @@ QompBaseDialog {
 			rowSpacing: 5 * scaler.scaleY
 			Layout.alignment: ( (parent.height >= parent.width && img.visible) ? Qt.AlignTop : Qt.AlignVCenter ) | Qt.AlignHCenter
 			Layout.fillWidth: true
-
 
 			Text {
 				id: ttle

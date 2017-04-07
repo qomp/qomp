@@ -4,5 +4,6 @@
         <file alias="filedialog-folder">icons/filedlg/folder.png</file>
         <file alias="filedialog-playlist">icons/filedlg/playlist.png</file>
         <file alias="filedialog-up">icons/filedlg/up-folder.png</file>
+        <file alias="vinyl">icons/vinyl.png</file>
     </qresource>
 </RCC>

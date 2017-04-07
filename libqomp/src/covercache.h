@@ -33,6 +33,7 @@ public:
 
 	QSharedPointer<QString> put(const QImage& img);
 	const QImage get(const QString& hash) const;
+	const QImage defaultImage() const;
 	QSharedPointer<QString> restore(const QString& hash);
 
 private:
