@@ -11,6 +11,7 @@ option( BUILD_THEMES "Build qomp themes" ON )
 set( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
 set( LIB_SUFFIX "" CACHE STRING "Define suffix of lib directory name (32/64)" )
 set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where libs will be installed" )
+option(USE_MXE "Use MXE toolkit" OFF)
 
 if( NOT USE_QT5 )
 	message(AUTHOR_WARNING "Qt4 support stopped since 1.1 version. Flag USE_QT5 always enabled")
@@ -36,6 +37,11 @@ add_subdirectory( plugins )
 
 add_definitions( -DQAPPLICATION_CLASS=QApplication )
 
+if( (CMAKE_CROSSCOMPILING) AND (DEFINED MSYS) )
+	message("-- MXE environment detected")
+	set(USE_MXE ON)
+endif()
+
 if( UNIX AND NOT (APPLE OR CYGWIN) )
 	set(LINUX ON)
 	find_package( X11 REQUIRED )
@@ -49,9 +55,14 @@ endif()
 
 if( WIN32 )
 	set(EXTRA_LIBS
-		-lUser32
-		)
+	-luser32
+	)
+	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
+	set( LIBCUE_ROOT "C:\\build\\libcue" CACHE STRING "LibCue root path" )
 endif()
+
+find_package( TagLib REQUIRED )
+list(APPEND EXTRA_LIBS ${TAGLIB_LIBRARY} )
 
 set( CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}" )
 include_directories(
@@ -61,6 +72,7 @@ include_directories(
 	src/options
 	src
 	thirdparty/QHotkey
+	${TAGLIB_INCLUDE_DIR}
 )
 
 set( qomp_RSCS
@@ -133,18 +145,13 @@ if( WIN32 )
 	list(APPEND qomp_SRCS
 		src/qompthumbnailtoolbar.cpp
 	)
+	set( qomp_RC ${PROJECT_NAME}.rc )
 endif()
 set( qomp_UIS
 	src/qompmainwin.ui
 	src/aboutdlg.ui
 	${options_UIS}
 )
-
-if( WIN32 )
-	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
-	set( LIBCUE_ROOT "C:\\build\\libcue" CACHE STRING "LibCue root path" )
-	set( qomp_RC ${PROJECT_NAME}.rc )
-endif()
 
 if( DEV_MODE )
 	set( EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/${PROJECT_NAME}" )
