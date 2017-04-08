@@ -117,6 +117,9 @@ set( libqomp_UIFILES
 	src/plugins/qompplugingettunesdlg.ui
 	src/frameless/windowheader.ui
 )
+set( libqomp_RSCS
+	src/icons.qrc
+)
 find_package( TagLib REQUIRED )
 #copy include headers
 file( COPY ${libqomp_INCLUDE_HDRS} DESTINATION ${PROJECT_BINARY_DIR}/include )
@@ -155,7 +158,7 @@ set( QT_DEPLIBS
 	Qt5::Network
 	Qt5::Concurrent
 )
-
+qt5_add_resources( RSCS ${libqomp_RSCS} )
 if( DEV_MODE )
 	set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/qomp" )
 endif()
@@ -166,6 +169,7 @@ add_library(
 	${libqomp_SRCS}
 	${libqomp_UIS}
 	${options_HDRS}
+	${RSCS}
 )
 set_target_properties(
 	${QOMP_LIB}
