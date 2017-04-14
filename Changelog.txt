@@ -1,5 +1,5 @@
 Version 1.2
-xx.04.17
+14.04.17
   + add m3u playlists support
   + add drag-n-drop files into playlist support
   + add thumbnail toolbar (Windows only)
