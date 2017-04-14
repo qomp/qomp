@@ -61,6 +61,9 @@ do_libqomp()
 		maj_ver=${version:0:1}
 		min_ver=${version:2:1}
 		patch_ver=${version:4:1}
+		if [ ! "${patch_ver}" ]; then
+			patch_ver=0
+		fi
 		echo -e "${blue}Patching file ${yellow}${libqomp_cmake_file}${blue}...${nocolor}"
 		sed -e 's/QOMP_LIB_VERSION_MAJOR[[:space:]][0-9]/QOMP_LIB_VERSION_MAJOR '${maj_ver}'/' -i ${libqomp_cmake_file}
 		sed -e 's/QOMP_LIB_VERSION_MINOR[[:space:]][0-9]/QOMP_LIB_VERSION_MINOR '${min_ver}'/' -i ${libqomp_cmake_file}
