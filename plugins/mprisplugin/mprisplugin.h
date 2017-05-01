@@ -58,11 +58,13 @@ private slots:
 	void updateVolume();
 	void updatePosition();
 	void setPosition(const qreal &position);
+	void tuneUpdated(Tune *tune);
 
 private:
 	void disableMpris();
 	void getMetaData(Tune *tune);
 	void sendMetadata(const QString &status);
+	QString getAlbumArtFile(const QImage &art);
 
 private:
 	QompPlayer *player_;

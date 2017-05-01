@@ -55,11 +55,14 @@ void MprisPlugin::qompPlayerChanged(QompPlayer *player)
 	if(player_ != player) {
 		if(player_) {
 			disconnect(player_, &QompPlayer::stateChanged, this, &MprisPlugin::playerStatusChanged);
+			disconnect(player_, &QompPlayer::tuneDataUpdated, this, &MprisPlugin::tuneUpdated);
 		}
 
 		player_ = player;
 		if(player_) {
 			connect(player_, &QompPlayer::stateChanged, this, &MprisPlugin::playerStatusChanged);
+			//needed to update albumArt for online files
+			connect(player_, &QompPlayer::tuneDataUpdated, this, &MprisPlugin::tuneUpdated);
 		}
 	}
 }
@@ -227,24 +230,40 @@ void MprisPlugin::getMetaData(Tune *tune)
 		tune_->trackLength = Qomp::durationStringToSeconds(tune->duration)*1e6; //in microseconds
 		QString url = tune->file;
 		tune_->url = (url.isEmpty()) ? "" : url; //Sets URL only for local files
-		if(!tune->cover().isNull()) {
-			QImage scaledArt = tune->cover();
+		tune_->cover = getAlbumArtFile(tune->cover());
+	}
+}
+
+QString MprisPlugin::getAlbumArtFile(const QImage &art)
+{
+	QString coverPath;
+	if(artFile_->exists()) {
+		artFile_->remove();
+	}
+	if(!art.isNull()) {
+		const QString tmpPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+		if(!tmpPath.isEmpty()) {
+			QImage scaledArt = art;
 			if((scaledArt.size().width() > maxArtSize.width())
 			   || (scaledArt.size().height() > maxArtSize.height())) {
 				scaledArt = scaledArt.scaled(maxArtSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 			}
-			if(artFile_->exists()) {
-				artFile_->remove();
-			}
-			artFile_->setFileName(QStandardPaths::writableLocation(QStandardPaths::TempLocation)
-					     + "/" + tune->title + "_cover.png");
+			artFile_->setFileName(tmpPath + "/" + lastTune_->title + "_cover.png");
 			if (artFile_->open()) {
-				QString albumArt = artFile_->fileName();
-				scaledArt.save(albumArt, "PNG");
-				tune_->cover = albumArt;
+				coverPath = artFile_->fileName();
+				scaledArt.save(coverPath, "PNG");
 				artFile_->close();
 			}
 		}
+	}
+	return coverPath;
+}
+
+void MprisPlugin::tuneUpdated(Tune *tune)
+{
+	if(player_->state() == Qomp::StatePlaying) {
+		getMetaData(tune);
+		sendMetadata(PLAYING);
 	}
 }
 
