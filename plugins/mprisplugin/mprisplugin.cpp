@@ -88,6 +88,7 @@ void MprisPlugin::setEnabled(bool enabled)
 		disconnect(mpris_);
 		disableMpris();
 		delete artFile_;
+		artFile_ = 0;
 	}
 }
 
