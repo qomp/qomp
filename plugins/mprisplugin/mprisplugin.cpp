@@ -27,12 +27,19 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QToolButton>
+#include <QStandardPaths>
+#include <QTemporaryFile>
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
 
 #define STOPPED "Stopped"
 #define PAUSED "Paused"
 #define PLAYING "Playing"
 #define nextButtonName "tb_next"
 #define prevButtonName "tb_prev"
+
+static const QSize maxArtSize(510,510);
 
 MprisPlugin::MprisPlugin() :
 	player_(0),
@@ -63,6 +70,8 @@ void MprisPlugin::setEnabled(bool enabled)
 	if(enabled_) {
 		mpris_ = new MprisController(this);
 		tune_ = new QompMetaData();
+		artFile_ = new QTemporaryFile(this);
+		artFile_->setAutoRemove(true);
 		connect(mpris_, &MprisController::play, this, &MprisPlugin::play);
 		connect(mpris_, &MprisController::pause, this, &MprisPlugin::pause);
 		connect(mpris_, &MprisController::stop, this, &MprisPlugin::stop);
@@ -78,6 +87,7 @@ void MprisPlugin::setEnabled(bool enabled)
 	else {
 		disconnect(mpris_);
 		disableMpris();
+		delete artFile_;
 	}
 }
 
@@ -189,9 +199,15 @@ void MprisPlugin::playerStatusChanged(Qomp::State state)
 			break;
 		case Qomp::StateStopped:
 			sendMetadata(STOPPED);
+			if (artFile_->exists()) {
+				artFile_->remove();
+			}
 			break;
 		case Qomp::StatePaused:
 			sendMetadata(PAUSED);
+			if (artFile_->exists()) {
+				artFile_->remove();
+			}
 			break;
 		default:
 			break;
@@ -210,6 +226,24 @@ void MprisPlugin::getMetaData(Tune *tune)
 		tune_->trackLength = Qomp::durationStringToSeconds(tune->duration)*1e6; //in microseconds
 		QString url = tune->file;
 		tune_->url = (url.isEmpty()) ? "" : url; //Sets URL only for local files
+		if(!tune->cover().isNull()) {
+			QImage scaledArt = tune->cover();
+			if((scaledArt.size().width() > maxArtSize.width())
+			   || (scaledArt.size().height() > maxArtSize.height())) {
+				scaledArt = scaledArt.scaled(maxArtSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			}
+			if(artFile_->exists()) {
+				artFile_->remove();
+			}
+			artFile_->setFileName(QStandardPaths::writableLocation(QStandardPaths::TempLocation)
+					     + "/" + tune->title + "_cover.png");
+			if (artFile_->open()) {
+				QString albumArt = artFile_->fileName();
+				scaledArt.save(albumArt, "PNG");
+				tune_->cover = albumArt;
+				artFile_->close();
+			}
+		}
 	}
 }
 
