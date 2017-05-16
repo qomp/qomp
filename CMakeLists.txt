@@ -1,5 +1,5 @@
 project( qomp )
-cmake_minimum_required( VERSION 2.8.12 )
+cmake_minimum_required( VERSION 3.1.0 )
 
 #common part
 set( CMAKE_AUTOMOC ON )
@@ -30,7 +30,7 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR "${CMAKE_BUILD_TYPE}" STREQUAL "Re
 else()
 	add_definitions( -DQT_NO_DEBUG )
 endif()
-message("Build type - ${CMAKE_BUILD_TYPE}")
+message(STATUS "Build type - ${CMAKE_BUILD_TYPE}")
 
 set( LIBQOMP_LIBRARY libqomp )
 add_subdirectory( ${LIBQOMP_LIBRARY} )
@@ -39,7 +39,7 @@ add_subdirectory( plugins )
 add_definitions( -DQAPPLICATION_CLASS=QApplication )
 
 if( (CMAKE_CROSSCOMPILING) AND (DEFINED MSYS) )
-	message("-- MXE environment detected")
+	message(STATUS "MXE environment detected")
 	set(USE_MXE ON)
 endif()
 
@@ -172,7 +172,7 @@ if( LINUX )
 	add_definitions( -DHAVE_X11 -DQOMP_DATADIR="${QOMP_DATADIR}" )
 endif()
 
-find_package( Qt5 REQUIRED Core Widgets Network Multimedia Concurrent )
+find_package( Qt5 COMPONENTS Core Widgets Network Multimedia Concurrent REQUIRED )
 find_package( Qt5LinguistTools )
 qt5_add_resources( RSCS ${qomp_RSCS} )
 if( Qt5LinguistTools_FOUND )

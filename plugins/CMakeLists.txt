@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.8.12 )
+cmake_minimum_required( VERSION 3.1.0 )
 
 set( CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}" )
 
@@ -41,7 +41,7 @@ endif()
 foreach( plugin ${plugins_list} )
 	foreach( subdir ${plugins} )
 		if( ${plugin} STREQUAL ${subdir} )
-			message( "Parse subdirectory: ${plugin}" )
+			message(STATUS "Parse subdirectory: ${plugin}" )
 			add_subdirectory( "${plugin}" )
 		endif()
 	endforeach( subdir )
