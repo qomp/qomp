@@ -82,6 +82,7 @@ set( qomp_RSCS
 )
 set( qomp_TRS
 	translations/translations/${PROJECT_NAME}_ru.ts
+	translations/translations/${PROJECT_NAME}_cs.ts
 )
 set( options_SRCS
 	src/options/qompoptionsdlg.cpp
