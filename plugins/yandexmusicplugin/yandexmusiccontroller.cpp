@@ -281,32 +281,8 @@ QNetworkRequest YandexMusicController::creatNetworkRequest(const QUrl &url) cons
 	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
 	nr.setRawHeader("Referer", mainUrl_.toLatin1());
+	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 	return nr;
-}
-
-bool YandexMusicController::checkRedirect(QNetworkReply *reply, const char* slot, QompPluginTreeModel *model)
-{
-	if(reply->header(QNetworkRequest::LocationHeader).isValid()) {
-		QString str = reply->header(QNetworkRequest::LocationHeader).toString();
-
-#ifdef DEBUG_OUTPUT
-		qDebug() << "YandexMusicController::checkRedirect() \n  url:\n" << reply->url().toString()
-							<< "\n  location:\n" << str;
-#endif
-
-		QUrl url(str);
-		mainUrl_ = QString("%1://%2/").arg(url.scheme(), url.host());
-
-		QNetworkRequest nr = creatNetworkRequest(url);
-		QNetworkReply* r = nam()->get(nr);
-		connect(r, SIGNAL(finished()), slot);
-		requests_.insert(r, model);
-		dlg_->startBusyWidget();
-
-		return true;
-	}
-
-	return false;
 }
 
 bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray &reply,
@@ -358,6 +334,7 @@ bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray 
 #endif
 			QNetworkRequest nr(url);
 			nr.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+			nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 			QNetworkReply* r = nam()->get(nr);
 			connect(r, SIGNAL(finished()), pr.slot);
 			requests_.insert(r, pr.model);
@@ -418,10 +395,6 @@ void YandexMusicController::artistsSearchFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
-		if(checkRedirect(reply, SLOT(artistsSearchFinished()))) {
-			return;
-		}
-
 		QByteArray ba = reply->readAll();
 #ifdef DEBUG_OUTPUT
 		qDebug() << ba;
@@ -466,10 +439,6 @@ void YandexMusicController::albumsSearchFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
-		if(checkRedirect(reply, SLOT(albumsSearchFinished()))) {
-			return;
-		}
-
 		const QByteArray ba = reply->readAll();
 
 		if(checkCaptcha(reply->url(), ba, SLOT(albumsSearchFinished()))) {
@@ -499,10 +468,6 @@ void YandexMusicController::tracksSearchFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
-		if(checkRedirect(reply, SLOT(tracksSearchFinished()))) {
-			return;
-		}
-
 		const QByteArray ba = reply->readAll();
 		if(checkCaptcha(reply->url(), ba, SLOT(tracksSearchFinished()))) {
 			return;
@@ -531,10 +496,6 @@ void YandexMusicController::artistUrlFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
-		if(checkRedirect(reply, SLOT(artistUrlFinished()))) {
-			return;
-		}
-
 		const QByteArray replyStr = reply->readAll();
 		if(checkCaptcha(reply->url(), replyStr, SLOT(artistUrlFinished()))) {
 			return;
@@ -592,10 +553,6 @@ void YandexMusicController::albumUrlFinished()
 	checkAndStopBusyWidget();
 
 	if(reply->error() == QNetworkReply::NoError) {
-		if(checkRedirect(reply, SLOT(albumUrlFinished()), static_cast<QompPluginTreeModel*>(model))) {
-			return;
-		}
-
 		const QByteArray replyStr = reply->readAll();
 		if(checkCaptcha(reply->url(), replyStr, SLOT(albumUrlFinished()), static_cast<QompPluginTreeModel*>(model))) {
 			return;
