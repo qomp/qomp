@@ -1,3 +1,13 @@
+Versio 1.2.1
+xx.06.2017
+  * fix Myzuka.ru plugin (fixed url)
+  * improvement for Mpris plugin (Linux only)
+  + add Italian translation (tnx to @symbianflo)
+  + add Czech translation (tnx to Pavel Fric)
+  * update Qt libs to 5.9.0 (OS X, Windows).  For now OS X 10.10 is minimal supported version.
+
+
+
 Version 1.2
 14.04.2017
   + add m3u playlists support
