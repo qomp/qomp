@@ -118,6 +118,7 @@ void ProstoPleerController::doSearchStepTwo()
 		url += QString("&page=%1").arg(QString::number(++page));
 	}
 	QNetworkRequest nr(url);
+	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 	QNetworkReply *reply = nam()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(searchFinished()));
 	startBusy();
@@ -201,6 +202,7 @@ void ProstoPleerController::itemSelected(QompPluginModelItem* item)
 	nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 	nr.setRawHeader("Accept", "application/json, text/javascript");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 	QByteArray ba("action=play&id=");
 	ba += pt->internalId;
 	QNetworkReply *reply = nam()->post(nr, ba);
@@ -235,6 +237,7 @@ void ProstoPleerController::doLogin()
 	nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 	nr.setRawHeader("Accept", "application/json, text/javascript");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 	QString str = QString("login=%1&password=%2").arg(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_LOGIN).toString(),
 				Qomp::decodePassword(Options::instance()->getOption(PROSTOPLEER_PLUGIN_OPTION_PASSWORD).toString(), PROSTOPLEER_DECODE_KEY));
 	QNetworkReply *reply = nam()->post(nr, str.toLatin1());
@@ -264,6 +267,7 @@ void ProstoPleerController::getSuggestions(const QString &text)
 	nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 	nr.setRawHeader("Accept", "application/json, text/javascript");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 	QByteArray ba("part=");
 	ba += text.toLatin1();
 	QNetworkReply *reply = nam()->post(nr, ba);
