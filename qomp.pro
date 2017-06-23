@@ -17,7 +17,4 @@ SUBDIRS += \
 	sub_src \
         sub_plugins
 
-LANG_PATH = translations/translations
-TRANSLATIONS = $$LANG_PATH/qomp_ru.ts \
-    $$LANG_PATH/qomp_cs.ts \
-    $$LANG_PATH/qomp_it.ts
+TRANSLATIONS = $$files($$PWD/translations/translations/*.ts)

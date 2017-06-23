@@ -20,8 +20,16 @@ unix:!android {
         translations.extra = $$QMAKE_COPY $$shell_path($$LANG_PATH/qomp_*.qm) $(INSTALL_ROOT)$$translations.path
         INSTALLS += translations
 } else {
-    QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$[QT_INSTALL_TRANSLATIONS]/qt*_ru.qm) $$TRDESTDIR \
-                        $$escape_expand(\\n\\t) \
-                        $$QMAKE_COPY $$shell_path($$LANG_PATH/*.qm) $$TRDESTDIR \
+    QMAKE_POST_LINK +=$$QMAKE_COPY $$shell_path($$LANG_PATH/*.qm) $$TRDESTDIR \
                         $$escape_expand(\\n\\t)
+
+    TRS = $$files($$LANG_PATH/*.qm)
+    for(TRANS, TRS) {
+        FILENAME = $$basename(TRANS)
+        lang = $$sprintf(%1/qt*_%2.qm, $$[QT_INSTALL_TRANSLATIONS], $$str_member($$FILENAME, 5, $$num_add($$str_size($$FILENAME), -4)))
+
+        QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$lang) $$TRDESTDIR \
+                        $$escape_expand(\\n\\t)
+
+    }
 }
