@@ -26,7 +26,8 @@ unix:!android {
     TRS = $$files($$LANG_PATH/*.qm)
     for(TRANS, TRS) {
         FILENAME = $$basename(TRANS)
-        lang = $$sprintf(%1/qt*_%2.qm, $$[QT_INSTALL_TRANSLATIONS], $$str_member($$FILENAME, 5, $$num_add($$str_size($$FILENAME), -4)))
+        fname = $$section(FILENAME, ., 0, 0)
+        lang = $$sprintf(%1/qt*_%2.qm, $$[QT_INSTALL_TRANSLATIONS], $$section(fname, qomp_, 1, 1))
 
         QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$lang) $$TRDESTDIR \
                         $$escape_expand(\\n\\t)
