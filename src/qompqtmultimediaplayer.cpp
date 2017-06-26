@@ -266,7 +266,7 @@ QString QompQtMultimediaPlayer::defaultAudioDevice() const
 
 void QompQtMultimediaPlayer::volumeChanged(int vol)
 {
-	emit volumeChanged(qreal(vol)/100);
+	emit QompPlayer::volumeChanged(qreal(vol)/100);
 }
 
 void QompQtMultimediaPlayer::playerStateChanged(QMediaPlayer::State _state)

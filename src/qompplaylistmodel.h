@@ -74,7 +74,7 @@ public:
 	void saveTunes(const QString& fileName);
 	void loadTunes(const QString& fileName);
 
-	virtual QHash<int, QByteArray> roleNames() const;
+	virtual QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
 signals:
 	void currentTuneChanged(Tune*);
