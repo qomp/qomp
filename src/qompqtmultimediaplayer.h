@@ -82,6 +82,7 @@ private:
 	void setPlayerMediaContent(const QUrl &url);
 	bool isTuneChangeFinished() const;
 	void processMediaState(bool audioReady, bool seekable);
+	void resumePlayer();
 
 private:
 	QMediaPlayer* player_;
