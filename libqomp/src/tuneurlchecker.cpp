@@ -50,7 +50,9 @@ bool TuneUrlChecker::result() const
 #ifdef DEBUG_OUTPUT
 	qDebug() << "TuneUrlChecker::result()" << "start check";
 #endif
-	reply_ = nam_->get(QNetworkRequest(url_));
+	QNetworkRequest nr(url_);
+	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+	reply_ = nam_->get(nr);
 	connect(reply_, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(error()));
 	connect(reply_, SIGNAL(readyRead()), SLOT(readyRead()));
 	connect(reply_, SIGNAL(destroyed()), loop_, SLOT(quit()));

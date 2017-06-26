@@ -106,7 +106,10 @@ void QompTagLibMetaDataResolver::resolveNextMedia()
 
 		QUrl u(t->getUrl());
 		if(!u.isLocalFile()) {
-			QNetworkReply* r = nam_->get(QNetworkRequest(u));
+			QNetworkRequest nr(u);
+			nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+
+			QNetworkReply* r = nam_->get(nr);
 
 			connect(r, &QNetworkReply::readyRead, this, &QompTagLibMetaDataResolver::dataReady);
 

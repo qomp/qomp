@@ -331,17 +331,15 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 
 void QompQtMultimediaPlayer::setPlayerMediaContent(const QUrl &url)
 {
-	if(player_->media().isNull()) {
-		player_->setMedia(QMediaContent(url));
+	if(player_->media().isNull() || player_->media().canonicalUrl() != url) {
+		QNetworkRequest nr(url);
+		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+
+		player_->setMedia(QMediaContent(nr));
 	}
 	else {
-		if(player_->media().canonicalUrl() != url) {
-			player_->setMedia(QMediaContent(url));
-		}
-		else {
-			updatePlayerPosition();
-			tuneDurationChanged(player_->duration());
-		}
+		updatePlayerPosition();
+		tuneDurationChanged(player_->duration());
 	}
 }
 
