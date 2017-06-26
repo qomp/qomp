@@ -76,6 +76,7 @@ public:
 		QNetworkRequest nr(url);
 		nr.setRawHeader("Accept", "*/*");
 		nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 		QNetworkReply *reply = nam_->get(nr);
 		connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepOne()));
 		connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
@@ -106,6 +107,7 @@ private slots:
 				QNetworkRequest nr(url);
 				nr.setRawHeader("Accept", "*/*");
 				nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+				nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 				QNetworkReply *reply = nam_->get(nr);
 				connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepTwo()));
 				connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
