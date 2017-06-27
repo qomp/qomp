@@ -338,25 +338,26 @@ bool QompQtMultimediaPlayer::isTuneChangeFinished() const
 
 void QompQtMultimediaPlayer::processMediaState(bool audioReady, bool seekable)
 {
-
 	if(audioReady && seekable && player_->mediaStatus() == QMediaPlayer::LoadedMedia)
 		emit mediaReady();
 }
 
 void QompQtMultimediaPlayer::resumePlayer()
 {
+	//we need to do this 2 times before and after state changing
+	updatePlayerPosition();
+
 	switch (lastAction()) {
 	case Qomp::StatePlaying: {
 		player_->play();
-		tuneDurationChanged(player_->duration());
-		updatePlayerPosition();
 		break;
 	}
-	case Qomp::StatePaused: player_->pause();
-		break;
 	default: player_->stop();
 		break;
 	}
+
+	tuneDurationChanged(player_->duration());
+	updatePlayerPosition();
 }
 
 void QompQtMultimediaPlayer::audioReadyChanged(bool ready)

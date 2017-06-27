@@ -760,6 +760,7 @@ void QompCon::setupPlayer()
 	connect(player_, SIGNAL(tuneDataUpdated(Tune*)), model_, SLOT(tuneDataUpdated(Tune*)));
 	connect(player_, SIGNAL(mediaFinished()), SLOT(mediaFinished()));
 	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStateChanged(Qomp::State)));
+	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)), model_, SLOT(currentTotalTimeChanged(qint64)));
 	connect(model_,  SIGNAL(currentTuneChanged(Tune*)), player_, SLOT(setTune(Tune*)));
 
 #ifndef Q_OS_ANDROID

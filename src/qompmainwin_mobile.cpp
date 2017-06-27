@@ -335,11 +335,6 @@ void QompMainWin::setCurrentPosition(qint64 ms)
 void QompMainWin::currentTotalTimeChanged(qint64 ms)
 {
 	d->setCurrentDuration(ms);
-
-	if(ms == -1 || ms == 0)
-		return;
-	model_->currentTune()->duration = Qomp::durationMiliSecondsToString(ms);
-	model_->tuneDataUpdated(model_->currentTune());
 }
 
 void QompMainWin::toggleVisibility()

@@ -420,6 +420,15 @@ void QompPlayListModel::tuneDataUpdated(Tune *tune)
 	emit dataChanged(index(i), index(i));
 	emit totalTimeChanged(totalTime());
 }
+
+void QompPlayListModel::currentTuneTotalTimeChanged(qint64 ms)
+{
+	if(ms == -1 || ms == 0)
+		return;
+
+	currentTune()->duration = Qomp::durationMiliSecondsToString(ms);
+	tuneDataUpdated(currentTune());
+}
 #ifdef QOMP_MOBILE
 void QompPlayListModel::move(int oldRow, int newRow)
 {
