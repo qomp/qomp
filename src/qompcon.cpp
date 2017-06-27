@@ -50,12 +50,12 @@
 #include <QGuiApplication>
 #ifdef TEST_ANDROID
 #include <QFile>
-#include <QTime>
 #endif
 #endif
 
 #include <QThread>
-
+#include <QSignalBlocker>
+#include <QTime>
 #include <QTimer>
 #include <QDesktopServices>
 #include <QClipboard>
@@ -780,18 +780,21 @@ void QompCon::setupModel()
 
 void QompCon::stopPlayer()
 {
-	player_->blockSignals(true);
+	static const int stop_timeout = 2000; //2 sec
+
+	const QSignalBlocker b(player_);
 	player_->stop();
 	mainWin_->setCurrentPosition(0);
 	playerStateChanged(Qomp::StateStopped);
 
-	while (player_->state() != Qomp::StateStopped) {
+	QTime t = QTime::currentTime();
+	t.start();
+	while (player_->state() != Qomp::StateStopped && t.elapsed() < stop_timeout) {
 		QThread::msleep(1);
 		qApp->processEvents();
 	}
 
 	savePlayerPosition();
-	player_->blockSignals(false);
 }
 
 void QompCon::playIndex(const QModelIndex &index)
