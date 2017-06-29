@@ -1,5 +1,25 @@
-project( qomp )
 cmake_minimum_required( VERSION 3.1.0 )
+if(UNIX AND NOT (APPLE OR CYGWIN))
+	find_program(QTCHOOSER_PATH qtchooser DOC "Path to qtchooser")
+	if(QTCHOOSER_PATH)
+		message(STATUS "Found qtchooser: ${QTCHOOSER_PATH}")
+		execute_process(COMMAND "${QTCHOOSER_PATH}" -print-env
+				OUTPUT_VARIABLE Qt5_ENV)
+		string(REGEX MATCHALL "QTLIBDIR=\"([^\"]+)\"" QT5LIBDIR ${Qt5_ENV})
+		if(CMAKE_MATCH_1)
+			message(STATUS "QTLIBDIR=${CMAKE_MATCH_1}")
+			set(CMAKE_PREFIX_PATH "${CMAKE_MATCH_1}/cmake")
+			set(Qt5_DIR "${CMAKE_MATCH_1}")
+		endif()
+		string(REGEX MATCHALL "QTTOOLDIR=\"([^\"]+)\"" QT5TOOLDIR ${Qt5_ENV})
+		if(CMAKE_MATCH_1)
+			message(STATUS "QTTOOLDIR=${CMAKE_MATCH_1}")
+			set(QT_QMAKE_EXECUTABLE "${CMAKE_MATCH_1}/qmake")
+		endif()
+	endif()
+endif()
+
+project( qomp )
 
 #common part
 set( CMAKE_AUTOMOC ON )
@@ -175,6 +195,9 @@ if( LINUX )
 endif()
 
 find_package( Qt5 COMPONENTS Core Widgets Network Multimedia Concurrent REQUIRED )
+if (Qt5Widgets_FOUND)
+    message(STATUS "Qt5 version: ${Qt5Widgets_VERSION}")
+endif()
 find_package( Qt5LinguistTools )
 qt5_add_resources( RSCS ${qomp_RSCS} )
 if( Qt5LinguistTools_FOUND )
@@ -230,7 +253,8 @@ add_executable(
 macro(create_themes _sources _output)
 	if(${Qt5Core_VERSION} VERSION_LESS 5.5.0)
 		add_custom_command(OUTPUT "${_output}"
-			COMMAND "${Qt5Core_RCC_EXECUTABLE}" --binary --verbose --output "${_output}" "${_sources}"
+			COMMAND "${Qt5Core_RCC_EXECUTABLE}"
+			ARGS --binary --verbose --output "${_output}" "${_sources}"
 			DEPENDS "${_sources}"
 			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 			COMMENT "Building external Qt resource ${_output}"
