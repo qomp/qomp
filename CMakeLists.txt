@@ -1,6 +1,7 @@
 cmake_minimum_required( VERSION 3.1.0 )
 #Hack to determine Qt by qtchooser utility
-if(UNIX AND NOT (APPLE OR CYGWIN))
+option(USE_QTCHOOSER "Use qtchooser utility to determine Qt environment" OFF)
+if(USE_QTCHOOSER AND (UNIX AND NOT (APPLE OR CYGWIN)))
 	find_program(QTCHOOSER_PATH qtchooser DOC "Path to qtchooser")
 	if(QTCHOOSER_PATH)
 		message(STATUS "Found qtchooser: ${QTCHOOSER_PATH}")
