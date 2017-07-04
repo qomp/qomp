@@ -33,6 +33,7 @@ struct QompMetaData {
 	QString url;
 	int trackNumber;
 	int trackLength;
+	QString cover;
 };
 
 class MprisAdapter : public QDBusAbstractAdaptor

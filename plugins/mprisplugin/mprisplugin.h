@@ -25,6 +25,7 @@
 #include "mpriscontroller.h"
 #include "tune.h"
 #include "common.h"
+#include <QTemporaryFile>
 
 class MprisPlugin : public QObject, public QompPlugin, public QompPlayerStatusPlugin
 {
@@ -37,7 +38,7 @@ public:
 	explicit MprisPlugin();
 	~MprisPlugin() {}
 	virtual QString name() const { return tr("MPRIS Plugin"); }
-	virtual QString version() const { return "1.2"; }
+	virtual QString version() const { return "1.2.1"; }
 	virtual QString description() const { return tr("Interface to MPRIS"); }
 	virtual QompOptionsPage* options() { return 0; }
 	virtual void qompPlayerChanged(QompPlayer* player);
@@ -57,11 +58,13 @@ private slots:
 	void updateVolume();
 	void updatePosition();
 	void setPosition(const qreal &position);
+	void tuneUpdated(Tune *tune);
 
 private:
 	void disableMpris();
 	void getMetaData(Tune *tune);
 	void sendMetadata(const QString &status);
+	QString getAlbumArtFile(const QImage &art);
 
 private:
 	QompPlayer *player_;
@@ -69,6 +72,7 @@ private:
 	MprisController* mpris_;
 	QompMetaData *tune_;
 	Tune *lastTune_;
+	QTemporaryFile *artFile_;
 };
 
 #endif // MPRISPLUGIN_H

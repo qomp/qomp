@@ -7,7 +7,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleGetInfoString</key>
-        <string>qomp 1.2</string>
+        <string>qomp 1.2.1</string>
 	<key>CFBundleSignature</key>
 	<string>qomp</string>
 	<key>CFBundleExecutable</key>
@@ -40,5 +40,9 @@
             <string>qomp-file.icns</string>
         </dict>
         </array>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <key>NSAllowsArbitraryLoads</key><true/>
+        </dict>
 </dict>
 </plist>

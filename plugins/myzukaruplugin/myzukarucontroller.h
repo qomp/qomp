@@ -56,7 +56,6 @@ private slots:
 
 private:
 	void checkAndStopBusyWidget();
-	bool checkRedirect(QNetworkReply* reply, const char *slot, QompPluginTreeModel* model = nullptr);
 
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;

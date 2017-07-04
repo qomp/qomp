@@ -27,12 +27,19 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QToolButton>
+#include <QStandardPaths>
+#include <QTemporaryFile>
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
 
 #define STOPPED "Stopped"
 #define PAUSED "Paused"
 #define PLAYING "Playing"
 #define nextButtonName "tb_next"
 #define prevButtonName "tb_prev"
+
+static const QSize maxArtSize(510,510);
 
 MprisPlugin::MprisPlugin() :
 	player_(0),
@@ -48,11 +55,14 @@ void MprisPlugin::qompPlayerChanged(QompPlayer *player)
 	if(player_ != player) {
 		if(player_) {
 			disconnect(player_, &QompPlayer::stateChanged, this, &MprisPlugin::playerStatusChanged);
+			disconnect(player_, &QompPlayer::tuneDataUpdated, this, &MprisPlugin::tuneUpdated);
 		}
 
 		player_ = player;
 		if(player_) {
 			connect(player_, &QompPlayer::stateChanged, this, &MprisPlugin::playerStatusChanged);
+			//needed to update albumArt for online files
+			connect(player_, &QompPlayer::tuneDataUpdated, this, &MprisPlugin::tuneUpdated);
 		}
 	}
 }
@@ -63,6 +73,8 @@ void MprisPlugin::setEnabled(bool enabled)
 	if(enabled_) {
 		mpris_ = new MprisController(this);
 		tune_ = new QompMetaData();
+		artFile_ = new QTemporaryFile(this);
+		artFile_->setAutoRemove(true);
 		connect(mpris_, &MprisController::play, this, &MprisPlugin::play);
 		connect(mpris_, &MprisController::pause, this, &MprisPlugin::pause);
 		connect(mpris_, &MprisController::stop, this, &MprisPlugin::stop);
@@ -78,6 +90,8 @@ void MprisPlugin::setEnabled(bool enabled)
 	else {
 		disconnect(mpris_);
 		disableMpris();
+		delete artFile_;
+		artFile_ = 0;
 	}
 }
 
@@ -189,9 +203,15 @@ void MprisPlugin::playerStatusChanged(Qomp::State state)
 			break;
 		case Qomp::StateStopped:
 			sendMetadata(STOPPED);
+			if (artFile_->exists()) {
+				artFile_->remove();
+			}
 			break;
 		case Qomp::StatePaused:
 			sendMetadata(PAUSED);
+			if (artFile_->exists()) {
+				artFile_->remove();
+			}
 			break;
 		default:
 			break;
@@ -210,6 +230,40 @@ void MprisPlugin::getMetaData(Tune *tune)
 		tune_->trackLength = Qomp::durationStringToSeconds(tune->duration)*1e6; //in microseconds
 		QString url = tune->file;
 		tune_->url = (url.isEmpty()) ? "" : url; //Sets URL only for local files
+		tune_->cover = getAlbumArtFile(tune->cover());
+	}
+}
+
+QString MprisPlugin::getAlbumArtFile(const QImage &art)
+{
+	QString coverPath;
+	if(artFile_->exists()) {
+		artFile_->remove();
+	}
+	if(!art.isNull()) {
+		const QString tmpPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+		if(!tmpPath.isEmpty()) {
+			QImage scaledArt = art;
+			if((scaledArt.size().width() > maxArtSize.width())
+			   || (scaledArt.size().height() > maxArtSize.height())) {
+				scaledArt = scaledArt.scaled(maxArtSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			}
+			artFile_->setFileName(tmpPath + "/" + lastTune_->title + "_cover.png");
+			if (artFile_->open()) {
+				coverPath = artFile_->fileName();
+				scaledArt.save(coverPath, "PNG");
+				artFile_->close();
+			}
+		}
+	}
+	return coverPath;
+}
+
+void MprisPlugin::tuneUpdated(Tune *tune)
+{
+	if(player_->state() == Qomp::StatePlaying) {
+		getMetaData(tune);
+		sendMetadata(PLAYING);
 	}
 }
 

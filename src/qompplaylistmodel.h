@@ -74,7 +74,7 @@ public:
 	void saveTunes(const QString& fileName);
 	void loadTunes(const QString& fileName);
 
-	virtual QHash<int, QByteArray> roleNames() const;
+	virtual QHash<int, QByteArray> roleNames() const Q_DECL_OVERRIDE;
 
 signals:
 	void currentTuneChanged(Tune*);
@@ -82,6 +82,7 @@ signals:
 
 public slots:
 	void tuneDataUpdated(Tune* tune);
+	void currentTuneTotalTimeChanged(qint64 ms);
 #ifdef QOMP_MOBILE
 	void move(int oldRow, int newRow);
 #endif

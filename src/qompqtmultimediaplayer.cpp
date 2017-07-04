@@ -266,7 +266,7 @@ QString QompQtMultimediaPlayer::defaultAudioDevice() const
 
 void QompQtMultimediaPlayer::volumeChanged(int vol)
 {
-	emit volumeChanged(qreal(vol)/100);
+	emit QompPlayer::volumeChanged(qreal(vol)/100);
 }
 
 void QompQtMultimediaPlayer::playerStateChanged(QMediaPlayer::State _state)
@@ -298,16 +298,6 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 	switch(status) {
 	case QMediaPlayer::LoadedMedia:
 		emit QompPlayer::stateChanged(state());
-#ifndef Q_OS_ANDROID
-		switch (lastAction()) {
-		case Qomp::StatePlaying: player_->play();
-			break;
-		case Qomp::StatePaused: player_->pause();
-			break;
-		default: player_->stop();
-			break;
-		}
-#endif
 		audioReadyChanged(player_->isAudioAvailable());
 		break;
 	case QMediaPlayer::LoadingMedia:
@@ -331,18 +321,14 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 
 void QompQtMultimediaPlayer::setPlayerMediaContent(const QUrl &url)
 {
-	if(player_->media().isNull()) {
-		player_->setMedia(QMediaContent(url));
+	if(player_->media().isNull() || player_->media().canonicalUrl() != url) {
+		QNetworkRequest nr(url);
+		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+
+		player_->setMedia(QMediaContent(nr));
 	}
-	else {
-		if(player_->media().canonicalUrl() != url) {
-			player_->setMedia(QMediaContent(url));
-		}
-		else {
-			updatePlayerPosition();
-			tuneDurationChanged(player_->duration());
-		}
-	}
+
+	resumePlayer();
 }
 
 bool QompQtMultimediaPlayer::isTuneChangeFinished() const
@@ -352,9 +338,26 @@ bool QompQtMultimediaPlayer::isTuneChangeFinished() const
 
 void QompQtMultimediaPlayer::processMediaState(bool audioReady, bool seekable)
 {
-
 	if(audioReady && seekable && player_->mediaStatus() == QMediaPlayer::LoadedMedia)
 		emit mediaReady();
+}
+
+void QompQtMultimediaPlayer::resumePlayer()
+{
+	//we need to do this 2 times before and after state changing
+	updatePlayerPosition();
+
+	switch (lastAction()) {
+	case Qomp::StatePlaying: {
+		player_->play();
+		break;
+	}
+	default: player_->stop();
+		break;
+	}
+
+	tuneDurationChanged(player_->duration());
+	updatePlayerPosition();
 }
 
 void QompQtMultimediaPlayer::audioReadyChanged(bool ready)
@@ -383,16 +386,6 @@ void QompQtMultimediaPlayer::tuneUrlReady(const QUrl &url)
 	prevTune_ = currentTune();
 
 	setPlayerMediaContent(url);
-#ifdef Q_OS_ANDROID
-	switch (lastAction()) {
-	case Qomp::StatePlaying: player_->play();
-		break;
-	case Qomp::StatePaused: player_->pause();
-		break;
-	default: player_->stop();
-		break;
-	}
-#endif
 }
 
 void QompQtMultimediaPlayer::tuneDurationChanged(qint64 dur)

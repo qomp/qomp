@@ -25,6 +25,9 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusObjectPath>
 #include <QStringList>
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
 
 MprisAdapter::MprisAdapter(MprisController *p) :
 	QDBusAbstractAdaptor(p),
@@ -66,6 +69,9 @@ void MprisAdapter::setMetadata(const QompMetaData &tune)
 	metaDataMap_["mpris:length"] = tune.trackLength;
 	trackId_ = QDBusObjectPath(QString("/org/qomp/MediaPlayer2/Track/%1").arg(qrand()));
 	metaDataMap_["mpris:trackid"] = QVariant::fromValue<QDBusObjectPath>(trackId_);
+	if(!tune.cover.isEmpty()) {
+		metaDataMap_["mpris:artUrl"] = tune.cover.startsWith("http") ? tune.cover : "file://" + tune.cover;
+	}
 	metadataChanged_ = true;
 }
 

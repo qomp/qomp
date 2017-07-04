@@ -691,11 +691,6 @@ void QompMainWin::currentTotalTimeChanged(qint64 ms)
 	if(d->winTaskBar_)
 		d->winTaskBar_->progress()->setMaximum(ms / 1000);
 #endif
-
-	if(ms == -1 || ms == 0)
-		return;
-	model_->currentTune()->duration = Qomp::durationMiliSecondsToString(ms);
-	model_->tuneDataUpdated(model_->currentTune());
 }
 
 void QompMainWin::toggleVisibility()

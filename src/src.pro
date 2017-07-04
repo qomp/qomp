@@ -134,14 +134,15 @@ android {
   }
 
   DISTFILES += \
-        ../android/gradle/wrapper/gradle-wrapper.jar \
-        ../android/gradlew \
-        ../android/res/values/libs.xml \
-        ../android/build.gradle \
-        ../android/gradle/wrapper/gradle-wrapper.properties \
-        ../android/gradlew.bat
+    $$PWD/../android/AndroidManifest.xml \
+    $$PWD/../android/gradle/wrapper/gradle-wrapper.jar \
+    $$PWD/../android/gradlew \
+    $$PWD/../android/res/values/libs.xml \
+    $$PWD/../android/build.gradle \
+    $$PWD/../android/gradle/wrapper/gradle-wrapper.properties \
+    $$PWD/../android/gradlew.bat
 
-  OTHER_FILES += $$PWD/../android/AndroidManifest.xml \
+  OTHER_FILES += \
         $$PWD/../android/src/net/sourceforge/qomp/Qomp.java \
         $$PWD/../android/src/net/sourceforge/qomp/QompService.java
 
