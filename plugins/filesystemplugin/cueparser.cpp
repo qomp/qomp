@@ -25,7 +25,11 @@
 #include "defines.h"
 
 extern "C" {
+#if QT_HAS_INCLUDE("libcue")
 #include "libcue.h"
+#else
+#include "/usr/include/libcue-1.4/libcue/libcue.h" //for linux
+#endif
 }
 
 #ifdef DEBUG_OUTPUT
