@@ -25,7 +25,7 @@
 #include "defines.h"
 
 extern "C" {
-#if QT_HAS_INCLUDE("libcue")
+#if __has_include("libcue.h")
 #include "libcue.h"
 #else
 #include "/usr/include/libcue-1.4/libcue/libcue.h" //for linux
