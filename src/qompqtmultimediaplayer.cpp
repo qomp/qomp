@@ -58,7 +58,6 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 
 QompQtMultimediaPlayer::~QompQtMultimediaPlayer()
 {
-	//delete resolver_;
 }
 
 void QompQtMultimediaPlayer::doSetTune()
@@ -77,9 +76,6 @@ void QompQtMultimediaPlayer::doSetTune()
 
 	GetTuneUrlHelper* helper = new GetTuneUrlHelper(this, "tuneUrlReady", this);
 	watcher_ = helper->getTuneUrlAsynchronously(currentTune());
-	if(resolver_) {
-		resolver_->resolve( {currentTune()} );
-	}
 }
 
 QompMetaDataResolver *QompQtMultimediaPlayer::metaDataResolver() const
@@ -383,6 +379,10 @@ void QompQtMultimediaPlayer::tuneUrlReady(const QUrl &url)
 #ifdef DEBUG_OUTPUT
 	qDebug() << "QompQtMultimediaPlayer::tuneUrlReady()  " << lastAction() << url;
 #endif
+	if(!url.isEmpty() && resolver_) {
+		resolver_->resolve( {qMakePair(currentTune(), url)} );
+	}
+
 	prevTune_ = currentTune();
 
 	setPlayerMediaContent(url);

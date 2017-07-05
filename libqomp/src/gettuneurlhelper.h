@@ -42,6 +42,9 @@ private slots:
 	void urlFinished();
 
 private:
+	bool checkUrl(const QUrl& url);
+
+private:
 	QObject* target_;
 	const char* slot_;
 	bool blocked_;

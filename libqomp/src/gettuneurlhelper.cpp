@@ -19,8 +19,11 @@
 
 #include "gettuneurlhelper.h"
 #include "tune.h"
+#include "tuneurlchecker.h"
+#include "qompnetworkingfactory.h"
 
 #include <QtConcurrent>
+#include <QNetworkAccessManager>
 
 GetTuneUrlHelper::GetTuneUrlHelper(QObject *target, const char *slot, QObject *parent) :
 	QObject(parent),
@@ -55,7 +58,22 @@ void GetTuneUrlHelper::urlFinished()
 	QFuture<QUrl> f = watcher->future();
 	watcher->deleteLater();
 	QUrl url = f.result();
+
+	if(!checkUrl(url))
+		url.clear();
+
 	if(!blocked_)
 		QMetaObject::invokeMethod(target_, slot_, Q_ARG(QUrl, url));
+
 	deleteLater();
+}
+
+bool GetTuneUrlHelper::checkUrl(const QUrl &url)
+{
+	QScopedPointer<QNetworkAccessManager> nam(QompNetworkingFactory::instance()->getThreadedNAM());
+	TuneUrlChecker uc(nam.data(), url, this);
+	if(uc.result())
+		return true;
+
+	return false;
 }

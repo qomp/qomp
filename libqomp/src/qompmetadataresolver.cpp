@@ -32,7 +32,7 @@ QompMetaDataResolver::~QompMetaDataResolver()
 {
 }
 
-void QompMetaDataResolver::resolve(const QList<Tune*> &tunes)
+void QompMetaDataResolver::resolve(const QList<TuneWithUrl> &tunes)
 {
 	bool s = data_.isEmpty();
 	addTunes(tunes);
@@ -41,7 +41,7 @@ void QompMetaDataResolver::resolve(const QList<Tune*> &tunes)
 	}
 }
 
-Tune* QompMetaDataResolver::get()
+TuneWithUrl QompMetaDataResolver::get()
 {
 	return data_.first();
 }
@@ -51,7 +51,7 @@ void QompMetaDataResolver::tuneFinished()
 	Tune* t = const_cast<Tune*>(Tune::emptyTune());
 
 	if(!data_.isEmpty()) {
-		t = data_.takeFirst();
+		t = data_.takeFirst().first;
 	}
 
 	if(t != Tune::emptyTune() && !t->isMetadataResolved()) {
@@ -100,7 +100,7 @@ bool QompMetaDataResolver::isDataEmpty() const
 //	data_.first()->duration = Qomp::durationMiliSecondsToString(msec);
 //}
 
-void QompMetaDataResolver::addTunes(const QList<Tune*> &tunes)
+void QompMetaDataResolver::addTunes(const QList<TuneWithUrl> &tunes)
 {
 	data_.append(tunes);
 }

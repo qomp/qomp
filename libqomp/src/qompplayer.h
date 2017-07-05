@@ -34,7 +34,7 @@ class LIBQOMPSHARED_EXPORT QompPlayer : public QObject
 public:
 	Tune* currentTune() const;
 
-	void resolveMetadata(const QList<Tune*> &tunes);
+//	void resolveMetadata(const QList<Tune*> &tunes);
 	Qomp::State lastAction() const;
 
 	virtual void setVolume(qreal vol) = 0;

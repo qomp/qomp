@@ -41,11 +41,11 @@ Tune *QompPlayer::currentTune() const
 	return currentTune_;
 }
 
-void QompPlayer::resolveMetadata(const QList<Tune*>& tunes)
-{
-	if(metaDataResolver())
-		metaDataResolver()->resolve(tunes);
-}
+//void QompPlayer::resolveMetadata(const QList<Tune*>& tunes)
+//{
+//	if(metaDataResolver())
+//		metaDataResolver()->resolve(tunes);
+//}
 
 Qomp::State QompPlayer::lastAction() const
 {

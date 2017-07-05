@@ -21,10 +21,10 @@
 #define QOMPMETADATARESOLVER_H
 
 #include <QObject>
-//#include <QMap>
 #include "libqomp_global.h"
 
 class Tune;
+typedef QPair<Tune*,QUrl> TuneWithUrl;
 
 class LIBQOMPSHARED_EXPORT QompMetaDataResolver : public QObject
 {
@@ -33,13 +33,13 @@ public:
 	explicit QompMetaDataResolver(QObject *parent = 0);
 	~QompMetaDataResolver();
 
-	void resolve(const QList<Tune*>& tunes);
+	void resolve(const QList<TuneWithUrl> &tunes);
 	
 signals:
 	void tuneUpdated(Tune*);
 	
 protected:
-	Tune *get();
+	TuneWithUrl get();
 	void tuneFinished();
 	bool isDataEmpty() const;
 
@@ -51,10 +51,10 @@ protected slots:
 //	void updateTuneDuration(qint64 msec);
 
 private:
-	void addTunes(const QList<Tune*>& tunes);
+	void addTunes(const QList<TuneWithUrl> &tunes);
 
 private:
-	QList<Tune*> data_;
+	QList<TuneWithUrl> data_;
 };
 
 #endif // QOMPMETADATARESOLVER_H

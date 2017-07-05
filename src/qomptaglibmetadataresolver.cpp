@@ -97,14 +97,15 @@ void QompTagLibMetaDataResolver::resolveNextMedia()
 	qDebug() << "QompTagLibMetaDataResolver::resolveNextMedia()";
 #endif
 	if(!isDataEmpty()) {
-		Tune* t = get();
+		TuneWithUrl tw = get();
+		Tune* t = tw.first;
 		if(t->isMetadataResolved()) {
 			tuneFinished();
 			resolveNextMedia();
 			return;
 		}
 
-		QUrl u(t->getUrl());
+		QUrl u(tw.second);
 		if(!u.isLocalFile()) {
 			QNetworkRequest nr(u);
 			nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
@@ -151,7 +152,8 @@ void QompTagLibMetaDataResolver::processData(const QUrl &url, const TagLib::Byte
 
 	TagLib::FileRef ref(tagFile);
 	if(tagFile->isValid() && !ref.isNull()) {
-		Tune *tune = get();
+		TuneWithUrl tw = get();
+		Tune *tune = tw.first;
 		Qomp::loadCover(tune, tagFile);
 
 		if(ref.audioProperties()) {

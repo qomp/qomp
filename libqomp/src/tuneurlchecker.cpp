@@ -28,7 +28,7 @@
 #include <QDebug>
 #endif
 
-static const int TIMEOUT = 3000;
+static const int TIMEOUT = 5000;
 
 
 TuneUrlChecker::TuneUrlChecker(QNetworkAccessManager *nam, const QUrl &url, QObject *parent) :
@@ -56,6 +56,7 @@ bool TuneUrlChecker::result() const
 	connect(reply_, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(error()));
 	connect(reply_, SIGNAL(readyRead()), SLOT(readyRead()));
 	connect(reply_, SIGNAL(destroyed()), loop_, SLOT(quit()));
+	timer_->start();
 
 	loop_->exec();
 #ifdef DEBUG_OUTPUT
