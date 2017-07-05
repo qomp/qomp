@@ -18,10 +18,7 @@
  */
 
 #include "cuteradiocontroller.h"
-#include "common.h"
-#include "options.h"
 #include "cuteradioplugindefines.h"
-#include "tune.h"
 #include "cuteradioplugingettunesdialog.h"
 #include "cuteradiomodel.h"
 
@@ -32,8 +29,16 @@
 #include <QJsonObject>
 #include <QStringList>
 
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
+
 
 static const QString CuteRadioUrl = "http://marxoft.co.uk/api/cuteradio";
+static const QString M3U_TYPE = "audio/x-mpegurl";
+static const QString PLS_TYPE = "audio/x-scpls";
+static const QString HTML_TYPE = "text/html";
+static const QString supportedMimeTypesPrefix = "audio/";
 
 
 
@@ -95,6 +100,7 @@ void CuteRadioController::doSearchStepTwo(const QString &str)
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 	QNetworkReply *reply = nam()->get(nr);
 	connect(reply, &QNetworkReply::finished, this, &CuteRadioController::searchFinished);
+	connect(this, &CuteRadioController::destroyed, reply, &QNetworkReply::deleteLater);
 	startBusy();
 }
 
@@ -130,7 +136,33 @@ QString CuteRadioController::parseSearchString(QString str) const
 			res.append( QStringLiteral("search=") + part );
 		}
 	}
-	return res.join("&") + QStringLiteral("&limit=50");
+	return res.join("&") + QStringLiteral("&limit=50&sortDescending=true&sort=lastPlayed");
+}
+
+void CuteRadioController::parceM3U(QompPluginModelItem *item, const QString &m3u)
+{
+	const QStringList lines = m3u.split("\n", QString::SkipEmptyParts);
+	for (const QString& line: lines) {
+		if (line.isEmpty() || line[0] == '#' || line.size() > 4096)
+			continue;
+
+		static_cast<CuteRadioTune*>(item)->url = line;
+		model_->emitUpdateSignal(model_->index(item));
+		break;
+	}
+}
+
+void CuteRadioController::parcePLS(QompPluginModelItem *item, const QString &pls)
+{
+	const QStringList lines = pls.split("\n", QString::SkipEmptyParts);
+	for (const QString& line: lines) {
+		if (line.startsWith("File") && line.contains("=")) {
+			QStringList sl = line.split("=", QString::SkipEmptyParts);
+			static_cast<CuteRadioTune*>(item)->url = sl.last();
+			model_->emitUpdateSignal(model_->index(item));
+			break;
+		}
+	}
 }
 
 void CuteRadioController::searchFinished()
@@ -151,17 +183,29 @@ void CuteRadioController::searchFinished()
 					continue;
 				}
 				auto dt = obj.value("lastPlayed").toVariant().toDateTime();
-				if(dt.isValid() && dt.daysTo(QDateTime::currentDateTime()) < 100) {
+				if(dt.isValid() /*&& dt.daysTo(QDateTime::currentDateTime()) < 100*/) {
 					CuteRadioTune *t = new CuteRadioTune;
 
 					if(obj.contains("title"))
 						t->title = obj.value("title").toString();
 
-					if(obj.contains("description"))
-						t->artist = obj.value("description").toString();
+					if(obj.contains("description")) {
+						const QString descr = obj.value("description").toString();
+						if(descr != "-")
+							t->artist = descr;
+					}
 
 					if(obj.contains("source"))
-						t->url = obj.value("source").toString();
+						t->internalId = obj.value("source").toString();
+
+					if(obj.contains("country"))
+						t->country = obj.value("country").toString();
+
+					if(obj.contains("genre"))
+						t->genre = obj.value("genre").toString();
+
+					if(obj.contains("language"))
+						t->lang = obj.value("language").toString();
 
 					t->lastPlayed = dt.toString(Qt::SystemLocaleShortDate);
 
@@ -180,9 +224,82 @@ void CuteRadioController::searchFinished()
 	}
 }
 
+void CuteRadioController::getUrlReadyRead()
+{
+	QNetworkReply* r = static_cast<QNetworkReply*>(sender());
+	CuteRadioTune* ct = reinterpret_cast<CuteRadioTune*>(r->property("tune").value<qintptr>());
+	const QString content = r->header(QNetworkRequest::ContentTypeHeader).toString();
+#ifdef DEBUG_OUTPUT
+	qDebug() << "getUrlReadyRead()" << content;
+#endif
+	if( !content.startsWith(M3U_TYPE, Qt::CaseInsensitive)
+		&& !content.startsWith(PLS_TYPE, Qt::CaseInsensitive)
+//		&& content.compare(HTML_TYPE, Qt::CaseInsensitive) != 0
+	) {
+		if(content.contains(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
+			ct->url = r->url().toString();
+			model_->emitUpdateSignal(model_->index(ct));
+		}
+		else if(content.compare(HTML_TYPE, Qt::CaseInsensitive) == 0) {
+			ct->url = r->url().toString() + ";";
+			model_->emitUpdateSignal(model_->index(ct));
+		}
+
+		r->abort();
+	}
+}
+
+void CuteRadioController::getUrlFinished()
+{
+	QNetworkReply* r = static_cast<QNetworkReply*>(sender());
+	CuteRadioTune* ct = reinterpret_cast<CuteRadioTune*>(r->property("tune").value<qintptr>());
+	stopBusy();
+	r->deleteLater();
+
+	if(r->error() == QNetworkReply::NoError) {
+		const QString content = r->header(QNetworkRequest::ContentTypeHeader).toString();
+		const QString data = r->readAll();
+		if(content.startsWith(M3U_TYPE, Qt::CaseInsensitive)) {
+			parceM3U(ct, data);
+		}
+		else if (content.startsWith(PLS_TYPE, Qt::CaseInsensitive)) {
+			parcePLS(ct, data);
+		}
+//		else if(content.compare(HTML_TYPE, Qt::CaseInsensitive) == 0) {
+//			if(data.contains(QStringLiteral("href=\"listen.pls\""))) {
+//				qDebug() << "cccccc";
+//				const QString url = r->url().toString();
+//				QNetworkRequest nr(url + "listen.pls");
+//				nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+//				nr.setRawHeader("Referer", url.toLatin1());
+//				QNetworkReply *r = nam()->get(nr);
+//				r->setProperty("tune", QVariant::fromValue<qintptr>(reinterpret_cast<qintptr>(ct)));
+
+//				connect(r, &QNetworkReply::readyRead, this, &CuteRadioController::getUrlReadyRead);
+//				connect(r, &QNetworkReply::finished, this, &CuteRadioController::getUrlFinished);
+//				connect(this, &CuteRadioController::destroyed, r, &QNetworkReply::deleteLater);
+//				startBusy();
+//			}
+//		}
+	}
+}
+
 void CuteRadioController::itemSelected(QompPluginModelItem* item)
 {
-	Q_UNUSED(item)
+	CuteRadioTune* ct = static_cast<CuteRadioTune*>(item);
+	if(!ct->url.isEmpty())
+		return;
+
+	QNetworkRequest nr(ct->internalId);
+	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+	QNetworkReply *r = nam()->get(nr);
+	r->setProperty("tune", QVariant::fromValue<qintptr>(reinterpret_cast<qintptr>(item)));
+
+	connect(r, &QNetworkReply::readyRead, this, &CuteRadioController::getUrlReadyRead);
+	connect(r, &QNetworkReply::finished, this, &CuteRadioController::getUrlFinished);
+	connect(this, &CuteRadioController::destroyed, r, &QNetworkReply::deleteLater);
+
+	startBusy();
 }
 
 void CuteRadioController::getSuggestions(const QString &text)

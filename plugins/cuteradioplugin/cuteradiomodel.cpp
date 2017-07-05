@@ -30,17 +30,29 @@ QVariant CuteRadioModel::data(const QModelIndex &index, int role) const
 	if(!index.isValid() || index.column())
 		return QVariant();
 
-	if(role == Qt::DisplayRole) {
-		return static_cast<CuteRadioTune*>(index.internalPointer())->title;
-	}
-	else if(role == Qt::ToolTipRole) {
+	if(role == Qt::ToolTipRole) {
 		auto t = static_cast<CuteRadioTune*>(index.internalPointer());
-		QString ret = QString("<div>%1</div><div><nobr><b>%2:</b> %3</nobr></div>")
+		QString ret = QString("<div>%1</div>"
+				      "<div><nobr><b>%2:</b> %3</nobr></div>"
+				      "<div><nobr><b>%4:</b> %5</nobr></div>"
+				      "<div><nobr><b>%6:</b> %7</nobr></div>"
+				      "<div><nobr><b>%8:</b> %9</nobr></div>")
 				.arg(t->artist)
+				.arg(tr("Country"))
+				.arg(t->country)
+				.arg(tr("Genre"))
+				.arg(t->genre)
+				.arg(tr("Language"))
+				.arg(t->lang)
 				.arg(tr("Last marked as played"))
 				.arg(t->lastPlayed);
 		return ret;
 	}
 
 	return QompPluginTreeModel::data(index, role);
+}
+
+QString CuteRadioTune::toString() const
+{
+	return QString("%1 [%2, %3]").arg(title, genre, country);
 }

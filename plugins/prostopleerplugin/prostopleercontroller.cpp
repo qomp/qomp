@@ -121,6 +121,7 @@ void ProstoPleerController::doSearchStepTwo()
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 	QNetworkReply *reply = nam()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(searchFinished()));
+	connect(this, &ProstoPleerController::destroyed, reply, &QNetworkReply::deleteLater);
 	startBusy();
 }
 
@@ -208,6 +209,7 @@ void ProstoPleerController::itemSelected(QompPluginModelItem* item)
 	QNetworkReply *reply = nam()->post(nr, ba);
 	reply->setProperty("id", pt->internalId);
 	connect(reply, SIGNAL(finished()), SLOT(urlFinished()));
+	connect(this, &ProstoPleerController::destroyed, reply, &QNetworkReply::deleteLater);
 	startBusy();
 }
 

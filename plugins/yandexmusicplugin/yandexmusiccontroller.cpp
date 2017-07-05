@@ -252,6 +252,7 @@ void YandexMusicController::search(const QString& text, const QString &type, con
 	}
 	QNetworkReply* reply = nam()->get(creatNetworkRequest(QUrl(url)));
 	connect(reply, SIGNAL(finished()), slot);
+	connect(this, &YandexMusicController::destroyed, reply, &QNetworkReply::deleteLater);
 	requests_.insert(reply, nullptr);
 	dlg_->startBusyWidget();
 }
@@ -632,6 +633,7 @@ void YandexMusicController::itemSelected(QompPluginModelItem *item)
 
 	requests_.insert(reply, model);
 	connect(reply, SIGNAL(finished()), slot);
+	connect(this, &YandexMusicController::destroyed, reply, &QNetworkReply::deleteLater);
 	dlg_->startBusyWidget();
 }
 

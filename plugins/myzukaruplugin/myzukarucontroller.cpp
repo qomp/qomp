@@ -373,6 +373,7 @@ void MyzukaruController::doSearch(const QString &txt)
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 	QNetworkReply* reply = nam()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(searchFinished()));
+	connect(this, &MyzukaruController::destroyed, reply, &QNetworkReply::deleteLater);
 	requests_.insert(reply, 0);
 	dlg_->startBusyWidget();
 }
@@ -497,6 +498,7 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 	requests_.insert(reply, model);
 
 	connect(reply, SIGNAL(finished()), slot);
+	connect(this, &MyzukaruController::destroyed, reply, &QNetworkReply::deleteLater);
 	dlg_->startBusyWidget();
 }
 

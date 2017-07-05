@@ -34,24 +34,28 @@ public:
 	virtual ~CuteRadioController();
 
 protected slots:
-	void doSearch(const QString& text);
-	QompPluginGettunesDlg* view() const;
-	void itemSelected(QompPluginModelItem* item);
-	void getSuggestions(const QString& text);
-	void suggestionsFinished();
+	virtual void doSearch(const QString& text) Q_DECL_OVERRIDE;
+	virtual QompPluginGettunesDlg* view() const Q_DECL_OVERRIDE;
+	virtual void itemSelected(QompPluginModelItem* item) Q_DECL_OVERRIDE;
+	virtual void getSuggestions(const QString& text) Q_DECL_OVERRIDE;
+	virtual void suggestionsFinished() Q_DECL_OVERRIDE;
 
 protected:
-	void init();
-	QList<Tune*> prepareTunes() const;
+	virtual void init() Q_DECL_OVERRIDE;
+	virtual QList<Tune*> prepareTunes() const Q_DECL_OVERRIDE;
 
 private slots:
 	void searchFinished();
+	void getUrlReadyRead();
+	void getUrlFinished();
 
 private:
 	void doSearchStepTwo(const QString& str);
 	void startBusy();
 	void stopBusy();
 	QString parseSearchString(QString str) const;
+	void parceM3U(QompPluginModelItem* item, const QString& m3u);
+	void parcePLS(QompPluginModelItem* item, const QString& pls);
 
 private:
 	QompPluginTreeModel* model_;

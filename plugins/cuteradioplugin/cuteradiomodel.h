@@ -27,6 +27,11 @@ class CuteRadioTune : public QompPluginTune
 {
 public:
 	QString lastPlayed;
+	QString country;
+	QString lang;
+	QString genre;
+
+	virtual QString toString() const Q_DECL_OVERRIDE;
 };
 
 
