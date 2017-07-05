@@ -33,7 +33,7 @@ class LIBQOMPSHARED_EXPORT GetTuneUrlHelper : public QObject
 	Q_PROPERTY(bool blocked READ blocked WRITE setBlocked)
 public:
 	GetTuneUrlHelper(QObject* target, const char* slot, QObject *parent = 0);
-	QFutureWatcher<QUrl>* getTuneUrlAsynchronously(Tune* t);
+	QFutureWatcher<QUrl>* getTuneUrlAsynchronously(Tune* t, bool withCheck = true);
 
 	bool blocked() const;
 	void setBlocked(bool b);
@@ -48,6 +48,7 @@ private:
 	QObject* target_;
 	const char* slot_;
 	bool blocked_;
+	bool withCheck_;
 };
 
 #endif // GETTUNEURLHELPER_H

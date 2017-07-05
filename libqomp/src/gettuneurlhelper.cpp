@@ -29,12 +29,14 @@ GetTuneUrlHelper::GetTuneUrlHelper(QObject *target, const char *slot, QObject *p
 	QObject(parent),
 	target_(target),
 	slot_(slot),
-	blocked_(false)
+	blocked_(false),
+	withCheck_(true)
 {
 }
 
-QFutureWatcher<QUrl> *GetTuneUrlHelper::getTuneUrlAsynchronously(Tune *t)
+QFutureWatcher<QUrl> *GetTuneUrlHelper::getTuneUrlAsynchronously(Tune *t, bool withCheck)
 {
+	withCheck_ = withCheck;
 	QFutureWatcher<QUrl>* watcher = new QFutureWatcher<QUrl>(this);
 	connect(watcher, SIGNAL(finished()), SLOT(urlFinished()));
 	QFuture<QUrl> f = QtConcurrent::run(t, &Tune::getUrl);
@@ -59,7 +61,7 @@ void GetTuneUrlHelper::urlFinished()
 	watcher->deleteLater();
 	QUrl url = f.result();
 
-	if(!checkUrl(url))
+	if(withCheck_ && !checkUrl(url))
 		url.clear();
 
 	if(!blocked_)
@@ -70,6 +72,9 @@ void GetTuneUrlHelper::urlFinished()
 
 bool GetTuneUrlHelper::checkUrl(const QUrl &url)
 {
+	if(url.isLocalFile())
+		return true;
+
 	QScopedPointer<QNetworkAccessManager> nam(QompNetworkingFactory::instance()->getThreadedNAM());
 	TuneUrlChecker uc(nam.data(), url, this);
 	if(uc.result())

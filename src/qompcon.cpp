@@ -685,7 +685,7 @@ void QompCon::actRemoveTune(Tune *tune)
 void QompCon::actCopyUrl(Tune *tune)
 {
 	GetTuneUrlHelper* helper = new GetTuneUrlHelper(this, "tuneUrlFinished", this);
-	helper->getTuneUrlAsynchronously(tune);
+	helper->getTuneUrlAsynchronously(tune, false);
 }
 
 void QompCon::tuneUrlFinished(const QUrl &url)
