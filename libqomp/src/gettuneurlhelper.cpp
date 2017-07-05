@@ -72,7 +72,7 @@ void GetTuneUrlHelper::urlFinished()
 
 bool GetTuneUrlHelper::checkUrl(const QUrl &url)
 {
-	if(url.isLocalFile())
+	if(url.isLocalFile() || url.isEmpty())
 		return true;
 
 	QScopedPointer<QNetworkAccessManager> nam(QompNetworkingFactory::instance()->getThreadedNAM());

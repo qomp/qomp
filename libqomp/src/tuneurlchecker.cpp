@@ -60,7 +60,7 @@ bool TuneUrlChecker::result() const
 
 	loop_->exec();
 #ifdef DEBUG_OUTPUT
-	qDebug() << "TuneUrlChecker::result()" << "finish check";
+	qDebug() << "TuneUrlChecker::result()" << "finish check" << result_;
 #endif
 	return result_;
 }
