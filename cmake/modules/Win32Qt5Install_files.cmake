@@ -131,6 +131,7 @@ if(USE_MXE)
 		liblzo2-2.dll
 		libmng-2.dll
 		libpcre16-0.dll
+		libpcre2-16-0.dll
 		libpcre-1.dll
 		libpng16-16.dll
 		libtiff-5.dll

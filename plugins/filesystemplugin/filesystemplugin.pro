@@ -27,6 +27,3 @@ win32|android {
 QT += multimedia
 
 LIBS += -lcue
-
-linux:!mac: INCLUDEPATH += /usr/include/libcue-1.4/libcue
-
