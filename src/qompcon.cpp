@@ -757,11 +757,11 @@ void QompCon::setupPlayer()
 	player_ = createPlayer();
 	PluginManager::instance()->qompPlayerChanged(player_);
 
-	connect(player_, SIGNAL(tuneDataUpdated(Tune*)), model_, SLOT(tuneDataUpdated(Tune*)));
-	connect(player_, SIGNAL(mediaFinished()), SLOT(mediaFinished()));
-	connect(player_, SIGNAL(stateChanged(Qomp::State)), SLOT(playerStateChanged(Qomp::State)));
-	connect(player_, SIGNAL(currentTuneTotalTimeChanged(qint64)), model_, SLOT(currentTotalTimeChanged(qint64)));
-	connect(model_,  SIGNAL(currentTuneChanged(Tune*)), player_, SLOT(setTune(Tune*)));
+	connect(player_, &QompPlayer::tuneDataUpdated,             model_, &QompPlayListModel::tuneDataUpdated);
+	connect(player_, &QompPlayer::currentTuneTotalTimeChanged, model_, &QompPlayListModel::currentTuneTotalTimeChanged);
+	connect(player_, SIGNAL(mediaFinished()), SLOT(mediaFinished())); //can't use new connect here
+	connect(player_, &QompPlayer::stateChanged,  this, &QompCon::playerStateChanged);
+	connect(model_,  &QompPlayListModel::currentTuneChanged, player_, &QompPlayer::setTune);
 
 #ifndef Q_OS_ANDROID
 	player_->setVolume(Options::instance()->getOption(OPTION_VOLUME, 1).toReal());
@@ -775,7 +775,7 @@ void QompCon::setupPlayer()
 void QompCon::setupModel()
 {
 	model_ = new QompPlayListModel(this);
-	connect(model_, SIGNAL(currentTuneChanged(Tune*)), SLOT(currentTuneChanged(Tune*)));
+	connect(model_, &QompPlayListModel::currentTuneChanged, this, &QompCon::currentTuneChanged);
 }
 
 void QompCon::stopPlayer()
@@ -784,6 +784,7 @@ void QompCon::stopPlayer()
 
 	const QSignalBlocker b(player_);
 	player_->stop();
+	qApp->processEvents();
 	mainWin_->setCurrentPosition(0);
 	playerStateChanged(Qomp::StateStopped);
 
@@ -920,7 +921,7 @@ void QompCon::playerStateChanged(Qomp::State state)
 
 void QompCon::currentTuneChanged(Tune *t)
 {
-	Q_UNUSED(t);
+	Q_UNUSED(t)
 #ifdef Q_OS_ANDROID
 	notifyIcon(model_->indexForTune(t).data().toString());
 #endif
