@@ -25,7 +25,7 @@ include_directories(
 	${PROJECT_BINARY_DIR}/include
 )
 
-find_package( Qt5 REQUIRED Widgets Network )
+find_package( Qt5 COMPONENTS Widgets Network REQUIRED )
 add_definitions(
 	-DHAVE_QT5
 )
@@ -33,7 +33,6 @@ set( QT_DEPLIBS
 	Qt5::Widgets
 	Qt5::Network
 )
-
 
 add_library(
 	${PLUGIN}

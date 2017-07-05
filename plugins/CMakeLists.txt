@@ -12,6 +12,7 @@ set( plugins_list
 	lastfmplugin
 	tunetofileplugin
 	mprisplugin
+	cuteradioplugin
 )
 
 if( DEV_MODE )

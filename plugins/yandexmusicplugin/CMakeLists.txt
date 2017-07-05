@@ -23,9 +23,8 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PROJECT_BINARY_DIR}/include
 )
-set( CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}" )
 
-find_package( Qt5 REQUIRED Widgets Network )
+find_package( Qt5 COMPONENTS Widgets Network REQUIRED )
 add_definitions(
 	-DHAVE_QT5
 )

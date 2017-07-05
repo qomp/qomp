@@ -74,7 +74,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 	find_package( X11 REQUIRED )
 	include_directories(
 		${X11_INCLUDE_DIR}
-		)
+	)
 	set(EXTRA_LIBS
 		${X11_LIBRARIES}
 	)
@@ -82,7 +82,7 @@ endif()
 
 if( WIN32 )
 	set(EXTRA_LIBS
-	-luser32
+		-luser32
 	)
 	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
 	set( LIBCUE_ROOT "C:\\build\\libcue" CACHE STRING "LibCue root path" )
@@ -202,7 +202,7 @@ endif()
 
 find_package( Qt5 COMPONENTS Core Widgets Network Multimedia Concurrent REQUIRED )
 if (Qt5Widgets_FOUND)
-    message(STATUS "Qt5 version: ${Qt5Widgets_VERSION}")
+	message(STATUS "Qt5 version: ${Qt5Widgets_VERSION}")
 endif()
 find_package( Qt5LinguistTools )
 qt5_add_resources( RSCS ${qomp_RSCS} )
@@ -264,7 +264,8 @@ macro(create_themes _sources _output)
 			DEPENDS "${_sources}"
 			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 			COMMENT "Building external Qt resource ${_output}"
-			VERBATIM)
+			VERBATIM
+		)
 	else()
 		qt5_add_binary_resources(build_theme_rcc "${_sources}" OPTIONS -binary DESTINATION "${_output}")
 	endif()
