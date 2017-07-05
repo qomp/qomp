@@ -83,6 +83,8 @@ private:
 	bool isTuneChangeFinished() const;
 	void processMediaState(bool audioReady, bool seekable);
 	void resumePlayer();
+	bool isMediaReady(bool audioReady, bool seekable) const;
+	void doPlay();
 
 private:
 	QMediaPlayer* player_;

@@ -26,6 +26,7 @@
 #include <QAudioOutputSelectorControl>
 #include <QMediaService>
 #include <QSignalBlocker>
+#include <QCoreApplication>
 
 
 #ifdef DEBUG_OUTPUT
@@ -68,6 +69,7 @@ void QompQtMultimediaPlayer::doSetTune()
 	if(!prevTune_ || !prevTune_->sameSource(currentTune())) {
 		const QSignalBlocker b(player_);
 		player_->setMedia(QMediaContent());
+		qApp->processEvents();
 	}
 
 	if(watcher_) {
@@ -105,6 +107,7 @@ void QompQtMultimediaPlayer::setVolume(qreal vol)
 {
 	const QSignalBlocker b(player_);
 	player_->setVolume(vol*100);
+	qApp->processEvents();
 }
 
 qreal QompQtMultimediaPlayer::volume() const
@@ -116,6 +119,7 @@ void QompQtMultimediaPlayer::setMute(bool mute)
 {
 	const QSignalBlocker b(player_);
 	player_->setMuted(mute);
+	qApp->processEvents();
 }
 
 bool QompQtMultimediaPlayer::isMuted() const
@@ -127,6 +131,7 @@ void QompQtMultimediaPlayer::setPosition(qint64 pos)
 {
 	const QSignalBlocker b(player_);
 	player_->setPosition( mapPositionFromTune(pos) );
+	qApp->processEvents();
 }
 
 qint64 QompQtMultimediaPlayer::position() const
@@ -160,7 +165,7 @@ void QompQtMultimediaPlayer::play()
 	QompPlayer::play();
 
 	if(!player_->media().isNull() && isTuneChangeFinished())
-		player_->play();
+		doPlay();
 }
 
 void QompQtMultimediaPlayer::pause()
@@ -238,6 +243,8 @@ void QompQtMultimediaPlayer::setAudioOutputDevice(const QString &devName)
 
 			svc->releaseControl(out);
 		}
+
+		qApp->processEvents();
 	}
 }
 
@@ -283,6 +290,7 @@ void QompQtMultimediaPlayer::updatePlayerPosition()
 
 		const QSignalBlocker b(player_);
 		player_->setPosition(pos);
+		qApp->processEvents();
 	}
 }
 
@@ -334,7 +342,7 @@ bool QompQtMultimediaPlayer::isTuneChangeFinished() const
 
 void QompQtMultimediaPlayer::processMediaState(bool audioReady, bool seekable)
 {
-	if(audioReady && seekable && player_->mediaStatus() == QMediaPlayer::LoadedMedia)
+	if(isMediaReady(audioReady, seekable))
 		emit mediaReady();
 }
 
@@ -345,7 +353,7 @@ void QompQtMultimediaPlayer::resumePlayer()
 
 	switch (lastAction()) {
 	case Qomp::StatePlaying: {
-		player_->play();
+		doPlay();
 		break;
 	}
 	default: player_->stop();
@@ -354,6 +362,30 @@ void QompQtMultimediaPlayer::resumePlayer()
 
 	tuneDurationChanged(player_->duration());
 	updatePlayerPosition();
+}
+
+bool QompQtMultimediaPlayer::isMediaReady(bool audioReady, bool seekable) const
+{
+#ifdef DEBUG_OUTPUT
+	qDebug() << "QompQtMultimediaPlayer::isMediaReady" << audioReady << seekable;
+#endif
+	return audioReady && seekable && player_->mediaStatus() == QMediaPlayer::LoadedMedia;
+}
+
+void QompQtMultimediaPlayer::doPlay()
+{
+//	if(isMediaReady(player_->isAudioAvailable(), player_->isSeekable())) {
+		player_->play();
+//	}
+//	else {
+//		auto pConn = QSharedPointer<QMetaObject::Connection>::create();
+//		*pConn = connect(this, &QompPlayer::mediaReady,
+//				 [this, pConn]()
+//		{
+//			player_->play();
+//			disconnect(*pConn);
+//		});
+//	}
 }
 
 void QompQtMultimediaPlayer::audioReadyChanged(bool ready)
@@ -405,6 +437,7 @@ void QompQtMultimediaPlayer::tunePositionChanged(qint64 pos)
 	else {
 		const QSignalBlocker b(player_);
 		player_->stop();
+		qApp->processEvents();
 
 		emit mediaFinished();
 	}
