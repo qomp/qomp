@@ -18,13 +18,12 @@
  */
 
 #include "cuteradiocontroller.h"
-#include "qompplugintypes.h"
 #include "common.h"
-#include "qompplugintreemodel.h"
 #include "options.h"
 #include "cuteradioplugindefines.h"
 #include "tune.h"
 #include "cuteradioplugingettunesdialog.h"
+#include "cuteradiomodel.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -40,7 +39,7 @@ static const QString CuteRadioUrl = "http://marxoft.co.uk/api/cuteradio";
 
 CuteRadioController::CuteRadioController(QObject *parent) :
 	QompPluginController(parent),
-	model_(new QompPluginTreeModel(this)),
+	model_(new CuteRadioModel(this)),
 	dlg_(new CuteRadioPluginGetTunesDialog()),
 	searchesCount_(0)
 {
@@ -148,24 +147,26 @@ void CuteRadioController::searchFinished()
 			QJsonArray arr = jo.value("items").toArray();
 			for(const QJsonValue& item: arr) {
 				QJsonObject obj = item.toObject();
-				if(obj.contains("lastPlayed")) {
-					auto dt = obj.value("lastPlayed").toVariant().toDateTime();
-					if(dt.daysTo(QDateTime::currentDateTime()) > 100)
-						continue;
+				if(!obj.contains("lastPlayed")) {
+					continue;
 				}
+				auto dt = obj.value("lastPlayed").toVariant().toDateTime();
+				if(dt.isValid() && dt.daysTo(QDateTime::currentDateTime()) < 100) {
+					CuteRadioTune *t = new CuteRadioTune;
 
-				QompPluginTune *t = new QompPluginTune;
+					if(obj.contains("title"))
+						t->title = obj.value("title").toString();
 
-				if(obj.contains("title"))
-					t->title = obj.value("title").toString();
+					if(obj.contains("description"))
+						t->artist = obj.value("description").toString();
 
-				if(obj.contains("description"))
-					t->artist = obj.value("description").toString();
+					if(obj.contains("source"))
+						t->url = obj.value("source").toString();
 
-				if(obj.contains("source"))
-					t->url = obj.value("source").toString();
+					t->lastPlayed = dt.toString(Qt::SystemLocaleShortDate);
 
-				model_->addTopLevelItems({t});
+					model_->addTopLevelItems({t});
+				}
 			}
 		}
 

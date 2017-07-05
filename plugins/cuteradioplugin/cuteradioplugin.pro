@@ -15,10 +15,12 @@ else {
 HEADERS +=  $$PWD/cuteradioplugin.h \
             $$PWD/cuteradioplugingettunesdialog.h \
             $$PWD/cuteradioplugindefines.h \
-            $$PWD/cuteradiocontroller.h
+            $$PWD/cuteradiocontroller.h \
+            $$PWD/cuteradiomodel.h
 
 SOURCES +=  $$PWD/cuteradioplugin.cpp \
-            $$PWD/cuteradiocontroller.cpp
+            $$PWD/cuteradiocontroller.cpp \
+            $$PWD/cuteradiomodel.cpp
 
 
 OTHER_FILES += $$PWD/metadata.json
