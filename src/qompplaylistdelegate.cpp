@@ -51,21 +51,26 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 		font.setWeight(QFont::Bold);
 	}
 
-	QString text;
+	QString text = QString::number(index.row()+1) + ". ";
 	QString title = index.data(QompPlayListModel::TitleRole).toString();
 	if(!title.isEmpty()) {
-		text = QString::number(index.row()+1) + ". ";
 		QString artist = index.data(QompPlayListModel::ArtistRole).toString();
 		if(!artist.isEmpty())
 			text += artist + " - ";
 		text += title;
 	}
-	if(text.isEmpty()) {
-		text = index.data(QompPlayListModel::URLRole).toString();
-	}
-	if(text.isEmpty()) {
-		text = index.data(QompPlayListModel::FileRole).toString();
-		text = QFileInfo(text).fileName();
+	else {
+		QString str = index.data(QompPlayListModel::URLRole).toString();
+		if(str.isEmpty()) {
+			str = index.data(QompPlayListModel::FileRole).toString();
+			if(!str.isEmpty()) {
+				str = QFileInfo(str).fileName();
+			}
+		}
+
+		if(!str.isEmpty()) {
+			text += str;
+		}
 	}
 
 	painter->fillRect(rect, (o.state & QStyle::State_Selected) ?

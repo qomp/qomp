@@ -87,10 +87,10 @@ Tune::Tune(bool canSave) :
 QString Tune::displayString() const
 {
 	QString ret;
+	if(!trackNumber.isEmpty()) {
+		ret = trackNumber+".";
+	}
 	if(!title.isEmpty()) {
-		if(!trackNumber.isEmpty()) {
-			ret = trackNumber+".";
-		}
 		if(!artist.isEmpty()) {
 			ret += artist+" - ";
 		}
@@ -101,10 +101,10 @@ QString Tune::displayString() const
 	}
 	else {
 		if(file.isEmpty())
-			ret = url;
+			ret += url;
 		else {
 			QFileInfo fi(file);
-			ret = fi.baseName();
+			ret += fi.baseName();
 		}
 		if(!duration.isEmpty()) {
 			ret += QString("    [%1]").arg(duration);
