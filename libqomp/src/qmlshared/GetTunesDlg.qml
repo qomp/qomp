@@ -140,7 +140,9 @@ ButtonsPage {
 			creator.active = false
 			creator.model = list
 			creator.active = true
-			suggestions.popup()
+
+			if(list.length > 0)
+				suggestions.popup()
 		}
 	}
 }

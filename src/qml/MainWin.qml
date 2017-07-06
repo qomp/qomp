@@ -392,7 +392,7 @@ Rectangle {
 		tuneInfoLoader.item.title = cur.title
 		tuneInfoLoader.item.bitrate = cur.bitrate
 		tuneInfoLoader.item.cover = cur.cover
-		console.log(cur.cover)
+//		console.log(cur.cover)
 		tuneInfoLoader.item.open()
 		tuneInfoLoader.item.forceActiveFocus()
 	}

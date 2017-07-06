@@ -18,6 +18,7 @@
  */
 
 #include "cuteradiomodel.h"
+#include "tune.h"
 
 CuteRadioModel::CuteRadioModel(QObject *parent) :
 	QompPluginTreeModel(parent)
@@ -55,4 +56,13 @@ QVariant CuteRadioModel::data(const QModelIndex &index, int role) const
 QString CuteRadioTune::toString() const
 {
 	return QString("%1 [%2, %3]").arg(title, genre, country);
+}
+
+Tune *CuteRadioTune::toTune() const
+{
+	Tune* t = new Tune(false);
+	t->artist = artist;
+	t->title = title;
+	t->url = url;
+	return t;
 }

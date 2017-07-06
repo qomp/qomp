@@ -270,6 +270,10 @@ void QompPluginGettunesDlg::newSuggestions(const QStringList &list)
 		return;
 
 	d->suggestionsMenu_->clear();
+	d->waitForSuggestions_ = false;
+
+	if(list.count() == 0)
+		return;
 
 	foreach(const QString& sug, list) {
 		QAction* act = new QAction(sug, d->suggestionsMenu_);

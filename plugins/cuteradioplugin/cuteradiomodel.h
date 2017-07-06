@@ -32,6 +32,7 @@ public:
 	QString genre;
 
 	virtual QString toString() const Q_DECL_OVERRIDE;
+	virtual Tune* toTune() const Q_DECL_OVERRIDE;
 };
 
 

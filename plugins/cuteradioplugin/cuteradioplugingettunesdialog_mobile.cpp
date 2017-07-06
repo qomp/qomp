@@ -45,8 +45,8 @@ public slots:
 
 CuteRadioPluginGetTunesDialog::Private::Private() : QObject()
 {
-	item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/CuteRadiorResultView.qml"));
-	connect(item, SIGNAL(itemCheckClick(QVariant)), SLOT(itemClicked(QVariant)));
+	item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/CuteRadioResultsView.qml"));
+	connect(item, SIGNAL(checkBoxClicked(QVariant)), SLOT(itemClicked(QVariant)));
 }
 
 CuteRadioPluginGetTunesDialog::Private::~Private()
@@ -66,7 +66,7 @@ void CuteRadioPluginGetTunesDialog::Private::itemClicked(const QVariant &row)
 CuteRadioPluginGetTunesDialog::CuteRadioPluginGetTunesDialog(QObject *parent) :
 	QompPluginGettunesDlg(parent)
 {
-	setWindowTitle(PROSTOPLEER_PLUGIN_NAME);
+	setWindowTitle(CUTERADIO_PLUGIN_NAME);
 	p = new Private;
 
 	connect (p, SIGNAL(itemClicked(QModelIndex)), SLOT(itemSelected(QModelIndex)));
@@ -83,5 +83,5 @@ void CuteRadioPluginGetTunesDialog::setModel(QAbstractItemModel *model)
 	QQmlProperty::write(p->item, "model", QVariant::fromValue(model));
 }
 
-#include "prostopleerplugingettunesdialog_mobile.moc"
+#include "cuteradioplugingettunesdialog_mobile.moc"
 

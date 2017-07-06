@@ -28,6 +28,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QStringList>
+#include <QTimer>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -290,8 +291,10 @@ void CuteRadioController::itemSelected(QompPluginModelItem* item)
 void CuteRadioController::getSuggestions(const QString &text)
 {
 	Q_UNUSED(text)
+	QTimer::singleShot(100, this, &CuteRadioController::suggestionsFinished);
 }
 
 void CuteRadioController::suggestionsFinished()
 {
+	emit suggestionsReady(QStringList());
 }
