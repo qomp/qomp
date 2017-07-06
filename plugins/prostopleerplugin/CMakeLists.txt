@@ -29,7 +29,7 @@ include_directories(
 	${PROJECT_BINARY_DIR}/include
 )
 
-find_package( Qt5 REQUIRED Widgets Network )
+find_package( Qt5 COMPONENTS Widgets Network REQUIRED )
 add_definitions(
 	-DHAVE_QT5
 )

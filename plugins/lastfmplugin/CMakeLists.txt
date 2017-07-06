@@ -27,7 +27,7 @@ include_directories(
 	${PROJECT_BINARY_DIR}/include
 )
 
-find_package( Qt5 REQUIRED Widgets Network Xml)
+find_package( Qt5 COMPONENTS Widgets Network Xml REQUIRED )
 add_definitions(
 	-DHAVE_QT5
 )

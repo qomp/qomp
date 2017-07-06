@@ -12,36 +12,36 @@ if( LINUX )
 		mpriscontroller.h
 		rootadapter.h
 		${PLUGIN}.h
-		)
+	)
 	set( mprisplugin_SRCS
 		mprisadapter.cpp
 		mpriscontroller.cpp
 		rootadapter.cpp
 		${PLUGIN}.cpp
-		)
+	)
 	include_directories(
 		${CMAKE_SOURCE_DIR}
 		${CMAKE_CURRENT_BINARY_DIR}
 		${PROJECT_BINARY_DIR}/include
-		)
-	find_package( Qt5 REQUIRED Widgets DBus)
+	)
+	find_package( Qt5 COMPONENTS Widgets DBus REQUIRED )
 	add_definitions(
 		-DHAVE_QT5
-		)
+	)
 	set( QT_DEPLIBS
 		Qt5::Widgets
 		Qt5::DBus
-		)
+	)
 	add_library(
 		${PLUGIN}
 		MODULE
 		${mprisplugin_SRCS}
-		)
+	)
 	target_link_libraries(
 		${PLUGIN}
 		${QT_DEPLIBS}
 		libqomp
-		)
+	)
 	add_dependencies( ${PLUGIN} libqomp qomp )
 	install(
 		TARGETS
@@ -51,5 +51,5 @@ if( LINUX )
 		${LIB_INSTALL_DIR}/qomp/plugins
 		RUNTIME DESTINATION
 		${LIB_INSTALL_DIR}/qomp/plugins
-		)
+	)
 endif()

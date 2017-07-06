@@ -17,7 +17,7 @@ include_directories(
 	${PROJECT_BINARY_DIR}/include
 )
 
-find_package( Qt5Widgets REQUIRED )
+find_package( Qt5 COMPONENTS Widgets REQUIRED )
 add_definitions(
 	-DHAVE_QT5
 )
