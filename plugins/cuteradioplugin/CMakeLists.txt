@@ -1,0 +1,67 @@
+set( PLUGIN cuteradioplugin )
+cmake_minimum_required( VERSION 3.1.0 )
+
+if( UNIX AND NOT (APPLE OR CYGWIN) )
+	set(LINUX ON)
+endif()
+set( CMAKE_AUTOMOC TRUE )
+add_definitions( -DQT_PLUGIN )
+set( cuteradioplugin_HDRS
+	cuteradioplugingettunesdialog.h
+	cuteradioplugindefines.h
+	cuteradiocontroller.h
+	cuteradiomodel.h
+	${PLUGIN}.h
+)
+set( cuteradioplugin_SRCS
+	cuteradiocontroller.cpp
+	cuteradiomodel.cpp
+	cuteradioplugingettunesdialog.cpp
+	${PLUGIN}.cpp
+)
+include_directories(
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${PROJECT_BINARY_DIR}/include
+)
+find_package( Qt5 COMPONENTS Widgets Network REQUIRED )
+add_definitions(
+	-DHAVE_QT5
+)
+set( QT_DEPLIBS
+	Qt5::Widgets
+	Qt5::Network
+)
+add_library(
+	${PLUGIN}
+	MODULE
+	${cuteradioplugin_SRCS}
+)
+target_link_libraries(
+	${PLUGIN}
+	${QT_DEPLIBS}
+	libqomp
+)
+add_dependencies( ${PLUGIN} libqomp qomp )
+if( WIN32 )
+	install(
+		TARGETS
+		${PLUGIN}
+		LIBRARY
+		DESTINATION
+		${CMAKE_INSTALL_PREFIX}/plugins
+		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/plugins
+	)
+endif()
+
+if( LINUX )
+	install(
+		TARGETS
+		${PLUGIN}
+		LIBRARY
+		DESTINATION
+		${LIB_INSTALL_DIR}/qomp/plugins
+		RUNTIME DESTINATION
+		${LIB_INSTALL_DIR}/qomp/plugins
+	)
+endif()
