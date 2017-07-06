@@ -40,6 +40,12 @@ TuneUrlChecker::TuneUrlChecker(QNetworkAccessManager *nam, const QUrl &url, QObj
 	timer_(new QTimer(this)),
 	reply_(0)
 {
+	if(url_.toString().right(1) == ";") {//SHOUTcast server
+		QString u = url_.toString();
+		u.chop(1);
+		url_.setUrl(u);
+	}
+
 	timer_->setSingleShot(true);
 	timer_->setInterval(TIMEOUT);
 	connect(timer_, SIGNAL(timeout()), SLOT(timeout()));

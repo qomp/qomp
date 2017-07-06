@@ -326,10 +326,17 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 void QompQtMultimediaPlayer::setPlayerMediaContent(const QUrl &url)
 {
 	if(player_->media().isNull() || player_->media().canonicalUrl() != url) {
-		QNetworkRequest nr(url);
-		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+		if(url.isLocalFile() || url.isEmpty()) {
+			player_->setMedia(QMediaContent(url));
+		}
+		else {
+			QNetworkRequest nr(url);
+			nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+			if(url.toString().right(1) == ";") //SHOUTcast server
+				nr.setRawHeader("icy-metadata", "1");
 
-		player_->setMedia(QMediaContent(nr));
+			player_->setMedia(QMediaContent(nr));
+		}
 	}
 
 	resumePlayer();

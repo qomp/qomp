@@ -40,6 +40,8 @@ static const QString PLS_TYPE = "audio/x-scpls";
 static const QString HTML_TYPE = "text/html";
 static const QString supportedMimeTypesPrefix = "audio/";
 
+#define TUNE_PROPERTY "tune"
+
 
 
 CuteRadioController::CuteRadioController(QObject *parent) :
@@ -227,20 +229,19 @@ void CuteRadioController::searchFinished()
 void CuteRadioController::getUrlReadyRead()
 {
 	QNetworkReply* r = static_cast<QNetworkReply*>(sender());
-	CuteRadioTune* ct = reinterpret_cast<CuteRadioTune*>(r->property("tune").value<qintptr>());
+	CuteRadioTune* ct = reinterpret_cast<CuteRadioTune*>(r->property(TUNE_PROPERTY).value<qintptr>());
 	const QString content = r->header(QNetworkRequest::ContentTypeHeader).toString();
 #ifdef DEBUG_OUTPUT
 	qDebug() << "getUrlReadyRead()" << content;
 #endif
 	if( !content.startsWith(M3U_TYPE, Qt::CaseInsensitive)
 		&& !content.startsWith(PLS_TYPE, Qt::CaseInsensitive)
-//		&& content.compare(HTML_TYPE, Qt::CaseInsensitive) != 0
 	) {
 		if(content.contains(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
 			ct->url = r->url().toString();
 			model_->emitUpdateSignal(model_->index(ct));
 		}
-		else if(content.compare(HTML_TYPE, Qt::CaseInsensitive) == 0) {
+		else if(content.compare(HTML_TYPE, Qt::CaseInsensitive) == 0) { //SHOUTcast server probably
 			ct->url = r->url().toString() + ";";
 			model_->emitUpdateSignal(model_->index(ct));
 		}
@@ -252,7 +253,7 @@ void CuteRadioController::getUrlReadyRead()
 void CuteRadioController::getUrlFinished()
 {
 	QNetworkReply* r = static_cast<QNetworkReply*>(sender());
-	CuteRadioTune* ct = reinterpret_cast<CuteRadioTune*>(r->property("tune").value<qintptr>());
+	CuteRadioTune* ct = reinterpret_cast<CuteRadioTune*>(r->property(TUNE_PROPERTY).value<qintptr>());
 	stopBusy();
 	r->deleteLater();
 
@@ -265,22 +266,6 @@ void CuteRadioController::getUrlFinished()
 		else if (content.startsWith(PLS_TYPE, Qt::CaseInsensitive)) {
 			parcePLS(ct, data);
 		}
-//		else if(content.compare(HTML_TYPE, Qt::CaseInsensitive) == 0) {
-//			if(data.contains(QStringLiteral("href=\"listen.pls\""))) {
-//				qDebug() << "cccccc";
-//				const QString url = r->url().toString();
-//				QNetworkRequest nr(url + "listen.pls");
-//				nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-//				nr.setRawHeader("Referer", url.toLatin1());
-//				QNetworkReply *r = nam()->get(nr);
-//				r->setProperty("tune", QVariant::fromValue<qintptr>(reinterpret_cast<qintptr>(ct)));
-
-//				connect(r, &QNetworkReply::readyRead, this, &CuteRadioController::getUrlReadyRead);
-//				connect(r, &QNetworkReply::finished, this, &CuteRadioController::getUrlFinished);
-//				connect(this, &CuteRadioController::destroyed, r, &QNetworkReply::deleteLater);
-//				startBusy();
-//			}
-//		}
 	}
 }
 
@@ -293,7 +278,7 @@ void CuteRadioController::itemSelected(QompPluginModelItem* item)
 	QNetworkRequest nr(ct->internalId);
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 	QNetworkReply *r = nam()->get(nr);
-	r->setProperty("tune", QVariant::fromValue<qintptr>(reinterpret_cast<qintptr>(item)));
+	r->setProperty(TUNE_PROPERTY, QVariant::fromValue<qintptr>(reinterpret_cast<qintptr>(item)));
 
 	connect(r, &QNetworkReply::readyRead, this, &CuteRadioController::getUrlReadyRead);
 	connect(r, &QNetworkReply::finished, this, &CuteRadioController::getUrlFinished);
