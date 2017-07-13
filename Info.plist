@@ -35,6 +35,25 @@
                 <string>flac</string>
                 <string>cue</string>
                 <string>wav</string>
+                <string>m3u</string>
+                <string>m3u8</string>
+                <string>pls</string>
+            </array>
+            <key>CFBundleTypeIconFile</key>
+            <string>qomp-file.icns</string>
+        </dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>CFBundleTypeName</key>
+            <string>qomp playlist</string>
+            <key>CFBundleTypeMIMETypes</key>
+            <array>
+                <string>text/plain</string>
+            </array>
+            <key>CFBundleTypeExtensions</key>
+            <array>
+                <string>qomp</string>
             </array>
             <key>CFBundleTypeIconFile</key>
             <string>qomp-file.icns</string>

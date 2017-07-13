@@ -66,6 +66,15 @@
                 <data android:pathPattern=".*\\.cue"/>
                 <data android:host="*"/>
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="file"/>
+                <data android:mimeType="text/plain"/>
+                <data android:pathPattern=".*\\.qomp"/>
+                <data android:host="*"/>
+            </intent-filter>
         </activity>
 
         <service android:name=".QompService" android:enabled="true" android:exported="false" android:label="@string/srv_name" android:icon="@drawable/icon">
