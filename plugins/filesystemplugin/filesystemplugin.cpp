@@ -22,8 +22,9 @@
 #include "tune.h"
 #include "qomppluginaction.h"
 #include "cueparser.h"
-#include "filesystemcommon.h"
 #include "defines.h"
+#include "taghelpers.h"
+#include "playlistparser.h"
 
 
 #ifdef QOMP_MOBILE
@@ -42,7 +43,6 @@
 #include <QtPlugin>
 
 static const QString CUE_TYPE = "application/x-cue";
-static const QString M3U_TYPE = "audio/x-mpegurl";
 static const QString supportedMimeTypesPrefix = "audio/";
 
 static QList<Tune*> getTunesRecursive(const QString& folder)
@@ -66,81 +66,29 @@ static QList<Tune*> getTunesRecursive(const QString& folder)
 	return list;
 }
 
-static QList<Tune*> m3uToTunes(const QString& file)
+static bool processString(const QString& file, QList<Tune*> *tunes)
 {
-	QList<Tune*> list;
-
-	//Next piece of code partially get from qtmultimedia m3u plugin
-	if(QFile::exists(file)) {
-		QFile f(file);
-		if (f.open(QFile::ReadOnly)) {
-			QTextStream ts(&f);
-			QUrl nextResource;
-			QUrl fileLocation = QUrl::fromLocalFile(file);
-
-			while (!ts.atEnd()) {
-				QString line = ts.readLine().trimmed();
-				if (line.isEmpty() || line[0] == '#' || line.size() > 4096)
-					continue;
-
-				QUrl fileUrl = QUrl::fromLocalFile(line);
-				QUrl url(line);
-
-				//m3u may contain url encoded entries or absolute/relative file names
-				//prefer existing file if any
-				QList<QUrl> candidates;
-				if (!fileLocation.isEmpty()) {
-					candidates << fileLocation.resolved(fileUrl);
-					candidates << fileLocation.resolved(url);
-				}
-				candidates << fileUrl;
-				candidates << url;
-
-				for (const QUrl &candidate : candidates) {
-					if (QFile::exists(candidate.toLocalFile())) {
-						nextResource = candidate;
-						break;
-					}
-				}
-
-				if (nextResource.isEmpty()) {
-					//assume the relative urls are file names, not encoded urls if m3u is local file
-					if (!fileLocation.isEmpty() && url.isRelative()) {
-						if (fileLocation.scheme() == QLatin1String("file"))
-							nextResource = fileLocation.resolved(fileUrl);
-						else
-							nextResource = fileLocation.resolved(url);
-					}
-				}
-
-				if(!nextResource.isEmpty())
-					list.append(Qomp::tuneFromFile(nextResource.toLocalFile()));
+	if(!file.isEmpty()) {
+		PlaylistParser p(file);
+		if(p.canParse()) {
+			tunes->append(p.parse());
+			return true;
+		}
+		else {
+			const QString mimeType = QMimeDatabase().mimeTypeForFile(file).name();
+			if(mimeType.compare(CUE_TYPE, Qt::CaseInsensitive) == 0) {
+				tunes->append(CueParser::parseTunes(file));
+				return true;
 			}
-		}
-	}
-
-	return list;
-}
-
-static bool processString(const QString& str, QList<Tune*> *tunes)
-{
-	if(!str.isEmpty()) {
-		const QString mimeType = QMimeDatabase().mimeTypeForFile(str).name();
-		if(mimeType.compare(CUE_TYPE, Qt::CaseInsensitive) == 0) {
-			tunes->append(CueParser::parseTunes(str));
-			return true;
-		}
-		else if(mimeType.compare(M3U_TYPE, Qt::CaseInsensitive) == 0) {
-			tunes->append(m3uToTunes(str));
-			return true;
-		}
-		else if (mimeType.startsWith(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
-			tunes->append(Qomp::tuneFromFile(str));
-			return true;
+			else if (mimeType.startsWith(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
+				tunes->append(Qomp::tuneFromFile(file));
+				return true;
+			}
 		}
 	}
 	return false;
 }
+
 
 
 class FilesystemPlugin::Private : public QObject
@@ -184,7 +132,7 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 						));
 	item_->setProperty("filter", QStringList()
 				<< tr("Audio files (*.mp3, *.ogg, *.wav, *.flac, *.cue)")
-				<< tr("Playlists (*.m3u, *.m3u8)")
+				<< tr("Playlists (*.m3u, *.m3u8, *.pls)")
 				<< tr("All files (*.*)") );
 	QompQmlEngine::instance()->addItem(item_);
 	connect(item_, SIGNAL(accepted()), loop_, SLOT(quit()));
@@ -205,7 +153,7 @@ QList<Tune*> FilesystemPlugin::Private::getTunes()
 #else
 	QFileDialog f(0, tr("Select file(s)"),
 		      Options::instance()->getOption("filesystemplugin.lastdir", QDir::homePath()).toString(),
-		      tr("Audio files (*.mp3 *.ogg *.wav *.flac *.cue);;Playlists (*.m3u *.m3u8);;All files (*)"));
+		      tr("Audio files (*.mp3 *.ogg *.wav *.flac *.cue);;Playlists (*.m3u *.m3u8 *.pls);;All files (*)"));
 	f.setFileMode(QFileDialog::ExistingFiles);
 	f.setViewMode(QFileDialog::List);
 	f.setAcceptMode(QFileDialog::AcceptOpen);

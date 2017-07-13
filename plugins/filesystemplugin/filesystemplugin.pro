@@ -1,11 +1,9 @@
 include($$PWD/../plugins.pri)
 
 SOURCES += $$PWD/filesystemplugin.cpp \
-    $$PWD/cueparser.cpp \
-    $$PWD/filesystemcommon.cpp
+    $$PWD/cueparser.cpp
 HEADERS  += $$PWD/filesystemplugin.h \
-    $$PWD/cueparser.h \
-    $$PWD/filesystemcommon.h
+    $$PWD/cueparser.h
 
 OTHER_FILES += $$PWD/metadata.json
 

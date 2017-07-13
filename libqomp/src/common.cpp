@@ -23,6 +23,7 @@
 #include <QTextDocument>
 #include <QStandardPaths>
 #include <QDir>
+#include <QTextCodec>
 #ifdef Q_OS_ANDROID
 #include <QCoreApplication>
 #else
@@ -227,6 +228,15 @@ QMainWindow *getMainWindow()
 	}
 	return nullptr;
 }
+
+bool checkIsUTF(const QByteArray &data)
+{
+	QTextCodec::ConverterState state;
+	QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+	codec->toUnicode(data.constData(), data.size(), &state);
+	return (state.invalidChars == 0);
+}
+
 #endif
 } //namespace Qomp
 

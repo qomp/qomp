@@ -39,6 +39,7 @@ LIBQOMPSHARED_EXPORT QString durationMiliSecondsToString(qint64 ms);
 LIBQOMPSHARED_EXPORT uint durationStringToSeconds(const QString& dur);
 
 LIBQOMPSHARED_EXPORT QString unescape(const QString& escaped);
+LIBQOMPSHARED_EXPORT bool checkIsUTF(const QByteArray& data);
 
 LIBQOMPSHARED_EXPORT QString cacheDir();
 LIBQOMPSHARED_EXPORT QString dataDir();

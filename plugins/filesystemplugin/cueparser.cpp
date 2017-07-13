@@ -20,9 +20,9 @@
 #include "cueparser.h"
 #include "tune.h"
 #include "common.h"
-#include "filesystemcommon.h"
 #include "options.h"
 #include "defines.h"
+#include "taghelpers.h"
 
 extern "C" {
 #if __has_include("libcue.h")
@@ -45,18 +45,23 @@ CueParser::CueParser(const QString &fname)
 {
 	QFile f(fname);
 	if(f.open(QFile::ReadOnly)) {
+		bool uc = Qomp::checkIsUTF(f.readAll());
+		f.reset();
+
 		QFileInfo fi(f);
 		_path = fi.absolutePath();
 
 		QTextStream stream(&f);
 
-		const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray();
-		QTextCodec *tc = QTextCodec::codecForName(decoding);
-		if(tc)
-			stream.setCodec(tc);
-
-
-		stream.setAutoDetectUnicode(true);
+		if(uc) {
+			stream.setCodec(QTextCodec::codecForName("UTF-8"));
+		}
+		else {
+			const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray();
+			QTextCodec *tc = QTextCodec::codecForName(decoding);
+			if(tc)
+				stream.setCodec(tc);
+		}
 
 		_cd = cue_parse_string(stream.readAll().toUtf8().constData());
 	}

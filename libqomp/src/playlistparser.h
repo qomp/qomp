@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Khryukin Evgeny
+ * Copyright (C) 2017  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,21 +17,30 @@
  *
  */
 
-#ifndef FILESYSTEMCOMMON_H
-#define FILESYSTEMCOMMON_H
+#ifndef PLAYLISTPARSER_H
+#define PLAYLISTPARSER_H
+
+#include <QObject>
+#include <QUrl>
+#include "libqomp_global.h"
 
 class Tune;
-class QString;
 
-#include <QtGlobal>
+class LIBQOMPSHARED_EXPORT PlaylistParser : public QObject
+{
+	Q_OBJECT
+public:
+	PlaylistParser(const QString& fileName, QObject *parent = nullptr);
 
+	bool canParse() const;
+	QList<Tune*> parse();
 
-namespace Qomp {
+	static QList<Tune*> parseM3U(QByteArray* data, const QUrl &fileLocation = QUrl());
+	static QList<Tune*> parsePLS(QByteArray* data);
 
-Tune* tuneFromFile(const QString& file);
+private:
+	QString _file;
+	QString _mimeType;
+};
 
-bool getAudioInfo(const QString& file, qint64* durationMiliSecs, int* bitrate);
-
-}
-
-#endif // FILESYSTEMCOMMON_H
+#endif // PLAYLISTPARSER_H

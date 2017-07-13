@@ -21,6 +21,7 @@
 #include "defines.h"
 #include "options.h"
 #include "tune.h"
+#include "common.h"
 
 #include <QTextCodec>
 #include <QFileInfo>
@@ -30,13 +31,18 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/mpegfile.h>
 #include <taglib/fileref.h>
+#include <taglib/tag.h>
+#include <taglib/audioproperties.h>
 #else
 #include <tag/tstring.h>
 #include <tag/id3v2tag.h>
 #include <tag/attachedpictureframe.h>
 #include <tag/mpegfile.h>
 #include <tag/fileref.h>
+#include <tag/tag.h>
+#include <tag/audioproperties.h>
 #endif
+
 
 namespace Qomp {
 
@@ -126,6 +132,50 @@ TagLib::FileRef fileName2TaglibRef(const QString &file, bool getAudioProps)
 		return TagLib::FileRef(fname, true, TagLib::AudioProperties::Accurate);
 	else
 		return TagLib::FileRef(fname, false);
+}
+
+Tune* tuneFromFile(const QString& file)
+{
+	Tune* tune = new Tune(false);
+	tune->file = file;
+
+	TagLib::FileRef ref = fileName2TaglibRef(file);
+	if(!ref.isNull()) {
+		if(ref.tag()) {
+			TagLib::Tag* tag = ref.tag();
+			tune->artist = safeTagLibString2QString( tag->artist() );
+			tune->album = safeTagLibString2QString( tag->album() );
+			tune->title = safeTagLibString2QString( tag->title() );
+			tune->trackNumber = QString::number( tag->track() );
+		}
+
+		Qomp::loadCover(tune, ref.file());
+
+		if(ref.audioProperties()) {
+			TagLib::AudioProperties *prop = ref.audioProperties();
+			tune->duration = Qomp::durationSecondsToString( prop->length() );
+			tune->bitRate = QString::number( prop->bitrate() );
+		}
+
+		tune->setMetadataResolved(true);
+	}
+
+	return tune;
+}
+
+bool getAudioInfo(const QString& file, qint64* durationMiliSecs, int* bitrate)
+{
+	TagLib::FileRef ref = Qomp::fileName2TaglibRef(file);
+	if(!ref.isNull() && ref.audioProperties()) {
+		TagLib::AudioProperties *prop = ref.audioProperties();
+
+		*bitrate = prop->bitrate();
+		*durationMiliSecs = prop->length() * 1000;
+
+		return true;
+	}
+
+	return false;
 }
 
 }

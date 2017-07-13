@@ -11,7 +11,8 @@ SOURCES += $$PWD/common.cpp \
         $$PWD/tuneurlchecker.cpp \
         $$PWD/gettuneurlhelper.cpp \
         $$PWD/covercache.cpp \
-        $$PWD/taghelpers.cpp
+        $$PWD/taghelpers.cpp \
+        $$PWD/playlistparser.cpp
 
 HEADERS += $$PWD/libqomp_global.h \
         $$PWD/common.h \
@@ -26,7 +27,8 @@ HEADERS += $$PWD/libqomp_global.h \
         $$PWD/tuneurlchecker.h \
         $$PWD/gettuneurlhelper.h \
         $$PWD/covercache.h \
-        $$PWD/taghelpers.h
+        $$PWD/taghelpers.h \
+        $$PWD/playlistparser.h
 
 RESOURCES += $$PWD/icons.qrc
 

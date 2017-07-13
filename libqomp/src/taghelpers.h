@@ -35,6 +35,9 @@ namespace Qomp {
 LIBQOMPSHARED_EXPORT QString safeTagLibString2QString(const TagLib::String& string);
 LIBQOMPSHARED_EXPORT TagLib::FileRef fileName2TaglibRef(const QString& file, bool getAudioProps = true);
 
+LIBQOMPSHARED_EXPORT Tune* tuneFromFile(const QString& file);
+LIBQOMPSHARED_EXPORT bool getAudioInfo(const QString& file, qint64* durationMiliSecs, int* bitrate);
+
 LIBQOMPSHARED_EXPORT void loadCover(Tune* tune, TagLib::File* file);
 
 }
