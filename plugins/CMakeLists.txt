@@ -41,7 +41,7 @@ endif()
 
 foreach( plugin ${plugins_list} )
 	foreach( subdir ${plugins} )
-		if( ${plugin} STREQUAL ${subdir} )
+		if( ${plugin} STREQUAL ${subdir} AND ( EXISTS "${CMAKE_CURRENT_LIST_DIR}/${plugin}" ) )
 			message(STATUS "Parse subdirectory: ${plugin}" )
 			add_subdirectory( "${plugin}" )
 		endif()
