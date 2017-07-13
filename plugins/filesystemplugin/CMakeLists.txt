@@ -13,12 +13,10 @@ endif()
 set( filesystemplugin_HDRS
 	${PLUGIN}.h
 	cueparser.h
-	filesystemcommon.h
 )
 set( filesystemplugin_SRCS
 	${PLUGIN}.cpp
 	cueparser.cpp
-	filesystemcommon.cpp
 )
 find_package( TagLib REQUIRED )
 find_package( LibCue REQUIRED )
