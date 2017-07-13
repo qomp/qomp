@@ -54,8 +54,7 @@ private:
 	void startBusy();
 	void stopBusy();
 	QString parseSearchString(QString str) const;
-	void parceM3U(QompPluginModelItem* item, const QString& m3u);
-	void parcePLS(QompPluginModelItem* item, const QString& pls);
+	void processTunes(QList<Tune*> tunes, QompPluginModelItem* item);
 
 private:
 	QompPluginTreeModel* model_;

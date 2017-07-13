@@ -21,7 +21,6 @@
 #define PLAYLISTPARSER_H
 
 #include <QObject>
-#include <QUrl>
 #include "libqomp_global.h"
 
 class Tune;
@@ -31,18 +30,21 @@ class LIBQOMPSHARED_EXPORT PlaylistParser : public QObject
 	Q_OBJECT
 public:
 	PlaylistParser(const QString& fileName, QObject *parent = nullptr);
+	PlaylistParser(const QByteArray& data, const QString& mimeType, QObject *parent = nullptr);
 
 	bool canParse() const;
 	QList<Tune*> parse();
 
-	static QList<Tune*> parseM3U(QByteArray* data, const QUrl &fileLocation = QUrl());
-	static QList<Tune*> parsePLS(QByteArray* data);
+	static QStringList cupportedMimeTypes();
 
 private:
+	static QList<Tune*> parseM3U(QByteArray* data, const QUrl &fileLocation);
+	static QList<Tune*> parsePLS(QByteArray* data);
 	bool checkQompPlaylist() const;
 
 private:
 	QString _file;
+	QByteArray _data;
 	QString _mimeType;
 };
 

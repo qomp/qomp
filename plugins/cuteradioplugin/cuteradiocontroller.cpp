@@ -21,6 +21,8 @@
 #include "cuteradioplugindefines.h"
 #include "cuteradioplugingettunesdialog.h"
 #include "cuteradiomodel.h"
+#include "playlistparser.h"
+#include "tune.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -36,12 +38,11 @@
 
 
 static const QString CuteRadioUrl = "http://marxoft.co.uk/api/cuteradio";
-static const QString M3U_TYPE = "audio/x-mpegurl";
-static const QString PLS_TYPE = "audio/x-scpls";
 static const QString HTML_TYPE = "text/html";
 static const QString supportedMimeTypesPrefix = "audio/";
 
 #define TUNE_PROPERTY "tune"
+#define STEP_PROPERTY "step"
 
 
 
@@ -142,30 +143,25 @@ QString CuteRadioController::parseSearchString(QString str) const
 	return res.join("&") + QStringLiteral("&limit=50&sortDescending=true&sort=lastPlayed");
 }
 
-void CuteRadioController::parceM3U(QompPluginModelItem *item, const QString &m3u)
+void CuteRadioController::processTunes(QList<Tune *> tunes, QompPluginModelItem *item)
 {
-	const QStringList lines = m3u.split("\n", QString::SkipEmptyParts);
-	for (const QString& line: lines) {
-		if (line.isEmpty() || line[0] == '#' || line.size() > 4096)
-			continue;
+	if(tunes.count() > 0) {
+		Tune* t = tunes.at(0);
 
-		static_cast<CuteRadioTune*>(item)->url = line;
-		model_->emitUpdateSignal(model_->index(item));
-		break;
-	}
-}
+		QNetworkRequest nr(t->url);
+		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+		QNetworkReply *r = nam()->get(nr);
+		r->setProperty(TUNE_PROPERTY, QVariant::fromValue<qintptr>(reinterpret_cast<qintptr>(item)));
+		r->setProperty(STEP_PROPERTY, 2);
 
-void CuteRadioController::parcePLS(QompPluginModelItem *item, const QString &pls)
-{
-	const QStringList lines = pls.split("\n", QString::SkipEmptyParts);
-	for (const QString& line: lines) {
-		if (line.startsWith("File") && line.contains("=")) {
-			QStringList sl = line.split("=", QString::SkipEmptyParts);
-			static_cast<CuteRadioTune*>(item)->url = sl.last();
-			model_->emitUpdateSignal(model_->index(item));
-			break;
-		}
+		connect(r, &QNetworkReply::readyRead, this, &CuteRadioController::getUrlReadyRead);
+		connect(r, &QNetworkReply::finished, this, &CuteRadioController::getUrlFinished);
+		connect(this, &CuteRadioController::destroyed, r, &QNetworkReply::deleteLater);
+
+		startBusy();
 	}
+
+	qDeleteAll(tunes);
 }
 
 void CuteRadioController::searchFinished()
@@ -235,20 +231,27 @@ void CuteRadioController::getUrlReadyRead()
 #ifdef DEBUG_OUTPUT
 	qDebug() << "getUrlReadyRead()" << content;
 #endif
-	if( !content.startsWith(M3U_TYPE, Qt::CaseInsensitive)
-		&& !content.startsWith(PLS_TYPE, Qt::CaseInsensitive)
-	) {
-		if(content.contains(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
-			ct->url = r->url().toString();
-			model_->emitUpdateSignal(model_->index(ct));
+	if(r->property(STEP_PROPERTY).toInt() == 1) {
+		for(const QString& type: PlaylistParser::cupportedMimeTypes()) {
+			if(content.startsWith(type, Qt::CaseInsensitive))
+				return;
 		}
-		else if(content.compare(HTML_TYPE, Qt::CaseInsensitive) == 0) { //SHOUTcast server probably
-			ct->url = r->url().toString() + ";";
-			model_->emitUpdateSignal(model_->index(ct));
-		}
-
-		r->abort();
 	}
+
+	if(content.contains(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
+		ct->url = r->url().toString();
+		model_->emitUpdateSignal(model_->index(ct));
+	}
+	else if(content.compare(HTML_TYPE, Qt::CaseInsensitive) == 0) { //SHOUTcast server probably
+		ct->url = r->url().toString();
+		if(!ct->url.endsWith("/"))
+			ct->url += "/";
+		ct->url += ";";
+		model_->emitUpdateSignal(model_->index(ct));
+	}
+
+	r->abort();
+
 }
 
 void CuteRadioController::getUrlFinished()
@@ -260,12 +263,13 @@ void CuteRadioController::getUrlFinished()
 
 	if(r->error() == QNetworkReply::NoError) {
 		const QString content = r->header(QNetworkRequest::ContentTypeHeader).toString();
-		const QString data = r->readAll();
-		if(content.startsWith(M3U_TYPE, Qt::CaseInsensitive)) {
-			parceM3U(ct, data);
-		}
-		else if (content.startsWith(PLS_TYPE, Qt::CaseInsensitive)) {
-			parcePLS(ct, data);
+		QByteArray data = r->readAll();
+#ifdef DEBUG_OUTPUT
+		qDebug() << "CuteRadioController::getUrlFinished() " << content << data;
+#endif
+		PlaylistParser p(data, content);
+		if(p.canParse()) {
+			processTunes(p.parse(), ct);
 		}
 	}
 }
@@ -280,6 +284,7 @@ void CuteRadioController::itemSelected(QompPluginModelItem* item)
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 	QNetworkReply *r = nam()->get(nr);
 	r->setProperty(TUNE_PROPERTY, QVariant::fromValue<qintptr>(reinterpret_cast<qintptr>(item)));
+	r->setProperty(STEP_PROPERTY, 1);
 
 	connect(r, &QNetworkReply::readyRead, this, &CuteRadioController::getUrlReadyRead);
 	connect(r, &QNetworkReply::finished, this, &CuteRadioController::getUrlFinished);

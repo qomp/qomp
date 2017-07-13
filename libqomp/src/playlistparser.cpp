@@ -50,12 +50,19 @@ PlaylistParser::PlaylistParser(const QString &fileName, QObject *parent) :
 	}
 }
 
+PlaylistParser::PlaylistParser(const QByteArray &data, const QString &mimeType, QObject *parent) :
+	QObject(parent),
+	_data(data),
+	_mimeType(mimeType)
+{
+}
+
 bool PlaylistParser::canParse() const
 {
 	QStringList types{PLS_TYPE, M3U_TYPE};
 
 	for(const QString& type: types) {
-		if(_mimeType.compare(type, Qt::CaseInsensitive) == 0)
+		if(_mimeType.startsWith(type, Qt::CaseInsensitive))
 			return true;
 	}
 
@@ -70,23 +77,34 @@ QList<Tune *> PlaylistParser::parse()
 {
 	QList<Tune *> tunes;
 
-	if(QFile::exists(_file)) {
+	if(!_file.isEmpty() && QFile::exists(_file)) {
 		QFile f(_file);
-		if (f.open(QFile::ReadOnly)) {
-			QByteArray data = f.readAll();
-			if(_mimeType.compare(M3U_TYPE) == 0) {
-				tunes = parseM3U(&data, QUrl::fromLocalFile(_file));
-			}
-			else if(_mimeType.compare(PLS_TYPE) == 0) {
-				tunes = parsePLS(&data);
-			}
-			else if(checkQompPlaylist()) {
-				tunes = Tune::tunesFromFile(_file);
-			}
+		if(checkQompPlaylist()) {
+			tunes = Tune::tunesFromFile(_file);
+		}
+		else if (f.open(QFile::ReadOnly)) {
+			_data = f.readAll();
+		}
+	}
 
+	if(!_data.isEmpty()) {
+		if(_mimeType.startsWith(M3U_TYPE)) {
+			QUrl local;
+			if(!_file.isEmpty())
+				local = QUrl::fromLocalFile(_file);
+
+			tunes = parseM3U(&_data, local);
+		}
+		else if(_mimeType.startsWith(PLS_TYPE)) {
+			tunes = parsePLS(&_data);
 		}
 	}
 	return tunes;
+}
+
+QStringList PlaylistParser::cupportedMimeTypes()
+{
+	return {M3U_TYPE, PLS_TYPE, PLAIN_TYPE};
 }
 
 QList<Tune *> PlaylistParser::parseM3U(QByteArray *data, const QUrl &fileLocation)
