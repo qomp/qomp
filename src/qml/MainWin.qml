@@ -283,7 +283,8 @@ Rectangle {
 				fileDialog.item.onDialogAccepted = function() {
 					root.actLoadPlaylist(fileDialog.item.file)
 				}
-				fileDialog.item.filter = [(qsTr("qomp playlist (*.qomp)"))]
+				fileDialog.item.filter = [qsTr("qomp playlist (*.qomp)"),
+										  qsTr("Other playlists (*.m3u, *.m3u8, *.pls)")]
 				fileDialog.item.visible = true
 				fileDialog.item.forceActiveFocus()
 			}

@@ -21,6 +21,7 @@
 #include "tune.h"
 #include "common.h"
 #include "taghelpers.h"
+#include "defines.h"
 
 #include <QFile>
 #include <QMimeDatabase>
@@ -34,6 +35,7 @@
 
 static const QString PLS_TYPE = "audio/x-scpls";
 static const QString M3U_TYPE = "audio/x-mpegurl";
+static const QString PLAIN_TYPE = "text/plain";
 static const QString EXTINF = "#EXTINF:";
 
 PlaylistParser::PlaylistParser(const QString &fileName, QObject *parent) :
@@ -57,6 +59,10 @@ bool PlaylistParser::canParse() const
 			return true;
 	}
 
+	if(checkQompPlaylist()) {
+		return true;
+	}
+
 	return false;
 }
 
@@ -71,8 +77,13 @@ QList<Tune *> PlaylistParser::parse()
 			if(_mimeType.compare(M3U_TYPE) == 0) {
 				tunes = parseM3U(&data, QUrl::fromLocalFile(_file));
 			}
-			else if(_mimeType.compare(PLS_TYPE) == 0)
+			else if(_mimeType.compare(PLS_TYPE) == 0) {
 				tunes = parsePLS(&data);
+			}
+			else if(checkQompPlaylist()) {
+				tunes = Tune::tunesFromFile(_file);
+			}
+
 		}
 	}
 	return tunes;
@@ -221,4 +232,10 @@ QList<Tune *> PlaylistParser::parsePLS(QByteArray *data)
 	}
 
 	return list;
+}
+
+bool PlaylistParser::checkQompPlaylist() const
+{
+	return _mimeType.compare(PLAIN_TYPE, Qt::CaseInsensitive) == 0
+			&& _file.endsWith(QStringLiteral("." PLAYLIST_EXTENTION));
 }

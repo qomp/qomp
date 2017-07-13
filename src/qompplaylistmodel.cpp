@@ -23,6 +23,7 @@
 #include "defines.h"
 #include "common.h"
 #include "pluginmanager.h"
+#include "playlistparser.h"
 
 #include <QFileInfo>
 #include <QStringList>
@@ -385,8 +386,9 @@ void QompPlayListModel::loadTunes(const QString &fileName)
 		return;
 
 	QList<Tune*> tl;
-	if (QFileInfo(fileName).suffix() == PLAYLIST_EXTENTION)
-		tl = Tune::tunesFromFile(fileName);
+	PlaylistParser p(fileName);
+	if(p.canParse())
+		tl = p.parse();
 	else
 		PluginManager::instance()->processUrl(fileName, &tl);
 

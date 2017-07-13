@@ -39,6 +39,9 @@ public:
 	static QList<Tune*> parsePLS(QByteArray* data);
 
 private:
+	bool checkQompPlaylist() const;
+
+private:
 	QString _file;
 	QString _mimeType;
 };
