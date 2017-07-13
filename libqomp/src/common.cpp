@@ -169,6 +169,14 @@ QString dataDir()
 	return dir;
 }
 
+bool checkIsUTF(const QByteArray &data)
+{
+	QTextCodec::ConverterState state;
+	QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+	codec->toUnicode(data.constData(), data.size(), &state);
+	return (state.invalidChars == 0);
+}
+
 #ifdef QOMP_MOBILE
 QString safeDir(const QString& dir)
 {
@@ -228,15 +236,6 @@ QMainWindow *getMainWindow()
 	}
 	return nullptr;
 }
-
-bool checkIsUTF(const QByteArray &data)
-{
-	QTextCodec::ConverterState state;
-	QTextCodec *codec = QTextCodec::codecForName("UTF-8");
-	codec->toUnicode(data.constData(), data.size(), &state);
-	return (state.invalidChars == 0);
-}
-
 #endif
 } //namespace Qomp
 
