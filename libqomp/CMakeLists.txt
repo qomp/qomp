@@ -79,6 +79,7 @@ set( libqomp_HDRS
 	src/taghelpers.h
 	src/thememanager.h
 	src/tune.h
+	src/playlistparser.h
 	${plugins_HDRS}
 	${options_HDRS}
 	${frameless_HDRS}
@@ -102,6 +103,7 @@ set( libqomp_INCLUDE_HDRS
 	src/qompmetadataresolver.h
 	src/options.h
 	src/defines.h
+	src/playlistparser.h
 	src/frameless/advwidget.h
 	src/plugins/qompplugingettunesdlg.h
 	src/plugins/qompplayerstatusplugin.h
@@ -130,6 +132,7 @@ set( libqomp_SRCS
 	src/thememanager.cpp
 	src/tune.cpp
 	src/tuneurlchecker.cpp
+	src/playlistparser.cpp
 	${plugins_SRCS}
 	${frameless_SRCS}
 )
