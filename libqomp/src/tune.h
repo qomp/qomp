@@ -52,6 +52,8 @@ public:
 	QString url;
 	QString file;
 	QString bitRate;
+	QString directUrl;
+	QString description;
 
 	/**
 	 * for cue sheet files

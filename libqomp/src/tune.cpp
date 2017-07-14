@@ -29,6 +29,7 @@
 
 static const QString separator = "@qomp@";
 static const QString simpleStrategyName = "SimpleStrategy";
+static const QString streamVersion = "2.0";
 
 
 TuneURLResolveStrategy::TuneURLResolveStrategy(QObject *p) :
@@ -127,6 +128,10 @@ QString Tune::toString() const
 
 	if(!cover_.isNull())
 		list.append( *cover_.data() );
+	else
+		list.append(QStringLiteral(""));
+
+	list << directUrl << description << streamVersion;
 
 	return list.join(separator);
 }
@@ -136,6 +141,43 @@ bool Tune::fromString(const QString &str)
 	QStringList list = str.split(separator);
 	if(list.size() < 8)
 		return false;
+
+	auto legacyFromString = [this, &list]() -> bool {
+		artist = list.takeFirst();
+		title = list.takeFirst();
+		trackNumber = list.takeFirst();
+		album = list.takeFirst();
+		duration = list.takeFirst();
+		url = list.takeFirst();
+		file = list.takeFirst();
+
+		const QString strName = list.takeFirst();
+		if(strName != simpleStrategyName) {
+			TuneURLResolveStrategy *rs = PluginManager::instance()->urlResolveStrategy(strName);
+			if(rs)
+				setUrlResolveStrategy(rs);
+		}
+
+		if(!list.isEmpty())
+			canSave_ = (list.takeFirst() == "true");
+		if(!list.isEmpty())
+			bitRate = list.takeFirst();
+
+		if(!list.isEmpty())
+			start = list.takeFirst().toLongLong();
+		if(!list.isEmpty())
+			length = list.takeFirst().toLongLong();
+		if(!list.isEmpty())
+			cover_ = CoverCache::instance()->restore(list.takeFirst());
+
+		if(!cover_.isNull())
+			metadataResolved_ = true;
+
+		return true;
+	};
+
+	if(list.last().compare(streamVersion) != 0)
+		return legacyFromString();
 
 	artist = list.takeFirst();
 	title = list.takeFirst();
@@ -152,20 +194,17 @@ bool Tune::fromString(const QString &str)
 			setUrlResolveStrategy(rs);
 	}
 
-	if(!list.isEmpty())
-		canSave_ = (list.takeFirst() == "true");
-	if(!list.isEmpty())
-		bitRate = list.takeFirst();
+	canSave_ = (list.takeFirst() == "true");
+	bitRate = list.takeFirst();
+	start = list.takeFirst().toLongLong();
+	length = list.takeFirst().toLongLong();
 
-	if(!list.isEmpty())
-		start = list.takeFirst().toLongLong();
-	if(!list.isEmpty())
-		length = list.takeFirst().toLongLong();
-	if(!list.isEmpty())
-		cover_ = CoverCache::instance()->restore(list.takeFirst());
-
+	cover_ = CoverCache::instance()->restore(list.takeFirst());
 	if(!cover_.isNull())
 		metadataResolved_ = true;
+
+	directUrl = list.takeFirst();
+	description = list.takeFirst();
 
 	return true;
 }
