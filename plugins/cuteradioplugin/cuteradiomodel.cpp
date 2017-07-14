@@ -64,5 +64,6 @@ Tune *CuteRadioTune::toTune() const
 	t->description = artist;
 	t->title = title;
 	t->url = url;
+	t->genre = genre;
 	return t;
 }

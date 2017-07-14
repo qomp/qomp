@@ -39,11 +39,13 @@ public:
 		URLRole      = Qt::UserRole+6,
 		FileRole     = Qt::UserRole+7,
 		IsCurrentTuneRole = Qt::UserRole+8,
-		CanDownloadRole   = Qt::UserRole+89,
-		TuneRole     = Qt::UserRole+10,
-		CoverRole    = Qt::UserRole+11,
-		BitrateRole  = Qt::UserRole+12,
-		DirectURLRole= Qt::UserRole+13
+		CanDownloadRole	= Qt::UserRole+9,
+		TuneRole	= Qt::UserRole+10,
+		CoverRole	= Qt::UserRole+11,
+		BitrateRole	= Qt::UserRole+12,
+		DirectURLRole	= Qt::UserRole+13,
+		DescriptionRole = Qt::UserRole+14,
+		GenreRole	= Qt::UserRole+15
 	};
 
 	void addTunes(const QList<Tune*>& tunes);

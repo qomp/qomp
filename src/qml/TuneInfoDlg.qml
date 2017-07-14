@@ -10,6 +10,8 @@ QompBaseDialog {
 	property alias album: albumTxt.text
 	property alias bitrate: bitrateTxt.text
 	property alias cover: img.source
+	property alias description: descrTxt.text
+	property alias genre: gnrTxt.text
 
 	preferredWidth: parent.height > parent.width ? parent.width * 0.9 : parent.width * (img.visible ? 0.8 : 0.7)
 	preferredHeight: parent.height > parent.width ? parent.height * (img.visible ? 0.7 : 0.5) : parent.height * 0.7
@@ -45,9 +47,10 @@ QompBaseDialog {
 
 			Text {
 				id: ttle
-				text: qsTr("Title:")
+				text: qsTr("Title") + ":"
 				font.pixelSize: 26 * scaler.scaleFont
 				font.bold: true
+				visible: titleTxt.visible
 			}
 
 			Text {
@@ -55,12 +58,14 @@ QompBaseDialog {
 				font.pixelSize: ttle.font.pixelSize
 				wrapMode: Text.WordWrap
 				Layout.fillWidth: true
+				visible: text.length > 0
 			}
 
 			Text {
-				text: qsTr("Artist:")
+				text: qsTr("Artist") + ":"
 				font.pixelSize: ttle.font.pixelSize
 				font.bold: true
+				visible: artistTxt.visible
 			}
 
 			Text {
@@ -68,12 +73,14 @@ QompBaseDialog {
 				font.pixelSize: ttle.font.pixelSize
 				wrapMode: Text.WordWrap
 				Layout.fillWidth: true
+				visible: text.length > 0
 			}
 
 			Text {
-				text: qsTr("Album:")
+				text: qsTr("Album") + ":"
 				font.pixelSize: ttle.font.pixelSize
 				font.bold: true
+				visible: albumTxt.visible
 			}
 
 			Text {
@@ -81,12 +88,44 @@ QompBaseDialog {
 				font.pixelSize: ttle.font.pixelSize
 				wrapMode: Text.WordWrap
 				Layout.fillWidth: true
+				visible: text.length > 0
 			}
 
 			Text {
-				text: qsTr("Bitrate:")
+				text: qsTr("Description") + ":"
 				font.pixelSize: ttle.font.pixelSize
 				font.bold: true
+				visible: descrTxt.visible
+			}
+
+			Text {
+				id: descrTxt
+				font.pixelSize: ttle.font.pixelSize
+				wrapMode: Text.WordWrap
+				Layout.fillWidth: true
+				visible: text.length > 0
+			}
+
+			Text {
+				text: qsTr("Genre") + ":"
+				font.pixelSize: ttle.font.pixelSize
+				font.bold: true
+				visible: gnrTxt.visible
+			}
+
+			Text {
+				id: gnrTxt
+				font.pixelSize: ttle.font.pixelSize
+				wrapMode: Text.WordWrap
+				Layout.fillWidth: true
+				visible: text.length > 0
+			}
+
+			Text {
+				text: qsTr("Bitrate") + ":"
+				font.pixelSize: ttle.font.pixelSize
+				font.bold: true
+				visible: bitrateTxt.visible
 			}
 
 			Text {
@@ -94,6 +133,7 @@ QompBaseDialog {
 				font.pixelSize: ttle.font.pixelSize
 				wrapMode: Text.WordWrap
 				Layout.fillWidth: true
+				visible: text.length > 0
 			}
 		}
 	}

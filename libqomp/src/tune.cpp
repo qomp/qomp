@@ -131,7 +131,7 @@ QString Tune::toString() const
 	else
 		list.append(QStringLiteral(""));
 
-	list << directUrl << description << streamVersion;
+	list << directUrl << description << genre << streamVersion;
 
 	return list.join(separator);
 }
@@ -205,6 +205,7 @@ bool Tune::fromString(const QString &str)
 
 	directUrl = list.takeFirst();
 	description = list.takeFirst();
+	genre = list.takeFirst();
 
 	return true;
 }

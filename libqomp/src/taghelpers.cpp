@@ -147,6 +147,7 @@ Tune* tuneFromFile(const QString& file)
 			tune->album = safeTagLibString2QString( tag->album() );
 			tune->title = safeTagLibString2QString( tag->title() );
 			tune->trackNumber = QString::number( tag->track() );
+			tune->genre = safeTagLibString2QString( tag->genre() );
 		}
 
 		Qomp::loadCover(tune, ref.file());

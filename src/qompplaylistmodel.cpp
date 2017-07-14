@@ -174,6 +174,9 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 		if(!t->description.isEmpty()) {
 			addTipLine(tr("Description"), t->description);
 		}
+		if(!t->genre.isEmpty()) {
+			addTipLine(tr("Genre"), t->genre);
+		}
 		if(!t->bitRate.isEmpty()) {
 			addTipLine(tr("Bitrate"), t->bitRate);
 		}
@@ -203,6 +206,12 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	}
 	else if(role == CoverRole) {
 		return t->cover();
+	}
+	else if(role == DescriptionRole) {
+		return t->description;
+	}
+	else if(role == GenreRole) {
+		return t->genre;
 	}
 
 	return QVariant();
@@ -423,7 +432,9 @@ QHash<int, QByteArray> QompPlayListModel::roleNames() const
 		{CanDownloadRole,"canDownload"},
 		{CoverRole,"cover"},
 		{DirectURLRole,"directUrl"},
-		{TuneRole, "tune"}
+		{TuneRole, "tune"},
+		{DescriptionRole, "description"},
+		{GenreRole, "genre"}
 	};
 	return roles;
 }
