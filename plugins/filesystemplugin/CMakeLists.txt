@@ -3,7 +3,6 @@ cmake_minimum_required( VERSION 3.1.0)
 
 set( CMAKE_AUTOMOC ON )
 if( WIN32 )
-	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
 	set( LIBCUE_ROOT "C:\\build\\libcue" CACHE STRING "LibCue root path" )
 endif()
 add_definitions( -DQT_PLUGIN )
@@ -18,12 +17,11 @@ set( filesystemplugin_SRCS
 	${PLUGIN}.cpp
 	cueparser.cpp
 )
-find_package( TagLib REQUIRED )
+
 find_package( LibCue REQUIRED )
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${TAGLIB_INCLUDE_DIR}
 	${PROJECT_BINARY_DIR}/include
 )
 
@@ -42,7 +40,6 @@ add_library(
 )
 target_link_libraries(
 	${PLUGIN}
-	${TAGLIB_LIBRARY}
 	${LIBCUE_LIBRARY}
 	${QT_DEPLIBS}
 	libqomp
