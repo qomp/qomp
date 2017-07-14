@@ -101,6 +101,11 @@ void QompPluginModelItem::setModel(QAbstractItemModel *model)
 		model_ = model;
 }
 
+QString QompPluginModelItem::makeTooltipString(const QString &key, const QString &value)
+{
+	return QString("<div><nobr><strong>%1:</strong> %2</nobr></div>").arg(key, value);
+}
+
 QList<QompPluginModelItem *> QompPluginModelItem::items() const
 {
 	return items_;
@@ -121,6 +126,20 @@ QString QompPluginTune::toString() const
 //	if(!url.isNull())
 //		ret += "  [OK]";
 	return ret;
+}
+
+QString QompPluginTune::description() const
+{
+	QString descr("");
+
+	if(!artist.isEmpty())
+		descr += makeTooltipString(QObject::tr("Artist"), artist);
+	if(!album.isEmpty())
+		descr += makeTooltipString(QObject::tr("Album"), album);
+	if(!title.isEmpty())
+		descr += makeTooltipString(QObject::tr("Title"), title);
+
+	return descr;
 }
 
 QompCon::ModelItemType QompPluginTune::type() const
@@ -183,6 +202,20 @@ QString QompPluginAlbum::toString() const
 	return ret;
 }
 
+QString QompPluginAlbum::description() const
+{
+	QString descr("");
+
+	if(!artist.isEmpty())
+		descr += makeTooltipString(QObject::tr("Artist"), artist);
+	if(!album.isEmpty())
+		descr += makeTooltipString(QObject::tr("Album"), album);
+	if(!year.isEmpty())
+		descr += makeTooltipString(QObject::tr("Year"), year);
+
+	return descr;
+}
+
 QompCon::ModelItemType QompPluginAlbum::type() const
 {
 	return QompCon::TypeAlbum;
@@ -211,6 +244,16 @@ QompPluginArtist::QompPluginArtist(QompPluginModelItem *parent) :
 QString QompPluginArtist::toString() const
 {
 	return	artist + "  [" + QString::number(items().size()) + "]";
+}
+
+QString QompPluginArtist::description() const
+{
+	QString descr("");
+
+	if(!artist.isEmpty())
+		descr += makeTooltipString(QObject::tr("Artist"), artist);
+
+	return descr;
 }
 
 QompCon::ModelItemType QompPluginArtist::type() const

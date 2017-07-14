@@ -20,42 +20,42 @@
 #include "cuteradiomodel.h"
 #include "tune.h"
 
+//--------------------------------------//
+//------------CuteRadioModel------------//
+//--------------------------------------//
 CuteRadioModel::CuteRadioModel(QObject *parent) :
 	QompPluginTreeModel(parent)
 {
-
 }
 
-QVariant CuteRadioModel::data(const QModelIndex &index, int role) const
-{
-	if(!index.isValid() || index.column())
-		return QVariant();
 
-	if(role == Qt::ToolTipRole) {
-		auto t = static_cast<CuteRadioTune*>(index.internalPointer());
-		QString ret = QString("<div>%1</div>"
-				      "<div><nobr><b>%2:</b> %3</nobr></div>"
-				      "<div><nobr><b>%4:</b> %5</nobr></div>"
-				      "<div><nobr><b>%6:</b> %7</nobr></div>"
-				      "<div><nobr><b>%8:</b> %9</nobr></div>")
-				.arg(t->artist)
-				.arg(tr("Country"))
-				.arg(t->country)
-				.arg(tr("Genre"))
-				.arg(t->genre)
-				.arg(tr("Language"))
-				.arg(t->lang)
-				.arg(tr("Last marked as played"))
-				.arg(t->lastPlayed);
-		return ret;
-	}
 
-	return QompPluginTreeModel::data(index, role);
-}
-
+//--------------------------------------//
+//-------------CuteRadioTune------------//
+//--------------------------------------//
 QString CuteRadioTune::toString() const
 {
 	return QString("%1 [%2, %3]").arg(title, genre, country);
+}
+
+QString CuteRadioTune::description() const
+{
+	QString descr("");
+
+	if(!artist.isEmpty())
+		descr += QString("<div>%1</div>").arg(artist);
+	if(!title.isEmpty())
+		descr += makeTooltipString(QObject::tr("Title"), title);
+	if(!country.isEmpty())
+		descr += makeTooltipString(QObject::tr("Country"), country);
+	if(!genre.isEmpty())
+		descr += makeTooltipString(QObject::tr("Genre"), genre);
+	if(!lang.isEmpty())
+		descr += makeTooltipString(QObject::tr("Language"), lang);
+	if(!lastPlayed.isEmpty())
+		descr += makeTooltipString(QObject::tr("Last marked as played"), lastPlayed);
+
+	return descr;
 }
 
 Tune *CuteRadioTune::toTune() const

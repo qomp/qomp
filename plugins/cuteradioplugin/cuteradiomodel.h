@@ -32,6 +32,7 @@ public:
 	QString genre;
 
 	virtual QString toString() const Q_DECL_OVERRIDE;
+	virtual QString description() const Q_DECL_OVERRIDE;
 	virtual Tune* toTune() const Q_DECL_OVERRIDE;
 };
 
@@ -41,8 +42,6 @@ class CuteRadioModel : public QompPluginTreeModel
 {
 public:
 	explicit CuteRadioModel(QObject *parent = 0);
-
-	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 };
 
 #endif // CUTERADIOMODEL_H

@@ -135,6 +135,10 @@ QVariant QompPluginTreeModel::data(const QModelIndex &index, int role) const
 	else if(role == Qt::DisplayRole) {
 		return static_cast<QompPluginModelItem*>(index.internalPointer())->toString();
 	}
+	else if(role == Qt::ToolTipRole) {
+		QString descr = static_cast<QompPluginModelItem*>(index.internalPointer())->description();
+		return descr.isEmpty() ? QVariant() : descr;
+	}
 	else if(role == Qt::DecorationRole) {
 		return static_cast<QompPluginModelItem*>(index.internalPointer())->icon();
 	}

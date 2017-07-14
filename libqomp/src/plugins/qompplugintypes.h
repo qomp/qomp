@@ -48,6 +48,11 @@ public:
 	virtual QString toString() const = 0;
 
 	/**
+	 * Tune descrioption used at tooltip
+	 */
+	virtual QString description() const = 0;
+
+	/**
 	* Set parent for this item. When parent item will be deleted
 	* all children will be deleted too
 	*/
@@ -98,6 +103,9 @@ public:
 	QAbstractItemModel* model() const;
 	void setModel(QAbstractItemModel* model);
 
+protected:
+	static QString makeTooltipString(const QString& key, const QString& value);
+
 private:
 	QompPluginModelItem* parent_;
 	QList<QompPluginModelItem*> items_;
@@ -115,14 +123,15 @@ public:
 	QString duration;
 	QString url;
 
-	virtual QString toString() const;
-	virtual QompCon::ModelItemType type() const;
+	virtual QString toString() const Q_DECL_OVERRIDE;
+	virtual QString description() const Q_DECL_OVERRIDE;
+	virtual QompCon::ModelItemType type() const Q_DECL_OVERRIDE;
 #ifdef Q_OS_ANDROID
 	QString
 #else
 	QIcon
 #endif
-	icon() const;
+	virtual icon() const Q_DECL_OVERRIDE;
 	virtual Tune* toTune() const;
 };
 
@@ -136,12 +145,13 @@ public:
 	QString year;
 	bool tunesReceived;
 
-	virtual QString toString() const;
-	virtual QompCon::ModelItemType type() const;
+	virtual QString toString() const Q_DECL_OVERRIDE;
+	virtual QString description() const Q_DECL_OVERRIDE;
+	virtual QompCon::ModelItemType type() const Q_DECL_OVERRIDE;
 #ifdef Q_OS_ANDROID
-	QString icon() const;
+	virtual QString icon() const Q_DECL_OVERRIDE;
 #else
-	QIcon icon() const;
+	virtual QIcon icon() const Q_DECL_OVERRIDE;
 #endif
 };
 
@@ -153,12 +163,13 @@ public:
 	QString artist;
 	bool tunesReceived;
 
-	virtual QString toString() const;
-	virtual QompCon::ModelItemType type() const;
+	virtual QString toString() const Q_DECL_OVERRIDE;
+	virtual QString description() const Q_DECL_OVERRIDE;
+	virtual QompCon::ModelItemType type() const Q_DECL_OVERRIDE;
 #ifdef Q_OS_ANDROID
-	QString icon() const;
+	virtual QString icon() const Q_DECL_OVERRIDE;
 #else
-	QIcon icon() const;
+	virtual QIcon icon() const Q_DECL_OVERRIDE;
 #endif
 };
 
