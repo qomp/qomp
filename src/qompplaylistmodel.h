@@ -42,7 +42,8 @@ public:
 		CanDownloadRole   = Qt::UserRole+89,
 		TuneRole     = Qt::UserRole+10,
 		CoverRole    = Qt::UserRole+11,
-		BitrateRole  = Qt::UserRole+12
+		BitrateRole  = Qt::UserRole+12,
+		DirectURLRole= Qt::UserRole+13
 	};
 
 	void addTunes(const QList<Tune*>& tunes);

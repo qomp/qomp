@@ -25,6 +25,7 @@
 #include "qompplaylistmodel.h"
 
 #include <QApplication>
+#include <QDesktopServices>
 
 QompMenu::QompMenu(QWidget *parent) :
 	QMenu(parent)
@@ -154,6 +155,11 @@ void QompTrackMenu::actToggleActivated()
 	emit togglePlayState(list_[0].data(QompPlayListModel::TuneRole).value<Tune*>());
 }
 
+void QompTrackMenu::actOpenDirectActivated()
+{
+	QDesktopServices::openUrl(list_[0].data(QompPlayListModel::TuneRole).value<Tune*>()->directUrl);
+}
+
 void QompTrackMenu::buildMenu()
 {
 	if (list_.size() == 0)
@@ -186,6 +192,12 @@ void QompTrackMenu::buildMenu()
 
 		if(hasUrl) {
 			act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/ok")), tr("Copy URL"), this, SLOT(actCopyUrlActivated()));
+			act->setParent(this);
+		}
+
+		const QString direct = first.data(QompPlayListModel::TuneRole).value<Tune*>()->directUrl;
+		if(!direct.isEmpty()) {
+			act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/updates")), tr("Open At Browser"), this, SLOT(actOpenDirectActivated()));
 			act->setParent(this);
 		}
 	}

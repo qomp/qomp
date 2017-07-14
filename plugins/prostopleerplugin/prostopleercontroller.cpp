@@ -156,6 +156,7 @@ void ProstoPleerController::searchFinished()
 			tune->title = Qomp::unescape(re.cap(4));
 			tune->internalId = re.cap(5);
 			tune->duration = re.cap(1);
+			tune->directUrl = ProstoPleerUrl + QStringLiteral("/tracks/") + tune->internalId;
 			list.append(tune);
 		}
 		if(!list.isEmpty())

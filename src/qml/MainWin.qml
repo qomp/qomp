@@ -23,6 +23,7 @@ Rectangle {
 	signal actToggle(int index)
 	signal actRemove(int index)
 	signal actDownload(int index, string dir)
+	signal actCopyUrl(var tune)
 
 	property string title: Qt.application.name
 
@@ -108,6 +109,8 @@ Rectangle {
 					trackMenu.active = true
 
 				trackMenu.item.canDownload = model.canDownload
+				trackMenu.item.hasUrl = model.url.length > 0
+				trackMenu.item.hasDirectUrl = model.directUrl.length > 0
 				trackMenu.item.popup()
 			}
 			onActivated: root.itemActivated(index)
@@ -330,6 +333,8 @@ Rectangle {
 				fileDialog.item.forceActiveFocus()
 			}
 			onTuneInfo: root.doTuneInfo()
+			onCopyUrl: root.doCopyUrl()
+			onOpenUrl: root.doOpenUrl()
 		}
 	}
 
@@ -396,5 +401,13 @@ Rectangle {
 //		console.log(cur.cover)
 		tuneInfoLoader.item.open()
 		tuneInfoLoader.item.forceActiveFocus()
+	}
+
+	function doOpenUrl() {
+		Qt.openUrlExternally(playlist.currentItem.curData.directUrl)
+	}
+
+	function doCopyUrl() {
+		actCopyUrl(playlist.currentItem.curData.tune)
 	}
 }

@@ -122,6 +122,7 @@ public:
 	QString album;
 	QString duration;
 	QString url;
+	QString directUrl;
 
 	virtual QString toString() const Q_DECL_OVERRIDE;
 	virtual QString description() const Q_DECL_OVERRIDE;

@@ -61,6 +61,7 @@ public slots:
 	void downloadTune(int index, const QString &dir);
 	void loadPlaylistActivate(const QString& file);
 	void savePlaylistActivate(const QString& file);
+	void copyUrl(const QVariant& tune);
 
 	void updateTuneInfo(Tune *tune);
 	void updateState(Qomp::State state);
@@ -126,6 +127,7 @@ void QompMainWin::Private::connectActions()
 	connect(r, SIGNAL(actToggle(int)),		SLOT(doToggle(int)));
 	connect(r, SIGNAL(actDownload(int,QString)),	SLOT(downloadTune(int,QString)));
 	connect(r, SIGNAL(actRemove(int)),		SLOT(removeTune(int)));
+	connect(r, SIGNAL(actCopyUrl(QVariant)),	SLOT(copyUrl(QVariant)));
 
 	connect(r, SIGNAL(actLoadPlaylist(QString)),	SLOT(loadPlaylistActivate(QString)));
 	connect(r, SIGNAL(actSavePlaylist(QString)),	SLOT(savePlaylistActivate(QString)));
@@ -228,6 +230,12 @@ void QompMainWin::Private::loadPlaylistActivate(const QString &file)
 void QompMainWin::Private::savePlaylistActivate(const QString &file)
 {
 	mainWin_->savePlaylist(file);
+}
+
+void QompMainWin::Private::copyUrl(const QVariant &tune)
+{
+	Tune* t = static_cast<Tune*>(tune.value<QObject*>());
+	emit mainWin_->copyUrl(t);
 }
 
 void QompMainWin::Private::updateTuneInfo(Tune* tune)

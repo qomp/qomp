@@ -188,6 +188,9 @@ static QList<QompPluginModelItem*> parseTunes(const QString& replyStr, int songI
 			t->internalId = songRx.cap(5);
 			t->artist = Qomp::unescape(songRx.cap(3));
 			t->title = Qomp::unescape(songRx.cap(6));
+			QString u(MYZUKA_URL);
+			u.chop(1);
+			t->directUrl = u + t->internalId;
 			//t->album = unescape(songRx.cap(9));
 
 			tunes.append(t);
@@ -212,6 +215,7 @@ static QList<QompPluginModelItem*> parseTunes2(const QString& replyStr, int song
 			t->artist = Qomp::unescape(songRx.cap(4));
 			t->title = Qomp::unescape(songRx.cap(5));
 			t->duration = Qomp::unescape(songRx.cap(3).trimmed());
+			t->directUrl = QStringLiteral(MYZUKA_URL "Song/") + t->url.split("?").first();
 
 			tunes.append(t);
 		}

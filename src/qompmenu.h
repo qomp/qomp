@@ -93,6 +93,7 @@ private slots:
 	void actCopyUrlActivated();
 	void actSaveActivated();
 	void actToggleActivated();
+	void actOpenDirectActivated();
 
 private:
 	void buildMenu();

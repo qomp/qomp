@@ -8,12 +8,28 @@ Menu {
 	signal download()
 	signal remove()
 	signal tuneInfo()
+	signal copyUrl()
+	signal openUrl
 
 	property alias canDownload: dwnld.visible
+	property alias hasUrl: cpUrl.visible
+	property alias hasDirectUrl: opnUrl.visible
 
 	MenuItem {
 		text: qsTr("Play/Pause")
 		onTriggered: root.toggle()
+	}
+
+	MenuItem {
+		id: cpUrl
+		text: qsTr("Copy URL")
+		onTriggered: root.copyUrl()
+	}
+
+	MenuItem {
+		id: opnUrl
+		text: qsTr("Open At Browser")
+		onTriggered: root.openUrl()
 	}
 
 	MenuItem {

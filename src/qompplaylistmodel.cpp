@@ -189,6 +189,9 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	else if(role == URLRole) {
 		return t->url;
 	}
+	else if(role == DirectURLRole) {
+		return t->directUrl;
+	}
 	else if(role == IsCurrentTuneRole) {
 		return currentTune() == t;
 	}
@@ -418,7 +421,9 @@ QHash<int, QByteArray> QompPlayListModel::roleNames() const
 		{FileRole,"file"},
 		{IsCurrentTuneRole,"current"},
 		{CanDownloadRole,"canDownload"},
-		{CoverRole,"cover"}
+		{CoverRole,"cover"},
+		{DirectURLRole,"directUrl"},
+		{TuneRole, "tune"}
 	};
 	return roles;
 }

@@ -143,6 +143,7 @@ static QList<QompPluginModelItem*> parseTunes(const QJsonArray& arr)
 		tune->duration = safeJSONValue2String(cur.value("durationMs"));
 		tune->internalId = safeJSONValue2String(cur.value("id"));
 		tune->url = cur.value("storageDir").toString();
+		tune->directUrl = YA_MUSIC_URL + QStringLiteral("track/") + tune->internalId;
 		tracks.append(tune);
 	}
 	return tracks;

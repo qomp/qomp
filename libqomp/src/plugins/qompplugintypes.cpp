@@ -179,6 +179,7 @@ Tune *QompPluginTune::toTune() const
 	t->album = album;
 	t->url = url;
 	t->duration = duration;
+	t->directUrl = directUrl;
 	return t;
 }
 
