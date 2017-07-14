@@ -61,7 +61,7 @@ QString CuteRadioTune::description() const
 Tune *CuteRadioTune::toTune() const
 {
 	Tune* t = new Tune(false);
-	t->artist = artist;
+	t->description = artist;
 	t->title = title;
 	t->url = url;
 	return t;

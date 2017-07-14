@@ -132,7 +132,7 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 
 	Tune* t = tunes_.at(index.row());
 	if(role == Qt::DisplayRole) {
-		return  t->displayString();
+		return t->displayString();
 	}
 	else if(role == ArtistRole) {
 		return t->artist;
@@ -158,17 +158,24 @@ QVariant QompPlayListModel::data(const QModelIndex &index, int role) const
 	}
 	else if(role == Qt::ToolTipRole) {
 		QString ret;
+		auto addTipLine = [&ret](const QString& key, const QString& value) {
+			ret += QString("<div><nobr><strong>%1:</strong> %2</nobr></div>").arg(key, value);
+		};
+
 		if(!t->artist.isEmpty()) {
-			ret += tr("<div><nobr><b>Artist</b>: %1</nobr></div>").arg(t->artist);
+			addTipLine(tr("Artist"), t->artist);
 		}
 		if(!t->title.isEmpty()) {
-			ret += tr("<div><nobr><b>Title</b>: %1</nobr></div>").arg(t->title);
+			addTipLine(tr("Title"), t->title);
 		}
 		if(!t->album.isEmpty()) {
-			ret += tr("<div><nobr><b>Album</b>: %1</nobr></div>").arg(t->album);
+			addTipLine(tr("Album"), t->album);
+		}
+		if(!t->description.isEmpty()) {
+			addTipLine(tr("Description"), t->description);
 		}
 		if(!t->bitRate.isEmpty()) {
-			ret += tr("<div><nobr><b>Bitrate</b>: %1</nobr></div>").arg(t->bitRate);
+			addTipLine(tr("Bitrate"), t->bitRate);
 		}
 		return ret;
 	}
