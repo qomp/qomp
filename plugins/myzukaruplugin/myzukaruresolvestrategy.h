@@ -38,6 +38,8 @@ public:
 	virtual QUrl getUrl(const Tune *t);
 	virtual QString name() const;
 
+	QUrl getBaseUrl(const Tune *t);
+
 private:
 	explicit MyzukaruResolveStrategy();
 	static MyzukaruResolveStrategy* instance_;

@@ -49,13 +49,12 @@ protected:
 
 private slots:
 	void searchFinished();
-	//void tuneUrlFinished();
 	void albumUrlFinished();
 	void artistUrlFinished();
-	void tuneUrlFinished();
 
 private:
 	void checkAndStopBusyWidget();
+	void getTuneUrl(QompPluginModelItem* item);
 
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;

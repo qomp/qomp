@@ -20,6 +20,7 @@
 #include "myzukaruresolvestrategy.h"
 #include "qompnetworkingfactory.h"
 #include "myzukarudefines.h"
+#include "common.h"
 
 #include <QEventLoop>
 #include <QNetworkAccessManager>
@@ -38,6 +39,15 @@
 #endif
 
 static const int TimerInterval = 5000;
+static const int ContentNotFoundResult = -1;
+static const int PageError = -2;
+static const int NoRequestError = 0;
+
+static const QString songsRegExp = QString(
+			"<div\\s+id=\"playerDiv[^>]+>\\s+"
+			"<div\\s+id=\"[^\"]+\"\\s+class=\"play[^>]+>\\s+"
+			"<span\\s+class=\"[^\"]+\"\\s+data-url=\"/Song/Play/([^\"]+)\""		//cap(1) - url
+			);
 
 
 class MyzukaruResolveStrategyPrivate : public QObject
@@ -53,7 +63,7 @@ public:
 		nam_ = QompNetworkingFactory::instance()->getThreadedNAM();
 		timer_->setSingleShot(true);
 		timer_->setInterval(TimerInterval);
-		connect(timer_, SIGNAL(timeout()), loop_, SLOT(quit()));
+		connect(timer_, &QTimer::timeout, loop_, &QEventLoop::quit);
 	}
 
 	~MyzukaruResolveStrategyPrivate()
@@ -74,22 +84,58 @@ public:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "MyzukaruResolveStrategyPrivate::getUrl()";
 #endif
+
+		int ret = getDirectUrl();
+#ifdef DEBUG_OUTPUT
+		qDebug() << "MyzukaruResolveStrategyPrivate::getUrl()  finished";
+#endif
+		if(ret == ContentNotFoundResult) {
+			ret = getBaseUrl();
+			if(ret == NoRequestError) {
+				tune_->url = url_.toString();
+				url_.clear();
+				getDirectUrl();
+			}
+		}
+
+		return url_;
+	}
+
+	int startLoop()
+	{
+		timer_->start();
+		int ret = loop_->exec();
+		if(timer_->isActive())
+			timer_->stop();
+
+		return ret;
+	}
+
+	int getDirectUrl()
+	{
 		QUrl url(QString("%1Song/Play/%2").arg(MYZUKA_URL).arg(tune_->url));
+		QNetworkRequest nr(createRequest(url));
+		QNetworkReply *reply = nam_->get(nr);
+		connect(reply, &QNetworkReply::finished, this, &MyzukaruResolveStrategyPrivate::tuneUrlFinished);
+		return startLoop();
+	}
+
+	int getBaseUrl()
+	{
+		QUrl url(QUrl::fromPercentEncoding(tune_->directUrl.toLatin1()));
+		QNetworkRequest nr(createRequest(url));
+		QNetworkReply *reply = nam_->get(nr);
+		connect(reply, &QNetworkReply::finished, this, &MyzukaruResolveStrategyPrivate::tunePageFinished);
+		return startLoop();
+	}
+
+	QNetworkRequest createRequest(const QUrl& url) const
+	{
 		QNetworkRequest nr(url);
 		nr.setRawHeader("Accept", "*/*");
 		nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
 		nr.setRawHeader("Referer", MYZUKA_URL);
-		QNetworkReply *reply = nam_->get(nr);
-		connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinished()));
-		connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
-		timer_->start();
-		loop_->exec();
-		if(timer_->isActive())
-			timer_->stop();
-#ifdef DEBUG_OUTPUT
-		qDebug() << "MyzukaruResolveStrategyPrivate::getUrl()  finished";
-#endif
-		return url_;
+		return nr;
 	}
 
 private slots:
@@ -101,27 +147,47 @@ private slots:
 		QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 		reply->deleteLater();
 		if(reply->error() == QNetworkReply::NoError) {
-//			QRegExp re("\"(http://[^\"]+)\"");
-//			QString text = QString::fromUtf8(reply->readAll());
-//			qDebug() << text;
-//			if(re.indexIn(text) != -1) {
-//				url_.setUrl(re.cap(1).replace("\\u0026", "&"),QUrl::TolerantMode);
-//			}
-//			else {
-				url_.setUrl(reply->header(QNetworkRequest::LocationHeader).toString());
-//			}
+			url_.setUrl(reply->header(QNetworkRequest::LocationHeader).toString());
+		}
+		else {
+#ifdef DEBUG_OUTPUT
+			qDebug() << "reply error: " << reply->error() << reply->errorString();
+#endif
+			if(reply->error() == QNetworkReply::ContentNotFoundError) {
+				loop_->exit(ContentNotFoundResult);
+				return;
+			}
+
 		}
 		loop_->quit();
 	}
 
-	void requestError()
+	void tunePageFinished()
 	{
+#ifdef DEBUG_OUTPUT
+		qDebug() << "MyzukaruResolveStrategyPrivate::tunePageFinished()";
+#endif
 		QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 		reply->deleteLater();
+		if(reply->error() == QNetworkReply::NoError) {
+			QRegExp re(songsRegExp);
+			re.setMinimal(true);
+			const QString replyStr = QString::fromUtf8(reply->readAll());
+			if(re.indexIn(replyStr) != -1) {
+				url_.setUrl(Qomp::unescape(re.cap(1)));
+			}
+		}
+		else {
+#ifdef DEBUG_OUTPUT
+			qDebug() << "reply error: " << reply->error() << reply->errorString();
+#endif
+			loop_->exit(PageError);
+			return;
+		}
 		loop_->quit();
 	}
 
-private:
+public:
 	QUrl url_;
 	QEventLoop* loop_;
 	QTimer* timer_;
@@ -166,6 +232,16 @@ QUrl MyzukaruResolveStrategy::getUrl(const Tune *t)
 QString MyzukaruResolveStrategy::name() const
 {
 	return "Myzuka.ru";
+}
+
+QUrl MyzukaruResolveStrategy::getBaseUrl(const Tune *t)
+{
+//	QMutexLocker l(mutex_);
+	MyzukaruResolveStrategyPrivate p(t);
+	if(p.getBaseUrl() == NoRequestError)
+		return p.url_;
+
+	return QUrl();
 }
 
 

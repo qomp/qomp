@@ -85,6 +85,10 @@ Tune::Tune(bool canSave) :
 	setUrlResolveStrategy(SimpleStrategy::instance());
 }
 
+Tune::~Tune()
+{
+}
+
 QString Tune::displayString() const
 {
 	QString ret;

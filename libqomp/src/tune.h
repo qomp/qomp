@@ -43,6 +43,7 @@ class LIBQOMPSHARED_EXPORT Tune: public QObject
 	Q_OBJECT
 public:
 	explicit Tune(bool canSave = true);
+	virtual ~Tune();
 
 	QString artist;
 	QString title;

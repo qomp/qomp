@@ -24,11 +24,14 @@
 #include "myzukarudefines.h"
 #include "qompplugintreemodel.h"
 #include "myzukaruresolvestrategy.h"
+#include "tune.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QRegExp>
 #include <QStringList>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QFutureWatcher>
 
 #include <algorithm>
 
@@ -109,32 +112,6 @@ static const QString songsRegExp2 = QString(
 		);
 
 
-//static const QString songsRegExp3 = QString(
-//		"<div\\s+id=\"playerDiv[^>]+>\\s+"
-//		"<div\\s+id=\"play[^>]+>\\s+"
-//		"<span\\s+class=\"[^\"]+\"\\s+data-url=\"/Song/Play/([^\"]+)\".+</span>\\s+"					//cap(1) - internalId
-//		"</div>\\s+"
-//		"<div[^>]+>\\s+"
-//		"<div[^>]+>\\s+"
-//		"<span.+</span>\\s+"
-//		"<a[^>]+>[^<]*</a>\\s+"
-//		"</div>\\s+"
-//		"<div\\s+class=\"data\">([^<]+)<.+</div>\\s+"					//cap(2) - duration
-//		"</div>\\s+"
-//		"<div[^>]+>\\s+"
-//		"<div[^<]+</div>\\s+"
-//		"<p>\\s+<strong>\\s+"
-//		"<a[^>]+>([^<]+)</a>\\s+"								//cap(3) - title
-//		"</strong>\\s+</p>.+"
-//		"<a[^>]+>([^<]+)</a>"									//cap(4) - album
-//		);
-
-static const QString songsRegExp4 = QString(
-			"<div\\s+id=\"playerDiv[^>]+>\\s+"
-			"<div\\s+id=\"[^\"]+\"\\s+class=\"play[^>]+>\\s+"
-			"<span\\s+class=\"[^\"]+\"\\s+data-url=\"/Song/Play/([^\"]+)\""				//cap(1) - internalId
-			);
-
 static bool lessThen(QompPluginModelItem* it1, QompPluginModelItem* it2)
 {
 	if(it1->type() == QompCon::TypeAlbum) {
@@ -188,9 +165,9 @@ static QList<QompPluginModelItem*> parseTunes(const QString& replyStr, int songI
 			t->internalId = songRx.cap(5);
 			t->artist = Qomp::unescape(songRx.cap(3));
 			t->title = Qomp::unescape(songRx.cap(6));
-			QString u(MYZUKA_URL);
-			u.chop(1);
-			t->directUrl = u + t->internalId;
+			QUrl u(MYZUKA_URL);
+			u.setPath(QUrl::fromPercentEncoding(t->internalId.toLatin1()));
+			t->directUrl = u.toString();
 			//t->album = unescape(songRx.cap(9));
 
 			tunes.append(t);
@@ -222,29 +199,6 @@ static QList<QompPluginModelItem*> parseTunes2(const QString& replyStr, int song
 	}
 	return tunes;
 }
-
-//static QList<QompPluginModelItem*> parseTunes3(const QString& replyStr, int songIndex)
-//{
-//#ifdef DEBUG_OUTPUT
-//	qDebug() << "QList<QompPluginModelItem*> parseTunes3" << replyStr;
-//#endif
-//	QList<QompPluginModelItem*> tunes;
-//	if(songIndex != -1) {
-//		QRegExp songRx(songsRegExp3, Qt::CaseInsensitive);
-//		songRx.setMinimal(true);
-//		while((songIndex = songRx.indexIn(replyStr, songIndex)) != -1) {
-//			songIndex += songRx.matchedLength();
-//			QompPluginTune* t = new QompPluginTune();
-//			t->/*internalId*/url = Qomp::unescape(songRx.cap(1));
-//			t->album = Qomp::unescape(songRx.cap(4));
-//			t->title = Qomp::unescape(songRx.cap(3));
-//			t->duration = Qomp::unescape(songRx.cap(2).trimmed());
-
-//			tunes.append(t);
-//		}
-//	}
-//	return tunes;
-//}
 
 static QList<QompPluginModelItem*> parseAlbums(const QString& replyStr, int albumsIndex)
 {
@@ -463,12 +417,8 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 	switch(item->type()) {
 	case QompCon::TypeTune:
 	{
-		QompPluginTune* tune = static_cast<QompPluginTune *>(item);
-		if(!tune->url.isEmpty())
-			return;
-		url.setPath(QUrl::fromPercentEncoding(tune->internalId.toLatin1()));
-		slot = SLOT(tuneUrlFinished());
-		break;
+		getTuneUrl(item);
+		return;
 	}
 	case QompCon::TypeAlbum:
 	{
@@ -544,6 +494,31 @@ void MyzukaruController::checkAndStopBusyWidget()
 {
 	if(requests_.isEmpty())
 		dlg_->stopBusyWidget();
+}
+
+void MyzukaruController::getTuneUrl(QompPluginModelItem *item)
+{
+	QompPluginTune* tune = static_cast<QompPluginTune *>(item);
+	if(!tune->url.isEmpty())
+		return;
+
+	Tune* t = tune->toTune();
+	QFutureWatcher<QUrl> *w = new QFutureWatcher<QUrl>(this);
+	connect(w, &QFutureWatcher<QUrl>::finished, t, &Tune::deleteLater);
+	connect(w, &QFutureWatcher<QUrl>::finished, [w, tune, item]() {
+		const QUrl u = w->result();
+		w->deleteLater();
+		if(!u.isEmpty())
+			tune->url = u.toString();
+
+		auto model = static_cast<QompPluginTreeModel*>(item->model());
+		model->emitUpdateSignal(model->index(item));
+	});
+
+
+	QFuture<QUrl> f = QtConcurrent::run(MyzukaruResolveStrategy::instance(),
+					    &MyzukaruResolveStrategy::getBaseUrl, t);
+	w->setFuture(f);
 }
 
 void MyzukaruController::albumUrlFinished()
@@ -646,28 +621,5 @@ void MyzukaruController::artistUrlFinished()
 //			connect(newReply, SIGNAL(finished()), SLOT(artistUrlFinished()));
 //			dlg_->startBusyWidget();
 //		}
-	}
-}
-
-void MyzukaruController::tuneUrlFinished()
-{
-	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
-	reply->deleteLater();
-	QompPluginTreeModel *model = static_cast<QompPluginTreeModel *>(requests_.value(reply));
-	requests_.remove(reply);
-	checkAndStopBusyWidget();
-	if(reply->error() == QNetworkReply::NoError) {
-		QString replyStr = QString::fromUtf8(reply->readAll());
-		const QString id = reply->property("id").toString();
-		QompPluginModelItem* it = model->itemForId(id);
-		if(it && it->type() == QompCon::TypeTune) {
-			QompPluginTune* t = static_cast<QompPluginTune*>(it);
-			QRegExp re(songsRegExp4);
-			re.setMinimal(true);
-			if(re.indexIn(replyStr) != -1) {
-				t->url = Qomp::unescape(re.cap(1));
-				model->emitUpdateSignal(model->index(it));
-			}
-		}
 	}
 }
