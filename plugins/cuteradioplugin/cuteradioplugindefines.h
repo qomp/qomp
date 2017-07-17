@@ -22,5 +22,7 @@
 
 #define CUTERADIO_PLUGIN_VERSION "1.2.1"
 #define CUTERADIO_PLUGIN_NAME "cuteRadio"
+#define OPTION_CUTERADIO_COUNTRY "cuteradio-country"
+#define OPTION_CUTERADIO_GENRE   "cuteradio-genre"
 
 #endif // CUTERADIO_PLUGIN_DEFINES_H

@@ -24,3 +24,6 @@ SOURCES +=  $$PWD/cuteradioplugin.cpp \
 
 
 OTHER_FILES += $$PWD/metadata.json
+
+FORMS += \
+    $$PWD/cuteradioplugingettunesdialog.ui

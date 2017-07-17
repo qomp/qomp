@@ -83,5 +83,24 @@ void CuteRadioPluginGetTunesDialog::setModel(QAbstractItemModel *model)
 	QQmlProperty::write(p->item, "model", QVariant::fromValue(model));
 }
 
+QString CuteRadioPluginGetTunesDialog::country() const
+{
+	return QString();
+}
+
+QString CuteRadioPluginGetTunesDialog::genre() const
+{
+	return QString();
+}
+
+void CuteRadioPluginGetTunesDialog::setCountries(QStringList *items)
+{
+	Q_UNUSED(items)
+}
+
+void CuteRadioPluginGetTunesDialog::setGenres(QStringList *items)
+{
+	Q_UNUSED(items)
+}
 #include "cuteradioplugingettunesdialog_mobile.moc"
 

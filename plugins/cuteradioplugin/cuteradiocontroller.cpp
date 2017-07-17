@@ -43,6 +43,10 @@ static const QString supportedMimeTypesPrefix = "audio/";
 
 #define TUNE_PROPERTY "tune"
 #define STEP_PROPERTY "step"
+#define CONTAINER_PROPERTY "container"
+
+QStringList CuteRadioController::_countries{};
+QStringList CuteRadioController::_genres{};
 
 
 
@@ -60,6 +64,18 @@ void CuteRadioController::init()
 	QompPluginController::init();
 
 	dlg_->setModel(model_);
+
+	connect(this, &CuteRadioController::countriesChanged, dlg_, &CuteRadioPluginGetTunesDialog::setCountries);
+	connect(this, &CuteRadioController::genresChanged, dlg_, &CuteRadioPluginGetTunesDialog::setGenres);
+	if(_countries.isEmpty())
+		loadCountries(0);
+	else
+		emit countriesChanged(&_countries);
+
+	if(_genres.isEmpty())
+		loadGenres(0);
+	else
+		emit genresChanged(&_genres);
 }
 
 CuteRadioController::~CuteRadioController()
@@ -84,11 +100,10 @@ QList<Tune*> CuteRadioController::prepareTunes() const
 
 void CuteRadioController::doSearch(const QString& text)
 {
-	if(text.isEmpty())
-		return;
-
 	model_->reset();
-	doSearchStepTwo(parseSearchString(text));
+	const QString str = prepareSearchString(text);
+	if(!str.isEmpty())
+		doSearchStepTwo(str);
 }
 
 QompPluginGettunesDlg *CuteRadioController::view() const
@@ -120,27 +135,27 @@ void CuteRadioController::stopBusy()
 		dlg_->stopBusyWidget();
 }
 
-QString CuteRadioController::parseSearchString(QString str) const
+QString CuteRadioController::prepareSearchString(const QString& str) const
 {
-	QStringList parts = str.replace(",", " ").split(" ", QString::SkipEmptyParts);
 	QStringList res;
-	for(int i = 0; i < parts.count(); ++i) {
-		const QString& part = parts.at(i);
+	QString genre = dlg_->genre();
+	QString country = dlg_->country();
 
-		if(part.compare(QStringLiteral("genre:")) == 0) {
-			res.append( QStringLiteral("genre=") + parts.at(++i) );
-		}
-		else if(part.compare(QStringLiteral("language:")) == 0) {
-			res.append( QStringLiteral("language=") + parts.at(++i) );
-		}
-		else if(part.compare(QStringLiteral("country:")) == 0) {
-			res.append( QStringLiteral("country=") + parts.at(++i) );
-		}
-		else {
-			res.append( QStringLiteral("search=") + part );
-		}
-	}
-	return res.join("&") + QStringLiteral("&limit=50&sortDescending=true&sort=lastPlayed");
+	if(!str.isEmpty())
+		res.append(QString("search=%1").arg(str));
+
+	if(!genre.isEmpty())
+		res.append(QString("genre=%1").arg(genre));
+
+	if(!country.isEmpty())
+		res.append(QString("country=%1").arg(country));
+
+	if(res.count() == 0)
+		return QString();
+
+	res << QStringLiteral("limit=50") << QStringLiteral("sortDescending=true") << QStringLiteral("sort=lastPlayed");
+
+	return res.join("&");
 }
 
 void CuteRadioController::processTunes(QList<Tune *> tunes, QompPluginModelItem *item)
@@ -162,6 +177,33 @@ void CuteRadioController::processTunes(QList<Tune *> tunes, QompPluginModelItem 
 	}
 
 	qDeleteAll(tunes);
+}
+
+void CuteRadioController::loadGenres(int offset)
+{
+	QString url = QString("/genres?limit=50&offset=%1&sortDescending=true&sort=count")
+			.arg(offset);
+
+	loadFilterData(url, &_genres);
+}
+
+void CuteRadioController::loadCountries(int offset)
+{
+	QString url = QString("/countries?limit=50&offset=%1&sortDescending=true&sort=count")
+			.arg(offset);
+
+	loadFilterData(url, &_countries);
+}
+
+void CuteRadioController::loadFilterData(const QString &urlPath, QStringList *container)
+{
+	QNetworkRequest nr(CuteRadioUrl + urlPath);
+	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+	QNetworkReply *reply = nam()->get(nr);
+	reply->setProperty(CONTAINER_PROPERTY, reinterpret_cast<qintptr>(container));
+	connect(reply, &QNetworkReply::finished, this, &CuteRadioController::getFilterDataFinished);
+	connect(this, &CuteRadioController::destroyed, reply, &QNetworkReply::deleteLater);
+	startBusy();
 }
 
 void CuteRadioController::searchFinished()
@@ -271,6 +313,38 @@ void CuteRadioController::getUrlFinished()
 		if(p.canParse()) {
 			processTunes(p.parse(), ct);
 		}
+	}
+}
+
+void CuteRadioController::getFilterDataFinished()
+{
+	QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
+	reply->deleteLater();
+	stopBusy();
+	if(reply->error() == QNetworkReply::NoError) {
+		QStringList* container = reinterpret_cast<QStringList*>(reply->property(CONTAINER_PROPERTY).value<qintptr>());
+		QByteArray ba = reply->readAll();
+		QJsonDocument doc = QJsonDocument::fromJson(ba);
+		QJsonObject jo = doc.object();
+
+		if(jo.contains("items")) {
+			QJsonArray arr = jo.value("items").toArray();
+			for(const QJsonValue& item: arr) {
+				QJsonObject obj = item.toObject();
+				if(obj.contains("name"))
+					container->append(obj.value("name").toString());
+			}
+		}
+
+		if(jo.contains("next")) {
+			const QString next = jo.value("next").toString();
+			loadFilterData(next, container);
+		}
+
+		if(container == &_countries)
+			emit countriesChanged(container);
+		else
+			emit genresChanged(container);
 	}
 }
 

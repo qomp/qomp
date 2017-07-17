@@ -33,6 +33,10 @@ public:
 	explicit CuteRadioController(QObject *parent = 0);
 	virtual ~CuteRadioController();
 
+signals:
+	void countriesChanged(QStringList*);
+	void genresChanged(QStringList*);
+
 protected slots:
 	virtual void doSearch(const QString& text) Q_DECL_OVERRIDE;
 	virtual QompPluginGettunesDlg* view() const Q_DECL_OVERRIDE;
@@ -48,18 +52,25 @@ private slots:
 	void searchFinished();
 	void getUrlReadyRead();
 	void getUrlFinished();
+	void getFilterDataFinished();
 
 private:
 	void doSearchStepTwo(const QString& str);
 	void startBusy();
 	void stopBusy();
-	QString parseSearchString(QString str) const;
+	QString prepareSearchString(const QString& str) const;
 	void processTunes(QList<Tune*> tunes, QompPluginModelItem* item);
+	void loadGenres(int offset);
+	void loadCountries(int offset);
+	void loadFilterData(const QString& urlPath, QStringList* container);
+
 
 private:
 	QompPluginTreeModel* model_;
 	CuteRadioPluginGetTunesDialog* dlg_;
 	int searchesCount_;
+
+	static QStringList _countries, _genres;
 };
 
 #endif // CUTERADIOCONTROLLER_H

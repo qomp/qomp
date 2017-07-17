@@ -33,6 +33,12 @@ public:
 	~CuteRadioPluginGetTunesDialog();
 
 	void setModel(QAbstractItemModel* model);
+	QString country() const;
+	QString genre() const;
+
+public slots:
+	void setCountries(QStringList* items);
+	void setGenres(QStringList *items);
 	
 private:
 	class Private;
