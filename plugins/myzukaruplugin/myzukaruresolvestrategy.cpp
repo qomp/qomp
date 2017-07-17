@@ -122,6 +122,9 @@ public:
 
 	int getBaseUrl()
 	{
+		if(tune_->directUrl.isEmpty())
+			return PageError;
+
 		QUrl url(QUrl::fromPercentEncoding(tune_->directUrl.toLatin1()));
 		QNetworkRequest nr(createRequest(url));
 		QNetworkReply *reply = nam_->get(nr);
