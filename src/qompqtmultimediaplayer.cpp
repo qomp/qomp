@@ -27,6 +27,7 @@
 #include <QMediaService>
 #include <QSignalBlocker>
 #include <QCoreApplication>
+//#include <QMetaDataReaderControl>
 
 
 #ifdef DEBUG_OUTPUT
@@ -50,6 +51,16 @@ QompQtMultimediaPlayer::QompQtMultimediaPlayer() :
 	connect(player_, &QMediaPlayer::mediaStatusChanged, this, &QompQtMultimediaPlayer::mediaStatusChanged);
 	connect(player_, &QMediaPlayer::durationChanged,    this, &QompQtMultimediaPlayer::tuneDurationChanged);
 	connect(player_, &QMediaPlayer::positionChanged,    this, &QompQtMultimediaPlayer::tunePositionChanged);
+
+//	connect(player_, static_cast<void (QMediaPlayer ::*)()>(&QMediaPlayer::metaDataChanged), [this]() {
+//		QMetaDataReaderControl *c = qobject_cast<QMetaDataReaderControl*>(
+//					player_->service()->requestControl(QMetaDataReaderControl_iid));
+//		if(c) {
+//			qDebug() << c->availableMetaData();
+//			player_->service()->releaseControl(c);
+//		}
+//	});
+
 #ifdef HAVE_X11
 	connect(player_, &QMediaPlayer::audioAvailableChanged, this, &QompQtMultimediaPlayer::audioReadyChanged);
 	connect(player_, &QMediaPlayer::seekableChanged, this, &QompQtMultimediaPlayer::seekableChanged);
