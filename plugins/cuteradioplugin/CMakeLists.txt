@@ -19,6 +19,9 @@ set( cuteradioplugin_SRCS
 	cuteradioplugingettunesdialog.cpp
 	${PLUGIN}.cpp
 )
+set(cuteradioplugin_UIS
+	cuteradioplugingettunesdialog.ui
+)
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -32,10 +35,12 @@ set( QT_DEPLIBS
 	Qt5::Widgets
 	Qt5::Network
 )
+qt5_wrap_ui( UIS ${cuteradioplugin_UIS} )
 add_library(
 	${PLUGIN}
 	MODULE
 	${cuteradioplugin_SRCS}
+	${UIS}
 )
 target_link_libraries(
 	${PLUGIN}
