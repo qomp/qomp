@@ -19,7 +19,6 @@
 
 #include "cuteradiocontroller.h"
 #include "cuteradioplugindefines.h"
-#include "cuteradioplugingettunesdialog.h"
 #include "cuteradiomodel.h"
 #include "playlistparser.h"
 #include "tune.h"
@@ -45,8 +44,8 @@ static const QString supportedMimeTypesPrefix = "audio/";
 #define STEP_PROPERTY "step"
 #define CONTAINER_PROPERTY "container"
 
-QStringList CuteRadioController::_countries{};
-QStringList CuteRadioController::_genres{};
+DataPairs CuteRadioController::_countries{};
+DataPairs CuteRadioController::_genres{};
 
 
 
@@ -195,7 +194,7 @@ void CuteRadioController::loadCountries(int offset)
 	loadFilterData(url, &_countries);
 }
 
-void CuteRadioController::loadFilterData(const QString &urlPath, QStringList *container)
+void CuteRadioController::loadFilterData(const QString &urlPath, QList<QPair<QString, int> > *container)
 {
 	QNetworkRequest nr(CuteRadioUrl + urlPath);
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
@@ -322,7 +321,7 @@ void CuteRadioController::getFilterDataFinished()
 	reply->deleteLater();
 	stopBusy();
 	if(reply->error() == QNetworkReply::NoError) {
-		QStringList* container = reinterpret_cast<QStringList*>(reply->property(CONTAINER_PROPERTY).value<qintptr>());
+		DataPairs* container = reinterpret_cast<DataPairs*>(reply->property(CONTAINER_PROPERTY).value<qintptr>());
 		QByteArray ba = reply->readAll();
 		QJsonDocument doc = QJsonDocument::fromJson(ba);
 		QJsonObject jo = doc.object();
@@ -331,8 +330,7 @@ void CuteRadioController::getFilterDataFinished()
 			QJsonArray arr = jo.value("items").toArray();
 			for(const QJsonValue& item: arr) {
 				QJsonObject obj = item.toObject();
-				if(obj.contains("name"))
-					container->append(obj.value("name").toString());
+				container->append(qMakePair(obj.value("name").toString(), obj.value("count").toInt()));
 			}
 		}
 

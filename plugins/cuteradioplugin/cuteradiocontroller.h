@@ -21,6 +21,7 @@
 #define CUTERADIOCONTROLLER_H
 
 #include "qompplugincontroller.h"
+#include "cuteradioplugingettunesdialog.h"
 
 class QompPluginModelItem;
 class CuteRadioPluginGetTunesDialog;
@@ -34,8 +35,8 @@ public:
 	virtual ~CuteRadioController();
 
 signals:
-	void countriesChanged(QStringList*);
-	void genresChanged(QStringList*);
+	void countriesChanged(DataPairs*);
+	void genresChanged(DataPairs*);
 
 protected slots:
 	virtual void doSearch(const QString& text) Q_DECL_OVERRIDE;
@@ -62,7 +63,7 @@ private:
 	void processTunes(QList<Tune*> tunes, QompPluginModelItem* item);
 	void loadGenres(int offset);
 	void loadCountries(int offset);
-	void loadFilterData(const QString& urlPath, QStringList* container);
+	void loadFilterData(const QString& urlPath, DataPairs* container);
 
 
 private:
@@ -70,7 +71,7 @@ private:
 	CuteRadioPluginGetTunesDialog* dlg_;
 	int searchesCount_;
 
-	static QStringList _countries, _genres;
+	static DataPairs _countries, _genres;
 };
 
 #endif // CUTERADIOCONTROLLER_H

@@ -41,5 +41,3 @@ mac {
 else {
     LIBS += -ltag
 }
-
-

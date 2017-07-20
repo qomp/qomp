@@ -40,7 +40,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="cb_countries">
+       <widget class="ExtendedComboBox" name="cb_countries">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -79,7 +79,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="cb_genres">
+       <widget class="ExtendedComboBox" name="cb_genres">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -100,20 +100,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pb_clear">
-        <property name="text">
-         <string>Clear</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
@@ -127,6 +113,11 @@
    <class>QompPluginTreeView</class>
    <extends>QTreeView</extends>
    <header>qompplugintreeview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExtendedComboBox</class>
+   <extends>QComboBox</extends>
+   <header>extendedcombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

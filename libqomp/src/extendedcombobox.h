@@ -17,35 +17,30 @@
  *
  */
 
-#ifndef CUTERADIO_PLUGIN_GETTUNESDIALOG_H
-#define CUTERADIO_PLUGIN_GETTUNESDIALOG_H
+#ifndef EXTENDEDCOMBOBOX_H
+#define EXTENDEDCOMBOBOX_H
 
-#include "qompplugingettunesdlg.h"
+#include <QComboBox>
 
-class QAbstractItemModel;
+#include "libqomp_global.h"
 
-typedef QList< QPair<QString,int> > DataPairs;
-
-class CuteRadioPluginGetTunesDialog : public QompPluginGettunesDlg
+class LIBQOMPSHARED_EXPORT ExtendedComboBox : public QComboBox
 {
 	Q_OBJECT
-	
+	Q_PROPERTY(bool headerHidden READ isHeaderHidden WRITE setHeaderHidden)
 public:
-	explicit CuteRadioPluginGetTunesDialog(QObject *parent = 0);
-	~CuteRadioPluginGetTunesDialog();
+	explicit ExtendedComboBox(QWidget* parent = nullptr);
 
-	void setModel(QAbstractItemModel* model);
-	QString country() const;
-	QString genre() const;
+	void setHeaderHidden(bool hide);
+	bool isHeaderHidden() const;
 
-public slots:
-	void setCountries(DataPairs* items);
-	void setGenres(DataPairs* items);
-	
+	void setHorizontalHeaderLabels(const QStringList &labels);
+	void addItem(const QVariantList &item);
+
 private:
 	class Private;
-	Private* p;
-	friend class Privat;
+	Private* d;
+	friend class Private;
 };
 
-#endif
+#endif // EXTENDEDCOMBOBOX_H

@@ -93,12 +93,12 @@ QString CuteRadioPluginGetTunesDialog::genre() const
 	return QString();
 }
 
-void CuteRadioPluginGetTunesDialog::setCountries(QStringList *items)
+void CuteRadioPluginGetTunesDialog::setCountries(DataPairs *items)
 {
 	Q_UNUSED(items)
 }
 
-void CuteRadioPluginGetTunesDialog::setGenres(QStringList *items)
+void CuteRadioPluginGetTunesDialog::setGenres(DataPairs *items)
 {
 	Q_UNUSED(items)
 }

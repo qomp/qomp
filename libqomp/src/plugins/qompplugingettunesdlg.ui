@@ -43,8 +43,11 @@
           <string>Search</string>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="../../../src/qomp.qrc">
            <normaloff>:/icons/search</normaloff>:/icons/search</iconset>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+S</string>
          </property>
         </widget>
        </item>
@@ -95,7 +98,9 @@
    <header>qompbusylabel.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../../src/qomp.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

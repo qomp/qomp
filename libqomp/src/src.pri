@@ -12,7 +12,8 @@ SOURCES += $$PWD/common.cpp \
         $$PWD/gettuneurlhelper.cpp \
         $$PWD/covercache.cpp \
         $$PWD/taghelpers.cpp \
-        $$PWD/playlistparser.cpp
+        $$PWD/playlistparser.cpp \
+        $$PWD/extendedcombobox.cpp
 
 HEADERS += $$PWD/libqomp_global.h \
         $$PWD/common.h \
@@ -28,7 +29,9 @@ HEADERS += $$PWD/libqomp_global.h \
         $$PWD/gettuneurlhelper.h \
         $$PWD/covercache.h \
         $$PWD/taghelpers.h \
-        $$PWD/playlistparser.h
+        $$PWD/playlistparser.h \
+        $$PWD/extendedcombobox.h
+
 
 RESOURCES += $$PWD/icons.qrc
 

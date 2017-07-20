@@ -20,13 +20,11 @@
 #include "cuteradioplugingettunesdialog.h"
 #include "cuteradioplugindefines.h"
 #include "options.h"
-
+#include "qompplugintreeview.h"
 #include "ui_cuteradioplugingettunesdialog.h"
-
 
 #include <QKeyEvent>
 
-#include "qompplugintreeview.h"
 
 class CuteRadioPluginGetTunesDialog::Private :public QObject
 {
@@ -37,9 +35,16 @@ public:
 		_widget(new QWidget)
 	{
 		_ui->setupUi(_widget);
-		connect(_ui->cb_countries, &QComboBox::currentTextChanged, this, &Private::countryChanged);
-		connect(_ui->cb_genres, &QComboBox::currentTextChanged, this, &Private::genreChanged);
-		connect(_ui->pb_clear, &QPushButton::clicked, this, &Private::clearFilter);
+
+		_ui->cb_countries->setHeaderHidden(false);
+		_ui->cb_genres->setHeaderHidden(false);
+		_ui->cb_countries->setHorizontalHeaderLabels({tr("Country"),tr("Count")});
+		_ui->cb_genres->setHorizontalHeaderLabels({tr("Genre"),tr("Count")});
+
+		connect(_ui->cb_countries, static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
+			this, &Private::countryChanged);
+		connect(_ui->cb_genres, static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
+			this, &Private::genreChanged);
 	}
 
 	Ui::CuteRadioPluginGetTunesDialog* _ui;
@@ -55,13 +60,9 @@ public slots:
 	{
 		Options::instance()->setOption(OPTION_CUTERADIO_GENRE, genre);
 	}
-
-	void clearFilter()
-	{
-		_ui->cb_countries->setCurrentIndex(-1);
-		_ui->cb_genres->setCurrentIndex(-1);
-	}
 };
+
+
 
 
 CuteRadioPluginGetTunesDialog::CuteRadioPluginGetTunesDialog(QObject *parent) :
@@ -95,12 +96,13 @@ QString CuteRadioPluginGetTunesDialog::genre() const
 	return p->_ui->cb_genres->currentText();
 }
 
-void CuteRadioPluginGetTunesDialog::setCountries(QStringList *items)
+void CuteRadioPluginGetTunesDialog::setCountries(DataPairs *items)
 {
+	QSignalBlocker b(p->_ui->cb_countries);
 	const QString opt = Options::instance()->getOption(OPTION_CUTERADIO_COUNTRY).toString();
-	for(const QString& item: *items) {
-		if(p->_ui->cb_countries->findText(item) < 0) {
-			p->_ui->cb_countries->addItem(item);
+	for(const auto& item: *items) {
+		if(p->_ui->cb_countries->findText(item.first) < 0) {
+			p->_ui->cb_countries->addItem({item.first, item.second});
 		}
 	}
 
@@ -108,12 +110,14 @@ void CuteRadioPluginGetTunesDialog::setCountries(QStringList *items)
 	p->_ui->cb_countries->setCurrentIndex(index);
 }
 
-void CuteRadioPluginGetTunesDialog::setGenres(QStringList *items)
+void CuteRadioPluginGetTunesDialog::setGenres(DataPairs *items)
 {
+	QSignalBlocker b(p->_ui->cb_genres);
 	const QString opt = Options::instance()->getOption(OPTION_CUTERADIO_GENRE).toString();
-	for(const QString& item: *items) {
-		if(p->_ui->cb_genres->findText(item) < 0) {
-			p->_ui->cb_genres->addItem(item);
+	for(const auto& item: *items) {
+		if(p->_ui->cb_genres->findText(item.first) < 0) {
+			p->_ui->cb_genres->addItem({item.first, item.second});
+
 		}
 	}
 	int index = p->_ui->cb_genres->findText(opt);
