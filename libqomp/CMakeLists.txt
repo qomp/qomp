@@ -68,6 +68,7 @@ set( frameless_SRCS
 )
 set( libqomp_HDRS
 	src/covercache.h
+	src/extendedcombobox.h
 	src/options.h
 	src/pluginhost.h
 	src/pluginmanager.h
@@ -87,6 +88,7 @@ set( libqomp_HDRS
 
 set( libqomp_INCLUDE_HDRS
 	src/common.h
+	src/extendedcombobox.h
 	src/pluginhost.h
 	src/qompplayer.h
 	src/tune.h
@@ -119,6 +121,7 @@ set( libqomp_INCLUDE_HDRS
 set( libqomp_SRCS
 	src/common.cpp
 	src/covercache.cpp
+	src/extendedcombobox.cpp
 	src/gettuneurlhelper.cpp
 	src/options.cpp
 	src/pluginhost.cpp
