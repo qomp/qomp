@@ -42,6 +42,7 @@ public:
 	virtual QString description() const { return tr("Interface to MPRIS"); }
 	virtual QompOptionsPage* options() { return 0; }
 	virtual void qompPlayerChanged(QompPlayer* player);
+	virtual void playerControlChanged(QompPlayerControl* control);
 	virtual void setEnabled(bool enabled);
 	virtual void unload();
 

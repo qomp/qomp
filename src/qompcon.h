@@ -25,6 +25,7 @@
 
 #include "common.h"
 #include "qompinstancewatcher.h"
+#include "qompplayercontrol.h"
 
 class QompMainWin;
 class QompPlayListModel;
@@ -34,9 +35,10 @@ class QompCommandLine;
 class QompOptionsDlg;
 
 
-class QompCon : public QObject
+class QompCon : public QObject, public QompPlayerControl
 {
 	Q_OBJECT
+	Q_INTERFACES(QompPlayerControl)
 public:
 	explicit QompCon(QObject *parent = 0);
 	~QompCon();
@@ -44,21 +46,21 @@ public:
 public slots:
 	void incomingCall(bool begining);
 
+	//QompPlayerControl
+	virtual void actPlayNext() Q_DECL_OVERRIDE;
+	virtual void actPlayPrev() Q_DECL_OVERRIDE;
+	virtual void actPlay() Q_DECL_OVERRIDE;
+	virtual void actPause() Q_DECL_OVERRIDE;
+	virtual void actStop() Q_DECL_OVERRIDE;
+	virtual void actMuteToggle(bool mute) Q_DECL_OVERRIDE;
+	virtual void actSeek(int ms) Q_DECL_OVERRIDE;
+	virtual void actSetVolume(qreal vol) Q_DECL_OVERRIDE;
+
 private slots:
 	void updateSettings();
 
-	void actPlayNext();
-	void actPlayPrev();
-	void actPlay();
-	void actPause();
-	void actStop();
-
 	void actMediaActivated(const QModelIndex& index);
 	void actMediaClicked(const QModelIndex& index);
-
-	void actMuteToggle(bool mute);
-	void actSeek(int ms);
-	void actSetVolume(qreal vol);
 
 	void setTunes(const QList<Tune*>& tunes);
 

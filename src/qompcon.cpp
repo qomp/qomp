@@ -303,6 +303,8 @@ void QompCon::init()
 
 	connectMediaKeys();
 
+	PluginManager::instance()->playerControlChanged(this);
+
 	model_->restoreState();
 
 	Options* o = Options::instance();

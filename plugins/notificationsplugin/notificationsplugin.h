@@ -42,6 +42,7 @@ public:
 	virtual QString description() const { return tr("Shows baloon notifications about current track"); }
 	virtual QompOptionsPage* options();
 	virtual void qompPlayerChanged(QompPlayer* player);
+	virtual void playerControlChanged(QompPlayerControl* control) { Q_UNUSED(control) }
 	virtual void setEnabled(bool enabled);
 	virtual void unload();
 

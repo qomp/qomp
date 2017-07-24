@@ -30,7 +30,8 @@ HEADERS += $$PWD/libqomp_global.h \
         $$PWD/covercache.h \
         $$PWD/taghelpers.h \
         $$PWD/playlistparser.h \
-        $$PWD/extendedcombobox.h
+        $$PWD/extendedcombobox.h \
+        $$PWD/qompplayercontrol.h
 
 
 RESOURCES += $$PWD/icons.qrc

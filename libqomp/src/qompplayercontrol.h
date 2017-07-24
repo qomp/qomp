@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2017  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,23 +17,25 @@
  *
  */
 
-#ifndef QOMPPLAYERSTATUSPLUGIN_H
-#define QOMPPLAYERSTATUSPLUGIN_H
+#ifndef QOMPPLAYERCONTROL_H
+#define QOMPPLAYERCONTROL_H
 
+#include <QObject>
 #include "libqomp_global.h"
 
-class QompPlayer;
-class QompPlayerControl;
-
-class LIBQOMPSHARED_EXPORT QompPlayerStatusPlugin
+class LIBQOMPSHARED_EXPORT QompPlayerControl
 {
-public:
-	virtual ~QompPlayerStatusPlugin() {}
-
-	virtual void qompPlayerChanged(QompPlayer* player) = 0;
-	virtual void playerControlChanged(QompPlayerControl* control) = 0;
+public slots:
+	virtual void actPlayNext() = 0;
+	virtual void actPlayPrev() = 0;
+	virtual void actPlay() = 0;
+	virtual void actPause() = 0;
+	virtual void actStop() = 0;
+	virtual void actMuteToggle(bool mute) = 0;
+	virtual void actSeek(int ms) = 0;
+	virtual void actSetVolume(qreal vol) = 0;
 };
 
-Q_DECLARE_INTERFACE(QompPlayerStatusPlugin, "Qomp.QompPlayerStatusPlugin/2.0")
+Q_DECLARE_INTERFACE(QompPlayerControl, "Qomp.QompPlayerControl/1.0")
 
-#endif // QOMPPLAYERSTATUSPLUGIN_H
+#endif // QOMPPLAYERCONTROL_H

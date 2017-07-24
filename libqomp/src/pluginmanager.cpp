@@ -287,5 +287,17 @@ void PluginManager::qompPlayerChanged(QompPlayer *player)
 	}
 }
 
+void PluginManager::playerControlChanged(QompPlayerControl *control)
+{
+	for(const PluginPair& pp: plugins_) {
+		if(!pp.second)
+			continue;
+		QompPlayerStatusPlugin *p = qobject_cast<QompPlayerStatusPlugin*>(pp.first->instance());
+		if(p) {
+			p->playerControlChanged(control);
+		}
+	}
+}
+
 
 PluginManager* PluginManager::instance_ = nullptr;

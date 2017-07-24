@@ -67,6 +67,11 @@ void MprisPlugin::qompPlayerChanged(QompPlayer *player)
 	}
 }
 
+void MprisPlugin::playerControlChanged(QompPlayerControl *control)
+{
+	Q_UNUSED(control)
+}
+
 void MprisPlugin::setEnabled(bool enabled)
 {
 	enabled_ = enabled;
