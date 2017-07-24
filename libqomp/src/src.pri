@@ -12,8 +12,7 @@ SOURCES += $$PWD/common.cpp \
         $$PWD/gettuneurlhelper.cpp \
         $$PWD/covercache.cpp \
         $$PWD/taghelpers.cpp \
-        $$PWD/playlistparser.cpp \
-        $$PWD/extendedcombobox.cpp
+        $$PWD/playlistparser.cpp
 
 HEADERS += $$PWD/libqomp_global.h \
         $$PWD/common.h \
@@ -30,7 +29,6 @@ HEADERS += $$PWD/libqomp_global.h \
         $$PWD/covercache.h \
         $$PWD/taghelpers.h \
         $$PWD/playlistparser.h \
-        $$PWD/extendedcombobox.h \
         $$PWD/qompplayercontrol.h
 
 
@@ -48,11 +46,13 @@ android {
 else {
     HEADERS += $$PWD/qompbusylabel.h \
                $$PWD/qompactionslist.h \
-               $$PWD/thememanager.h
+               $$PWD/thememanager.h \
+               $$PWD/extendedcombobox.h
 
     SOURCES += $$PWD/qompbusylabel.cpp \
                $$PWD/qompactionslist.cpp \
-               $$PWD/thememanager.cpp
+               $$PWD/thememanager.cpp \
+               $$PWD/extendedcombobox.cpp
 }
 
 lupdate_only {
