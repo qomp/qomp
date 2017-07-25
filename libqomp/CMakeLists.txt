@@ -77,6 +77,7 @@ set( libqomp_HDRS
 	src/qompmetadataresolver.h
 	src/qompnetworkingfactory.h
 	src/qompplayer.h
+	src/qompplayercontrol.h
 	src/taghelpers.h
 	src/thememanager.h
 	src/tune.h
@@ -103,6 +104,7 @@ set( libqomp_INCLUDE_HDRS
 	src/qompbusylabel.h
 	src/qompnetworkingfactory.h
 	src/qompmetadataresolver.h
+	src/qompplayercontrol.h
 	src/options.h
 	src/defines.h
 	src/playlistparser.h
