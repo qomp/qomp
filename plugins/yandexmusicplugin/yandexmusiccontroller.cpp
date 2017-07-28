@@ -368,10 +368,6 @@ QPixmap YandexMusicController::getCaptcha(const QString &captchaUrl, QString *ke
 
 	QPixmap pix;
 	if (r->error() == QNetworkReply::NoError) {
-		if(r->header(QNetworkRequest::LocationHeader).isValid()) {
-			QString str = r->header(QNetworkRequest::LocationHeader).toString();
-			return getCaptcha(str, key);
-		}
 		if(url.hasQuery()) {
 			const QString queries = url.query();
 

@@ -10,7 +10,7 @@ import android.os.Handler;
 
 import android.util.Log;
 
-//for menu key handling
+//for menu and media key handling
 import android.view.KeyEvent;
 
 //import java.util.Locale;
@@ -41,6 +41,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     private PowerManager.WakeLock wl_;
     private BroadcastReceiver callReceiver_;
     private QompService service_;
+    private BroadcastReceiver mediaReceiver_;
 
     private ServiceConnection sConn_ = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -59,6 +60,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
         super.onCreate(savedInstanceState);
         registerCallReceiver();
         bindToService();
+        registerMediaReceiver();
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl_ = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
@@ -85,6 +87,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     public void deInit() {
         unbindService(sConn_);
         unregisterReceiver(callReceiver_);
+        unregisterReceiver(mediaReceiver_);
         if(wl_.isHeld())
             wl_.release();
     }
@@ -98,11 +101,20 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-       // Log.i("Qomp", "onKeyDown");
+       // Log.i("Qomp", "onKeyDown: " + String.valueOf(keyCode));
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             menuKeyDown();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // Log.i("Qomp", "onUpDown: " + String.valueOf(keyCode));
+        if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK) {
+            mediaButtonClicked();
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     private void registerCallReceiver() {
@@ -121,6 +133,31 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
         };
         IntentFilter f = new IntentFilter("android.intent.action.PHONE_STATE");
         registerReceiver(callReceiver_, f);
+    }
+
+    private void registerMediaReceiver() {
+        mediaReceiver_ = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String intentAction = intent.getAction();
+               // Log.i ("QompBroadcastReceiver", intentAction.toString() + " happended");
+
+                if (Intent.ACTION_MEDIA_BUTTON.equals(intentAction)) {
+                    KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                    if (event != null) {
+                        if (event.getAction() == KeyEvent.ACTION_UP) {
+                            mediaButtonClicked();
+                        }
+                        abortBroadcast();
+                    }
+                }
+            }
+        };
+
+        IntentFilter f = new IntentFilter("android.intent.action.MEDIA_BUTTON");
+        f.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
+        registerReceiver(mediaReceiver_, f);
     }
 
     public static void processIncomingCall(final String state) {
@@ -169,4 +206,5 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     private static native void incomingCallStart();
     private static native void incomingCallFinish();
     private static native void setUrl(final String url);
+    private static native void mediaButtonClicked();
 }

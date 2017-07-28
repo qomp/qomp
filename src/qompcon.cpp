@@ -135,6 +135,15 @@ static void setUrl(JNIEnv */*env*/, jobject /*thiz*/, const jstring url)
 #endif
 	QMetaObject::invokeMethod(_instance, "processUrl", Qt::QueuedConnection, Q_ARG(QString, obj.toString()));
 }
+
+static void mediaButtonClicked(JNIEnv */*env*/, jobject /*thiz*/)
+{
+#ifdef DEBUG_OUTPUT
+	qDebug() << "mediaButtonClicked";
+#endif
+	QMetaObject::invokeMethod(_instance, "processHeadsetButtonClick", Qt::QueuedConnection);
+}
+
 #endif
 
 
@@ -166,7 +175,8 @@ QompCon::QompCon(QObject *parent) :
 	JNINativeMethod methods[] = {
 			{ "incomingCallStart",  "()V", (void*)incomingCallStart  },
 			{ "incomingCallFinish", "()V", (void*)incomingCallFinish },
-			{ "setUrl", "(Ljava/lang/String;)V", (void*)setUrl }
+			{ "setUrl", "(Ljava/lang/String;)V", (void*)setUrl },
+			{ "mediaButtonClicked", "()V", (void*)mediaButtonClicked }
 		};
 	jni->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0]));
 	jni->DeleteLocalRef(clazz);
@@ -213,6 +223,36 @@ void QompCon::applicationStateChanged(Qt::ApplicationState state)
 	default:
 		break;
 	}
+}
+
+void QompCon::processHeadsetButtonClick()
+{
+#ifdef Q_OS_ANDROID
+	static qint64 lastTimeClick = 0;
+	static const qint64 doubleClickInterval = 500;
+	static bool handled = false;
+
+	QDateTime dt = QDateTime::currentDateTime();
+	qint64 cur = dt.toMSecsSinceEpoch();
+
+	if((cur - lastTimeClick) < doubleClickInterval) {
+		if(!handled) {
+			actPlayNext();
+			handled = true;
+		}
+	}
+	else {
+		handled = false;
+		QTimer::singleShot(doubleClickInterval, [this]() {
+			if(!handled) {
+				actPlay();
+				handled = true;
+			}
+		});
+	}
+
+	lastTimeClick = cur;
+#endif
 }
 
 void QompCon::preparePlayback()

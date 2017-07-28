@@ -86,6 +86,7 @@ private slots:
 	void deInit();
 	void processUrl(const QString& url);
 	void applicationStateChanged(Qt::ApplicationState state);
+	void processHeadsetButtonClick();
 
 protected:
 	bool eventFilter(QObject *obj, QEvent *e);
