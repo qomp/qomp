@@ -144,7 +144,8 @@ android {
 
   OTHER_FILES += \
         $$PWD/../android/src/net/sourceforge/qomp/Qomp.java \
-        $$PWD/../android/src/net/sourceforge/qomp/QompService.java
+        $$PWD/../android/src/net/sourceforge/qomp/QompService.java \
+        $$PWD/../android/src/net/sourceforge/qomp/MediaButtonReceiver.java
 
 } else {
     LIBS += -L$$OUT_PWD/../bin -lqomp

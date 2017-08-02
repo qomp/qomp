@@ -34,6 +34,10 @@ import android.app.Service;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 
+//For Media Button Click
+import android.media.AudioManager;
+import android.content.ComponentName;
+
 
 public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     public static final String NOTIFY = "net.sourceforge.qomp.NOTIFY";
@@ -41,7 +45,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     private PowerManager.WakeLock wl_;
     private BroadcastReceiver callReceiver_;
     private QompService service_;
-    private BroadcastReceiver mediaReceiver_;
+    private ComponentName mediaComponent_;
 
     private ServiceConnection sConn_ = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -87,7 +91,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     public void deInit() {
         unbindService(sConn_);
         unregisterReceiver(callReceiver_);
-        unregisterReceiver(mediaReceiver_);
+        unregisterMediaReceiver();
         if(wl_.isHeld())
             wl_.release();
     }
@@ -136,28 +140,14 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     }
 
     private void registerMediaReceiver() {
-        mediaReceiver_ = new BroadcastReceiver() {
+        AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mediaComponent_ = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
+        manager.registerMediaButtonEventReceiver(mediaComponent_);
+    }
 
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String intentAction = intent.getAction();
-               // Log.i ("QompBroadcastReceiver", intentAction.toString() + " happended");
-
-                if (Intent.ACTION_MEDIA_BUTTON.equals(intentAction)) {
-                    KeyEvent event = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-                    if (event != null) {
-                        if (event.getAction() == KeyEvent.ACTION_UP) {
-                            mediaButtonClicked();
-                        }
-                        abortBroadcast();
-                    }
-                }
-            }
-        };
-
-        IntentFilter f = new IntentFilter("android.intent.action.MEDIA_BUTTON");
-        f.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
-        registerReceiver(mediaReceiver_, f);
+    private void unregisterMediaReceiver() {
+        AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        manager.unregisterMediaButtonEventReceiver(mediaComponent_);
     }
 
     public static void processIncomingCall(final String state) {
@@ -206,5 +196,5 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     private static native void incomingCallStart();
     private static native void incomingCallFinish();
     private static native void setUrl(final String url);
-    private static native void mediaButtonClicked();
+    public  static native void mediaButtonClicked();
 }

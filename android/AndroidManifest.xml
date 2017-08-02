@@ -79,6 +79,12 @@
 
         <service android:name=".QompService" android:enabled="true" android:exported="false" android:label="@string/srv_name" android:icon="@drawable/icon">
         </service>
+
+        <receiver android:name=".MediaButtonReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
