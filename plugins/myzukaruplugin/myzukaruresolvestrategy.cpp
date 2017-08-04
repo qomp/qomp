@@ -87,7 +87,7 @@ public:
 
 		int ret = getDirectUrl();
 #ifdef DEBUG_OUTPUT
-		qDebug() << "MyzukaruResolveStrategyPrivate::getUrl()  finished";
+		qDebug() << "MyzukaruResolveStrategyPrivate::getUrl() finished: " << ret;
 #endif
 		if(ret == ContentNotFoundResult) {
 			ret = getBaseUrl();
@@ -127,6 +127,7 @@ public:
 
 		QUrl url(QUrl::fromPercentEncoding(tune_->directUrl.toLatin1()));
 		QNetworkRequest nr(createRequest(url));
+		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 		QNetworkReply *reply = nam_->get(nr);
 		connect(reply, &QNetworkReply::finished, this, &MyzukaruResolveStrategyPrivate::tunePageFinished);
 		return startLoop();
@@ -151,18 +152,14 @@ private slots:
 		reply->deleteLater();
 		if(reply->error() == QNetworkReply::NoError) {
 			url_.setUrl(reply->header(QNetworkRequest::LocationHeader).toString());
+			loop_->quit();
 		}
 		else {
 #ifdef DEBUG_OUTPUT
 			qDebug() << "reply error: " << reply->error() << reply->errorString();
 #endif
-			if(reply->error() == QNetworkReply::ContentNotFoundError) {
-				loop_->exit(ContentNotFoundResult);
-				return;
-			}
-
+			loop_->exit(ContentNotFoundResult);
 		}
-		loop_->quit();
 	}
 
 	void tunePageFinished()
