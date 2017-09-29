@@ -1,6 +1,6 @@
 import QtQuick 2.5
 
-Item {
+FocusScope {
 	id: root
 
 	property var artistsModel;
@@ -98,6 +98,7 @@ Item {
 		highlightMoveDuration: 500
 		clip: true
 		orientation: Qt.Horizontal
+		focus: true
 
 		rebound: Transition {
 			NumberAnimation {

@@ -14,7 +14,7 @@ ButtonsPage {
 
 	property bool waitForSuggestions: false
 
-	content: Item {
+	content: FocusScope {
 		id: mainRect
 
 		anchors.fill: parent
@@ -26,6 +26,8 @@ ButtonsPage {
 			anchors.bottom: parent.bottom
 			anchors.left: parent.left
 			anchors.right: parent.right
+
+			focus: true
 
 			onChildrenChanged: {
 				for(var i=0; i<children.length; ++i) {
