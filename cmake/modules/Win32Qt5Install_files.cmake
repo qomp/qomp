@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 3.0.2 )
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND WIN32)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(D "d")
 	add_definitions(-DALLOW_QT_PLUGINS_DIR)
 endif()
@@ -9,6 +9,7 @@ string(REGEX REPLACE "\\\\" "/" QT_BIN_DIR "${QT_BIN_DIR_TMP}")
 unset(QT_BIN_DIR_TMP)
 get_filename_component(QT_DIR "${QT_BIN_DIR}" DIRECTORY)
 set(QT_PLUGINS_DIR ${QT_DIR}/plugins)
+set(QT_TRANSLATIONS_DIR ${QT_DIR}/translations)
 
 function(copy SOURCE DEST TARGET)
 	if(EXISTS ${SOURCE})
@@ -67,31 +68,107 @@ function(copy SOURCE DEST TARGET)
 	endif()
 endfunction()
 
+function(find_lib LIBLIST PATHES OUTPUT_PATH)
+		set(_LIBS ${LIBLIST})
+		set(_PATHES ${PATHES})
+		set(_OUTPUT_PATH ${OUTPUT_PATH})
+		set(FIXED_PATHES "")
+		foreach(_path ${_PATHES})
+			string(REGEX REPLACE "//bin" "/bin" tmp_path "${_path}")
+			list(APPEND FIXED_PATHES ${tmp_path})
+		endforeach()
+		if(NOT USE_MXE)
+			set(ADDITTIONAL_FLAG "NO_DEFAULT_PATH")
+		else()
+			set(ADDITTIONAL_FLAG "")
+		endif()
+		foreach(_liba ${_LIBS})
+			set(_library _library-NOTFOUND)
+			find_file( _library ${_liba} PATHS ${FIXED_PATHES} ${ADDITTIONAL_FLAG})
+			if( NOT "${_library}" STREQUAL "_library-NOTFOUND" )
+				message("library found ${_library}")
+				copy("${_library}" "${_OUTPUT_PATH}" prepare-bin)
+			endif()
+		endforeach()
+		set(_LIBS "")
+		set(_PATHES "")
+		set(_OUTPUT_PATH "")
+endfunction()
 
-#install Qt5 libs and plugins
-copy("${QT_BIN_DIR}/Qt5Core${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_BIN_DIR}/Qt5Gui${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_BIN_DIR}/Qt5Widgets${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_BIN_DIR}/Qt5Network${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_BIN_DIR}/Qt5Xml${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_BIN_DIR}/Qt5XmlPatterns${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_BIN_DIR}/Qt5Multimedia${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_BIN_DIR}/Qt5MultimediaWidgets${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_BIN_DIR}/Qt5Concurrent${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_BIN_DIR}/Qt5OpenGL${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_BIN_DIR}/Qt5WinExtras${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/audio/qtaudio_windows${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/audio/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/platforms/qminimal${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/platforms/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/platforms/qoffscreen${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/platforms/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/platforms/qwindows${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/platforms/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/bearer/qgenericbearer${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/bearer/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/bearer/qnativewifibearer${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/bearer/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/playlistformats/qtmultimedia_m3u${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/playlistformats/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/mediaservice/dsengine${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/mediaservice/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/mediaservice/qtmedia_audioengine${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/mediaservice/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/imageformats/qgif${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/imageformats/" prepare-bin)
-copy("${QT_PLUGINS_DIR}/imageformats/qjpeg${D}.dll" "${EXECUTABLE_OUTPUT_PATH}/imageformats/" prepare-bin)
-
+find_program(WINDEPLOYQTBIN windeployqt ${QT_BIN_DIR})
+if(NOT "${WINDEPLOYQTBIN}" STREQUAL "WINDEPLOYQTBIN-NOTFOUND")
+	message(STATUS "WinDeployQt utility - FOUND")
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		list(APPEND WDARGS --debug)
+	else()
+		list(APPEND WDARGS --release)
+	endif()
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${WINDEPLOYQTBIN}
+		ARGS
+		${WDARGS}
+		$<TARGET_FILE:${PROJECT_NAME}>
+		WORKING_DIRECTORY
+		${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+		COMMENT
+		"Preparing Qt runtime dependencies"
+	)
+else()
+	set( ICU_LIBS_PREFIXES
+		icudt5
+		icuin5
+		icuuc5
+	)
+	set( ICU_LIBS "" )
+	foreach( icu_prefix ${ICU_LIBS_PREFIXES} )
+		foreach( icu_counter RANGE 9 )
+		find_file( ${icu_prefix}${icu_counter} "${icu_prefix}${icu_counter}.dll" )
+			if( NOT "${${icu_prefix}${icu_counter}}" STREQUAL "${icu_prefix}${icu_counter}-NOTFOUND" )
+				list(APPEND ICU_LIBS
+					"${icu_prefix}${icu_counter}.dll"
+				)
+			endif()
+		endforeach()
+	endforeach()
+	find_lib("${ICU_LIBS}" "${QT_BIN_DIR}" "${EXECUTABLE_OUTPUT_PATH}/")
+	set(QT_LIBS
+		Qt5Core${D}.dll
+		Qt5Gui${D}.dll
+		Qt5Widgets${D}.dll
+		Qt5Network${D}.dll
+		Qt5Xml${D}.dll
+		Qt5XmlPatterns${D}.dll
+		Qt5Multimedia${D}.dll
+		Qt5MultimediaWidgets${D}.dll
+		Qt5Concurrent${D}.dll
+		Qt5OpenGL${D}.dll
+		Qt5WinExtras${D}.dll
+	)
+	find_lib("${QT_LIBS}" "${QT_BIN_DIR}" "${EXECUTABLE_OUTPUT_PATH}/")
+	find_lib("qtaudio_windows${D}.dll" "${QT_PLUGINS_DIR}/audio/" "${EXECUTABLE_OUTPUT_PATH}/audio/")
+	set(PLATFORM_PLUGS
+		qminimal${D}.dll
+		qoffscreen${D}.dll
+		qwindows${D}.dll
+	)
+	find_lib("${PLATFORM_PLUGS}" "${QT_PLUGINS_DIR}/platforms/" "${EXECUTABLE_OUTPUT_PATH}/platforms/")
+	set(BEARER_PLUGS
+		qgenericbearer${D}.dll
+		qnativewifibearer${D}.dll
+	)
+	find_lib("${BEARER_PLUGS}" "${QT_PLUGINS_DIR}/bearer/" "${EXECUTABLE_OUTPUT_PATH}/bearer/")
+	find_lib("qtmultimedia_m3u${D}.dll" "${QT_PLUGINS_DIR}/playlistformats/" "${EXECUTABLE_OUTPUT_PATH}/playlistformats/")
+	set(MEDIA_PLUGS
+		dsengine${D}.dll
+		qtmedia_audioengine${D}.dll
+	)
+	find_lib("${MEDIA_PLUGS}" "${QT_PLUGINS_DIR}/mediaservice/" "${EXECUTABLE_OUTPUT_PATH}/mediaservice/")
+	set(IMAGE_PLUGS
+		qgif${D}.dll
+		qjpeg${D}.dll
+	)
+	find_lib("${IMAGE_PLUGS}" "${QT_PLUGINS_DIR}/imageformats/" "${EXECUTABLE_OUTPUT_PATH}/imageformats/")
+endif()
 #install mingw and other needed libs
 set( FILE_LIST
 	libgcc_s_sjlj-1.dll
@@ -100,20 +177,6 @@ set( FILE_LIST
 	libstdc++-6.dll
 	libwinpthread-1.dll
 )
-set( ICU_LIBS_PREFIXES
-	icudt5
-	icuin5
-	icuuc5
-)
-
-foreach( icu_prefix ${ICU_LIBS_PREFIXES} )
-	foreach( icu_counter RANGE 9 )
-		find_file( ${icu_prefix}${icu_counter} "${icu_prefix}${icu_counter}.dll" )
-		if( EXISTS "${${icu_prefix}${icu_counter}}" )
-			copy("${${icu_prefix}${icu_counter}}" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-		endif()
-	endforeach()
-endforeach()
 
 if(USE_MXE)
 	list(APPEND FILE_LIST
@@ -157,24 +220,4 @@ set(LIB_PATHS
 	"${OPENSSL_ROOT}/bin"
 )
 
-function(find_lib LIBLIST PATHES)
-	set(FIXED_PATHS "")
-	foreach(_path ${PATHES})
-		string(REGEX REPLACE "[\\]" "/" tmp_path "${_path}")
-		if(EXISTS "${tmp_path}")
-			list(APPEND FIXED_PATHS ${tmp_path})
-		endif()
-	endforeach()
-	set( inc 1 )
-	foreach(_liba ${LIBLIST})
-		find_file( ${_liba}${inc} ${_liba} PATHS ${FIXED_PATHS})
-		if( NOT "${${_liba}${inc}}" STREQUAL "${_liba}${inc}-NOTFOUND" )
-			message("Library found at ${${_liba}${inc}}")
-			copy("${${_liba}${inc}}" "${EXECUTABLE_OUTPUT_PATH}/" prepare-bin)
-		endif()
-		math( EXPR inc ${inc}+1)
-	endforeach()
-endfunction()
-
-find_lib("${FILE_LIST}" "${LIB_PATHS}")
-
+find_lib("${FILE_LIST}" "${LIB_PATHS}" "${EXECUTABLE_OUTPUT_PATH}/")
