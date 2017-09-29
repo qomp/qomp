@@ -73,7 +73,6 @@ public slots:
 
 private slots:
 	void sliderMoved(int val);
-	void actionTriggered();
 	void buildOpenTunesMenu();
 
 private:
@@ -163,14 +162,6 @@ void QompMainWin::Private::sliderMoved(int val)
 	mainWin_->seekSliderMoved(val);
 }
 
-void QompMainWin::Private::actionTriggered()
-{
-	QompPluginAction* act = static_cast<QompPluginAction*>(sender());
-	QList<Tune*> t = act->getTunes();	
-	if(!t.isEmpty())
-		emit mainWin_->tunes(t);
-}
-
 void QompMainWin::Private::buildOpenTunesMenu()
 {
 	QObjectList l = QQmlProperty::read(root(), "pluginsActions").value<QObjectList>();
@@ -179,7 +170,7 @@ void QompMainWin::Private::buildOpenTunesMenu()
 
 	foreach(QompPluginAction* act, PluginManager::instance()->tunesActions()) {
 		act->setParent(this);
-		connect(act, SIGNAL(triggered()), SLOT(actionTriggered()));
+		connect(act, &QompPluginAction::tunesReady, mainWin_, &QompMainWin::tunes);
 		l << act;
 	}
 	QQmlProperty::write(root(), "pluginsActions", QVariant::fromValue(l));

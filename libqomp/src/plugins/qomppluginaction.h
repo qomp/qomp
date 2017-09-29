@@ -37,16 +37,19 @@ public:
 	QompPluginAction(const QIcon& ico, const QString& text, QObject* receiver, const char* slot, QObject *parent = 0);
 	~QompPluginAction();
 
-	QList<Tune*> getTunes();
+	void setTunesReady(const QList<Tune*>& tunes);
 
 	QString text() const;
 #ifndef Q_OS_ANDROID
 	QAction* action() const;
 #endif
 
+public slots:
+	void getTunes();
+
 signals:
-	void triggered();
 	void textChanged();
+	void tunesReady(const QList<Tune*>&);
 
 private:
 	QObject* receiver_;

@@ -20,6 +20,7 @@
 #include "qompplayer.h"
 #include "qompmetadataresolver.h"
 #include "tune.h"
+#include "covercache.h"
 
 
 QompPlayer::QompPlayer() :
@@ -27,6 +28,7 @@ QompPlayer::QompPlayer() :
 	currentTune_(nullptr),
 	lastAction_(Qomp::StateStopped)
 {
+	CoverCache::instance(); //Init Cover Cache;
 }
 
 void QompPlayer::setTune(Tune *tune)

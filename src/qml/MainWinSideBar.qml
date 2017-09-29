@@ -37,7 +37,7 @@ QompSideBar {
 					text: modelData.text
 					onTriggered: {
 						root.open();
-						qompAct.triggered()
+						qompAct.getTunes()
 					}
 
 					Line{}

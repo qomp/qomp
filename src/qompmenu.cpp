@@ -27,34 +27,34 @@
 #include <QApplication>
 #include <QDesktopServices>
 
-QompMenu::QompMenu(QWidget *parent) :
-	QMenu(parent)
-{
-	connect(this, SIGNAL(aboutToShow()), SLOT(menuAboutToShow()));
-}
 
 QompMenu::QompMenu(const QString &name, QWidget *parent) :
 	QMenu(name, parent)
 {
-	connect(this, SIGNAL(aboutToShow()), SLOT(menuAboutToShow()));
+	connect(this, &QompMenu::aboutToShow, this, &QompMenu::menuAboutToShow);
+}
+
+QompMenu::~QompMenu()
+{
+	clearMenu();
+}
+
+void QompMenu::clearMenu()
+{
+	foreach (QAction* act, actions()) {
+		delete act->menu();
+		delete act;
+	}
 }
 
 void QompMenu::menuAboutToShow()
 {
-	qDeleteAll(actions());
-	actions().clear();
-
+	clearMenu();
 	buildMenu();
 }
 
 
 
-
-QompGetTunesMenu::QompGetTunesMenu(QWidget *parent) :
-	QompMenu(parent)
-{
-	init();
-}
 
 QompGetTunesMenu::QompGetTunesMenu(const QString &name, QWidget *parent) :
 	QompMenu(name, parent)
@@ -62,40 +62,42 @@ QompGetTunesMenu::QompGetTunesMenu(const QString &name, QWidget *parent) :
 	init();
 }
 
-QompGetTunesMenu::~QompGetTunesMenu()
-{
-	foreach (QAction* act, actions()) {
-		delete act->menu();
-	}
-}
-
-void QompGetTunesMenu::actionActivated(QAction* sender)
-{
-	QompPluginAction* act = static_cast<QompPluginAction*>(sender->parent());
-	QList<Tune*> t = act->getTunes();
-	if(!t.isEmpty())
-		emit tunes(t);
-}
-
 void QompGetTunesMenu::buildMenu()
 {
 	foreach(QompPluginAction* act, PluginManager::instance()->tunesActions()) {
-		act->setParent(this);
 		addAction(act->action());
+		if(act->action()->menu()) {
+			for(QAction* a: act->action()->menu()->actions()) {
+				connect(static_cast<QompPluginAction*>(a->parent()),
+					&QompPluginAction::tunesReady, this, &QompGetTunesMenu::tunes);
+			}
+		}
+		connect(act, &QompPluginAction::tunesReady, this, &QompGetTunesMenu::tunes);
 	}
 }
 
 void QompGetTunesMenu::init()
 {
 	setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/add")));
-	connect(this, SIGNAL(triggered(QAction*)), SLOT(actionActivated(QAction*)));
 }
 
 
 
 
 QompMainMenu::QompMainMenu(QWidget *p) :
-	QompMenu(p)
+	QompMenu("", p),
+	_tunesMenu(new QompGetTunesMenu(tr("Open"), this))
+{
+	connect(_tunesMenu, &QompGetTunesMenu::tunes, this, &QompMainMenu::tunes);
+	buildMenu();
+}
+
+QompGetTunesMenu *QompMainMenu::tunesMenu() const
+{
+	return _tunesMenu;
+}
+
+void QompMainMenu::menuAboutToShow()
 {
 }
 
@@ -104,9 +106,7 @@ void QompMainMenu::buildMenu()
 	QAction* act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/toggle")), tr("Toggle Visibility"), this, SIGNAL(actToggleVisibility()));
 	act->setParent(this);
 
-	QompGetTunesMenu *open = new QompGetTunesMenu(tr("Open"), this);
-	connect(open, SIGNAL(tunes(QList<Tune*>)), SIGNAL(tunes(QList<Tune*>)));
-	addMenu(open);
+	addMenu(_tunesMenu);
 
 	act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/options")), tr("Settings"), this, SIGNAL(actDoOptions()));
 	act->setParent(this);
@@ -130,7 +130,7 @@ void QompMainMenu::buildMenu()
 
 
 QompTrackMenu::QompTrackMenu(const QModelIndexList &list, QWidget *p) :
-	QompMenu(p),
+	QompMenu("", p),
 	list_(list)
 {
 }
@@ -214,7 +214,7 @@ void QompTrackMenu::buildMenu()
 
 
 QompRemoveTunesMenu::QompRemoveTunesMenu(QWidget *p) :
-	QompMenu(p)
+	QompMenu("", p)
 {
 }
 

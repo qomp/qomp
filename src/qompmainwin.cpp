@@ -363,12 +363,11 @@ void QompMainWin::Private::bringToFront()
 
 void QompMainWin::Private::actOpenActivated()
 {
-	QompGetTunesMenu m(mainWin_);
-	connect(&m, SIGNAL(tunes(QList<Tune*>)), parentWin_, SIGNAL(tunes(QList<Tune*>)));
+	QompGetTunesMenu *m = mainMenu_->tunesMenu();
 
 	QPoint p = ui->tb_open->pos();
 	p.setY(p.y() + ui->tb_open->height()/2);
-	m.exec(mainWin_->mapToGlobal(p));
+	m->exec(mainWin_->mapToGlobal(p));
 }
 
 void QompMainWin::Private::actClearActivated()

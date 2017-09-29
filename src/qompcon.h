@@ -22,6 +22,7 @@
 
 #include <QModelIndex>
 #include <QPointer>
+#include <QMutex>
 
 #include "common.h"
 #include "qompinstancewatcher.h"
@@ -120,6 +121,7 @@ private:
 	QompPlayer* player_;
 	QompCommandLine* commandLine_;
 	QPointer<QompOptionsDlg> optionsDlg_;
+	QMutex mutex_;
 #ifndef QOMP_MOBILE
 	QompInstanceWatcher watcher_;
 #endif

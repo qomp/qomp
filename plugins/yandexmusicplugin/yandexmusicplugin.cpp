@@ -34,10 +34,10 @@ QString YandexMusicPlugin::description() const
 	return tr("Listening to the music from Yandex.Music");
 }
 
-QList<Tune*> YandexMusicPlugin::getTunes()
+void YandexMusicPlugin::getTunes(QompPluginAction *act)
 {
 	YandexMusicController ctrl;
-	return ctrl.getTunes();
+	act->setTunesReady( ctrl.getTunes() );
 }
 
 QompOptionsPage *YandexMusicPlugin::options()

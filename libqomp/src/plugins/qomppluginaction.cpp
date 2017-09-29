@@ -44,7 +44,8 @@ QompPluginAction::QompPluginAction(const QIcon &ico,
 #endif
 {
 #ifndef Q_OS_ANDROID
-	connect(action_, SIGNAL(triggered()), SIGNAL(triggered()));
+	connect(action_, &QAction::triggered, this, &QompPluginAction::getTunes);
+	connect(action_, &QAction::destroyed, this, &QompPluginAction::deleteLater);
 #endif
 }
 
@@ -55,12 +56,15 @@ QompPluginAction::~QompPluginAction()
 #endif
 }
 
-QList<Tune *> QompPluginAction::getTunes()
+void QompPluginAction::getTunes()
 {
-	QList<Tune*> list;
 	if(receiver_)
-		QMetaObject::invokeMethod(receiver_, slot_, Qt::DirectConnection, Q_RETURN_ARG(QList<Tune*>, list) );
-	return list;
+		QMetaObject::invokeMethod(receiver_, slot_, Qt::DirectConnection, Q_ARG(QompPluginAction*, this));
+}
+
+void QompPluginAction::setTunesReady(const QList<Tune *> &tunes)
+{
+	emit tunesReady(tunes);
 }
 
 QString QompPluginAction::text() const

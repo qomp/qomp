@@ -29,31 +29,29 @@ class QompMenu : public QMenu
 {
 	Q_OBJECT
 protected:
-	explicit QompMenu(QWidget *parent = 0);
 	QompMenu(const QString& name, QWidget *parent = 0);
+	~QompMenu();
 
 	virtual void buildMenu() {}
 
-private slots:
-	void menuAboutToShow();
+protected:
+	void clearMenu();
+
+protected slots:
+	virtual void menuAboutToShow();
 };
 
 class QompGetTunesMenu : public QompMenu
 {
 	Q_OBJECT
 public:
-	explicit QompGetTunesMenu(QWidget *parent = 0);
 	QompGetTunesMenu(const QString& name, QWidget *parent = 0);
-	~QompGetTunesMenu();
 
 signals:
 	void tunes(const QList<Tune*>&);
 
-private slots:
-	void actionActivated(QAction *sender);
-
 private:
-	void buildMenu();
+	virtual void buildMenu() Q_DECL_OVERRIDE;
 	void init();
 };
 
@@ -62,6 +60,8 @@ class QompMainMenu : public QompMenu
 	Q_OBJECT
 public:
 	explicit QompMainMenu(QWidget* p = 0);
+
+	QompGetTunesMenu* tunesMenu() const;
 
 signals:
 	void actToggleVisibility();
@@ -72,8 +72,13 @@ signals:
 	void actReportBug();
 	void tunes(const QList<Tune*>&);
 
+protected slots:
+	virtual void menuAboutToShow() Q_DECL_OVERRIDE;
+
 private:
-	void buildMenu();
+	virtual void buildMenu() Q_DECL_OVERRIDE;
+private:
+	QompGetTunesMenu* _tunesMenu;
 };
 
 class QompTrackMenu : public QompMenu
@@ -96,7 +101,7 @@ private slots:
 	void actOpenDirectActivated();
 
 private:
-	void buildMenu();
+	virtual void buildMenu() Q_DECL_OVERRIDE;
 
 private:
 	QModelIndexList list_;
@@ -114,7 +119,7 @@ signals:
 	void removeSelected();
 
 private:
-	void buildMenu();
+	virtual void buildMenu() Q_DECL_OVERRIDE;
 };
 
 #endif // QOMPMENU_H

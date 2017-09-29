@@ -33,10 +33,10 @@ QString MyzukaruPlugin::description() const
 	return tr("Listen to the music from Myzuka.ru");
 }
 
-QList<Tune*> MyzukaruPlugin::getTunes()
+void MyzukaruPlugin::getTunes(QompPluginAction* act)
 {
 	MyzukaruController ctrl;
-	return ctrl.getTunes();
+	act->setTunesReady( ctrl.getTunes() );
 }
 
 

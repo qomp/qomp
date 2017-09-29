@@ -112,4 +112,6 @@ private:
 	static const Tune* empty_;
 };
 
+Q_DECLARE_METATYPE(Tune*)
+
 #endif // TUNE_H

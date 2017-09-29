@@ -12,6 +12,6 @@ win32|android|mac {
     INCLUDEPATH += $$CUE_INCLUDE
 }
 
-QT += multimedia
+QT += multimedia concurrent
 
 LIBS += -lcue

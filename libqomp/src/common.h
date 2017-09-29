@@ -21,6 +21,7 @@
 #define COMMON_H
 
 #include <QString>
+#include <QMetaType>
 
 #include "libqomp_global.h"
 #ifndef QOMP_MOBILE
@@ -61,6 +62,7 @@ enum /*LIBQOMPSHARED_EXPORT*/ State { StateUnknown,StateStopped,StatePaused,Stat
 
 } //namespace Qomp
 
+Q_DECLARE_METATYPE(Qomp::State)
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>

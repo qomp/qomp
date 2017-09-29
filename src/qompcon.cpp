@@ -155,8 +155,9 @@ QompCon::QompCon(QObject *parent) :
 	player_(nullptr),
 	commandLine_(nullptr)
 {
-	qRegisterMetaType<Tune*>("Tune*");
-	qRegisterMetaType<Qomp::State>("State");
+	qRegisterMetaType<Tune*>();
+	qRegisterMetaType<Qomp::State>();
+	qRegisterMetaType<QList<Tune*>>();
 #ifdef Q_OS_ANDROID
 	_instance = this;
 
@@ -638,6 +639,7 @@ void QompCon::actSetVolume(qreal vol)
 
 void QompCon::setTunes(const QList<Tune*> &tunes)
 {
+	QMutexLocker l(&mutex_);
 	if(!tunes.isEmpty()) {
 		model_->addTunes(tunes);
 

@@ -35,7 +35,7 @@ UrlPlugin::UrlPlugin()
 {
 }
 
-QList<Tune*> UrlPlugin::getTunes()
+void UrlPlugin::getTunes(QompPluginAction *act)
 {
 	QList<Tune*> list;
 #ifndef Q_OS_ANDROID
@@ -61,7 +61,7 @@ QList<Tune*> UrlPlugin::getTunes()
 	QompQmlEngine::instance()->removeItem();
 #endif
 
-	return list;
+	act->setTunesReady( list );
 }
 
 Tune *UrlPlugin::urlToTune(const QString &url)

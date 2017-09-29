@@ -33,10 +33,10 @@ QString CuteRadioPlugin::description() const
 	return tr("Listen to the music from cuteRadio");
 }
 
-QList<Tune*> CuteRadioPlugin::getTunes()
+void CuteRadioPlugin::getTunes(QompPluginAction *action)
 {
 	CuteRadioController ctrl;
-	return ctrl.getTunes();
+	action->setTunesReady( ctrl.getTunes() );
 }
 
 QompOptionsPage *CuteRadioPlugin::options()

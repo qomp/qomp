@@ -34,10 +34,10 @@ QString ProstoPleerPlugin::description() const
 	return tr("Listen to the music from Pleer.com");
 }
 
-QList<Tune*> ProstoPleerPlugin::getTunes()
+void ProstoPleerPlugin::getTunes(QompPluginAction *act)
 {
 	ProstoPleerController ctrl;
-	return ctrl.getTunes();
+	act->setTunesReady( ctrl.getTunes() );
 }
 
 QompOptionsPage *ProstoPleerPlugin::options()
