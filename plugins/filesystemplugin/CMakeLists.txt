@@ -25,14 +25,13 @@ include_directories(
 	${PROJECT_BINARY_DIR}/include
 )
 
-find_package( Qt5 COMPONENTS Widgets Multimedia Concurrent REQUIRED)
+find_package( Qt5 COMPONENTS Widgets Multimedia REQUIRED)
 add_definitions(
 	-DHAVE_QT5
 )
 set( QT_DEPLIBS
 	Qt5::Widgets
 	Qt5::Multimedia
-	Qt5::Concurrent
 )
 add_library(
 	${PLUGIN}
