@@ -22,11 +22,14 @@
 
 #include "qompplugin.h"
 #include "qomptunepluign.h"
+#include "qompplayerstatusplugin.h"
 
-class FilesystemPlugin : public QObject, public QompPlugin, public QompTunePlugin
+class FilesystemPlugin : public QObject, public QompPlugin,
+		public QompTunePlugin, public QompPlayerStatusPlugin
+
 {
 	Q_OBJECT
-	Q_INTERFACES(QompPlugin QompTunePlugin)
+	Q_INTERFACES(QompPlugin QompTunePlugin QompPlayerStatusPlugin)
 #ifdef HAVE_QT5
 	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1" FILE "metadata.json")
 #endif
@@ -41,6 +44,8 @@ public:
 	virtual void unload();
 	virtual QList<QompPluginAction*> getTunesActions();
 	virtual bool processUrl(const QString &, QList<Tune*> *);
+	virtual void qompPlayerChanged(QompPlayer* player);
+	virtual void playerControlChanged(QompPlayerControl* ) {}
 
 private:
 	class Private;

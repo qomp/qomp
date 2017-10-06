@@ -25,6 +25,7 @@
 #include "defines.h"
 #include "taghelpers.h"
 #include "playlistparser.h"
+#include "qompplayer.h"
 
 
 #ifdef QOMP_MOBILE
@@ -48,58 +49,26 @@ static const QString supportedMimeTypesPrefix = "audio/";
 static const int maxTunesForList = 10;
 static const int sleepInterval = 10; //msec
 
-static QList<Tune*> getTunesRecursive(const QString& folder,
-		QompPluginAction* action = nullptr, QThread* t = nullptr)
+
+//-----------------------------------//
+//---------PlayerContainer-----------//
+//-----------------------------------//
+class PlayerContainer
 {
-	QList<Tune*> list;
-
-	QDir dir(folder);
-	foreach(const QString& entry, dir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)) {
-		if(t && t->isInterruptionRequested())
-			break;
-
-		QFileInfo fi(dir.absolutePath() + "/" +entry);
-		if(fi.isDir()) {
-			list.append(getTunesRecursive(fi.absoluteFilePath(), action, t));
-		}
-		else  {
-			const QString mimeType = QMimeDatabase().mimeTypeForFile(fi).name();
-			if (mimeType.startsWith(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
-				list.append(Qomp::tuneFromFile(fi.absoluteFilePath()));
-				if(action && list.count() >= maxTunesForList) {
-					action->setTunesReady(list);
-					QThread::msleep(sleepInterval);
-					list.clear();
-				}
-			}
-		}
+public:
+	void setPlayer(QompPlayer* p)
+	{
+		_player = p;
 	}
 
-	return list;
-}
-
-static bool processString(const QString& file, QList<Tune*> *tunes)
-{
-	if(!file.isEmpty()) {
-		PlaylistParser p(file);
-		if(p.canParse()) {
-			tunes->append(p.parse());
-			return true;
-		}
-		else {
-			const QString mimeType = QMimeDatabase().mimeTypeForFile(file).name();
-			if(mimeType.compare(CUE_TYPE, Qt::CaseInsensitive) == 0) {
-				tunes->append(CueParser::parseTunes(file));
-				return true;
-			}
-			else if (mimeType.startsWith(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
-				tunes->append(Qomp::tuneFromFile(file));
-				return true;
-			}
-		}
+	QompPlayer* player() const
+	{
+		return _player;
 	}
-	return false;
-}
+
+private:
+	QompPlayer* _player;
+};
 
 
 //-----------------------------------//
@@ -109,11 +78,76 @@ class TunesThread : public QThread
 {
 	Q_OBJECT
 public:
-	TunesThread(const QStringList& files, QompPluginAction* act, QObject* p)
-		: QThread(p),
+	TunesThread(const QStringList& files, QompPluginAction* act, PlayerContainer* p)
+		: QThread(),
 		_files(files),
-		_action(act)
+		_action(act),
+		_pc(p)
 	{
+	}
+
+	void waitForPLayer()
+	{
+		while(!isInterruptionRequested()
+			&& qp()->state() != Qomp::StatePlaying
+			&& qp()->state() != Qomp::StatePaused )
+		{
+			QThread::msleep(sleepInterval);
+		}
+	}
+
+	static bool processString(const QString& file, QList<Tune*> *tunes)
+	{
+		if(!file.isEmpty()) {
+			PlaylistParser p(file);
+			if(p.canParse()) {
+				tunes->append(p.parse());
+				return true;
+			}
+			else {
+				const QString mimeType = QMimeDatabase().mimeTypeForFile(file).name();
+				if(mimeType.compare(CUE_TYPE, Qt::CaseInsensitive) == 0) {
+					tunes->append(CueParser::parseTunes(file));
+					return true;
+				}
+				else if (mimeType.startsWith(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
+					tunes->append(Qomp::tuneFromFile(file));
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	static QList<Tune*> getTunesRecursive(const QString& folder,
+			QompPluginAction* action = nullptr, TunesThread* t = nullptr)
+	{
+		QList<Tune*> list;
+
+		QDir dir(folder);
+		foreach(const QString& entry, dir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)) {
+			if(t && t->isInterruptionRequested())
+				break;
+
+			QFileInfo fi(dir.absolutePath() + "/" +entry);
+			if(fi.isDir()) {
+				list.append(getTunesRecursive(fi.absoluteFilePath(), action, t));
+			}
+			else  {
+				const QString mimeType = QMimeDatabase().mimeTypeForFile(fi).name();
+				if (mimeType.startsWith(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
+					list.append(Qomp::tuneFromFile(fi.absoluteFilePath()));
+					if(action && list.count() >= maxTunesForList) {
+						action->setTunesReady(list);
+						if(t)
+							t->waitForPLayer();
+						list.clear();
+					}
+				}
+			}
+		}
+
+		return list;
 	}
 
 protected:
@@ -131,7 +165,7 @@ protected:
 				processString(file, &list);
 				if(list.count() >= maxTunesForList) {
 					_action->setTunesReady(list);
-					QThread::msleep(sleepInterval);
+					waitForPLayer();
 					list.clear();
 				}
 			}
@@ -141,8 +175,15 @@ protected:
 	}
 
 private:
+	QompPlayer* qp() const
+	{
+		return _pc->player();
+	}
+
+private:
 	QStringList _files;
 	QompPluginAction* _action;
+	PlayerContainer* _pc;
 };
 
 
@@ -150,17 +191,18 @@ private:
 //-----------------------------------//
 //----FilesystemPlugin::Private------//
 //-----------------------------------//
-class FilesystemPlugin::Private : public QObject
+class FilesystemPlugin::Private : public QObject, public PlayerContainer
 {
 	Q_OBJECT
 public:
 	explicit Private(QObject* p = 0) : QObject(p)
-		,_tThread(nullptr)
 #ifdef QOMP_MOBILE
 		,loop_(new QEventLoop(this))
 		,item_(0)
 #endif
+		,_tThread(nullptr)
 	{
+		setPlayer(nullptr);
 	}
 
 	~Private()
@@ -285,7 +327,6 @@ void FilesystemPlugin::Private::getFolders(QompPluginAction* act)
 		Options::instance()->setOption("filesystemplugin.lastdir", files.first());
 	}
 	QompQmlEngine::instance()->removeItem();
-
 #else
 	QFileDialog f(0, tr("Select folder"),
 			Options::instance()->getOption("filesystemplugin.lastdir",QDir::homePath()).toString()
@@ -375,13 +416,18 @@ bool FilesystemPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 	if(fi.exists()) {
 		const QString file = fi.canonicalFilePath();
 		if (fi.isDir()) {
-			tunes->append(getTunesRecursive(file));
+			tunes->append(TunesThread::getTunesRecursive(file));
 			return true;
 		}
 		else
-			return processString(file, tunes);
+			return TunesThread::processString(file, tunes);
 	}
 	return false;
+}
+
+void FilesystemPlugin::qompPlayerChanged(QompPlayer *player)
+{
+	d->setPlayer(player);
 }
 
 
