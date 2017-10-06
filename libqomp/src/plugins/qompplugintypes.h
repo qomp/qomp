@@ -123,6 +123,7 @@ public:
 	QString duration;
 	QString url;
 	QString directUrl;
+	QString genre;
 
 	virtual QString toString() const Q_DECL_OVERRIDE;
 	virtual QString description() const Q_DECL_OVERRIDE;

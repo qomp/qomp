@@ -29,7 +29,6 @@ public:
 	QString lastPlayed;
 	QString country;
 	QString lang;
-	QString genre;
 
 	virtual QString toString() const Q_DECL_OVERRIDE;
 	virtual QString description() const Q_DECL_OVERRIDE;

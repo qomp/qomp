@@ -180,6 +180,7 @@ Tune *QompPluginTune::toTune() const
 	t->url = url;
 	t->duration = duration;
 	t->directUrl = directUrl;
+	t->genre = genre;
 	return t;
 }
 

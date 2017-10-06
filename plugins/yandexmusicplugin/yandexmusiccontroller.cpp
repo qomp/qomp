@@ -137,8 +137,13 @@ static QList<QompPluginModelItem*> parseTunes(const QJsonArray& arr)
 		}
 		if(cur.contains(ALBUMS_NAME)){
 			QJsonArray ja = cur.value(ALBUMS_NAME).toArray();
-			if(!ja.isEmpty())
-				tune->artist = ja.first().toObject().value("title").toString();
+			if(!ja.isEmpty()) {
+				auto alb = ja.first().toObject();
+				tune->artist = alb.value("title").toString();
+				if(alb.contains("genre")) {
+					tune->genre = alb.value("genre").toString();
+				}
+			}
 		}
 		tune->duration = safeJSONValue2String(cur.value("durationMs"));
 		tune->internalId = safeJSONValue2String(cur.value("id"));
