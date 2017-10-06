@@ -39,8 +39,7 @@
 #endif
 #include <QMimeDatabase>
 #include <QTextStream>
-#include <QtConcurrent>
-#include <QPointer>
+#include <QThread>
 
 #include <QtPlugin>
 
@@ -49,29 +48,26 @@ static const QString supportedMimeTypesPrefix = "audio/";
 static const int maxTunesForList = 10;
 static const int sleepInterval = 10; //msec
 
-static QList<Tune*> getTunesRecursive(const QString& folder, QPointer<QompPluginAction> action, bool withAction = true)
+static QList<Tune*> getTunesRecursive(const QString& folder,
+		QompPluginAction* action = nullptr, QThread* t = nullptr)
 {
 	QList<Tune*> list;
 
 	QDir dir(folder);
 	foreach(const QString& entry, dir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)) {
-		if(withAction && action.isNull())
+		if(t && t->isInterruptionRequested())
 			break;
 
 		QFileInfo fi(dir.absolutePath() + "/" +entry);
 		if(fi.isDir()) {
-			list.append(getTunesRecursive(fi.absoluteFilePath(), action, withAction));
+			list.append(getTunesRecursive(fi.absoluteFilePath(), action, t));
 		}
 		else  {
 			const QString mimeType = QMimeDatabase().mimeTypeForFile(fi).name();
 			if (mimeType.startsWith(supportedMimeTypesPrefix, Qt::CaseInsensitive)) {
 				list.append(Qomp::tuneFromFile(fi.absoluteFilePath()));
-				if(withAction && list.count() >= maxTunesForList) {
-					if(!action.isNull())
-						action->setTunesReady(list);
-					else
-						break;
-
+				if(action && list.count() >= maxTunesForList) {
+					action->setTunesReady(list);
 					QThread::msleep(sleepInterval);
 					list.clear();
 				}
@@ -106,18 +102,73 @@ static bool processString(const QString& file, QList<Tune*> *tunes)
 }
 
 
+//-----------------------------------//
+//------------TunesThread------------//
+//-----------------------------------//
+class TunesThread : public QThread
+{
+	Q_OBJECT
+public:
+	TunesThread(const QStringList& files, QompPluginAction* act, QObject* p)
+		: QThread(p),
+		_files(files),
+		_action(act)
+	{
+	}
 
+protected:
+	virtual void run() Q_DECL_OVERRIDE
+	{
+		QList<Tune*> list;
+		foreach(const QString& file, _files) {
+			if(isInterruptionRequested())
+				break;
+			QFileInfo fi(file);
+			if(fi.isDir()) {
+				list.append(getTunesRecursive(file, _action, this));
+			}
+			else {
+				processString(file, &list);
+				if(list.count() >= maxTunesForList) {
+					_action->setTunesReady(list);
+					QThread::msleep(sleepInterval);
+					list.clear();
+				}
+			}
+		}
+		if(!isInterruptionRequested())
+			_action->setTunesReady(list);
+	}
+
+private:
+	QStringList _files;
+	QompPluginAction* _action;
+};
+
+
+
+//-----------------------------------//
+//----FilesystemPlugin::Private------//
+//-----------------------------------//
 class FilesystemPlugin::Private : public QObject
 {
 	Q_OBJECT
 public:
 	explicit Private(QObject* p = 0) : QObject(p)
+		,_tThread(nullptr)
 #ifdef QOMP_MOBILE
 		,loop_(new QEventLoop(this))
 		,item_(0)
 #endif
 	{
 	}
+
+	~Private()
+	{
+		stop();
+	}
+
+	void stop();
 
 public slots:
 	void getTunes(QompPluginAction *act);
@@ -132,10 +183,26 @@ private:
 	QEventLoop* loop_;
 	QQuickItem* item_;
 #endif
+
+private:
+	TunesThread* _tThread;
 };
+
+void FilesystemPlugin::Private::stop()
+{
+	if(_tThread &&_tThread->isRunning()) {
+		_tThread->requestInterruption();
+		_tThread->wait();
+	}
+
+	delete _tThread;
+	_tThread = nullptr;
+}
 
 void FilesystemPlugin::Private::getTunes(QompPluginAction* act)
 {
+	stop();
+	QStringList files;
 #ifdef QOMP_MOBILE
 	item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/QompFileDlg.qml"));
 	item_->setProperty("selectFolders", false);
@@ -164,29 +231,11 @@ void FilesystemPlugin::Private::getTunes(QompPluginAction* act)
 	}
 	QompQmlEngine::instance()->removeItem();
 
-	QtConcurrent::run([](const QVariant& vf, QPointer<QompPluginAction> action) {
-		QList<Tune*> list;
-		if(!vf.isNull()) {
-			foreach(const QVariant& var, vf.value<QVariantMap>().keys()) {
-				if(action.isNull())
-					break;
-
-				const QString str = var.toUrl().toLocalFile();
-				processString(str, &list);
-				if(list.count() >= maxTunesForList) {
-					if(!action.isNull())
-						action->setTunesReady(list);
-					else
-						break;
-
-					list.clear();
-					QThread::msleep(sleepInterval);
-				}
-			}
+	if(!varFiles.isNull()) {
+		foreach(const QVariant& var, varFiles.value<QVariantMap>().keys()) {
+			files.append(var.toUrl().toLocalFile());
 		}
-		if(!action.isNull())
-			action->setTunesReady(list);
-	}, varFiles, act);
+	}
 
 #else
 	QFileDialog f(0, tr("Select file(s)"),
@@ -197,40 +246,24 @@ void FilesystemPlugin::Private::getTunes(QompPluginAction* act)
 	f.setAcceptMode(QFileDialog::AcceptOpen);
 
 	if(f.exec() == QFileDialog::Accepted) {
-		QStringList files = f.selectedFiles();
+		files = f.selectedFiles();
 
 		if(!files.isEmpty()) {
 			QFileInfo fi (files.first());
 			Options::instance()->setOption("filesystemplugin.lastdir", fi.dir().path());
 		}
-
-		QtConcurrent::run([](const QStringList& files_, QPointer<QompPluginAction> action) {
-			QList<Tune*> list;
-			foreach(const QString& file, files_) {
-				if(action.isNull())
-					break;
-
-				processString(file, &list);
-				if(list.count() >= maxTunesForList) {
-					if(!action.isNull())
-						action->setTunesReady(list);
-					else
-						break;
-
-					list.clear();
-					QThread::msleep(sleepInterval);
-				}
-			}
-			if(!action.isNull())
-				action->setTunesReady(list);
-		}, files, act);
-
 	}
 #endif
+	if(!files.isEmpty()) {
+		_tThread = new TunesThread(files, act, this);
+		_tThread->start();
+	}
 }
 
 void FilesystemPlugin::Private::getFolders(QompPluginAction* act)
 {
+	stop();
+	QStringList files;
 #ifdef QOMP_MOBILE
 	item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/QompFileDlg.qml"));
 	item_->setProperty("selectFolders", true);
@@ -246,22 +279,13 @@ void FilesystemPlugin::Private::getFolders(QompPluginAction* act)
 	connect(item_, SIGNAL(rejected()), SLOT(exitLoop()));
 	connect(item_, SIGNAL(destroyed()), SLOT(exitLoop()));
 
-	QString folder;
 	int res = loop_->exec();
 	if(!res) {
-		folder = item_->property("folder").toUrl().toLocalFile();
-		Options::instance()->setOption("filesystemplugin.lastdir", folder);
+		files.append(item_->property("folder").toUrl().toLocalFile());
+		Options::instance()->setOption("filesystemplugin.lastdir", files.first());
 	}
 	QompQmlEngine::instance()->removeItem();
 
-	QtConcurrent::run([](const QString& folder_, QPointer<QompPluginAction> action) {
-		QList<Tune*> list;
-		if(!folder_.isEmpty()) {
-			list = getTunesRecursive(folder_, action);
-		}
-		if(!action.isNull())
-			action->setTunesReady(list);
-	}, folder, act);
 #else
 	QFileDialog f(0, tr("Select folder"),
 			Options::instance()->getOption("filesystemplugin.lastdir",QDir::homePath()).toString()
@@ -272,32 +296,24 @@ void FilesystemPlugin::Private::getFolders(QompPluginAction* act)
 	f.setAcceptMode(QFileDialog::AcceptOpen);
 
 	if(f.exec() == QFileDialog::Accepted) {
-		QStringList files = f.selectedFiles();
+		files = f.selectedFiles();
 
 		if(!files.isEmpty()) {
 			QFileInfo fi (files.first());
 			Options::instance()->setOption("filesystemplugin.lastdir", fi.absoluteFilePath());
 		}
-
-		QtConcurrent::run([](const QStringList& files_, QPointer<QompPluginAction> action) {
-			QList<Tune*> list;
-			foreach(const QString& file, files_) {
-				QFileInfo fi(file);
-				if(fi.isDir()) {
-					list.append(getTunesRecursive(file, action));
-				}
-			}
-			if(!action.isNull())
-				action->setTunesReady(list);
-		}, files, act);
-
 	}
 #endif
+	if(!files.isEmpty()) {
+		_tThread = new TunesThread(files, act, this);
+		_tThread->start();
+	}
 }
 
 
-
-
+//-----------------------------------//
+//---------FilesystemPlugin----------//
+//-----------------------------------//
 FilesystemPlugin::FilesystemPlugin() : QObject()
 {
 	d = new Private(this);
@@ -306,6 +322,11 @@ FilesystemPlugin::FilesystemPlugin() : QObject()
 QompOptionsPage *FilesystemPlugin::options()
 {
 	return 0;
+}
+
+void FilesystemPlugin::unload()
+{
+	d->stop();
 }
 
 QList<QompPluginAction *> FilesystemPlugin::getTunesActions()
@@ -354,7 +375,7 @@ bool FilesystemPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 	if(fi.exists()) {
 		const QString file = fi.canonicalFilePath();
 		if (fi.isDir()) {
-			tunes->append(getTunesRecursive(file, nullptr, false));
+			tunes->append(getTunesRecursive(file));
 			return true;
 		}
 		else

@@ -396,6 +396,7 @@ void QompCon::deInit()
 
 	//we do this cleanup here cos sometimes on android
 	//we catch random crashes on exit;
+	delete PluginManager::instance();
 	delete Options::instance();
 	delete Translator::instance();
 #ifndef Q_OS_ANDROID

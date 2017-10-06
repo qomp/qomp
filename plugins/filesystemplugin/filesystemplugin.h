@@ -38,7 +38,7 @@ public:
 	virtual QompOptionsPage* options();
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
 	virtual void setEnabled(bool/* enabled*/) {}
-	virtual void unload(){}
+	virtual void unload();
 	virtual QList<QompPluginAction*> getTunesActions();
 	virtual bool processUrl(const QString &, QList<Tune*> *);
 
