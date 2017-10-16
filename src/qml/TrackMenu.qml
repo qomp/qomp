@@ -1,5 +1,5 @@
-import QtQuick 2.5
-import QtQuick.Controls 1.4
+import QtQuick 2.9
+import "qrc:///qmlshared"
 
 Menu {
 	id: root

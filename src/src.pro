@@ -71,7 +71,6 @@ android {
   !CONFIG(debug, debug|release) {
     ANDROID_DEPLOYMENT_DEPENDENCIES = \
         jar/QtAndroid-bundled.jar \
-        jar/QtAndroidAccessibility-bundled.jar \
         jar/QtAndroidBearer-bundled.jar \
         jar/QtMultimedia-bundled.jar
 
@@ -110,14 +109,6 @@ android {
         qml/QtQuick.2/plugins.qmltypes \
         qml/QtQuick.2/qmldir \
         qml/QtQuick.2/libqtquick2plugin.so
-
-    ANDROID_DEPLOYMENT_DEPENDENCIES += \
-        qml/QtQuick/Controls/libqtquickcontrolsplugin.so \
-        qml/QtQuick/Controls/qmldir \
-        qml/QtQuick/Controls/plugins.qmltypes \
-        qml/QtQuick/Controls/Styles/qmldir \
-        qml/QtQuick/Controls/Styles/Android/qmldir \
-        qml/QtQuick/Controls/Styles/Android/libqtquickcontrolsandroidstyleplugin.so
 
     ANDROID_DEPLOYMENT_DEPENDENCIES += \
         qml/Qt/labs/folderlistmodel/qmldir \

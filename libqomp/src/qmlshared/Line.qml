@@ -1,4 +1,4 @@
-import QtQuick 2.5
+import QtQuick 2.9
 
 Rectangle {
 	width: parent.width

@@ -1,4 +1,4 @@
-import QtQuick 2.5
+import QtQuick 2.9
 import "qrc:///qmlshared"
 import net.sourceforge.qomp 1.0
 import QtQuick.Dialogs 1.2

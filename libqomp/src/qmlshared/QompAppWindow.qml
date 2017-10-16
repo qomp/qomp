@@ -1,5 +1,5 @@
-import QtQuick 2.5
-import QtQuick.Window 2.2
+import QtQuick 2.9
+import QtQuick.Window 2.3
 
 Window {
 	id: root

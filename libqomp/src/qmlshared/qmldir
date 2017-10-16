@@ -22,6 +22,8 @@ QompStackView               1.0 QompStackView.qml
 QompComboBox                1.0 QompComboBox.qml
 QompFileDlg                 1.0 QompFileDlg.qml
 QompBaseDialog              1.0 QompBaseDialog.qml
+Menu                        1.0 Menu.qml
+MenuItem                    1.0 MenuItem.qml
 
 internal GetTunesDlg    GetTunesDlg.qml
 internal QompAppWindow  QompAppWindow.qml

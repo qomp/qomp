@@ -27,5 +27,7 @@
         <file>qmlshared/QompFileDlg.qml</file>
         <file>qmlshared/QompCaptchaDlg.qml</file>
         <file>qmlshared/QompBaseDialog.qml</file>
+        <file>qmlshared/Menu.qml</file>
+        <file>qmlshared/MenuItem.qml</file>
     </qresource>
 </RCC>

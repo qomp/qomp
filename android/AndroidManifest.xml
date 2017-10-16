@@ -49,7 +49,7 @@
                 * minimal - useful for Quick Controls 2 apps, it is much faster than "full"
                 * none - useful for apps that don't use any of the above Qt modules
                 -->
-            <meta-data android:name="android.app.extract_android_style" android:value="full"/>
+            <meta-data android:name="android.app.extract_android_style" android:value="none"/>
             <!-- extract android style -->
 
             <intent-filter>
@@ -82,12 +82,12 @@
 
         <receiver android:name=".MediaButtonReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>
         </receiver>
     </application>
 
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
+    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="19"/>
     <supports-screens android:smallScreens="true" android:largeScreens="true" android:normalScreens="true" android:anyDensity="true"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
