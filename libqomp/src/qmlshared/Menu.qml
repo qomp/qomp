@@ -36,6 +36,8 @@ FocusScope {
 
 
 	Flickable {
+		id: flick
+
 		clip: true
 		contentWidth: contents.width
 		contentHeight: contents.height
@@ -43,10 +45,11 @@ FocusScope {
 		height: Math.min(root.height - 20 * scaler.scaleY, contents.height)
 		width:  Math.min(root.width  - 20 * scaler.scaleX, contents.width)
 		boundsBehavior: Flickable.StopAtBounds
-		pressDelay: 100
+		pressDelay: 200
+		focus: true
 
 		Rectangle {
-			color: "white"
+			color: "lightgrey"
 
 			width: contents.width
 			height: contents.height
@@ -54,10 +57,44 @@ FocusScope {
 			ColumnLayout {
 				id: contents
 
+				readonly property int itemCount: children.length
+				readonly property int itemHeight: itemCount > 0 ? height / itemCount : 0
+				readonly property double visibleItemsCount: itemHeight > 0 ? flick.height / itemHeight : 0
+
 				anchors.centerIn: parent
 				spacing: 1
-				focus: true
 			}
+		}
+
+		onDragStarted: positioner.show()
+		onDragEnded: positioner.hide()
+	}
+
+	Rectangle {
+		id: positioner
+
+		readonly property int space: 20 * scaler.scaleY
+		readonly property int itemDelta: (contents.itemCount - contents.visibleItemsCount) > 0 ?
+										(flick.height - space * 2 - height) / (contents.itemCount - contents.visibleItemsCount) : 0
+		width: 5 * scaler.scaleX
+		height: contents.visibleItemsCount > 0 ? (flick.height - space * 2) * contents.visibleItemsCount / contents.itemCount : 0
+		x: flick.x + flick.width - 10 * scaler.scaleX
+		y: contents.itemHeight > 0 ? flick.y + space + itemDelta * flick.contentY / contents.itemHeight : flick.y
+		color: "silver"
+		visible: opacity > 0
+		opacity: 0
+
+		Behavior on opacity {
+			NumberAnimation {}
+		}
+
+		function show() {
+			if (itemDelta > 0)
+				opacity = 0.8
+		}
+
+		function hide() {
+			opacity = 0;
 		}
 	}
 

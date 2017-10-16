@@ -7,15 +7,20 @@ Rectangle {
 
 	property alias text: name.text
 	signal triggered()
+	readonly property int space: 20 * scaler.scaleX
 
 
 	height: 80 * scaler.scaleY
 	implicitWidth: name.contentWidth + name.padding * 2
 	implicitHeight: height
-	color: Qt.lighter("black")
+	color: ma.pressed ? "dimgray" : Qt.lighter("black")
 	Layout.fillWidth: true
 	Layout.maximumWidth: Screen.desktopAvailableWidth - 20 * scaler.scaleX
 	clip: true
+
+	Behavior on color {
+		ColorAnimation {}
+	}
 
 	Text {
 		id: name
@@ -26,14 +31,15 @@ Rectangle {
 		anchors.left: parent.left
 		anchors.top: parent.top
 
-		padding: 10 * scaler.scaleX
-		font.pixelSize: 35 * scaler.scaleY
+		padding: root.space
+		font.pixelSize: 30 * scaler.scaleY
 		verticalAlignment: Text.AlignVCenter
 		horizontalAlignment: Text.AlignLeft
 		elide: Text.ElideRight
 	}
 
 	MouseArea {
+		id: ma
 		anchors.fill: parent
 
 		propagateComposedEvents: true
