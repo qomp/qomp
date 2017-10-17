@@ -78,15 +78,16 @@ QompQmlEngine *QompQmlEngine::instance()
 }
 
 QompQmlEngine::~QompQmlEngine()
-{	
+{
+	removeEventFilter(this);
 	QMetaObject::invokeMethod(window_, "beforeClose");
 	window_->update();
 	qApp->processEvents();
 	removeImageProvider(QompTuneCoveImageProvider::name());
 	delete scaler_;
-	clearComponentCache();
-	collectGarbage();
-	qApp->processEvents();
+//	clearComponentCache();
+//	collectGarbage();
+//	qApp->processEvents();
 }
 
 QQuickItem *QompQmlEngine::createItem(const QUrl &url)
