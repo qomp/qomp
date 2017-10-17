@@ -847,7 +847,7 @@ void QompCon::playIndex(const QModelIndex &index)
 {
 	stopPlayer();
 	model_->setCurrentTune(model_->tune(index));
-	actPlay();
+	player_->play();
 }
 
 QompPlayer *QompCon::createPlayer()

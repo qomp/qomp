@@ -25,10 +25,14 @@
 #include "taghelpers.h"
 
 extern "C" {
+#if !defined __has_include
+#include "libcue.h"
+#else
 #if __has_include("libcue.h")
 #include "libcue.h"
 #else
 #include "/usr/include/libcue-1.4/libcue/libcue.h" //for linux
+#endif
 #endif
 }
 
