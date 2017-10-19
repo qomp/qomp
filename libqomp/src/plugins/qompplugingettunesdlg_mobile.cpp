@@ -28,7 +28,6 @@
 #include <QQuickItem>
 #include <QQmlContext>
 #include <QQmlComponent>
-#include <QEventLoop>
 #include <QQmlProperty>
 
 static const int sugTimerInterval = 1000;
@@ -44,21 +43,20 @@ public:
 public slots:
 	void search();
 	void timeout();
+	void accepted();
 
 public:
 	QQuickItem* item_;
 	QStringList searchHistory_;
 	QTimer* sugTimer_;
 	QompPluginGettunesDlg* mainDlg_;
-	QEventLoop* loop_;
 };
 
 QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	QObject(p),
 	item_(0),
 	sugTimer_(new QTimer(this)),
-	mainDlg_(p),
-	loop_(new QEventLoop(this))
+	mainDlg_(p)
 {
 	item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/GetTunesDlg.qml"));
 
@@ -69,8 +67,7 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	sugTimer_->setInterval(sugTimerInterval);
 
 	connect(item_, SIGNAL(doSearch()), SLOT(search()));
-	connect(item_, SIGNAL(accepted()), loop_, SLOT(quit()));
-	connect(item_, SIGNAL(destroyed()), loop_, SLOT(quit()));
+	connect(item_, SIGNAL(accepted()), SLOT(accepted()));
 	connect(item_, SIGNAL(editTextChanged()), sugTimer_, SLOT(start()));
 	connect(sugTimer_, SIGNAL(timeout()), SLOT(timeout()));
 }
@@ -110,6 +107,14 @@ void QompPluginGettunesDlg::Private::timeout()
 	}
 }
 
+void QompPluginGettunesDlg::Private::accepted()
+{
+	if(item_->property("status").toBool())
+		emit mainDlg_->finished(Result::ResultOK);
+	else
+		emit mainDlg_->finished(Result::ResultCancel);
+}
+
 
 
 
@@ -126,15 +131,9 @@ QompPluginGettunesDlg::~QompPluginGettunesDlg()
 	d = 0;
 }
 
-QompPluginGettunesDlg::Result QompPluginGettunesDlg::go()
+void QompPluginGettunesDlg::go()
 {
 	QompQmlEngine::instance()->addItem(d->item_);
-	d->loop_->exec();
-	d->loop_->disconnect();
-	if(d->item_->property("status").toBool())
-		return ResultOK;
-
-	return ResultCancel;
 }
 
 void QompPluginGettunesDlg::setWindowTitle(const QString &title) const

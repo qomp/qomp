@@ -29,9 +29,11 @@
 
 
 #ifdef QOMP_MOBILE
+
+static const char* FOLDER_PROP = "get_folder";
+
 #include <QDir>
 #include <QQuickItem>
-#include <QEventLoop>
 #include "qompqmlengine.h"
 #include "common.h"
 #else
@@ -197,7 +199,6 @@ class FilesystemPlugin::Private : public QObject, public PlayerContainer
 public:
 	explicit Private(QObject* p = 0) : QObject(p)
 #ifdef QOMP_MOBILE
-		,loop_(new QEventLoop(this))
 		,item_(0)
 #endif
 		,_tThread(nullptr)
@@ -212,22 +213,53 @@ public:
 
 	void stop();
 
+	void processFiles(const QStringList& files)
+	{
+		if(!files.isEmpty()) {
+			_tThread = new TunesThread(files, _act, this);
+			_tThread->start();
+		}
+	}
+
 public slots:
 	void getTunes(QompPluginAction *act);
 	void getFolders(QompPluginAction* act);
 #ifdef QOMP_MOBILE
-	void exitLoop()
+	void accepted()
 	{
-		loop_->exit(-1);
+		QStringList files;
+
+		const QString folder = item_->property("folder").toUrl().toLocalFile();
+		Options::instance()->setOption("filesystemplugin.lastdir", folder);
+
+		if(item_->property(FOLDER_PROP).toBool()) {
+			files.append(folder);
+		}
+		else {
+			const QVariant varFiles = item_->property("files");
+
+			if(!varFiles.isNull()) {
+				foreach(const QVariant& var, varFiles.value<QVariantMap>().keys()) {
+					files.append(var.toUrl().toLocalFile());
+				}
+			}
+		}
+
+		processFiles(files);
+		QompQmlEngine::instance()->removeItem();
 	}
 
+	void rejected()
+	{
+		QompQmlEngine::instance()->removeItem();
+	}
 private:
-	QEventLoop* loop_;
 	QQuickItem* item_;
 #endif
 
 private:
 	TunesThread* _tThread;
+	QompPluginAction* _act;
 };
 
 void FilesystemPlugin::Private::stop()
@@ -244,7 +276,7 @@ void FilesystemPlugin::Private::stop()
 void FilesystemPlugin::Private::getTunes(QompPluginAction* act)
 {
 	stop();
-	QStringList files;
+	_act = act;
 #ifdef QOMP_MOBILE
 	item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/QompFileDlg.qml"));
 	item_->setProperty("selectFolders", false);
@@ -258,28 +290,14 @@ void FilesystemPlugin::Private::getTunes(QompPluginAction* act)
 				<< tr("Audio files (*.mp3, *.ogg, *.wav, *.flac, *.cue)")
 				<< tr("Playlists (*.m3u, *.m3u8, *.pls)")
 				<< tr("All files (*.*)") );
+	item_->setProperty(FOLDER_PROP, false);
+
+	connect(item_, SIGNAL(accepted()), SLOT(accepted()));
+	connect(item_, SIGNAL(rejected()), SLOT(rejected()));
+
 	QompQmlEngine::instance()->addItem(item_);
-	connect(item_, SIGNAL(accepted()), loop_, SLOT(quit()));
-	connect(item_, SIGNAL(rejected()), SLOT(exitLoop()));
-	connect(item_, SIGNAL(destroyed()), SLOT(exitLoop()));
-
-	QVariant varFiles;
-	int res = loop_->exec();
-	if(!res) {
-		const QString folder = item_->property("folder").toUrl().toLocalFile();
-		Options::instance()->setOption("filesystemplugin.lastdir", folder);
-		varFiles = item_->property("files");
-
-	}
-	QompQmlEngine::instance()->removeItem();
-
-	if(!varFiles.isNull()) {
-		foreach(const QVariant& var, varFiles.value<QVariantMap>().keys()) {
-			files.append(var.toUrl().toLocalFile());
-		}
-	}
-
 #else
+	QStringList files;
 	QFileDialog f(0, tr("Select file(s)"),
 		      Options::instance()->getOption("filesystemplugin.lastdir", QDir::homePath()).toString(),
 		      tr("Audio files (*.mp3 *.ogg *.wav *.flac *.cue);;Playlists (*.m3u *.m3u8 *.pls);;All files (*)"));
@@ -295,17 +313,14 @@ void FilesystemPlugin::Private::getTunes(QompPluginAction* act)
 			Options::instance()->setOption("filesystemplugin.lastdir", fi.dir().path());
 		}
 	}
+	processFiles(files);
 #endif
-	if(!files.isEmpty()) {
-		_tThread = new TunesThread(files, act, this);
-		_tThread->start();
-	}
 }
 
 void FilesystemPlugin::Private::getFolders(QompPluginAction* act)
 {
 	stop();
-	QStringList files;
+	_act = act;
 #ifdef QOMP_MOBILE
 	item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/QompFileDlg.qml"));
 	item_->setProperty("selectFolders", true);
@@ -316,18 +331,14 @@ void FilesystemPlugin::Private::getFolders(QompPluginAction* act)
 				  Qomp::safeDir(Options::instance()->getOption("filesystemplugin.lastdir").toString())
 						));
 	item_->setProperty("filter", QStringList() << tr("All files (*.*)") );
-	QompQmlEngine::instance()->addItem(item_);
-	connect(item_, SIGNAL(accepted()), loop_, SLOT(quit()));
-	connect(item_, SIGNAL(rejected()), SLOT(exitLoop()));
-	connect(item_, SIGNAL(destroyed()), SLOT(exitLoop()));
+	item_->setProperty(FOLDER_PROP, true);
 
-	int res = loop_->exec();
-	if(!res) {
-		files.append(item_->property("folder").toUrl().toLocalFile());
-		Options::instance()->setOption("filesystemplugin.lastdir", files.first());
-	}
-	QompQmlEngine::instance()->removeItem();
+	connect(item_, SIGNAL(accepted()), SLOT(accepted()));
+	connect(item_, SIGNAL(rejected()), SLOT(rejected()));
+
+	QompQmlEngine::instance()->addItem(item_);
 #else
+	QStringList files;
 	QFileDialog f(0, tr("Select folder"),
 			Options::instance()->getOption("filesystemplugin.lastdir",QDir::homePath()).toString()
 		      );
@@ -344,11 +355,8 @@ void FilesystemPlugin::Private::getFolders(QompPluginAction* act)
 			Options::instance()->setOption("filesystemplugin.lastdir", fi.absoluteFilePath());
 		}
 	}
+	processFiles(files);
 #endif
-	if(!files.isEmpty()) {
-		_tThread = new TunesThread(files, act, this);
-		_tThread->start();
-	}
 }
 
 

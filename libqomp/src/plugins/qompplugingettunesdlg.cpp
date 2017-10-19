@@ -32,7 +32,6 @@
 #include <QTimer>
 #include <QDialog>
 #include <QMessageBox>
-#include <QEventLoop>
 
 static const int sugTimerInterval = 500;
 
@@ -40,14 +39,18 @@ static const int sugTimerInterval = 500;
 class QompPluginGettunesDlg::Private : public QObject
 {
 	Q_OBJECT
+
 public:
 	explicit Private(QompPluginGettunesDlg* p = 0);
 	~Private();
+
+	void saveSearchHistory();
 
 public slots:
 	void suggestionActionTriggered(QAction* a);
 	void search();
 	void timeout();
+	void dialogFinished(int status);
 
 protected:
 	void keyPressEvent(QKeyEvent *e);
@@ -78,9 +81,9 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	ui->setupUi(dialog_);
 
 	connect(dialog_, SIGNAL(destroyed(QObject*)), p, SLOT(deleteLater()));
+	connect(dialog_, SIGNAL(finished(int)), SLOT(dialogFinished(int)));
 
-	QStringList searchHistory = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
-
+	const QStringList searchHistory = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
 	ui->cb_search->addItems(searchHistory);
 	ui->cb_search->setInsertPolicy(QComboBox::InsertAtTop);
 
@@ -105,13 +108,17 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	}
 }
 
-QompPluginGettunesDlg::Private::~Private()
+void QompPluginGettunesDlg::Private::saveSearchHistory()
 {
 	QStringList searchHistory;
 	for(int i = 0; (i < ui->cb_search->count() && i < 10); i++) {
 		searchHistory.append(ui->cb_search->itemText(i));
 	}
 	Options::instance()->setOption(OPTION_SEARCH_HISTORY, searchHistory);
+}
+
+QompPluginGettunesDlg::Private::~Private()
+{
 	delete ui;
 }
 
@@ -154,6 +161,16 @@ void QompPluginGettunesDlg::Private::timeout()
 		waitForSuggestions_ = true;
 		emit mainDlg_->searchTextChanged(txt);
 	}
+}
+
+void QompPluginGettunesDlg::Private::dialogFinished(int status)
+{
+	if(status == QDialog::Accepted) {
+		saveSearchHistory();
+		emit mainDlg_->finished(Result::ResultOK);
+	}
+	else
+		emit mainDlg_->finished(Result::ResultCancel);
 }
 
 bool QompPluginGettunesDlg::Private::eventFilter(QObject *o, QEvent *e)
@@ -214,18 +231,9 @@ QompPluginGettunesDlg::~QompPluginGettunesDlg()
 	d = 0;
 }
 
-QompPluginGettunesDlg::Result QompPluginGettunesDlg::go()
+void QompPluginGettunesDlg::go()
 {
-	//We can not use here QDialog::exec() because of when
-	//we use QDialog::setWindowFlags() exec call is interrupted.
-	QEventLoop l;
-	connect(d->dialog_, SIGNAL(finished(int)), &l, SLOT(quit()));
 	d->dialog_->show();
-	l.exec();
-	if(d->dialog_->result() == QDialog::Accepted)
-		return ResultOK;
-
-	return ResultCancel;
 }
 
 void QompPluginGettunesDlg::setWindowTitle(const QString &title) const

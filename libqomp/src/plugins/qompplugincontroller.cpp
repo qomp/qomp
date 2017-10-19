@@ -35,12 +35,10 @@ QompPluginController::~QompPluginController()
 
 }
 
-QList<Tune*> QompPluginController::getTunes() const
+void QompPluginController::getTunes() const
 {
-	if(view()->go() == QompPluginGettunesDlg::ResultOK)
-		return prepareTunes();
-
-	return QList<Tune*>();
+	connect(view(), &QompPluginGettunesDlg::finished, this, &QompPluginController::dialogFinished);
+	view()->go();
 }
 
 void QompPluginController::init()
@@ -49,4 +47,14 @@ void QompPluginController::init()
 	connect(view(), SIGNAL(doSearch(QString)), SLOT(doSearch(QString)));
 	connect(view(), SIGNAL(searchTextChanged(QString)), SLOT(getSuggestions(QString)));
 	connect(this, SIGNAL(suggestionsReady(QStringList)), view(), SLOT(newSuggestions(QStringList)));
+}
+
+void QompPluginController::dialogFinished(QompPluginGettunesDlg::Result status)
+{
+	QList<Tune*> res;
+	if(status == QompPluginGettunesDlg::Result::ResultOK)
+		res = prepareTunes();
+
+	emit tunesReady(res);
+	deleteLater();
 }

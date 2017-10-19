@@ -25,50 +25,84 @@
 #include <QInputDialog>
 #else
 #include "qompqmlengine.h"
-#include <QEventLoop>
 #include <QQuickItem>
 #endif
 #include <QtPlugin>
 #include <QFileInfo>
 
-UrlPlugin::UrlPlugin()
+
+class UrlPlugin::Private: public QObject
+{
+	Q_OBJECT
+public:
+	Private(QompPluginAction* p) : QObject(p), _act(p)
+	{
+#ifdef Q_OS_ANDROID
+		_item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/GetUrlDlg.qml"));
+		_item->setProperty("title",PLUGIN_NAME);
+		connect(_item, SIGNAL(accepted()), SLOT(dlgFinished()));
+#endif
+	}
+
+	void start()
+	{
+#ifdef Q_OS_ANDROID
+		QompQmlEngine::instance()->addItem(_item);
+#else
+		bool ok = false;
+		QString url = QInputDialog::getText(0, tr("Input url"), "URL:",QLineEdit::Normal, "", &ok);
+		if(ok) {
+			_url = url;
+		}
+		dlgFinished();
+#endif
+	}
+
+	static Tune* urlToTune(const QString& url)
+	{
+		Tune *tune = new Tune;
+		tune->url = url;
+		return tune;
+	}
+
+public slots:
+	void dlgFinished()
+	{
+		QList<Tune*> list;
+#ifdef Q_OS_ANDROID
+		if(_item->property("status").toBool()) {
+			QString url = _item->property("url").toString();
+			if(!url.isEmpty()) {
+				list.append(urlToTune(url));
+			}
+		}
+		QompQmlEngine::instance()->removeItem();
+#else
+		if(!_url.isEmpty())
+			list.append(urlToTune(_url));
+#endif
+		_act->setTunesReady( list );
+
+		deleteLater();
+	}
+
+private:
+	QompPluginAction* _act;
+#ifdef Q_OS_ANDROID
+	QQuickItem *_item;
+#else
+	QString _url = "";
+#endif
+};
+
+UrlPlugin::UrlPlugin() : d(nullptr)
 {
 }
 
 void UrlPlugin::getTunes(QompPluginAction *act)
 {
-	QList<Tune*> list;
-#ifndef Q_OS_ANDROID
-	bool ok = false;
-	QString url = QInputDialog::getText(0, tr("Input url"), "URL:",QLineEdit::Normal, "", &ok);
-	if(ok && !url.isEmpty()) {
-		list.append(urlToTune(url));
-	}
-#else
-	QEventLoop l;
-	QQuickItem *item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/GetUrlDlg.qml"));
-	item->setProperty("title",PLUGIN_NAME);
-	connect(item, SIGNAL(accepted()), &l, SLOT(quit()));
-	connect(item, SIGNAL(destroyed()), &l, SLOT(quit()));
-	QompQmlEngine::instance()->addItem(item);
-	l.exec();
-	if(item->property("status").toBool()) {
-		QString url = item->property("url").toString();
-		if(!url.isEmpty()) {
-			list.append(urlToTune(url));
-		}
-	}
-	QompQmlEngine::instance()->removeItem();
-#endif
-
-	act->setTunesReady( list );
-}
-
-Tune *UrlPlugin::urlToTune(const QString &url)
-{
-	Tune *tune = new Tune;
-	tune->url = url;
-	return tune;
+	d = new Private(act);
+	d->start();
 }
 
 QompOptionsPage *UrlPlugin::options()
@@ -88,7 +122,7 @@ bool UrlPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 {
 	QUrl u(url);
 	if(u.isValid() && !u.isLocalFile() && !QFileInfo(url).exists()) {
-		tunes->append(urlToTune(u.toString()));
+		tunes->append(Private::urlToTune(u.toString()));
 		return true;
 	}
 
@@ -98,3 +132,6 @@ bool UrlPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 #ifndef HAVE_QT5
 Q_EXPORT_PLUGIN2(urlplugin, UrlPlugin)
 #endif
+
+
+#include "urlplugin.moc"

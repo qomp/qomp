@@ -46,7 +46,7 @@ public:
 	virtual bool processUrl(const QString &, QList<Tune*> *) { return false; }
 
 private slots:
-	void getTunes(QompPluginAction *action);
+	void getTunes(QompPluginAction *act);
 
 private:
 	bool enabled_;

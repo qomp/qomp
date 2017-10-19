@@ -47,7 +47,7 @@
            <normaloff>:/icons/search</normaloff>:/icons/search</iconset>
          </property>
          <property name="shortcut">
-          <string>Ctrl+S</string>
+          <string notr="true">Ctrl+S</string>
          </property>
         </widget>
        </item>

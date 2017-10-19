@@ -36,8 +36,9 @@ QString YandexMusicPlugin::description() const
 
 void YandexMusicPlugin::getTunes(QompPluginAction *act)
 {
-	YandexMusicController ctrl;
-	act->setTunesReady( ctrl.getTunes() );
+	YandexMusicController* ctrl = new YandexMusicController(this);
+	connect(ctrl, &YandexMusicController::tunesReady, act, &QompPluginAction::setTunesReady);
+	ctrl->getTunes();
 }
 
 QompOptionsPage *YandexMusicPlugin::options()

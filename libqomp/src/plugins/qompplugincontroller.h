@@ -22,11 +22,12 @@
 
 #include <QObject>
 #include "libqomp_global.h"
+#include "qompplugingettunesdlg.h"
 
 class Tune;
 class QNetworkAccessManager;
 class QompPluginModelItem;
-class QompPluginGettunesDlg;
+
 
 class LIBQOMPSHARED_EXPORT QompPluginController : public QObject
 {
@@ -38,10 +39,11 @@ public:
 	/**
 	 * Return list of Tunes
 	 */
-	QList<Tune*> getTunes() const;
+	void getTunes() const;
 
 signals:
 	void suggestionsReady(const QStringList&);
+	void tunesReady(const QList<Tune*>&);
 
 protected slots:
 	virtual QompPluginGettunesDlg* view() const = 0;
@@ -60,6 +62,9 @@ protected:
 	QNetworkAccessManager* nam() const { return nam_; }
 	virtual void init();
 	virtual QList<Tune*> prepareTunes() const = 0;
+
+private slots:
+	void dialogFinished(QompPluginGettunesDlg::Result status);
 
 private:
 	QNetworkAccessManager* nam_;

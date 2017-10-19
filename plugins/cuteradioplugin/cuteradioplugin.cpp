@@ -20,6 +20,7 @@
 #include "cuteradioplugin.h"
 #include "cuteradiocontroller.h"
 #include "qomppluginaction.h"
+#include "tune.h"
 
 #include <QtPlugin>
 
@@ -33,10 +34,11 @@ QString CuteRadioPlugin::description() const
 	return tr("Listen to the music from cuteRadio");
 }
 
-void CuteRadioPlugin::getTunes(QompPluginAction *action)
+void CuteRadioPlugin::getTunes(QompPluginAction *act)
 {
-	CuteRadioController ctrl;
-	action->setTunesReady( ctrl.getTunes() );
+	CuteRadioController* ctrl = new CuteRadioController(this);
+	connect(ctrl, &CuteRadioController::tunesReady, act, &QompPluginAction::setTunesReady);
+	ctrl->getTunes();
 }
 
 QompOptionsPage *CuteRadioPlugin::options()

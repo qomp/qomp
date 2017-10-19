@@ -38,12 +38,12 @@ public:
 	explicit QompPluginGettunesDlg(QObject *parent = 0);
 	virtual ~QompPluginGettunesDlg();
 
-	enum Result { ResultOK, ResultCancel };
+	enum class Result { ResultOK, ResultCancel };
 
 	/**
 	 * wrapper to internal dialog exec() call
 	 */
-	virtual Result go();
+	virtual void go();
 
 	/**
 	 * set internal dialo title
@@ -69,6 +69,7 @@ signals:
 	void searchTextChanged(const QString&);
 	void doSearch(const QString&);
 	void itemSelected(QompPluginModelItem* item);
+	void finished(Result);
 	
 public slots:
 	/**

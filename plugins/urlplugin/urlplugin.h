@@ -33,7 +33,7 @@ class UrlPlugin : public QObject, public QompPlugin, public QompTunePlugin
 	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1" FILE "metadata.json")
 #endif
 public:
-	UrlPlugin();	
+	UrlPlugin();
 	virtual QString name() const { return PLUGIN_NAME; }
 	virtual QString version() const { return "1.2.1"; }
 	virtual QString description() const { return tr("Open custom URL"); }
@@ -48,7 +48,8 @@ private slots:
 	void getTunes(QompPluginAction* act);
 
 private:
-	Tune* urlToTune(const QString& url);
+	class Private;
+	Private* d;
 };
 
 #endif // URLPLUGIN_H

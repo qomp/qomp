@@ -21,6 +21,7 @@
 #include "prostopleercontroller.h"
 #include "prostopleerpluginsettings.h"
 #include "qomppluginaction.h"
+#include "tune.h"
 
 #include <QtPlugin>
 
@@ -36,8 +37,9 @@ QString ProstoPleerPlugin::description() const
 
 void ProstoPleerPlugin::getTunes(QompPluginAction *act)
 {
-	ProstoPleerController ctrl;
-	act->setTunesReady( ctrl.getTunes() );
+	ProstoPleerController* ctrl = new ProstoPleerController(this);
+	connect(ctrl, &ProstoPleerController::tunesReady, act, &QompPluginAction::setTunesReady);
+	ctrl->getTunes();
 }
 
 QompOptionsPage *ProstoPleerPlugin::options()

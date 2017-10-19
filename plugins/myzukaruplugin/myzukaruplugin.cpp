@@ -35,8 +35,9 @@ QString MyzukaruPlugin::description() const
 
 void MyzukaruPlugin::getTunes(QompPluginAction* act)
 {
-	MyzukaruController ctrl;
-	act->setTunesReady( ctrl.getTunes() );
+	MyzukaruController* ctrl = new MyzukaruController(this);
+	connect(ctrl, &MyzukaruController::tunesReady, act, &QompPluginAction::setTunesReady);
+	ctrl->getTunes();
 }
 
 
