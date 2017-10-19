@@ -36,10 +36,14 @@ Item {
 		}
 
 		onRunningChanged: {
-			if(!running && deleteExit) {
-				exitItem.destroy()
-				exitItem = null
+			if(!running) {
+				if(deleteExit) {
+					exitItem.destroy()
+					exitItem = null
+				}
+				enterItem.focus = true
 			}
+
 		}
 	}
 
@@ -47,10 +51,9 @@ Item {
 		item.visible = Qt.binding(function() { return item.opacity > 0 })
 
 		var doAnim = false
-		var l = content.children.length
-		if(l > 0) {
+		if(depth > 0) {
 			anim.enterItem = item
-			anim.exitItem = content.children[l - 1]
+			anim.exitItem = content.children[depth - 1]
 			doAnim = true
 			anim.deleteExit = false
 			item.opacity = 0
@@ -61,24 +64,20 @@ Item {
 		item.width = Qt.binding(function() { return content.width })
 		if(doAnim)
 			anim.start()
-
-		item.focus = true
 	}
 
 	function pop() {
-		var l = content.children.length
-		if(l < 2)
+		if(depth < 2)
 			return
 
-		anim.enterItem = content.children[l - 2]
-		anim.exitItem = content.children[l - 1]
+		anim.enterItem = content.children[depth - 2]
+		anim.exitItem = content.children[depth - 1]
 		anim.deleteExit = true
 		anim.start()
-		anim.enterItem.focus = true
 	}
 
 	function clear() {
-		for(var i = content.children.length - 1; i >= 0; --i) {
+		for(var i = depth - 1; i >= 0; --i) {
 			var it = content.children[i]
 			it.width = 0
 			it.height = 0
