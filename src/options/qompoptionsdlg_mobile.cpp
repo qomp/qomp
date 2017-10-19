@@ -65,6 +65,13 @@ public:
 		}
 	}
 
+public slots:
+	void dlgAccepted() {
+		parentDialog_->applyOptions();
+		QompQmlEngine::instance()->removeItem();
+		parentDialog_->deleteLater();
+	}
+
 private slots:
 	void pageDestroyed()
 	{
@@ -113,16 +120,8 @@ QompOptionsDlg::~QompOptionsDlg()
 
 void QompOptionsDlg::exec()
 {
-	QEventLoop l;
-	connect(d->item_, SIGNAL(accepted()), &l, SLOT(quit()));
-	connect(d->item_, SIGNAL(destroyed()), &l, SLOT(quit()));
-
+	connect(d->item_, SIGNAL(accepted()), d, SLOT(dlgAccepted()));
 	QompQmlEngine::instance()->addItem(d->item_);
-	l.exec();
-	//if(d->item_->property("status").toBool()) {
-		applyOptions();
-	//}
-	QompQmlEngine::instance()->removeItem();
 }
 
 void QompOptionsDlg::applyOptions()
