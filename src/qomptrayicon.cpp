@@ -101,7 +101,7 @@ QompTrayIcon::QompTrayIcon(QompMainWin *parent) :
 	win_(parent),
 	lastClick_(QTime::currentTime())
 {
-	setIcon(QIcon(":/icons/icons/qomp_stop.png"));
+	setIcon(QIcon::fromTheme("qomp_stop", QIcon(":/icons/icons/qomp_stop.png")));
 	setToolTip(QString());
 	connect(icon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
 
