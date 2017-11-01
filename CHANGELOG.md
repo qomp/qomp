@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3 - 2017-11-xx
+## 1.3 - 2017-11-01
   + added cuteRadio plugin (Windows and Linux only). http://marxoft.co.uk/projects/cuteradio
   * improved playlists support
   + added 'Open at browser' action to tune popup menu

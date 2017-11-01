@@ -40,7 +40,7 @@ public:
 	explicit TuneToFilePlugin();
 
 	virtual QString name() const { return tr("Tune to File"); }
-	virtual QString version() const { return "1.2.1"; }
+	virtual QString version() const { return "1.3"; }
 	virtual QString description() const { return tr("Store current tune into file. Usefull for publishing tune in status"); }
 	virtual QompOptionsPage* options();
 	virtual void qompPlayerChanged(QompPlayer* player);
