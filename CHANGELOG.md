@@ -1,5 +1,6 @@
-Version 1.3
-xx.10.2017
+# Changelog
+
+## 1.3 - 2017-11-xx
   + added cuteRadio plugin (Windows and Linux only). http://marxoft.co.uk/projects/cuteradio
   * improved playlists support
   + added 'Open at browser' action to tune popup menu
@@ -13,8 +14,7 @@ xx.10.2017
 
 
 
-Version 1.2.1
-30.06.2017
+## 1.2.1 - 2017-06-30
   * fix Myzuka.ru plugin (fixed url)
   * improvement for Mpris plugin (Linux only)
   * other minor fixes
@@ -24,8 +24,7 @@ Version 1.2.1
 
 
 
-Version 1.2
-14.04.2017
+## 1.2 - 2017-04-14
   + add m3u playlists support
   + add drag-n-drop files into playlist support
   + add thumbnail toolbar (Windows only)
@@ -41,8 +40,7 @@ Version 1.2
   * various fixes and improvements
 
 
-Version 1.1.1
-15.12.2016
+## 1.1.1 - 2016-12-15
   + add mediakeys support
   * fixed Shuffle when click "Next" button
   + add Windows TaskBar progress support
@@ -59,8 +57,7 @@ Version 1.1.1
 
 
 
-Version 1.1
-05.07.2016
+## 1.1 - 2016-07-05
  + add CUE SHEET support (*.cue files)
  + add "Open With..." dialog support
  + add "Allow one copy" option
@@ -75,8 +72,8 @@ Version 1.1
  * various fixes and improvements
 
 
-Version 1.0
-18.04.2016
+
+## 1.0 - 2016-04-18
  + add CAPTCHA support for Yandex.Music plugin
  * update Myzuka.ru url (now Myzuka.fm)
  + add shuffle support
@@ -84,8 +81,7 @@ Version 1.0
 
 
 
-Version 0.9 beta
-10.07.2015
+## 0.9 beta - 2015-07-10
  * fixes for yandex.music plugin
  + add "repeat last search" option
  * fix dock click detection on OS X
@@ -94,25 +90,26 @@ Version 0.9 beta
  * update Qt libs to 5.5.0 (Windows, Android, OS X)
 
 
-Version 0.8.1 beta
-30.03.2015
+
+## 0.8.1 beta - 2015-03-30
  * fixes for myzuka.ru and yandex.music plugins
 
 
-Version 0.8 beta
-15.03.2015
+
+## 0.8 beta - 2015-03-15
  * change myzuka.ru link to new site location (myzuka.org)
  * update Qt libs to 5.4.1 (Windows, Android, OS X)
  * windows package now installs some third party codecs
 
 
-Version 0.7.1 beta
-26.11.2014
+
+## 0.7.1 beta - 2014-11-26
  * adapt myzuka.ru plugin for new site design
  * some minor fixes
 
-Version 0.7 beta
-31.10.2014
+
+
+## 0.7 beta - 2014-10-31
  + add QML interface for android
  + add full android support
  + add Notifications plugin
@@ -127,8 +124,8 @@ Version 0.7 beta
  * new homepage at http://qomp.sourceforge.net/
 
 
-Version 0.6 beta
-23.08.2014
+
+## 0.6 beta - 2014-08-23
  * update Yandex.Music plugin
  * update Myzuka.ru plugin
  * update filesystem plugin: add resolving tags on loading tunes with taglib
@@ -138,8 +135,8 @@ Version 0.6 beta
  * various fixes and improvements
 
 
-Version 0.5 beta
-02.05.2014
+
+## 0.5 beta - 2014-05-02
  * fixes for translations system
  * improvements for android builds
  * fix myzuka.ru plugin
@@ -154,8 +151,8 @@ Version 0.5 beta
  + add theme manager
 
 
-Version 0.4 beta
-27.02.2014
+
+## 0.4 beta - 2014-02-27
  + add android compilling support
  * fix myzuka.ru plugin
  * plugins improvements
@@ -167,8 +164,8 @@ Version 0.4 beta
  * some fixes and optiomizations
 
 
-Version 0.3 beta
-09.09.2013
+
+## 0.3 beta - 2013-09-09
  * fix prostopleer plugins url after thair moving to another hosting
  + add drag-and-drop at playlist
  + add LastFm scrobbling
@@ -180,8 +177,8 @@ Version 0.3 beta
  * different fixes and improvements
 
 
-Version 0.2 beta
-15.06.2013
+
+## 0.2 beta - 2013-06-15
  + add tray icon
  + better linux integration
  + add ability load and save playlist
@@ -199,6 +196,6 @@ Version 0.2 beta
  + add Yandex.Music plugin
 
 
-Version 0.1 beta
-21.03.2013
+
+## 0.1 beta - 2013-03-21
  * Start work
