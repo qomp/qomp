@@ -39,13 +39,16 @@ import android.media.AudioManager;
 import android.content.ComponentName;
 
 
-public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
+public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
+                  //implements AudioManager.OnAudioFocusChangeListener
+{
     public static final String NOTIFY = "net.sourceforge.qomp.NOTIFY";
 
     private PowerManager.WakeLock wl_;
     private BroadcastReceiver callReceiver_;
     private QompService service_;
     private ComponentName mediaComponent_;
+    private boolean mediaRegistered_ = false;
 
     private ServiceConnection sConn_ = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -62,12 +65,30 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     public void onCreate (Bundle savedInstanceState) {
         // Log.i("Qomp", "onCreated");
         super.onCreate(savedInstanceState);
+
+        mediaComponent_ = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
+
         registerCallReceiver();
         bindToService();
-        registerMediaReceiver();
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl_ = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+       // Log.e("Qomp", "onResume");
+
+        unregisterMediaReceiver();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+       // Log.e("Qomp", "onPause");
+
+        registerMediaReceiver();
     }
 
     public String checkIntent() {
@@ -140,27 +161,48 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity {
     }
 
     private void registerMediaReceiver() {
-        AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        mediaComponent_ = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
-        manager.registerMediaButtonEventReceiver(mediaComponent_);
+        if(!mediaRegistered_) {
+            AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            //int result = manager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+            //if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                manager.registerMediaButtonEventReceiver(mediaComponent_);
+                mediaRegistered_ = true;
+            //}
+        }
     }
 
     private void unregisterMediaReceiver() {
-        AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        manager.unregisterMediaButtonEventReceiver(mediaComponent_);
+        if(mediaRegistered_) {
+            AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            manager.unregisterMediaButtonEventReceiver(mediaComponent_);
+            mediaRegistered_ = false;
+        }
     }
+
+ /*   @Override
+    public void onAudioFocusChange(int focusChange) {
+         if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+             //Log.e("ClassOnAudioFocusChangeListener: ", "AUDIOFOCUS_LOSS_TRANSIENT");
+         }
+         else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+             //Log.e("ClassOnAudioFocusChangeListener: ", "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
+         }
+         else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+             //Log.e("ClassOnAudioFocusChangeListener: ", "AUDIOFOCUS_GAIN");
+         }
+         else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+             //Log.e("ClassOnAudioFocusChangeListener: ", "AUDIOFOCUS_LOSS");
+         }
+    }*/
 
     public static void processIncomingCall(final String state) {
        // Log.i("Qomp","State: "+ state);
 
-        if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_RINGING))
-        {
+        if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_RINGING)) {
                 //Log.i("Qomp","Incomng Call");
                 incomingCallStart();
         }
-
-        if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_IDLE))
-        {
+        else if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_IDLE)) {
                // Log.i("Qomp","Incomng Call Finished");
                 incomingCallFinish();
         }
