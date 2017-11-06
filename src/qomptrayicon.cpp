@@ -21,6 +21,7 @@
 #include "defines.h"
 #include "qompmainwin.h"
 #include "options.h"
+#include "thememanager.h"
 
 #include <QWheelEvent>
 #include <QTimer>
@@ -101,7 +102,7 @@ QompTrayIcon::QompTrayIcon(QompMainWin *parent) :
 	win_(parent),
 	lastClick_(QTime::currentTime())
 {
-	setIcon(QIcon(":/icons/icons/qomp_stop.png"));
+	setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_stop.png")));
 	setToolTip(QString());
 	connect(icon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
 

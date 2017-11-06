@@ -436,19 +436,16 @@ void QompMainWin::Private::updateIcons(Qomp::State state)
 	switch (state) {
 	case Qomp::StatePaused: {
 		ui->tb_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")));
-		static const QIcon pauseIco(":/icons/icons/qomp_pause.png");
-		trayIcon_->setIcon(pauseIco);
+		trayIcon_->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_pause.png")));
 		break;
 	}
 	case Qomp::StatePlaying: {
 		ui->tb_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/pause")));
-		static const QIcon playIcon(":/icons/icons/qomp_play.png");
-		trayIcon_->setIcon(playIcon);
+		trayIcon_->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_play.png")));
 		break;
 	}
 	default: {
-		static const QIcon stopIco(":/icons/icons/qomp_stop.png");
-		trayIcon_->setIcon(stopIco);
+		trayIcon_->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_stop.png")));
 		ui->tb_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")));
 		break;
 	}
