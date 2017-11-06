@@ -881,14 +881,11 @@ void QompCon::playNextShuffle(bool afterError, const QModelIndex &index)
 		ind = model_->index(r);
 	}
 
-	Qomp::State state = player_->lastAction();
-	stopPlayer();
-
 	if(ind.isValid()) {
-		model_->setCurrentTune(model_->tune(ind));
-
-		if(state == Qomp::StatePlaying)
-			actPlay();
+		playIndex(ind);
+	}
+	else {
+		stopPlayer();
 	}
 }
 
