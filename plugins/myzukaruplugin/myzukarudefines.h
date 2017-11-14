@@ -22,7 +22,7 @@
 
 #define MYZUKA_PLUGIN_NAME "Myzuka.ru"
 #define MYZUKA_PLUGIN_VERSION "1.3"
-#define MYZUKA_URL "https://myzuka.me/"
+#define MYZUKA_URL "https://myzuka.club/"
 
 
 #endif // MYZUKARUDEFINES_H
