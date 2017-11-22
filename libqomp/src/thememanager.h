@@ -56,6 +56,7 @@ private:
 	QString currentTheme_;
 	QString iconPath_;
 	bool useBorder_;
+	QMap<QString,QString> nativeIcons_;
 };
 
 #endif // THEMEMANAGER_H

@@ -31,6 +31,7 @@
 
 
 static const QString iconsExpression = "Icons\\s*\\{\\s*path:\\s*(\\S+[^;]*);\\s*\\}";
+static const QString nativeIconsExpression = "NativeIcons\\s*\\{\\s*([^\\}]+)\\}";
 static const QString borderExpression = "UseWindowBorder\\s*\\{\\s*use:\\s*([\\d]);\\s*\\}";
 static const QString themePathExpression = "<theme_path>";
 static const QString resourceFileName = "*.rcc";
@@ -103,6 +104,17 @@ void ThemeManager::prepareTheme(QFile *file)
 		useBorder_ = true;
 	}
 
+	re.setPattern(nativeIconsExpression);
+	if(re.indexIn(content) != -1) {
+		const QString ni = re.cap(1).trimmed();
+		for(const QString& line: ni.split(";", QString::SkipEmptyParts)) {
+			const QStringList vals = line.split(":", QString::SkipEmptyParts);
+			if(vals.count() == 2) {
+				nativeIcons_.insert(vals.at(0), vals.at(1));
+			}
+		}
+	}
+
 	qApp->setStyleSheet(content);
 }
 
@@ -123,12 +135,16 @@ QStringList ThemeManager::availableThemes() const
 
 QString ThemeManager::getIconFromTheme(const QString &file) const
 {
-	if(iconPath_.isEmpty())
+	if(iconPath_.isEmpty() && nativeIcons_.count() == 0)
 		return file;
 
 	QFileInfo fi(file);
 	if(fi.exists()) {
-		QString fname = fi.fileName();
+		const QString fname = fi.fileName();
+
+		if(nativeIcons_.contains(fname))
+			return nativeIcons_.value(fname);
+
 		QString ext = fi.suffix().isEmpty() ? ".png" : "";
 		QString newFile = iconPath_ + "/" + fname + ext;
 		if(QFileInfo::exists(newFile)) {
