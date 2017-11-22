@@ -176,7 +176,7 @@ ThemeManager::ThemeManager() :
 QStringList ThemeManager::themeFolders()
 {
 	QStringList list;
-	list << ":/themes";
+	list << ":/themes" << qApp->applicationDirPath();
 #ifdef Q_OS_WIN
 	list.append(qApp->applicationDirPath()+"/themes");
 #elif defined (HAVE_X11)
