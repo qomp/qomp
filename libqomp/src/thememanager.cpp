@@ -25,6 +25,7 @@
 #include <QRegExp>
 #include <QFileInfo>
 #include <QResource>
+#include <QIcon>
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
 #endif
@@ -110,7 +111,7 @@ void ThemeManager::prepareTheme(QFile *file)
 		for(const QString& line: ni.split(";", QString::SkipEmptyParts)) {
 			const QStringList vals = line.split(":", QString::SkipEmptyParts);
 			if(vals.count() == 2) {
-				nativeIcons_.insert(vals.at(0), vals.at(1));
+				nativeIcons_.insert(vals.at(0).trimmed(), vals.at(1).trimmed());
 			}
 		}
 	}
@@ -133,29 +134,30 @@ QStringList ThemeManager::availableThemes() const
 	return themes_.keys();
 }
 
-QString ThemeManager::getIconFromTheme(const QString &file) const
+QIcon ThemeManager::getIconFromTheme(const QString &file) const
 {
-	if(iconPath_.isEmpty() && nativeIcons_.count() == 0)
-		return file;
+	QIcon ico(file);
+	const QFileInfo fi(file);
+	const QString fname = fi.baseName();
 
-	QFileInfo fi(file);
-	if(fi.exists()) {
-		const QString fname = fi.fileName();
-
-		if(nativeIcons_.contains(fname))
-			return nativeIcons_.value(fname);
-
-		QString ext = fi.suffix().isEmpty() ? ".png" : "";
-		QString newFile = iconPath_ + "/" + fname + ext;
+	if(nativeIcons_.contains(fname)) {
+#ifdef DEBUG_OUTPUT
+		qDebug() << "ThemeManager::getIconFromTheme() fromTheme" << nativeIcons_.value(fname);
+#endif
+		ico = QIcon::fromTheme(nativeIcons_.value(fname), ico);
+	}
+	else if(!iconPath_.isEmpty()) {
+		static const QString ext = ".png";
+		const QString newFile = iconPath_ + "/" + fname + ext;
 		if(QFileInfo::exists(newFile)) {
 #ifdef DEBUG_OUTPUT
 			qDebug() << "ThemeManager::getIconFromTheme()" << newFile;
 #endif
-			return newFile;
+			ico = QIcon(newFile);
 		}
 	}
 
-	return file;
+	return ico;
 }
 
 bool ThemeManager::isWindowBorderEnabled() const

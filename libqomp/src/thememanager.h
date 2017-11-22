@@ -35,7 +35,7 @@ public:
 
 	void setTheme(const QString& theme);
 	QStringList availableThemes() const;
-	QString getIconFromTheme(const QString& file) const;
+	QIcon getIconFromTheme(const QString& file) const;
 	bool isWindowBorderEnabled() const;
 
 signals:

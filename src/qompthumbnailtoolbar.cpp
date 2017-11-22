@@ -55,11 +55,11 @@ void QompThumbnailToolBar::setCurrentState(Qomp::State state)
 
 	switch (state) {
 	case Qomp::StatePlaying: {
-		_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/pause")));
+		_play->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/pause"));
 		break;
 	}
 	default: {
-		_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")));
+		_play->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play"));
 		break;
 	}
 	}
@@ -67,7 +67,7 @@ void QompThumbnailToolBar::setCurrentState(Qomp::State state)
 
 void QompThumbnailToolBar::updateIcons()
 {
-	_prev->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/prev")));
-	_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")));
-	_next->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/next")));
+	_prev->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/prev"));
+	_play->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play"));
+	_next->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/next"));
 }

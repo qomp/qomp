@@ -135,9 +135,9 @@ QompMainWin::Private::Private(QompMainWin *p) :
 
 #if defined(HAVE_X11) && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QMenu *menu = new QMenu(mainWin_);
-	menu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/toggle")), tr("Toggle Visibility"), parentWin_, SLOT(toggleVisibility()))->setParent(menu);
+	menu->addAction(ThemeManager::instance()->getIconFromTheme(":/icons/toggle"), tr("Toggle Visibility"), parentWin_, SLOT(toggleVisibility()))->setParent(menu);
 	menu->addSeparator();
-	menu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/close")), tr("Exit"), qApp, SLOT(quit()))->setParent(menu);
+	menu->addAction(ThemeManager::instance()->getIconFromTheme(":/icons/close"), tr("Exit"), qApp, SLOT(quit()))->setParent(menu);
 
 	trayIcon_->setContextMenu(menu);
 #else
@@ -183,35 +183,35 @@ QompMainWin::Private::~Private()
 void QompMainWin::Private::updateShuffleIcon()
 {
 	ui->tb_shuffle->setIcon(ui->tb_shuffle->isChecked() ?
-				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/random")) :
-				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/linear")));
+				     ThemeManager::instance()->getIconFromTheme(":/icons/random") :
+				     ThemeManager::instance()->getIconFromTheme(":/icons/linear"));
 }
 
 void QompMainWin::Private::updateMuteIcon()
 {
 	ui->tb_mute->setIcon(ui->tb_mute->isChecked() ?
-				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/mute")) :
-				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/volume")));
+				     ThemeManager::instance()->getIconFromTheme(":/icons/mute") :
+				     ThemeManager::instance()->getIconFromTheme(":/icons/volume"));
 }
 
 void QompMainWin::Private::updatePlaylistIcon()
 {
 	ui->tb_showPlaylist->setIcon(Options::instance()->getOption(OPTION_PLAYLIST_VISIBLE).toBool() ?
-				     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/arrow-down")) :
-					     QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/arrow-up")));
+					ThemeManager::instance()->getIconFromTheme(":/icons/arrow-down") :
+					ThemeManager::instance()->getIconFromTheme(":/icons/arrow-up"));
 }
 
 void QompMainWin::Private::updateIcons()
 {
-	ui->tb_clear->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/delete")));
-	ui->tb_prev->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/prev")));
-	ui->tb_next->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/next")));
-	ui->tb_stop->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/stop")));
-	ui->tb_repeatAll->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/repeat")));
-	ui->tb_load->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/load")));
-	ui->tb_save->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/save")));
-	ui->tb_open->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/add")));
-	ui->tb_options->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/options")));
+	ui->tb_clear->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/delete"));
+	ui->tb_prev->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/prev"));
+	ui->tb_next->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/next"));
+	ui->tb_stop->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/stop"));
+	ui->tb_repeatAll->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/repeat"));
+	ui->tb_load->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/load"));
+	ui->tb_save->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/save"));
+	ui->tb_open->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/add"));
+	ui->tb_options->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/options"));
 }
 
 void QompMainWin::Private::togglePlaylistVisibility()
@@ -435,18 +435,18 @@ void QompMainWin::Private::updateIcons(Qomp::State state)
 {
 	switch (state) {
 	case Qomp::StatePaused: {
-		ui->tb_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")));
-		trayIcon_->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_pause.png")));
+		ui->tb_play->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play"));
+		trayIcon_->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_pause.png"));
 		break;
 	}
 	case Qomp::StatePlaying: {
-		ui->tb_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/pause")));
-		trayIcon_->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_play.png")));
+		ui->tb_play->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/pause"));
+		trayIcon_->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_play.png"));
 		break;
 	}
 	default: {
-		trayIcon_->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_stop.png")));
-		ui->tb_play->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")));
+		trayIcon_->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_stop.png"));
+		ui->tb_play->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play"));
 		break;
 	}
 	}

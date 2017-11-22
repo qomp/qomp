@@ -78,7 +78,7 @@ void QompGetTunesMenu::buildMenu()
 
 void QompGetTunesMenu::init()
 {
-	setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/add")));
+	setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/add"));
 }
 
 
@@ -103,28 +103,28 @@ void QompMainMenu::menuAboutToShow()
 
 void QompMainMenu::buildMenu()
 {
-	QAction* act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/toggle")), tr("Toggle Visibility"), this, SIGNAL(actToggleVisibility()));
+	QAction* act = addAction(ThemeManager::instance()->getIconFromTheme(":/icons/toggle"), tr("Toggle Visibility"), this, SIGNAL(actToggleVisibility()));
 	act->setParent(this);
 
 	addMenu(_tunesMenu);
 
-	act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/options")), tr("Settings"), this, SIGNAL(actDoOptions()));
+	act = addAction(ThemeManager::instance()->getIconFromTheme(":/icons/options"), tr("Settings"), this, SIGNAL(actDoOptions()));
 	act->setParent(this);
 	addSeparator();
 
 	QMenu* helpMenu = new QMenu(tr("Help"), this);
-	helpMenu->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/help")));
-	act = helpMenu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/home")), tr("About qomp"), this, SIGNAL(actAbout()));
+	helpMenu->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/help"));
+	act = helpMenu->addAction(ThemeManager::instance()->getIconFromTheme(":/icons/home"), tr("About qomp"), this, SIGNAL(actAbout()));
 	act->setParent(helpMenu);
-	act = helpMenu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/info")), tr("About Qt"), qApp, SLOT(aboutQt()));
+	act = helpMenu->addAction(ThemeManager::instance()->getIconFromTheme(":/icons/info"), tr("About Qt"), qApp, SLOT(aboutQt()));
 	act->setParent(helpMenu);
-	act = helpMenu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/bugreport")), tr("Report a bug"), this, SIGNAL(actReportBug()));
+	act = helpMenu->addAction(ThemeManager::instance()->getIconFromTheme(":/icons/bugreport"), tr("Report a bug"), this, SIGNAL(actReportBug()));
 	act->setParent(helpMenu);
-	act = helpMenu->addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/updates")), tr("Check for updates"), this, SIGNAL(actCheckUpdates()));
+	act = helpMenu->addAction(ThemeManager::instance()->getIconFromTheme(":/icons/updates"), tr("Check for updates"), this, SIGNAL(actCheckUpdates()));
 	act->setParent(helpMenu);
 	addMenu(helpMenu);
 
-	act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/close")), tr("Exit"), this, SIGNAL(actExit()));
+	act = addAction(ThemeManager::instance()->getIconFromTheme(":/icons/close"), tr("Exit"), this, SIGNAL(actExit()));
 	act->setParent(this);
 }
 
@@ -187,27 +187,27 @@ void QompTrackMenu::buildMenu()
 
 	QAction* act;
 	if(first.isValid()) {
-		act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/play")), tr("Play/Pause"), this, SLOT(actToggleActivated()));
+		act = addAction(ThemeManager::instance()->getIconFromTheme(":/icons/play"), tr("Play/Pause"), this, SLOT(actToggleActivated()));
 		act->setParent(this);
 
 		if(hasUrl) {
-			act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/ok")), tr("Copy URL"), this, SLOT(actCopyUrlActivated()));
+			act = addAction(ThemeManager::instance()->getIconFromTheme(":/icons/ok"), tr("Copy URL"), this, SLOT(actCopyUrlActivated()));
 			act->setParent(this);
 		}
 
 		const QString direct = first.data(QompPlayListModel::TuneRole).value<Tune*>()->directUrl;
 		if(!direct.isEmpty()) {
-			act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/updates")), tr("Open At Browser"), this, SLOT(actOpenDirectActivated()));
+			act = addAction(ThemeManager::instance()->getIconFromTheme(":/icons/updates"), tr("Open At Browser"), this, SLOT(actOpenDirectActivated()));
 			act->setParent(this);
 		}
 	}
 
-	act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/delete")), tr("Remove"), this, SLOT(actRemoveActivated()));
+	act = addAction(ThemeManager::instance()->getIconFromTheme(":/icons/delete"), tr("Remove"), this, SLOT(actRemoveActivated()));
 	act->setParent(this);
 
 
 	if(hasSave) {
-		act = addAction(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/save")), tr("Save File(s)"), this, SLOT(actSaveActivated()));
+		act = addAction(ThemeManager::instance()->getIconFromTheme(":/icons/save"), tr("Save File(s)"), this, SLOT(actSaveActivated()));
 		act->setParent(this);
 	}
 }

@@ -118,14 +118,14 @@ bool WindowHeader::eventFilter(QObject *watched, QEvent *event)
 
 void WindowHeader::updateIcons()
 {
-	_ui.closeButton->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_close")));
-	_ui.hideButton->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_minimize")));
+	_ui.closeButton->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_close"));
+	_ui.hideButton->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_minimize"));
 
 	if (parentWidget()->window()->windowState() == Qt::WindowMaximized) {
-		_ui.maximizeButton->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_restore")));
+		_ui.maximizeButton->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_restore"));
 	}
 	else {
-		_ui.maximizeButton->setIcon(QIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_maximize")));
+		_ui.maximizeButton->setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/window_maximize"));
 	}
 
 }
