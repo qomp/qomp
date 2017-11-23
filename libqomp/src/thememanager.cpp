@@ -105,6 +105,7 @@ void ThemeManager::prepareTheme(QFile *file)
 		useBorder_ = true;
 	}
 
+	nativeIcons_.clear();
 	re.setPattern(nativeIconsExpression);
 	if(re.indexIn(content) != -1) {
 		const QString ni = re.cap(1).trimmed();
