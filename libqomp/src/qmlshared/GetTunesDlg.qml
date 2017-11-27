@@ -5,7 +5,7 @@ ButtonsPage {
 	id: root
 
 	signal doSearch()
-	signal editTextChanged()
+	signal returnPressed()
 
 	property alias model: items.model
 	property alias serchText: items.text
@@ -56,19 +56,15 @@ ButtonsPage {
 
 				focus: true
 				onClicked: {
-					items.inserting = true
 					Qt.inputMethod.commit()
 					Qt.inputMethod.hide()
 					root.waitForSuggestions = false
 					root.doSearch()
-					items.inserting = false
 				}
 			}
 
 			QompComboBox {
 				id: items
-
-				property bool inserting: false
 
 				availableHeight: mainRect.height
 
@@ -76,16 +72,7 @@ ButtonsPage {
 				anchors.margins: 10 * scaler.scaleMargins
 				anchors.rightMargin: search.width + search.anchors.leftMargin + search.anchors.rightMargin
 
-				onTextChanged: {
-					if(!inserting) {
-						if(text.length > 2)
-							root.editTextChanged()
-					}
-					else
-						inserting = false
-				}
-
-				onActivated: inserting = true
+				Keys.onReturnPressed: root.returnPressed()
 
 				QompBusyIndicator {
 					id: sugIndicator
@@ -112,11 +99,7 @@ ButtonsPage {
 
 			MenuItem {
 				text: modelData
-				onTriggered: {
-					items.inserting = true
-					items.text = text
-					items.inserting = false
-				}
+				onTriggered: items.text = text
 			}
 			onObjectAdded: suggestions.insertItem(index, object)
 			onObjectRemoved: suggestions.removeItem(object)

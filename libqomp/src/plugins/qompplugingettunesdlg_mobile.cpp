@@ -30,8 +30,6 @@
 #include <QQmlComponent>
 #include <QQmlProperty>
 
-static const int sugTimerInterval = 1000;
-
 
 class QompPluginGettunesDlg::Private : public QObject
 {
@@ -42,20 +40,18 @@ public:
 
 public slots:
 	void search();
-	void timeout();
 	void accepted();
+	void returnPressed();
 
 public:
 	QQuickItem* item_;
 	QStringList searchHistory_;
-	QTimer* sugTimer_;
 	QompPluginGettunesDlg* mainDlg_;
 };
 
 QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	QObject(p),
 	item_(0),
-	sugTimer_(new QTimer(this)),
 	mainDlg_(p)
 {
 	item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/GetTunesDlg.qml"));
@@ -63,13 +59,9 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	searchHistory_ = Options::instance()->getOption(OPTION_SEARCH_HISTORY).toStringList();
 	QQmlProperty::write(item_, "model", QVariant::fromValue(searchHistory_));
 
-	sugTimer_->setSingleShot(true);
-	sugTimer_->setInterval(sugTimerInterval);
-
 	connect(item_, SIGNAL(doSearch()), SLOT(search()));
 	connect(item_, SIGNAL(accepted()), SLOT(accepted()));
-	connect(item_, SIGNAL(editTextChanged()), sugTimer_, SLOT(start()));
-	connect(sugTimer_, SIGNAL(timeout()), SLOT(timeout()));
+	connect(item_, SIGNAL(returnPressed()), SLOT(returnPressed()));
 }
 
 QompPluginGettunesDlg::Private::~Private()
@@ -98,21 +90,21 @@ void QompPluginGettunesDlg::Private::search()
 	emit mainDlg_->doSearch(text);
 }
 
-void QompPluginGettunesDlg::Private::timeout()
-{
-	QString text = mainDlg_->currentSearchText();
-	if(text.length() > 2) {
-		emit mainDlg_->searchTextChanged(text);
-		QQmlProperty::write(item_, "waitForSuggestions", true);
-	}
-}
-
 void QompPluginGettunesDlg::Private::accepted()
 {
 	if(item_->property("status").toBool())
 		emit mainDlg_->finished(Result::ResultOK);
 	else
 		emit mainDlg_->finished(Result::ResultCancel);
+}
+
+void QompPluginGettunesDlg::Private::returnPressed()
+{
+	QString text = mainDlg_->currentSearchText();
+	if(text.length() > 2) {
+		emit mainDlg_->searchTextChanged(text);
+		QQmlProperty::write(item_, "waitForSuggestions", true);
+	}
 }
 
 
