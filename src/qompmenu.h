@@ -52,7 +52,9 @@ signals:
 
 private:
 	virtual void buildMenu() Q_DECL_OVERRIDE;
-	void init();
+
+private slots:
+	void updateIcons();
 };
 
 class QompMainMenu : public QompMenu
@@ -75,10 +77,15 @@ signals:
 protected slots:
 	virtual void menuAboutToShow() Q_DECL_OVERRIDE;
 
+private slots:
+	void updateIcons();
+
 private:
 	virtual void buildMenu() Q_DECL_OVERRIDE;
 private:
 	QompGetTunesMenu* _tunesMenu;
+	QAction *_actToggle, *_actUpdates, *_actBugs, *_actQuit, *_actAboutQt, *_actOptions, *_actHome;
+	QMenu *_helpMenu;
 };
 
 class QompTrackMenu : public QompMenu
