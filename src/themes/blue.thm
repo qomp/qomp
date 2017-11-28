@@ -58,7 +58,7 @@ QToolButton {
     width: 28px;
     height: 28px;
     padding: 1px;
-    icon-size: 28px;
+    qproperty-iconSize: 28px;
 }
 
 QToolButton:hover {
