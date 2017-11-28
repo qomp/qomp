@@ -3,3 +3,7 @@ QompPlaylistView {
     font-size: 14px;
     font-family: "Sans Serif";
 }
+
+QToolButton {
+    qproperty-iconSize: 28px;
+}
