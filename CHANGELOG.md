@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.1 - 2017-12-19
+  + added support for native linux icon themes (new linux_native theme)
+  * updated Myzuka plugin url (myzuka.club)
+  * fixed suggestions on android
+  * fixed shuffle play on android
+  * updated Qt libs to 5.9.3 (OS X, Windows, Android)
+  * other minor fixes
+
 ## 1.3 - 2017-11-01
   + added cuteRadio plugin (Windows and Linux only). http://marxoft.co.uk/projects/cuteradio
   * improved playlists support

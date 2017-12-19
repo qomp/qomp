@@ -2,5 +2,5 @@
 	"id":"Filesystem",
 	"name": "File System",
 	"description": "Open music from filesystem",
-	"version": "1.3"
+	"version": "1.3.1"
 }

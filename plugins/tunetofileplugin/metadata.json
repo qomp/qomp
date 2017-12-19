@@ -2,5 +2,5 @@
 	"id": "Tune2File",
 	"name": "Tune to File",
 	"description": "Store current tune into file. Usefull for publishing tune in status",
-	"version": "1.3"  }
+	"version": "1.3.1"  }
 
