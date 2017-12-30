@@ -39,6 +39,7 @@ set( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
 set( LIB_SUFFIX "" CACHE STRING "Define suffix of lib directory name (32/64)" )
 set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where libs will be installed" )
 option(USE_MXE "Use MXE toolkit" OFF)
+option( USE_CPACK "Enable CPack" OFF )
 
 if( NOT USE_QT5 )
 	message(AUTHOR_WARNING "Qt4 support stopped since 1.1 version. Flag USE_QT5 always enabled")
@@ -58,6 +59,7 @@ else()
 endif()
 message(STATUS "Build type - ${CMAKE_BUILD_TYPE}")
 
+include( ${PROJECT_SOURCE_DIR}/cmake/modules/version.cmake )
 set( LIBQOMP_LIBRARY libqomp )
 add_subdirectory( ${LIBQOMP_LIBRARY} )
 add_subdirectory( plugins )
@@ -293,6 +295,10 @@ endif()
 
 set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
 
+if(USE_CPACK)
+	include( ${PROJECT_SOURCE_DIR}/cmake/modules/qomp-packaging.cmake )
+endif()
+
 target_link_libraries(
 	${PROJECT_NAME}
 	${LIBQOMP_LIBRARY}
@@ -306,7 +312,7 @@ if( WIN32 )
 	if( DEV_MODE )
 		set( OPENSSL_ROOT_DIR "c:\\build\\openssl" CACHE STRING "OpenSSL root path" )
 		set( ZLIB_ROOT "c:\\build\\zlib" CACHE STRING "ZLIB root path" )
-		include( Win32Qt5Install_files )
+		include( ${PROJECT_SOURCE_DIR}/cmake/modules/Win32Qt5Install_files.cmake )
 	endif()
 	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} )
 	set( TRS_PATH ${CMAKE_INSTALL_PREFIX}/translations )
@@ -341,6 +347,9 @@ if( LINUX )
 	INSTALL( FILES ${DESKTOPFILES} DESTINATION ${DESKTOP_PATH} )
 	if(THEMES_EXISTS)
 		INSTALL( FILES ${THEMES_RCC} DESTINATION ${APPDATA_PATH}/themes )
+	endif()
+	if(USE_CPACK)
+		INSTALL( FILES ${PROJECT_BINARY_DIR}/copyright DESTINATION ${DATADIR_PATH}/doc/${PROJECT_NAME} )
 	endif()
 endif()
 
