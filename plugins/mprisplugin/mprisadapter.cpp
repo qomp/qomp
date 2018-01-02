@@ -53,7 +53,7 @@ void MprisAdapter::setMetadata(const QompMetaData &tune)
 {
 	metaDataMap_.clear();
 	if (!tune.title.isEmpty()) {
-		metaDataMap_["xesam:title"] = QStringList() << tune.title;
+		metaDataMap_["xesam:title"] = tune.title;
 	}
 	else {
 		return;

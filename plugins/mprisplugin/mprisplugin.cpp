@@ -233,8 +233,12 @@ void MprisPlugin::getMetaData(Tune *tune)
 		tune_->album = tune->album;
 		tune_->trackNumber = num;
 		tune_->trackLength = Qomp::durationStringToSeconds(tune->duration)*1e6; //in microseconds
-		QString url = tune->file;
-		tune_->url = (url.isEmpty()) ? "" : url; //Sets URL only for local files
+		if (!tune->file.isEmpty()) {
+			tune_->url = (tune->file.startsWith("file://")) ? tune->file : "file://" + tune->file;
+		}
+		else {
+			tune_->url = QString();
+		}
 		tune_->cover = getAlbumArtFile(tune->cover());
 	}
 }
@@ -253,10 +257,13 @@ QString MprisPlugin::getAlbumArtFile(const QImage &art)
 			   || (scaledArt.size().height() > maxArtSize.height())) {
 				scaledArt = scaledArt.scaled(maxArtSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 			}
-			artFile_->setFileName(tmpPath + "/" + lastTune_->title + "_cover.png");
+			artFile_->setFileName(tmpPath + "/qomp_" + QString::number(qrand()) + "_cover.png");
 			if (artFile_->open()) {
 				coverPath = artFile_->fileName();
-				scaledArt.save(coverPath, "PNG");
+				if (!scaledArt.save(coverPath, "PNG")) {
+					artFile_->close();
+					return QString();
+				}
 				artFile_->close();
 			}
 		}
