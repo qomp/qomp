@@ -73,4 +73,11 @@ Usefull cmake flags:
    -DBUILD_THEMES=ON
    set this flag to compile qomp themes
    default value is ON
+**use cpack to build qomp packages
+   -DUSE_CPACK=ON
+   for now only *.rpm and *.deb packages supported
+   after cmake command you can use: make package
+   command to create qomp package
+**use qtchooser tool to determine default qt environment
+  -DUSE_QTCHOOSER=ON
   

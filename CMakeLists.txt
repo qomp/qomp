@@ -1,28 +1,8 @@
 cmake_minimum_required( VERSION 3.1.0 )
 #Hack to determine Qt by qtchooser utility
 option(USE_QTCHOOSER "Use qtchooser utility to determine Qt environment" OFF)
-if(USE_QTCHOOSER AND (UNIX AND NOT (APPLE OR CYGWIN)))
-	find_program(QTCHOOSER_PATH qtchooser DOC "Path to qtchooser")
-	if(QTCHOOSER_PATH)
-		message(STATUS "Found qtchooser: ${QTCHOOSER_PATH}")
-		execute_process(COMMAND "${QTCHOOSER_PATH}" -print-env
-				OUTPUT_VARIABLE Qt5_ENV)
-		string(REGEX MATCHALL "QTLIBDIR=\"?([^\"]+)\"?" QT5LIBDIR ${Qt5_ENV})
-		if(CMAKE_MATCH_1)
-			if(EXISTS ${CMAKE_MATCH_1})
-				message(STATUS "QTLIBDIR=${CMAKE_MATCH_1}")
-				set(CMAKE_PREFIX_PATH "${CMAKE_MATCH_1}/cmake")
-				set(Qt5_DIR "${CMAKE_MATCH_1}")
-			endif()
-		endif()
-		string(REGEX MATCHALL "QTTOOLDIR=\"?([^\"]+)\"?" QT5TOOLDIR ${Qt5_ENV})
-		if(CMAKE_MATCH_1)
-			if(EXISTS ${CMAKE_MATCH_1})
-				message(STATUS "QTTOOLDIR=${CMAKE_MATCH_1}")
-				set(QT_QMAKE_EXECUTABLE "${CMAKE_MATCH_1}/qmake")
-			endif()
-		endif()
-	endif()
+if(USE_QTCHOOSER)
+    include( ${CMAKE_CURRENT_LIST_DIR}/cmake/modules/qtchooser.cmake )
 endif()
 
 project( qomp )
@@ -259,18 +239,7 @@ add_executable(
 )
 
 macro(create_themes _sources _output)
-	if(${Qt5Core_VERSION} VERSION_LESS 5.5.0)
-		add_custom_command(OUTPUT "${_output}"
-			COMMAND "${Qt5Core_RCC_EXECUTABLE}"
-			ARGS --binary --verbose --output "${_output}" "${_sources}"
-			DEPENDS "${_sources}"
-			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-			COMMENT "Building external Qt resource ${_output}"
-			VERBATIM
-		)
-	else()
-		qt5_add_binary_resources(build_theme_rcc "${_sources}" OPTIONS -binary DESTINATION "${_output}")
-	endif()
+	qt5_add_binary_resources(build_theme_rcc "${_sources}" OPTIONS -binary DESTINATION "${_output}")
 	add_custom_target(build_themes_rcc DEPENDS "${_output}" SOURCES "${_sources}")
 	add_dependencies(${PROJECT_NAME} build_themes_rcc)
 endmacro()
