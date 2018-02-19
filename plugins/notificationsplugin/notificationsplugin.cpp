@@ -79,7 +79,7 @@ public:
 		growl_->notify(notificationName, APPLICATION_NAME, text, pix);
 #elif defined HAVE_X11
 		if (dbusNotify_->isAvailable()) {
-			static const QImage imageArt = (!art.isNull()) ? art : QImage(":/icons/icons/qomp.png");
+			QImage imageArt = (!art.isNull()) ? art : QImage(":/icons/icons/qomp.png");
 			dbusNotify_->doPopup(title, text, imageArt);
 		}
 #endif
