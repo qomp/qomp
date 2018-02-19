@@ -1,6 +1,10 @@
 set( PLUGIN myzukaruplugin )
 cmake_minimum_required( VERSION 3.1.0 )
 
+if ( NOT CMAKE_VERSION VERSION_LESS 3.10 )
+	cmake_policy(SET CMP0071 OLD)
+endif ()
+
 set( CMAKE_AUTOMOC ON )
 add_definitions( -DQT_PLUGIN )
 if( UNIX AND NOT (APPLE OR CYGWIN) )

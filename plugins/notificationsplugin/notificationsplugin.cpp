@@ -64,7 +64,7 @@ public:
 #endif
 	}
 
-	void showNotification(const QString& text)
+	void showNotification(const QString& text, QImage art = QImage())
 	{
 		static const QString title = QString(APPLICATION_NAME).left(1).toUpper() + QString(APPLICATION_NAME).mid(1) + QObject::tr(" now playing:");
 #ifdef Q_OS_ANDROID
@@ -79,8 +79,8 @@ public:
 		growl_->notify(notificationName, APPLICATION_NAME, text, pix);
 #elif defined HAVE_X11
 		if (dbusNotify_->isAvailable()) {
-			static const QImage appIcon(":/icons/icons/qomp.png");
-			dbusNotify_->doPopup(title, text, appIcon);
+			static const QImage imageArt = (!art.isNull()) ? art : QImage(":/icons/icons/qomp.png");
+			dbusNotify_->doPopup(title, text, imageArt);
 		}
 #endif
 	}
@@ -144,7 +144,7 @@ void NotificationsPlugin::playerStatusChanged(Qomp::State state)
 		Tune* t = player_->currentTune();
 		if(t != d->tune_) {
 			d->tune_ = t;
-			d->showNotification(t->displayString());
+			d->showNotification(t->displayString(), d->tune_->cover());
 		}
 	}
 }

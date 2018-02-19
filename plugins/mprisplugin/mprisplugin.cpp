@@ -249,6 +249,9 @@ QString MprisPlugin::getAlbumArtFile(const QImage &art)
 	if(artFile_->exists()) {
 		artFile_->remove();
 	}
+#ifdef DEBUG_OUTPUT
+    qDebug() << "Art Object" << art;
+#endif
 	if(!art.isNull()) {
 		const QString tmpPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 		if(!tmpPath.isEmpty()) {
