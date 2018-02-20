@@ -1,8 +1,8 @@
 cmake_minimum_required( VERSION 3.1.0 )
 
-if ( NOT CMAKE_VERSION VERSION_LESS 3.10 )
+if( POLICY CMP0071 )
 	cmake_policy(SET CMP0071 OLD)
-endif ()
+endif()
 
 #Hack to determine Qt by qtchooser utility
 option(USE_QTCHOOSER "Use qtchooser utility to determine Qt environment" OFF)
