@@ -208,15 +208,9 @@ void MprisPlugin::playerStatusChanged(Qomp::State state)
 			break;
 		case Qomp::StateStopped:
 			sendMetadata(STOPPED);
-			if (artFile_->exists()) {
-				artFile_->remove();
-			}
 			break;
 		case Qomp::StatePaused:
 			sendMetadata(PAUSED);
-			if (artFile_->exists()) {
-				artFile_->remove();
-			}
 			break;
 		default:
 			break;
@@ -245,14 +239,10 @@ void MprisPlugin::getMetaData(Tune *tune)
 
 QString MprisPlugin::getAlbumArtFile(const QImage &art)
 {
-	QString coverPath;
-	if(artFile_->exists()) {
-		artFile_->remove();
-	}
-#ifdef DEBUG_OUTPUT
-    qDebug() << "Art Object" << art;
-#endif
 	if(!art.isNull()) {
+		if(artFile_->exists()) {
+			artFile_->remove();
+		}
 		const QString tmpPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 		if(!tmpPath.isEmpty()) {
 			QImage scaledArt = art;
@@ -262,16 +252,16 @@ QString MprisPlugin::getAlbumArtFile(const QImage &art)
 			}
 			artFile_->setFileName(tmpPath + "/qomp_" + QString::number(qrand()) + "_cover.png");
 			if (artFile_->open()) {
-				coverPath = artFile_->fileName();
-				if (!scaledArt.save(coverPath, "PNG")) {
+				if (!scaledArt.save(artFile_, "PNG")) {
 					artFile_->close();
 					return QString();
 				}
 				artFile_->close();
+				return artFile_->fileName();
 			}
 		}
 	}
-	return coverPath;
+	return QString();
 }
 
 void MprisPlugin::tuneUpdated(Tune *tune)
