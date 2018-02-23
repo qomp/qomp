@@ -203,8 +203,9 @@ void MprisPlugin::playerStatusChanged(Qomp::State state)
 
 	switch(state) {
 		case Qomp::StatePlaying:
-			getMetaData(player_->currentTune());
-			sendMetadata(PLAYING);
+			if(getMetaData(player_->currentTune())) {
+				sendMetadata(PLAYING);
+			}
 			break;
 		case Qomp::StateStopped:
 			sendMetadata(STOPPED);
@@ -217,7 +218,7 @@ void MprisPlugin::playerStatusChanged(Qomp::State state)
 	}
 }
 
-void MprisPlugin::getMetaData(Tune *tune)
+bool MprisPlugin::getMetaData(Tune *tune)
 {
 	if (tune && lastTune_ != tune) {
 		lastTune_ = tune;
@@ -234,7 +235,9 @@ void MprisPlugin::getMetaData(Tune *tune)
 			tune_->url = QString();
 		}
 		tune_->cover = getAlbumArtFile(tune->cover());
+		return true;
 	}
+	return false;
 }
 
 QString MprisPlugin::getAlbumArtFile(const QImage &art)
@@ -267,8 +270,9 @@ QString MprisPlugin::getAlbumArtFile(const QImage &art)
 void MprisPlugin::tuneUpdated(Tune *tune)
 {
 	if(player_->state() == Qomp::StatePlaying) {
-		getMetaData(tune);
-		sendMetadata(PLAYING);
+		if(getMetaData(tune)) {
+			sendMetadata(PLAYING);
+		}
 	}
 }
 
@@ -277,7 +281,7 @@ void MprisPlugin::sendMetadata(const QString &status)
 	if (status == STOPPED || status == PAUSED) {
 		mpris_->sendData(status, QompMetaData());
 	}
-	else if (status == PLAYING){
+	else if (status == PLAYING) {
 		mpris_->sendData(status, *tune_);
 	}
 }

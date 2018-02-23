@@ -63,7 +63,7 @@ private slots:
 
 private:
 	void disableMpris();
-	void getMetaData(Tune *tune);
+	bool getMetaData(Tune *tune);
 	void sendMetadata(const QString &status);
 	QString getAlbumArtFile(const QImage &art);
 
