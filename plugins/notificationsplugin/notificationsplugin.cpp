@@ -73,7 +73,11 @@ public:
 		act.callMethod<void>("showNotification", "(Ljava/lang/String;)V", str.object<jstring>());
 #elif defined Q_OS_WIN
 		QSystemTrayIcon* ico = qApp->findChild<QSystemTrayIcon*>();
-		ico->showMessage(title, text, QSystemTrayIcon::Information, 5000);
+		if(!art.isNull()) {
+			ico->showMessage(title, text, QIcon(QPixmap::fromImage(art)), 5000);
+		} else {
+			ico->showMessage(title, text, QSystemTrayIcon::Information, 5000);
+		}
 #elif defined Q_OS_MAC
 		static const QPixmap pix("qrc:///icons/icons/qomp.png");
 		growl_->notify(notificationName, APPLICATION_NAME, text, pix);
