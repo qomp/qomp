@@ -32,6 +32,7 @@
 #include <QTimer>
 #include <QDialog>
 #include <QMessageBox>
+#include <QAbstractItemView>
 
 static const int sugTimerInterval = 500;
 

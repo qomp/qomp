@@ -23,6 +23,7 @@
 #include "ui_tunetofilesettings.h"
 
 #include <QFileDialog>
+#include <QStyle>
 #ifdef Q_OS_WIN
 #include <QProcessEnvironment>
 #endif
