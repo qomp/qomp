@@ -25,6 +25,7 @@
 
 class QNetworkAccessManager;
 class QNetworkProxy;
+class QNetworkReply;
 
 class LIBQOMPSHARED_EXPORT QompNetworkingFactory : public QObject
 {
@@ -50,6 +51,9 @@ public:
 	QNetworkAccessManager* getThreadedNAM();
 
 	bool isNetworkAvailable() const;
+
+private slots:
+	void logEvent(QNetworkReply* reply);
 	
 private:
 	QompNetworkingFactory();

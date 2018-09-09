@@ -87,7 +87,7 @@
         </receiver>
     </application>
 
-    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="19"/>
+    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="27"/>
     <supports-screens android:smallScreens="true" android:largeScreens="true" android:normalScreens="true" android:anyDensity="true"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>

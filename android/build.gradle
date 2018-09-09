@@ -1,24 +1,27 @@
 buildscript {
     repositories {
         jcenter()
+        google()
+        maven { url 'https://maven.fabric.io/public' }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.0'
+        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.google.gms:google-services:4.1.0'
+        classpath 'io.fabric.tools:gradle:1.25.4'
     }
 }
 
 allprojects {
     repositories {
         jcenter()
+        google()
+        maven { url 'https://maven.google.com/' }
     }
 }
 
 apply plugin: 'com.android.application'
-
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-}
+apply plugin: 'io.fabric'
 
 android {
     /*******************************************************
@@ -54,4 +57,23 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    dexOptions {
+        //preDexLibraries = false
+    }
+
+    defaultConfig {
+        applicationId "net.sourceforge.qomp" // Used by Firebase auto-config (the google-services.json from Firebase console)
+
+        // Enabling multidex support.
+        //multiDexEnabled = true
+    }
 }
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.google.firebase:firebase-core:16.0.3'
+    compile 'com.crashlytics.sdk.android:crashlytics:2.9.5'
+}
+
+apply plugin: 'com.google.gms.google-services'

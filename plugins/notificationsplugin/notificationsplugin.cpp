@@ -68,6 +68,8 @@ public:
 	{
 		static const QString title = QString(APPLICATION_NAME).left(1).toUpper() + QString(APPLICATION_NAME).mid(1) + QObject::tr(" now playing:");
 #ifdef Q_OS_ANDROID
+		Q_UNUSED(art)
+		Q_UNUSED(title)
 		QAndroidJniObject str = QAndroidJniObject::fromString(text);
 		QAndroidJniObject act = QtAndroid::androidActivity();
 		act.callMethod<void>("showNotification", "(Ljava/lang/String;)V", str.object<jstring>());
@@ -148,7 +150,11 @@ void NotificationsPlugin::playerStatusChanged(Qomp::State state)
 		Tune* t = player_->currentTune();
 		if(t != d->tune_) {
 			d->tune_ = t;
-			d->showNotification(t->displayString(), d->tune_->cover());
+			d->showNotification(t->displayString()
+						#ifndef Q_OS_ANDROID
+							, d->tune_->cover()
+						#endif
+					 );
 		}
 	}
 }

@@ -26,12 +26,18 @@
 #include <QTextCodec>
 #ifdef Q_OS_ANDROID
 #include <QCoreApplication>
+#include <QAndroidJniObject>
+#include <QtAndroid>
+#include <QAndroidJniEnvironment>
 #else
 #include <QWidget>
 #include <QLayout>
 #include <QApplication>
 #endif
 
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
 
 namespace Qomp {
 
@@ -186,6 +192,42 @@ QString safeDir(const QString& dir)
 
 	static const QString defDir("/sdcard/");
 	return defDir;
+}
+
+void logEvent(const QString &name, const QMap<QString, QString> &data)
+{
+#ifdef Q_OS_ANDROID
+#ifdef DEBUG_OUTPUT
+	qDebug() << "logEvent" << name << data;
+#endif
+	QAndroidJniEnvironment env;
+
+	static jclass javaArrayList  = static_cast<jclass>(env->NewGlobalRef(env->FindClass("java/util/ArrayList")));
+	static jmethodID javaInitArrayList = env->GetMethodID(javaArrayList, "<init>", "(I)V");
+
+	auto eventName = QAndroidJniObject::fromString(name);
+	//jmethodID javaArrayListAdd  = env->GetMethodID(java_util_ArrayList, "add", "(Ljava/lang/String;)Z");
+
+	jobject stringArrayKeys = env->NewObject(javaArrayList, javaInitArrayList, data.keys().size());
+	jobject stringArrayValues = env->NewObject(javaArrayList, javaInitArrayList, data.keys().size());
+	auto keys = QAndroidJniObject::fromLocalRef(stringArrayKeys);
+	auto values = QAndroidJniObject::fromLocalRef(stringArrayValues);
+
+	foreach(const QString& key, data.keys()) {
+		auto k = QAndroidJniObject::fromString(key);
+		auto v = QAndroidJniObject::fromString(data.value(key));
+		keys.callMethod<jboolean>("add", "(Ljava/lang/Object;)Z", k.object<jstring>());
+		values.callMethod<jboolean>("add", "(Ljava/lang/Object;)Z", v.object<jstring>());
+	}
+
+	QtAndroid::androidActivity().callMethod<void>("logEvent", "(Ljava/lang/String;Ljava/util/ArrayList;Ljava/util/ArrayList;)V",
+						eventName.object<jstring>(),
+						keys.object<jobject>(),
+						keys.object<jobject>());
+#else
+	Q_UNUSED(name)
+	Q_UNUSED(data)
+#endif
 }
 
 #endif

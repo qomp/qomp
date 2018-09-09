@@ -4,12 +4,12 @@ QT += network concurrent
 
 android {
     TARGET = qomp-shared
-} else {
+}
+else {
     TARGET = qomp
+    DESTDIR = $$OUT_PWD/../bin
 }
 TEMPLATE = lib
-
-DESTDIR = $$OUT_PWD/../bin
 
 DEFINES += LIBQOMP_LIBRARY
 

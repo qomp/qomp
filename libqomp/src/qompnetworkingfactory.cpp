@@ -26,6 +26,7 @@
 #include <QNetworkProxy>
 #include <QCoreApplication>
 #include <QNetworkCookieJar>
+#include <QNetworkReply>
 #ifdef HAVE_QT5
 #include <QNetworkCookie>
 #endif
@@ -76,6 +77,7 @@ QompNetworkingFactory::QompNetworkingFactory() :
 	manager_(new QNetworkAccessManager)
 {
 	manager_->setCookieJar(new QompNetworkCookieJar(manager_));
+	connect(manager_, &QNetworkAccessManager::finished, this, &QompNetworkingFactory::logEvent);
 	updateProxySettings();
 }
 
@@ -129,12 +131,19 @@ QNetworkAccessManager *QompNetworkingFactory::getThreadedNAM()
 	QNetworkAccessManager* m = new QNetworkAccessManager;
 	m->setCookieJar(new QompNetworkCookieJar(m));
 	m->setProxy(getProxy());
+	connect(manager_, &QNetworkAccessManager::finished, this, &QompNetworkingFactory::logEvent, Qt::DirectConnection);
 	return m;
 }
 
 bool QompNetworkingFactory::isNetworkAvailable() const
 {
 	return manager_->networkAccessible() == QNetworkAccessManager::Accessible;
+}
+
+void QompNetworkingFactory::logEvent(QNetworkReply *reply)
+{
+	const QUrl u = reply->url();
+	Qomp::logEvent("network_access", {{"path", u.host(QUrl::PrettyDecoded) + u.path(QUrl::PrettyDecoded)}});
 }
 
 

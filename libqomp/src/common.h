@@ -22,6 +22,7 @@
 
 #include <QString>
 #include <QMetaType>
+#include <QMap>
 
 #include "libqomp_global.h"
 #ifndef QOMP_MOBILE
@@ -44,6 +45,8 @@ LIBQOMPSHARED_EXPORT bool checkIsUTF(const QByteArray& data);
 
 LIBQOMPSHARED_EXPORT QString cacheDir();
 LIBQOMPSHARED_EXPORT QString dataDir();
+
+LIBQOMPSHARED_EXPORT void logEvent(const QString& name, const QMap<QString,QString>& data);
 
 #ifdef QOMP_MOBILE
 LIBQOMPSHARED_EXPORT QString safeDir(const QString& dir);

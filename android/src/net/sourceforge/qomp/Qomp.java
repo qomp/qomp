@@ -38,6 +38,10 @@ import android.os.PowerManager.WakeLock;
 import android.media.AudioManager;
 import android.content.ComponentName;
 
+//For crashlytics
+import com.google.firebase.analytics.FirebaseAnalytics;
+import java.util.ArrayList;
+
 
 public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
                   //implements AudioManager.OnAudioFocusChangeListener
@@ -232,6 +236,14 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
         if (uri != null){
             setUrl(uri);
         }
+    }
+
+    public void logEvent(final String eventName, ArrayList<String> keys, ArrayList<String> values) {
+        Bundle bundle = new Bundle();
+        for(int i = 0; i < keys.size(); i++) {
+            bundle.putString(keys.get(i), values.get(i));
+        }
+        FirebaseAnalytics.getInstance(this).logEvent(eventName, bundle);
     }
 
     private static native void menuKeyDown();

@@ -34,3 +34,4 @@ android/gradle.properties*
 android/local.properties*
 gradle-wrapper.properties~
 *.autosave
+google-services.json

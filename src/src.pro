@@ -6,7 +6,6 @@ CONFIG += qtmultimedia_backend
 
 
 TARGET = qomp
-DESTDIR = $$OUT_PWD/../bin
 TEMPLATE = app
 
 
@@ -55,12 +54,12 @@ macx {
 }
 
 android {
-  LIBS += -L$$OUT_PWD/../bin -lqomp-shared
+  LIBS += -L$$OUT_PWD/../libqomp -lqomp-shared
   ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
   ANDROID_EXTRA_LIBS += \
         $$TAG_LIB/libtag.so \
         $$CUE_LIB/libcue.so \
-        $$OUT_PWD/../bin/libqomp-shared.so
+        $$OUT_PWD/../libqomp/libqomp-shared.so
 
   !isEmpty(SSL_PATH) {
     ANDROID_EXTRA_LIBS += \
@@ -131,15 +130,18 @@ android {
     $$PWD/../android/res/values/libs.xml \
     $$PWD/../android/build.gradle \
     $$PWD/../android/gradle/wrapper/gradle-wrapper.properties \
-    $$PWD/../android/gradlew.bat
+    $$PWD/../android/gradlew.bat \
+    $$PWD/../android/gradle.properties
 
   OTHER_FILES += \
         $$PWD/../android/src/net/sourceforge/qomp/Qomp.java \
         $$PWD/../android/src/net/sourceforge/qomp/QompService.java \
         $$PWD/../android/src/net/sourceforge/qomp/MediaButtonReceiver.java
 
-} else {
+}
+else {
     LIBS += -L$$OUT_PWD/../bin -lqomp
+    DESTDIR = $$OUT_PWD/../bin
 }
 
 win32|android {
