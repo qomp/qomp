@@ -32,7 +32,7 @@
 #include <QStringList>
 
 
-static const QString ProstoPleerUrl = "http://pleer.net";
+static const QString ProstoPleerUrl = "http://mppleer.ru";
 
 class ProstopleerTune : public QompPluginTune
 {
