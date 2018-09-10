@@ -223,7 +223,7 @@ void logEvent(const QString &name, const QMap<QString, QString> &data)
 	QtAndroid::androidActivity().callMethod<void>("logEvent", "(Ljava/lang/String;Ljava/util/ArrayList;Ljava/util/ArrayList;)V",
 						eventName.object<jstring>(),
 						keys.object<jobject>(),
-						keys.object<jobject>());
+						values.object<jobject>());
 #else
 	Q_UNUSED(name)
 	Q_UNUSED(data)
