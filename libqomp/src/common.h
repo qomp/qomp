@@ -50,6 +50,7 @@ LIBQOMPSHARED_EXPORT void logEvent(const QString& name, const QMap<QString,QStri
 
 #ifdef QOMP_MOBILE
 LIBQOMPSHARED_EXPORT QString safeDir(const QString& dir);
+LIBQOMPSHARED_EXPORT QString storageDir();
 #else
 /**
  * Forces the given widget to update, even if it's hidden.

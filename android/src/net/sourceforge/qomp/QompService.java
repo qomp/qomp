@@ -1,37 +1,39 @@
 package net.sourceforge.qomp;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.os.Binder;
-
-import android.util.Log;
-
-//for notification icon
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Notification;
-import android.support.v4.app.NotificationCompat;
-import android.graphics.BitmapFactory;
-import android.graphics.Bitmap;
-
-//for Toast
-import android.widget.Toast;
-import java.lang.Runnable;
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
-
-
+import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 public class QompService extends Service {
 
     private static final int NotifRef = 1;
+    private static final String ChannelId = "QompServiceChannel";
     private final IBinder binder = new QompBinder();
     private final Handler handler = new Handler();
 
     @Override
     public void onCreate() {
-//        Log.i("QompService", "onCreated");
         super.onCreate();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(ChannelId,
+                    getResources().getString(R.string.channel_name),
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setSound(null, null);
+            NotificationManager m = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if(m != null)
+                m.createNotificationChannel(channel);
+        }
     }
 
     @Override
@@ -67,19 +69,19 @@ public class QompService extends Service {
 //        Log.i("QompService", "showStatusIcon  "+text);
         String app = getResources().getString(R.string.app_name) + " - " +
                      getResources().getString(R.string.icon_info);
-        Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
-                                                   R.drawable.notification);
-        NotificationCompat.Builder b = new NotificationCompat.Builder(this)
+//        Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
+//                                                   R.drawable.notification);
+        NotificationCompat.Builder b = new NotificationCompat.Builder(this, ChannelId)
                         .setContentTitle(app)
                         .setContentText(text)
                         .setSmallIcon(R.drawable.notification);
                         //.setLargeIcon(icon);
 
         Intent notificationIntent = new Intent(this, Qomp.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                                        notificationIntent,
-                                       PendingIntent.FLAG_UPDATE_CURRENT |
-                                       Intent.FLAG_ACTIVITY_NEW_TASK);
+                                       PendingIntent.FLAG_UPDATE_CURRENT);
 
          b.setContentIntent(contentIntent);
          Notification not = b.build();
@@ -88,9 +90,9 @@ public class QompService extends Service {
     }
 
     private class ToastRunnable implements Runnable {
-        String text_;
+        private String text_;
 
-        public ToastRunnable(final String text) {
+        ToastRunnable(final String text) {
             text_ = text;
         }
 
@@ -107,7 +109,7 @@ public class QompService extends Service {
         handler.post(new ToastRunnable(text));
     }
 
-    public class QompBinder extends Binder {
+    class QompBinder extends Binder {
         QompService getService() {
             return QompService.this;
         }

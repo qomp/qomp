@@ -143,7 +143,7 @@ QString cacheDir()
 {
 	QString dir;
 #ifdef Q_OS_ANDROID
-	dir = QString("/sdcard/.%1").arg(qApp->organizationName());
+	dir = QString("%1/.%2").arg(Qomp::storageDir(), qApp->organizationName());
 #else
 	QStringList list = QStandardPaths::standardLocations(QStandardPaths::CacheLocation);
 	if(!list.isEmpty())
@@ -190,9 +190,18 @@ QString safeDir(const QString& dir)
 	if(!dir.isEmpty() && info.exists() && info.isDir())
 		return info.absoluteFilePath();
 
-	static const QString defDir("/sdcard/");
+	static const QString defDir(Qomp::storageDir() + "/");
 	return defDir;
 }
+
+QString storageDir() {
+	QAndroidJniObject storage = QAndroidJniObject::callStaticObjectMethod("android.os.Environment",
+								       "getExternalStorageDirectory",
+								       "()Ljava/io/File;");
+	auto path = storage.callObjectMethod("getAbsolutePath", "()Ljava/lang/String;");
+	return path.toString();
+}
+#endif
 
 void logEvent(const QString &name, const QMap<QString, QString> &data)
 {
@@ -229,8 +238,6 @@ void logEvent(const QString &name, const QMap<QString, QString> &data)
 	Q_UNUSED(data)
 #endif
 }
-
-#endif
 
 /**
  * Helper function for forceUpdate().

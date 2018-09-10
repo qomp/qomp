@@ -1,54 +1,32 @@
 package net.sourceforge.qomp;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.app.Activity;
-import java.lang.Exception;
-
-//for checking intent
-import android.os.Handler;
-
-import android.util.Log;
-
-//for menu and media key handling
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.media.AudioManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.PowerManager;
+import android.support.v4.content.ContextCompat;
+import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
 
-//import java.util.Locale;
-
-//import android.content.res.Configuration;
-import android.os.Bundle;
-
-//for incomming calls receiving
-import android.telephony.TelephonyManager;
-import android.content.BroadcastReceiver;
-import android.os.Bundle;
-import android.content.IntentFilter;
-
-//for service
-import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.content.ComponentName;
-import android.app.Service;
-
-//For PowerManager
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
-
-//For Media Button Click
-import android.media.AudioManager;
-import android.content.ComponentName;
-
-//For crashlytics
 import com.google.firebase.analytics.FirebaseAnalytics;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 
 public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
                   //implements AudioManager.OnAudioFocusChangeListener
 {
-    public static final String NOTIFY = "net.sourceforge.qomp.NOTIFY";
-
-    private PowerManager.WakeLock wl_;
+    private static final int PermissionsRequest = 1;
+    private PowerManager.WakeLock wl_ = null;
     private BroadcastReceiver callReceiver_;
     private QompService service_;
     private ComponentName mediaComponent_;
@@ -66,9 +44,11 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
     };
 
     @Override
-    public void onCreate (Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         // Log.i("Qomp", "onCreated");
         super.onCreate(savedInstanceState);
+
+        checkRights();
 
         mediaComponent_ = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
 
@@ -76,7 +56,8 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
         bindToService();
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wl_ = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
+        if(pm != null)
+            wl_ = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
     }
 
     @Override
@@ -95,38 +76,43 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
         registerMediaReceiver();
     }
 
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String uri = intent.getDataString();
+//        Log.i("Qomp","onNewInten " + uri);
+        if (uri != null){
+            setUrl(uri);
+        }
+    }
+
     public String checkIntent() {
         Intent intent = getIntent();
         if(intent != null) {
             String action = intent.getAction();
             if (action != null && action.compareTo(Intent.ACTION_VIEW) == 0) {
-                String uri = intent.getDataString();
-                return uri;
+                return intent.getDataString();
             }
         }
         return null;
-    }
-
-    @Override
-    public void onDestroy() {
-        //Log.i("Qomp", "onDestroy");
-        super.onDestroy();
     }
 
     public void deInit() {
         unbindService(sConn_);
         unregisterReceiver(callReceiver_);
         unregisterMediaReceiver();
-        if(wl_.isHeld())
+        if(wl_ != null && wl_.isHeld())
             wl_.release();
     }
 
     public void makeWakeLock(int timeout) {
 //        Log.i("Qomp", "makeWakeLock " + Integer.toString(timeout));
-        if(wl_.isHeld())
-            wl_.release();
+        if(wl_ != null) {
+            if (wl_.isHeld())
+                wl_.release();
 
-        wl_.acquire(timeout);
+            wl_.acquire(timeout);
+        }
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -157,7 +143,8 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
                             return;
 
                     String state = bundle.getString(TelephonyManager.EXTRA_STATE);
-                    processIncomingCall(state);
+                    if(state != null)
+                        processIncomingCall(state);
             }
         };
         IntentFilter f = new IntentFilter("android.intent.action.PHONE_STATE");
@@ -169,8 +156,10 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
             AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             //int result = manager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
             //if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            if(manager != null) {
                 manager.registerMediaButtonEventReceiver(mediaComponent_);
                 mediaRegistered_ = true;
+            }
             //}
         }
     }
@@ -178,8 +167,10 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
     private void unregisterMediaReceiver() {
         if(mediaRegistered_) {
             AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            manager.unregisterMediaButtonEventReceiver(mediaComponent_);
-            mediaRegistered_ = false;
+            if(manager != null) {
+                manager.unregisterMediaButtonEventReceiver(mediaComponent_);
+                mediaRegistered_ = false;
+            }
         }
     }
 
@@ -228,22 +219,23 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
             service_.showToast(text);
     }
 
-    @Override
-    public void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        String uri = intent.getDataString();
-//        Log.i("Qomp","onNewInten " + uri);
-        if (uri != null){
-            setUrl(uri);
-        }
-    }
-
     public void logEvent(final String eventName, ArrayList<String> keys, ArrayList<String> values) {
         Bundle bundle = new Bundle();
         for(int i = 0; i < keys.size(); i++) {
             bundle.putString(keys.get(i), values.get(i));
         }
         FirebaseAnalytics.getInstance(this).logEvent(eventName, bundle);
+    }
+
+    @SuppressLint("NewApi")
+    private void checkRights() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) )
+        {
+                String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE};
+                requestPermissions(perms, PermissionsRequest);
+        }
     }
 
     private static native void menuKeyDown();

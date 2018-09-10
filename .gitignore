@@ -35,3 +35,5 @@ android/local.properties*
 gradle-wrapper.properties~
 *.autosave
 google-services.json
+android/.*/
+android/android.iml

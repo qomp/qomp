@@ -81,7 +81,7 @@ static QompCon* _instance;
 #ifdef TEST_ANDROID
 static QtMessageHandler _handler = nullptr;
 
-static QFile f("/sdcard/.qomp/log.txt");
+static QFile f(Qomp::storageDir() + "/.qomp/log.txt");
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
 	QString str = QString("Debug [%1]: %2 (%3:%4, %5)\n")

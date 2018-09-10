@@ -20,6 +20,7 @@
 
 #include "options.h"
 #include "defines.h"
+#include "common.h"
 #include <QSettings>
 #include <QCoreApplication>
 
@@ -34,14 +35,16 @@ Options* Options::instance()
 
 	return instance_;
 }
-
+#include <QDebug>
 Options::Options()
 	: QObject(qApp)
 	, set_(0)
 {
 #ifdef Q_OS_ANDROID
-	set_ = new QSettings(QString("/sdcard/.%1/%2.ini")
-			     .arg(qApp->organizationName(), qApp->applicationName()),
+	set_ = new QSettings(QString("%1/.%2/%3.ini")
+			     .arg(Qomp::storageDir(),
+				  qApp->organizationName(),
+				  qApp->applicationName()),
 			     QSettings::IniFormat, this);
 #else
 	set_ = new QSettings(QSettings::IniFormat, QSettings::UserScope,

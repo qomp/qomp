@@ -3,4 +3,5 @@
     <string name="app_name">qomp</string>
     <string name="icon_info">Music player</string>
     <string name="srv_name">qomp-service</string>
+    <string name="channel_name">qomp channel</string>
 </resources>
