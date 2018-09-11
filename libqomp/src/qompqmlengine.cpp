@@ -20,6 +20,7 @@
 #include "qompqmlengine.h"
 #include "scaler.h"
 #include "covercache.h"
+#include "common.h"
 
 #include <QGuiApplication>
 #include <QQuickItem>
@@ -39,6 +40,7 @@
 QQuickWindow* _instance = nullptr;
 
 static const int UPDATE_INTERVAL = 100;
+static const char* PROP_URL = "prop_url";
 
 #ifdef Q_OS_ANDROID
 static void menuKeyDown(JNIEnv */*env*/, jobject /*thiz*/)
@@ -96,6 +98,7 @@ QQuickItem *QompQmlEngine::createItem(const QUrl &url)
 	QQuickItem* item = static_cast<QQuickItem*>(comp->create(rootContext()));
 	comp->setParent(item);
 	connect(item, SIGNAL(destroyed()), SLOT(itemDeleted()));
+	item->setProperty(PROP_URL, url.toDisplayString());
 	return item;
 }
 
@@ -105,6 +108,7 @@ void QompQmlEngine::addItem(QQuickItem *item)
 	setObjectOwnership(item, QQmlEngine::JavaScriptOwnership);
 	QMetaObject::invokeMethod(window_, "addView", Qt::DirectConnection,
 				  Q_ARG(QVariant, QVariant::fromValue(item)));
+	Qomp::logEvent("item_view", {{"qml_item", item->property(PROP_URL).toString()}});
 }
 
 void QompQmlEngine::removeItem()
