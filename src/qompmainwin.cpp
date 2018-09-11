@@ -417,6 +417,10 @@ void QompMainWin::Private::doTrackContextMenu(const QPoint& val)
 void QompMainWin::Private::updateTuneInfo(Tune* tune)
 {
 	QModelIndex i = parentWin_->model_->indexForTune(tune);
+
+	if(i.isValid())
+		ui->playList->scrollTo(i);
+
 	if(i.isValid() && (parentWin_->currentState_ == Qomp::StatePaused || parentWin_->currentState_ == Qomp::StatePlaying)) {
 		ui->lb_artist->setText(i.data(QompPlayListModel::ArtistRole).toString());
 		ui->lb_title->setText(i.data(QompPlayListModel::TitleRole).toString());
