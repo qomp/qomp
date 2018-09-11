@@ -2,11 +2,9 @@ package net.sourceforge.qomp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
@@ -15,7 +13,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.ContextCompat;
-import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -23,11 +20,11 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.ArrayList;
 
 public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
-                  //implements AudioManager.OnAudioFocusChangeListener
+                  implements AudioManager.OnAudioFocusChangeListener
 {
     private static final int PermissionsRequest = 1;
     private PowerManager.WakeLock wl_ = null;
-    private BroadcastReceiver callReceiver_;
+//    private BroadcastReceiver callReceiver_;
     private QompService service_;
     private ComponentName mediaComponent_;
     private boolean mediaRegistered_ = false;
@@ -52,7 +49,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
 
         mediaComponent_ = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
 
-        registerCallReceiver();
+//        registerCallReceiver();
         bindToService();
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -99,7 +96,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
 
     public void deInit() {
         unbindService(sConn_);
-        unregisterReceiver(callReceiver_);
+//        unregisterReceiver(callReceiver_);
         unregisterMediaReceiver();
         if(wl_ != null && wl_.isHeld())
             wl_.release();
@@ -132,7 +129,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
         return super.onKeyUp(keyCode, event);
     }
 
-    private void registerCallReceiver() {
+    /*private void registerCallReceiver() {
         callReceiver_ = new BroadcastReceiver() {
 
             @Override
@@ -149,14 +146,14 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
         };
         IntentFilter f = new IntentFilter("android.intent.action.PHONE_STATE");
         registerReceiver(callReceiver_, f);
-    }
+    }*/
 
     private void registerMediaReceiver() {
         if(!mediaRegistered_) {
             AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            //int result = manager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-            //if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             if(manager != null) {
+                int result = manager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+                //if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 manager.registerMediaButtonEventReceiver(mediaComponent_);
                 mediaRegistered_ = true;
             }
@@ -174,23 +171,21 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
         }
     }
 
- /*   @Override
+    @Override
     public void onAudioFocusChange(int focusChange) {
-         if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-             //Log.e("ClassOnAudioFocusChangeListener: ", "AUDIOFOCUS_LOSS_TRANSIENT");
-         }
-         else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-             //Log.e("ClassOnAudioFocusChangeListener: ", "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
-         }
-         else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-             //Log.e("ClassOnAudioFocusChangeListener: ", "AUDIOFOCUS_GAIN");
-         }
-         else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-             //Log.e("ClassOnAudioFocusChangeListener: ", "AUDIOFOCUS_LOSS");
-         }
-    }*/
+        //Log.i("Qomp", "onAudioFocusChange " + String.valueOf(focusChange));
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            audioFocusLoss(true, false);
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+            audioFocusLoss(true, true);
+        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            audioFocusGain();
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+            audioFocusLoss(false, false);
+        }
+    }
 
-    public static void processIncomingCall(final String state) {
+    /*public static void processIncomingCall(final String state) {
        // Log.i("Qomp","State: "+ state);
 
         if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_RINGING)) {
@@ -201,7 +196,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
                // Log.i("Qomp","Incomng Call Finished");
                 incomingCallFinish();
         }
-    }
+    }*/
 
     private void bindToService() {
         Intent i = new Intent(this, QompService.class);
@@ -231,16 +226,18 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
     private void checkRights() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) )
+                /*|| ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED*/) )
         {
-                String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE};
+                String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE/*, Manifest.permission.READ_PHONE_STATE*/};
                 requestPermissions(perms, PermissionsRequest);
         }
     }
 
     private static native void menuKeyDown();
-    private static native void incomingCallStart();
-    private static native void incomingCallFinish();
+//    private static native void incomingCallStart();
+//    private static native void incomingCallFinish();
+    private static native void audioFocusLoss(boolean isTransient, boolean canDuck);
+    private static native void audioFocusGain();
     private static native void setUrl(final String url);
     public  static native void mediaButtonClicked();
 }

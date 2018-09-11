@@ -45,7 +45,10 @@ public:
 	~QompCon();
 
 public slots:
-	void incomingCall(bool begining);
+	//android staff
+//	void incomingCall(bool begining);
+	void audioFocusLoss(bool transient, bool canDuck);
+	void audioFocusGain();
 
 	//QompPlayerControl
 	virtual void actPlayNext() Q_DECL_OVERRIDE;
@@ -124,6 +127,10 @@ private:
 	QMutex mutex_;
 #ifndef QOMP_MOBILE
 	QompInstanceWatcher watcher_;
+#else
+	bool ducking_ = false;
+	bool transientLose_ = false;
+	qreal lastVolume_;
 #endif
 };
 

@@ -102,15 +102,15 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 }
 #endif
 
-static void incomingCallStart(JNIEnv */*env*/, jobject /*thiz*/)
-{
-	QMetaObject::invokeMethod(_instance, "incomingCall", Qt::QueuedConnection, Q_ARG(bool, true));
-}
+//static void incomingCallStart(JNIEnv */*env*/, jobject /*thiz*/)
+//{
+//	QMetaObject::invokeMethod(_instance, "incomingCall", Qt::QueuedConnection, Q_ARG(bool, true));
+//}
 
-static void incomingCallFinish(JNIEnv */*env*/, jobject /*thiz*/)
-{
-	QMetaObject::invokeMethod(_instance, "incomingCall", Qt::QueuedConnection, Q_ARG(bool, false));
-}
+//static void incomingCallFinish(JNIEnv */*env*/, jobject /*thiz*/)
+//{
+//	QMetaObject::invokeMethod(_instance, "incomingCall", Qt::QueuedConnection, Q_ARG(bool, false));
+//}
 
 static void notifyIcon(const QString& text)
 {
@@ -123,7 +123,6 @@ static void deInitActivity()
 {
 	QAndroidJniObject act = QtAndroid::androidActivity();
 	act.callMethod<void>("deInit", "()V");
-
 }
 
 static void setUrl(JNIEnv */*env*/, jobject /*thiz*/, const jstring url)
@@ -144,6 +143,24 @@ static void mediaButtonClicked(JNIEnv */*env*/, jobject /*thiz*/)
 	QMetaObject::invokeMethod(_instance, "processHeadsetButtonClick", Qt::QueuedConnection);
 }
 
+static void audioFocusGain(JNIEnv */*env*/, jobject /*thiz*/)
+{
+#ifdef DEBUG_OUTPUT
+	qDebug() << "audioFocusGain";
+#endif
+	QMetaObject::invokeMethod(_instance, "audioFocusGain", Qt::QueuedConnection);
+}
+
+static void audioFocusLoss(JNIEnv */*env*/, jobject /*thiz*/, jboolean isTransient, jboolean canDuck)
+{
+	auto trans = (isTransient != JNI_FALSE);
+	auto duck  = (canDuck != JNI_FALSE);
+#ifdef DEBUG_OUTPUT
+	qDebug() << "audioFocusLoss" << trans << duck;
+#endif
+	QMetaObject::invokeMethod(_instance, "audioFocusLoss", Qt::QueuedConnection,
+					  Q_ARG(bool, trans), Q_ARG(bool, duck));
+}
 #endif
 
 
@@ -174,10 +191,12 @@ QompCon::QompCon(QObject *parent) :
 	QAndroidJniEnvironment jni;
 	jclass clazz = jni->GetObjectClass(act.object());
 	JNINativeMethod methods[] = {
-			{ "incomingCallStart",  "()V", (void*)incomingCallStart  },
-			{ "incomingCallFinish", "()V", (void*)incomingCallFinish },
+//			{ "incomingCallStart",  "()V", (void*)incomingCallStart  },
+//			{ "incomingCallFinish", "()V", (void*)incomingCallFinish },
 			{ "setUrl", "(Ljava/lang/String;)V", (void*)setUrl },
-			{ "mediaButtonClicked", "()V", (void*)mediaButtonClicked }
+			{ "mediaButtonClicked", "()V", (void*)mediaButtonClicked },
+			{ "audioFocusGain", "()V", (void*)::audioFocusGain },
+			{ "audioFocusLoss", "(ZZ)V", (void*)::audioFocusLoss }
 		};
 	jni->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0]));
 	jni->DeleteLocalRef(clazz);
@@ -522,26 +541,68 @@ void QompCon::connectMediaKeys()
 #endif
 }
 
-void QompCon::incomingCall(bool begining)
+//void QompCon::incomingCall(bool begining)
+//{
+//#ifdef Q_OS_ANDROID
+//#ifdef DEBUG_OUTPUT
+//	qDebug() << "incomingCall" << begining;
+//#endif
+//	static Qomp::State state = Qomp::StateStopped;
+
+//	if(begining) {
+//		if(player_->state() == Qomp::StatePlaying) {
+//			state = Qomp::StatePlaying;
+//			actPause();
+//		}
+//	}
+//	else {
+//		if(state == Qomp::StatePlaying) {
+//			actPlay();
+//			state =  Qomp::StateStopped;
+//		}
+//	}
+//#else
+//	Q_UNUSED(begining)
+//#endif
+//}
+
+void QompCon::audioFocusLoss(bool transient, bool canDuck)
 {
 #ifdef Q_OS_ANDROID
-	static Qomp::State state = Qomp::StateStopped;
+	if(!transient) {
+		ducking_ = false;
+		transientLose_ = false;
 
-	if(begining) {
-		if(player_->state() == Qomp::StatePlaying) {
-			state = Qomp::StatePlaying;
+		if(player_->state() == Qomp::StatePlaying)
+			actPause();
+	}
+	else if(player_->state() == Qomp::StatePlaying) {
+		if(canDuck) {
+			ducking_ = true;
+			lastVolume_ = player_->volume();
+			actSetVolume(lastVolume_ * 0.5);
+		}
+		else {
+			transientLose_ = true;
 			actPause();
 		}
 	}
-	else {
-		if(state == Qomp::StatePlaying) {
-			actPlay();
-			state =  Qomp::StateStopped;
-		}
-	}
 #else
-	Q_UNUSED(begining)
+	Q_UNUSED(canDuck)
 #endif
+}
+
+void QompCon::audioFocusGain()
+{
+	if(ducking_) {
+		actSetVolume(lastVolume_);
+	}
+	else if(transientLose_) {
+		actPlay();
+	}
+
+	ducking_ = false;
+	transientLose_ = false;
 }
 
 void QompCon::updateSettings()
