@@ -25,6 +25,9 @@
 
 class LIBQOMPSHARED_EXPORT QompPlayerControl
 {
+public:
+	virtual ~QompPlayerControl(){}
+
 public slots:
 	virtual void actPlayNext() = 0;
 	virtual void actPlayPrev() = 0;

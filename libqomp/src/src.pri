@@ -53,6 +53,9 @@ else {
                $$PWD/qompactionslist.cpp \
                $$PWD/thememanager.cpp \
                $$PWD/extendedcombobox.cpp
+
+
+    include($$PWD/../../ga/qt-google-analytics.pri)
 }
 
 lupdate_only {

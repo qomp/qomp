@@ -18,10 +18,11 @@
  *
  */
 
-
 #include "advwidget.h"
 #include "windowheader.h"
 #include "thememanager.h"
+#include "common.h"
+#include "defines.h"
 
 #include <QMouseEvent>
 #include <QWidget>
@@ -55,6 +56,8 @@ template<class BaseClass>
 void AdvancedWidget<BaseClass>::setupFinished()
 {
 	themeChanged();
+
+	Qomp::logEvent(ITEM_VIEW_EVENT, {{ITEM_VIEW_EVENT_DATA, BaseClass::windowTitle()}});
 }
 
 template<class BaseClass>

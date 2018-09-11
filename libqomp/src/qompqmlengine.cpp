@@ -21,6 +21,7 @@
 #include "scaler.h"
 #include "covercache.h"
 #include "common.h"
+#include "defines.h"
 
 #include <QGuiApplication>
 #include <QQuickItem>
@@ -108,7 +109,7 @@ void QompQmlEngine::addItem(QQuickItem *item)
 	setObjectOwnership(item, QQmlEngine::JavaScriptOwnership);
 	QMetaObject::invokeMethod(window_, "addView", Qt::DirectConnection,
 				  Q_ARG(QVariant, QVariant::fromValue(item)));
-	Qomp::logEvent("item_view", {{"qml_item", item->property(PROP_URL).toString()}});
+	Qomp::logEvent(ITEM_VIEW_EVENT, {{"qml_item", item->property(PROP_URL).toString()}});
 }
 
 void QompQmlEngine::removeItem()

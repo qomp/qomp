@@ -143,7 +143,7 @@ bool QompNetworkingFactory::isNetworkAvailable() const
 void QompNetworkingFactory::logEvent(QNetworkReply *reply)
 {
 	const QUrl u = reply->url();
-	Qomp::logEvent("network_access", {{"path", u.host(QUrl::PrettyDecoded)}});
+	Qomp::logEvent(NETWORK_EVENT, {{NETWORK_EVENT_DATA, u.host(QUrl::PrettyDecoded)}});
 }
 
 

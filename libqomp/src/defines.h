@@ -75,4 +75,9 @@
 
 #define PLAYLIST_EXTENTION "qomp"
 
+#define ITEM_VIEW_EVENT      "item_view"
+#define ITEM_VIEW_EVENT_DATA "view"
+#define NETWORK_EVENT        "network_access"
+#define NETWORK_EVENT_DATA   "path"
+
 #endif // DEFINES_H

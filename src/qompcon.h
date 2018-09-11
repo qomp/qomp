@@ -20,13 +20,13 @@
 #ifndef QOMP_H
 #define QOMP_H
 
-#include <QModelIndex>
-#include <QPointer>
-#include <QMutex>
-
 #include "common.h"
 #include "qompinstancewatcher.h"
 #include "qompplayercontrol.h"
+
+#include <QModelIndex>
+#include <QPointer>
+#include <QMutex>
 
 class QompMainWin;
 class QompPlayListModel;
@@ -42,7 +42,7 @@ class QompCon : public QObject, public QompPlayerControl
 	Q_INTERFACES(QompPlayerControl)
 public:
 	explicit QompCon(QObject *parent = 0);
-	~QompCon();
+	virtual ~QompCon();
 
 public slots:
 	//android staff

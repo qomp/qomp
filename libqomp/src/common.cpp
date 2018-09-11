@@ -18,6 +18,7 @@
  */
 
 #include "common.h"
+#include "defines.h"
 
 #include <QTime>
 #include <QTextDocument>
@@ -30,6 +31,7 @@
 #include <QtAndroid>
 #include <QAndroidJniEnvironment>
 #else
+#include "ganalytics.h"
 #include <QWidget>
 #include <QLayout>
 #include <QApplication>
@@ -37,6 +39,41 @@
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
+#endif
+
+
+#ifndef Q_OS_ANDROID
+#include "qompnetworkingfactory.h"
+//#include <QUuid>
+
+static const QString TrackingID = "UA-42858086-4";
+
+class QompGA : public QObject
+{
+	Q_OBJECT
+public:
+	explicit QompGA(QObject *p = nullptr) : QObject(p),
+		analytics(new GAnalytics(TrackingID, this))
+	{
+		analytics->setNetworkAccessManager(QompNetworkingFactory::instance()->getMainNAM());
+//		if(analytics->userID().isEmpty()) {
+//			analytics->setUserID(QUuid::createUuid().toString());
+//		}
+#ifdef DEBUG_OUTPUT
+		analytics->setLogLevel(GAnalytics::Debug);
+#endif
+		analytics->startSession();
+	}
+
+	~QompGA()
+	{
+		analytics->endSession();
+	}
+
+	GAnalytics* analytics;
+};
+
+QompGA* qompGA = nullptr;
 #endif
 
 namespace Qomp {
@@ -205,10 +242,10 @@ QString storageDir() {
 
 void logEvent(const QString &name, const QMap<QString, QString> &data)
 {
-#ifdef Q_OS_ANDROID
 #ifdef DEBUG_OUTPUT
 	qDebug() << "logEvent" << name << data;
 #endif
+#ifdef Q_OS_ANDROID
 	QAndroidJniEnvironment env;
 
 	static jclass javaArrayList  = static_cast<jclass>(env->NewGlobalRef(env->FindClass("java/util/ArrayList")));
@@ -234,8 +271,19 @@ void logEvent(const QString &name, const QMap<QString, QString> &data)
 						keys.object<jobject>(),
 						values.object<jobject>());
 #else
-	Q_UNUSED(name)
-	Q_UNUSED(data)
+	if(!qompGA)
+		qompGA = new QompGA(qApp);
+
+	if(name == ITEM_VIEW_EVENT) {
+		qompGA->analytics->sendScreenView(data[ITEM_VIEW_EVENT_DATA]);
+	}
+	else {
+		QVariantMap map;
+		for(QMap<QString,QString>::const_iterator it = data.constBegin(); it != data.constEnd(); ++it) {
+			map[it.key()] = it.value();
+		}
+		qompGA->analytics->sendEvent(name, "", "", "", map);
+	}
 #endif
 }
 
@@ -318,3 +366,5 @@ QDebug operator<<(QDebug dbg, Qomp::State value)
 	return dbg.space();
 }
 #endif
+
+#include "common.moc"
