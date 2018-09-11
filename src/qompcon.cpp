@@ -588,12 +588,14 @@ void QompCon::audioFocusLoss(bool transient, bool canDuck)
 		}
 	}
 #else
+	Q_UNUSED(transient)
 	Q_UNUSED(canDuck)
 #endif
 }
 
 void QompCon::audioFocusGain()
 {
+#ifdef Q_OS_ANDROID
 	if(ducking_) {
 		actSetVolume(lastVolume_);
 	}
@@ -603,6 +605,7 @@ void QompCon::audioFocusGain()
 
 	ducking_ = false;
 	transientLose_ = false;
+#endif
 }
 
 void QompCon::updateSettings()
