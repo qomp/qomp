@@ -48,6 +48,12 @@ set( frameless_SRCS
 	src/frameless/advwidget.cpp
 	src/frameless/windowheader.cpp
 )
+set( g_analytics_HDRS
+	${CMAKE_SOURCE_DIR}/ga/ganalytics.h
+)
+set( g_analytics_SRCS
+	${CMAKE_SOURCE_DIR}/ga/ganalytics.cpp
+)
 set( libqomp_HDRS
 	src/covercache.h
 	src/extendedcombobox.h
@@ -67,6 +73,7 @@ set( libqomp_HDRS
 	${plugins_HDRS}
 	${options_HDRS}
 	${frameless_HDRS}
+	${g_analytics_HDRS}
 )
 
 set( libqomp_INCLUDE_HDRS
@@ -122,6 +129,7 @@ set( libqomp_SRCS
 	src/playlistparser.cpp
 	${plugins_SRCS}
 	${frameless_SRCS}
+	${g_analytics_SRCS}
 )
 set( libqomp_UIFILES
 	src/plugins/qompplugingettunesdlg.ui
@@ -156,6 +164,7 @@ include_directories(
 	src/frameless
 	src/plugins
 	src/options
+	${CMAKE_SOURCE_DIR}/ga
 )
 
 find_package( Qt5 REQUIRED Widgets Network Concurrent )
