@@ -46,9 +46,6 @@
           <iconset resource="../../../src/qomp.qrc">
            <normaloff>:/icons/search</normaloff>:/icons/search</iconset>
          </property>
-         <property name="shortcut">
-          <string notr="true">Ctrl+S</string>
-         </property>
         </widget>
        </item>
       </layout>

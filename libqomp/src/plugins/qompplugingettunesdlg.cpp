@@ -80,6 +80,8 @@ QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	dialog_->setAttribute(Qt::WA_DeleteOnClose);
 	dialog_->setModal(true);
 	ui->setupUi(dialog_);
+	//Can't set it from UI: https://bugreports.qt.io/browse/QTBUG-65251
+	ui->pb_search->setShortcut(QKeySequence("Ctrl+S"));
 
 	connect(dialog_, SIGNAL(destroyed(QObject*)), p, SLOT(deleteLater()));
 	connect(dialog_, SIGNAL(finished(int)), SLOT(dialogFinished(int)));
