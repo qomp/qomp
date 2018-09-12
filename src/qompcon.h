@@ -93,7 +93,7 @@ private slots:
 	void processHeadsetButtonClick();
 
 protected:
-	bool eventFilter(QObject *obj, QEvent *e);
+	virtual bool eventFilter(QObject *obj, QEvent *e) Q_DECL_OVERRIDE;
 
 private:
 	void setupMainWin();

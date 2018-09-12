@@ -66,9 +66,9 @@ public:
 
 	void showNotification(const QString& text, QImage art = QImage())
 	{
+		Q_UNUSED(art)
 		static const QString title = QString(APPLICATION_NAME).left(1).toUpper() + QString(APPLICATION_NAME).mid(1) + QObject::tr(" now playing:");
 #ifdef Q_OS_ANDROID
-		Q_UNUSED(art)
 		Q_UNUSED(title)
 		QAndroidJniObject str = QAndroidJniObject::fromString(text);
 		QAndroidJniObject act = QtAndroid::androidActivity();
