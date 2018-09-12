@@ -35,6 +35,7 @@
 #include <QWidget>
 #include <QLayout>
 #include <QApplication>
+#include <QFile>
 #endif
 
 #ifdef DEBUG_OUTPUT
@@ -43,10 +44,8 @@
 
 
 #ifndef Q_OS_ANDROID
-#include "qompnetworkingfactory.h"
-//#include <QUuid>
-
 static const QString TrackingID = "UA-42858086-4";
+static const QString eventsFileName = "/cached-events";
 
 class QompGA : public QObject
 {
@@ -55,10 +54,12 @@ public:
 	explicit QompGA(QObject *p = nullptr) : QObject(p),
 		analytics(new GAnalytics(TrackingID, this))
 	{
-		analytics->setNetworkAccessManager(QompNetworkingFactory::instance()->getMainNAM());
-//		if(analytics->userID().isEmpty()) {
-//			analytics->setUserID(QUuid::createUuid().toString());
-//		}
+		QFile f(Qomp::cacheDir() + eventsFileName);
+		if(f.exists() && f.open(QFile::ReadOnly)) {
+			QDataStream stream(&f);
+			stream >> *analytics;
+			f.close();
+		}
 #ifdef DEBUG_OUTPUT
 		analytics->setLogLevel(GAnalytics::Debug);
 #endif
@@ -68,6 +69,13 @@ public:
 	~QompGA()
 	{
 		analytics->endSession();
+
+		QFile f(Qomp::cacheDir() + eventsFileName);
+		if(f.open(QFile::WriteOnly)) {
+			QDataStream stream(&f);
+			stream << *analytics;
+			f.close();
+		}
 	}
 
 	GAnalytics* analytics;
@@ -278,11 +286,12 @@ void logEvent(const QString &name, const QMap<QString, QString> &data)
 		qompGA->analytics->sendScreenView(data[ITEM_VIEW_EVENT_DATA]);
 	}
 	else {
-		QVariantMap map;
-		for(QMap<QString,QString>::const_iterator it = data.constBegin(); it != data.constEnd(); ++it) {
-			map[it.key()] = it.value();
+		QString action, label;
+		if(data.size() > 0) {
+			label = data.firstKey();
+			action = data.value(label);
 		}
-		qompGA->analytics->sendEvent(name, "", "", "", map);
+		qompGA->analytics->sendEvent(name, action, label);
 	}
 #endif
 }
