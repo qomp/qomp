@@ -367,4 +367,6 @@ QDebug operator<<(QDebug dbg, Qomp::State value)
 }
 #endif
 
+#ifndef Q_OS_ANDROID
 #include "common.moc"
+#endif
