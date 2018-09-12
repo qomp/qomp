@@ -68,10 +68,19 @@ android {
   }
 
   !CONFIG(debug, debug|release) {
-    ANDROID_DEPLOYMENT_DEPENDENCIES = \
-        jar/QtAndroid-bundled.jar \
-        jar/QtAndroidBearer-bundled.jar \
-        jar/QtMultimedia-bundled.jar
+    greaterThan(QT_MINOR_VERSION, 10) {
+        ANDROID_DEPLOYMENT_DEPENDENCIES = \
+            jar/QtAndroid.jar \
+            jar/QtAndroidBearer.jar \
+            jar/QtAndroidExtras.jar \
+            jar/QtMultimedia.jar
+    }
+    else {
+        ANDROID_DEPLOYMENT_DEPENDENCIES = \
+            jar/QtAndroid-bundled.jar \
+            jar/QtAndroidBearer-bundled.jar \
+            jar/QtMultimedia-bundled.jar
+    }
 
     ANDROID_DEPLOYMENT_DEPENDENCIES += \
         lib/libQt5Core.so \

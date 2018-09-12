@@ -41,9 +41,15 @@ CONFIG += c++11
 
 android {
     QT += quick qml androidextras
+
     DEFINES += QOMP_MOBILE
     CONFIG(debug, debug|release) {
         DEFINES += TEST_ANDROID
+    }
+    else {
+        greaterThan(QT_MINOR_VERSION, 10) {
+            CONFIG += qtquickcompiler
+        }
     }
 }
 

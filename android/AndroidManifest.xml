@@ -77,12 +77,7 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".QompService"
-            android:enabled="true"
-            android:exported="false"
-            android:label="@string/srv_name"
-            android:icon="@drawable/icon" />
+        <service android:name=".QompService" android:enabled="true" android:exported="false" android:label="@string/srv_name" android:icon="@drawable/icon"/>
 
         <receiver android:name=".MediaButtonReceiver">
             <intent-filter>

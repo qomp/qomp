@@ -19,6 +19,7 @@ Rectangle {
 		anchors.margins: 8 * scaler.scaleMargins
 		anchors.fill: parent
 //		inputMethodComposing: true
+		inputMethodHints: Qt.ImhNoAutoUppercase
 		selectByMouse: true
 		verticalAlignment: TextInput.AlignVCenter
 		horizontalAlignment: TextInput.AlignLeft
