@@ -38,12 +38,11 @@ Item {
 		onRunningChanged: {
 			if(!running) {
 				if(deleteExit) {
-					exitItem.destroy()
+					destoryItem(exitItem)
 					exitItem = null
 				}
 				enterItem.focus = true
 			}
-
 		}
 	}
 
@@ -79,10 +78,14 @@ Item {
 	function clear() {
 		for(var i = depth - 1; i >= 0; --i) {
 			var it = content.children[i]
-			it.width = 0
-			it.height = 0
-			it.visible = false
-			it.destroy()
+			destoryItem(it)
 		}
+	}
+
+	function destoryItem(item) {
+		item.width = 0
+		item.height = 0
+		item.visible = false
+		item.destroy()
 	}
 }

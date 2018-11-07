@@ -37,3 +37,4 @@ gradle-wrapper.properties~
 google-services.json
 android/.*/
 android/android.iml
+*qmlcache.qrc

@@ -57,9 +57,7 @@ PoiskmPluginGetTunesDialog::Private::~Private()
 
 void PoiskmPluginGetTunesDialog::Private::itemClicked(const QVariant &row)
 {
-	//QAbstractItemModel *model = item->property("model").value<QAbstractItemModel*>();
 	QModelIndex i = row.value<QModelIndex>();
-	//model->setData(i, QompCon::DataToggle, Qt::CheckStateRole);
 	emit itemClicked(i);
 }
 
@@ -74,7 +72,7 @@ PoiskmPluginGetTunesDialog::PoiskmPluginGetTunesDialog(QObject *parent) :
 	p = new Private;
 
 	connect (p, SIGNAL(itemClicked(QModelIndex)), SLOT(itemSelected(QModelIndex)));
-	connect (p, SIGNAL(next()), SIGNAL(next()));
+	connect (p, &PoiskmPluginGetTunesDialog::Private::next, this, &PoiskmPluginGetTunesDialog::next);
 	setResultsWidget(p->item);
 }
 

@@ -4,7 +4,6 @@ import "qrc:///qmlshared"
 BasePage {
 	id: root
 
-	property alias pages: placeholder
 	property alias qompVer: aboutdlg.title
 
 	title: qsTr("Options")
@@ -117,5 +116,10 @@ BasePage {
 		var i = comp.createObject(placeholder, {"text": _title})
 		_item.parent = placeholder
 		placeholder.height += i.height + _item.height
+	}
+
+	Component.onDestruction: {
+		for(var i = placeholder.children.length - 1; i >= 0; --i)
+			placeholder.children[i].destroy()
 	}
 }

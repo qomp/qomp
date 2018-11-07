@@ -9,7 +9,6 @@ ButtonsPage {
 
 	property alias model: items.model
 	property alias serchText: items.text
-	readonly property alias pluginContent: placeholder
 
 	property bool waitForSuggestions: false
 
@@ -128,5 +127,14 @@ ButtonsPage {
 			if(list.length > 0)
 				suggestions.popup()
 		}
+	}
+
+	function setPluginContent(content) {
+		content.parent = placeholder
+	}
+
+	Component.onDestruction: {
+		if(placeholder.children.length > 0)
+			placeholder.children[0].destroy()
 	}
 }

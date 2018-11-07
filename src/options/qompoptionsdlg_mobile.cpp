@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014  Khryukin Evgeny
+ * Copyright (C) 2013-2018  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -86,10 +86,8 @@ private:
 		QQuickItem* item = qobject_cast<QQuickItem*>(page->page());
 		Q_ASSERT(item);
 
-		QObject* p = item_->property("pages").value<QObject*>();
-		Q_ASSERT(p);
-		item->setParent(p);
-
+		item->setParent(0);
+		QompQmlEngine::instance()->setObjectOwnership(item, QQmlEngine::JavaScriptOwnership);
 		QMetaObject::invokeMethod(item_, "addPage",
 					  Q_ARG(QVariant, page->name()),
 					  Q_ARG(QVariant, QVariant::fromValue(item)));
@@ -145,4 +143,3 @@ void QompOptionsDlg::addPluginPage(const QString &name)
 }
 
 #include "qompoptionsdlg_mobile.moc"
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  Khryukin Evgeny
+ * Copyright (C) 2014-2018  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -68,7 +68,6 @@ QompPluginGettunesDlg::Private::~Private()
 {
 	Options::instance()->setOption(OPTION_SEARCH_HISTORY, searchHistory_);
 	QompQmlEngine::instance()->removeItem();
-	//item_->deleteLater();
 }
 
 void QompPluginGettunesDlg::Private::search()
@@ -138,12 +137,10 @@ void QompPluginGettunesDlg::setResultsWidget(QObject *widget)
 	QQuickItem* w = qobject_cast<QQuickItem*>(widget);
 	Q_ASSERT(w);
 	if(w) {
-		QObjectList l;
-		l.append(w);
-		QObject* content = d->item_->property("pluginContent").value<QObject*>();
-		Q_ASSERT(content);
-		w->setParent(content);
-		QQmlProperty::write(w, "parent", QVariant::fromValue(content));
+		w->setParent(0);
+		QompQmlEngine::instance()->setObjectOwnership(w, QQmlEngine::JavaScriptOwnership);
+		QMetaObject::invokeMethod(d->item_, "setPluginContent", Qt::DirectConnection,
+					  Q_ARG(QVariant, QVariant::fromValue(widget)));
 	}
 }
 
