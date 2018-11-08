@@ -42,6 +42,7 @@ signals:
 
 public slots:
 	void itemClicked(const QVariant &row);
+	void selectAllClicked();
 };
 
 PoiskmPluginGetTunesDialog::Private::Private() : QObject()
@@ -49,6 +50,7 @@ PoiskmPluginGetTunesDialog::Private::Private() : QObject()
 	item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/PoiskmResultView.qml"));
 	connect(item, SIGNAL(itemCheckClick(QVariant)), SLOT(itemClicked(QVariant)));
 	connect(item, SIGNAL(actNext()), SIGNAL(next()));
+	connect(item, SIGNAL(selectAllClicked()), SLOT(selectAllClicked()));
 }
 
 PoiskmPluginGetTunesDialog::Private::~Private()
@@ -59,6 +61,16 @@ void PoiskmPluginGetTunesDialog::Private::itemClicked(const QVariant &row)
 {
 	QModelIndex i = row.value<QModelIndex>();
 	emit itemClicked(i);
+}
+
+void PoiskmPluginGetTunesDialog::Private::selectAllClicked()
+{
+	auto model = QQmlProperty::read(item, "model").value<QAbstractItemModel*>();
+	if(model) {
+		for(int i = 0; i < model->rowCount(); ++i) {
+			model->setData(model->index(i, 0), QompCon::DataToggle, Qt::CheckStateRole);
+		}
+	}
 }
 
 

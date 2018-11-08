@@ -8,13 +8,44 @@ Item {
 	property alias page: curPage.text
 	property alias nextEnabled: btnNext.enabled
 
+	readonly property int fontSize: 25 * scaler.scaleY
+
 	signal itemCheckClick(var index)
 	signal actNext()
+	signal selectAllClicked()
+
+	Row {
+		id: checkboxRow
+
+		anchors {
+			top: parent.top
+			left: parent.left
+			right: parent.right
+			margins: 10 * scaler.scaleMargins
+		}
+		height: 60 * scaler.scaleY
+
+		QompCheckBox {
+			id: selecAll
+
+			anchors.verticalCenter: parent.verticalCenter
+			onCheckedChanged: selectAllClicked()
+		}
+
+		Text {
+			text: qsTr("Select all")
+			anchors.verticalCenter: parent.verticalCenter
+			height: parent.height
+			anchors.leftMargin: 10 * scaler.scaleX
+			font.pixelSize: fontSize
+			verticalAlignment: Text.AlignVCenter
+		}
+	}
 
 	QompPluginsSearchView {
 		id: view
 
-		anchors.top: parent.top
+		anchors.top: checkboxRow.bottom
 		anchors.bottom: info.top
 		anchors.left: parent.left
 		anchors.right: parent.right
@@ -37,10 +68,10 @@ Item {
 
 			anchors.left: parent.left
 			anchors.verticalCenter: parent.verticalCenter
-			height: parent.height/2
+			height: parent.height
 			width: contentWidth
-			anchors.leftMargin: 5 * scaler.scaleX
-			font.pixelSize: height / 2
+			anchors.leftMargin: 10 * scaler.scaleX
+			font.pixelSize: fontSize
 			verticalAlignment: Text.AlignVCenter
 			text: qsTr("Current:")
 
@@ -51,10 +82,10 @@ Item {
 
 			anchors.left: pageTxt.right
 			anchors.verticalCenter: parent.verticalCenter
-			height: parent.height/2
+			height: parent.height
 			width: 80 * scaler.scaleX
 			anchors.leftMargin: 5 * scaler.scaleX
-			font.pixelSize: height / 2
+			font.pixelSize: fontSize
 			verticalAlignment: Text.AlignVCenter
 			text: "0"
 		}
