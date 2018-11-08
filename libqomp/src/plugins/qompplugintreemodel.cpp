@@ -130,7 +130,7 @@ QVariant QompPluginTreeModel::data(const QModelIndex &index, int role) const
 
 
 	if(role == Qt::CheckStateRole && index.flags() & Qt::ItemIsUserCheckable) {
-		return QVariant(selected_.contains(index) ? 2 : 0);
+		return QVariant(selected_.contains(index) ? Qt::Checked : Qt::Unchecked);
 	}
 	else if(role == Qt::DisplayRole) {
 		return static_cast<QompPluginModelItem*>(index.internalPointer())->toString();

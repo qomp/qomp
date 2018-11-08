@@ -29,7 +29,7 @@ class LIBQOMPSHARED_EXPORT QompPluginCaptchaDialog: public QObject
 {
 	Q_OBJECT
 public:
-	QompPluginCaptchaDialog(const QPixmap& captcha, QObject* parent = 0);
+	QompPluginCaptchaDialog(const QPixmap& captcha, QObject* parent = nullptr);
 	~QompPluginCaptchaDialog();
 
 	bool start();

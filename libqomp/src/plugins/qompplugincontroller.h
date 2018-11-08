@@ -33,7 +33,7 @@ class LIBQOMPSHARED_EXPORT QompPluginController : public QObject
 {
 	Q_OBJECT
 public:
-	explicit QompPluginController(QObject *parent = 0);
+	explicit QompPluginController(QObject *parent = nullptr);
 	virtual ~QompPluginController();
 
 	/**

@@ -34,7 +34,7 @@ class LIBQOMPSHARED_EXPORT QompPluginAction : public QObject
 	Q_PROPERTY(QString text READ text() NOTIFY textChanged())
 
 public:
-	QompPluginAction(const QIcon& ico, const QString& text, QObject* receiver, const char* slot, QObject *parent = 0);
+	QompPluginAction(const QIcon& ico, const QString& text, QObject* receiver, const char* slot, QObject *parent = nullptr);
 	~QompPluginAction();
 
 	QString text() const;

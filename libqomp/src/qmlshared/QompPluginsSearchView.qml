@@ -109,7 +109,13 @@ FocusScope {
 						anchors.leftMargin: 10 * scaler.scaleX
 
 						visible: model.state !== undefined
-						checked: visible ? model.state : false
+
+						Binding {
+							target: chkbx
+							property: "checked"
+							value: visible ? model.state : false
+							delayed: true
+						}
 
 						onClicked: {
 							root.checkBoxClicked(list.model.modelIndex(index))
