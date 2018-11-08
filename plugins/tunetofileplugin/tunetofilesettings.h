@@ -39,7 +39,7 @@ public:
 
 public slots:
 	virtual void applyOptions() Q_DECL_FINAL;
-	virtual void restoreOptions();
+	virtual void restoreOptions() Q_DECL_FINAL;
 
 private slots:
 	void getFileName();

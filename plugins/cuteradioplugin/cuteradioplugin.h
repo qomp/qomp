@@ -35,15 +35,15 @@ class CuteRadioPlugin : public QObject, public QompPlugin, public QompTunePlugin
 #endif
 public:
 	CuteRadioPlugin();
-	virtual QString name() const { return CUTERADIO_PLUGIN_NAME; }
-	virtual QString version() const { return CUTERADIO_PLUGIN_VERSION; }
-	virtual QString description() const;
-	virtual QompOptionsPage* options();
-	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return nullptr; }
-	virtual void setEnabled(bool enabled);
-	virtual void unload();
-	virtual QList<QompPluginAction*> getTunesActions();
-	virtual bool processUrl(const QString &, QList<Tune*> *) { return false; }
+	virtual QString name() const Q_DECL_FINAL { return CUTERADIO_PLUGIN_NAME; }
+	virtual QString version() const Q_DECL_FINAL { return CUTERADIO_PLUGIN_VERSION; }
+	virtual QString description() const Q_DECL_FINAL;
+	virtual QompOptionsPage* options() Q_DECL_FINAL;
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const Q_DECL_FINAL { return nullptr; }
+	virtual void setEnabled(bool enabled) Q_DECL_FINAL;
+	virtual void unload() Q_DECL_FINAL;
+	virtual QList<QompPluginAction*> getTunesActions() Q_DECL_FINAL;
+	virtual bool processUrl(const QString &, QList<Tune*> *) Q_DECL_FINAL { return false; }
 
 private slots:
 	void getTunes(QompPluginAction *act);

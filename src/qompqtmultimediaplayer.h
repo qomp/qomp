@@ -36,25 +36,25 @@ public:
 	QompQtMultimediaPlayer();
 	~QompQtMultimediaPlayer();
 
-	virtual void setVolume(qreal vol);
-	virtual qreal volume() const;
-	virtual void setMute(bool mute);
-	virtual bool isMuted() const;
-	virtual void setPosition(qint64 pos);
-	virtual qint64 position() const;
+	virtual void setVolume(qreal vol) Q_DECL_OVERRIDE;
+	virtual qreal volume() const Q_DECL_OVERRIDE;
+	virtual void setMute(bool mute) Q_DECL_OVERRIDE;
+	virtual bool isMuted() const Q_DECL_OVERRIDE;
+	virtual void setPosition(qint64 pos) Q_DECL_OVERRIDE;
+	virtual qint64 position() const Q_DECL_OVERRIDE;
 
-	virtual Qomp::State state() const;
-	virtual void play();
-	virtual void pause();
-	virtual void stop();
-	virtual qint64 currentTuneTotalTime() const;
+	virtual Qomp::State state() const Q_DECL_OVERRIDE;
+	virtual void play() Q_DECL_OVERRIDE;
+	virtual void pause() Q_DECL_OVERRIDE;
+	virtual void stop() Q_DECL_OVERRIDE;
+	virtual qint64 currentTuneTotalTime() const Q_DECL_OVERRIDE;
 
-	virtual QStringList audioOutputDevice() const;
-	virtual void setAudioOutputDevice(const QString& devName);
-	virtual QString defaultAudioDevice() const;
+	virtual QStringList audioOutputDevice() const Q_DECL_OVERRIDE;
+	virtual void setAudioOutputDevice(const QString& devName) Q_DECL_OVERRIDE;
+	virtual QString defaultAudioDevice() const Q_DECL_OVERRIDE;
 
 protected slots:
-	virtual void doSetTune();
+	virtual void doSetTune() Q_DECL_OVERRIDE;
 
 private slots:
 	void volumeChanged(int);
@@ -67,7 +67,7 @@ private slots:
 	void seekableChanged(bool seekable);
 
 protected:
-	virtual QompMetaDataResolver* metaDataResolver() const;
+	virtual QompMetaDataResolver* metaDataResolver() const Q_DECL_OVERRIDE;
 
 private:
 	/**

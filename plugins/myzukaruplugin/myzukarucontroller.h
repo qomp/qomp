@@ -33,19 +33,19 @@ class MyzukaruController : public QompPluginController
 {
 	Q_OBJECT
 public:
-	explicit MyzukaruController(QObject *parent = 0);
-	virtual ~MyzukaruController();
+	explicit MyzukaruController(QObject *parent = nullptr);
+	~MyzukaruController();
 
 protected slots:
-	void doSearch(const QString& txt);
-	QompPluginGettunesDlg* view() const;
-	void itemSelected(QompPluginModelItem* item);
-	void getSuggestions(const QString& text);
-	void suggestionsFinished();
+	void doSearch(const QString& txt) Q_DECL_FINAL;
+	QompPluginGettunesDlg* view() const Q_DECL_FINAL;
+	void itemSelected(QompPluginModelItem* item) Q_DECL_FINAL;
+	void getSuggestions(const QString& text) Q_DECL_FINAL;
+	void suggestionsFinished() Q_DECL_FINAL;
 
 protected:
-	void init();
-	QList<Tune*> prepareTunes() const;
+	void init() Q_DECL_FINAL;
+	QList<Tune*> prepareTunes() const Q_DECL_FINAL;
 
 private slots:
 	void searchFinished();

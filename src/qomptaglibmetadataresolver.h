@@ -40,7 +40,7 @@ public:
 	explicit QompTagLibMetaDataResolver(QObject *parent = 0);
 
 protected:
-	virtual void start();
+	virtual void start() Q_DECL_OVERRIDE;
 
 private slots:
 	void dataReady();

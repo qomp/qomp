@@ -39,14 +39,14 @@ class TuneToFilePlugin : public QObject, public QompPlugin, public QompPlayerSta
 public:
 	TuneToFilePlugin();
 
-	virtual QString name() const { return tr("Tune to File"); }
-	virtual QString version() const { return "1.3.1"; }
-	virtual QString description() const { return tr("Store current tune into file. Usefull for publishing tune in status"); }
-	virtual QompOptionsPage* options();
-	virtual void qompPlayerChanged(QompPlayer* player);
-	virtual void playerControlChanged(QompPlayerControl* control) { Q_UNUSED(control) }
-	virtual void setEnabled(bool enabled);
-	virtual void unload();
+	virtual QString name() const Q_DECL_FINAL { return tr("Tune to File"); }
+	virtual QString version() const Q_DECL_FINAL { return "1.3.1"; }
+	virtual QString description() const Q_DECL_FINAL { return tr("Store current tune into file. Usefull for publishing tune in status"); }
+	virtual QompOptionsPage* options() Q_DECL_FINAL;
+	virtual void qompPlayerChanged(QompPlayer* player) Q_DECL_FINAL;
+	virtual void playerControlChanged(QompPlayerControl* control) Q_DECL_FINAL { Q_UNUSED(control) }
+	virtual void setEnabled(bool enabled) Q_DECL_FINAL;
+	virtual void unload() Q_DECL_FINAL;
 
 private slots:
 	void playerStatusChanged(Qomp::State state);

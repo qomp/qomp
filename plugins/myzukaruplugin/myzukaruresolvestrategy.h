@@ -35,8 +35,8 @@ public:
 
 	static void reset();
 
-	virtual QUrl getUrl(const Tune *t);
-	virtual QString name() const;
+	virtual QUrl getUrl(const Tune *t) Q_DECL_FINAL;
+	virtual QString name() const Q_DECL_FINAL;
 
 	QUrl getBaseUrl(const Tune *t);
 

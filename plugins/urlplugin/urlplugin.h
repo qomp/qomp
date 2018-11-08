@@ -34,15 +34,15 @@ class UrlPlugin : public QObject, public QompPlugin, public QompTunePlugin
 #endif
 public:
 	UrlPlugin();
-	virtual QString name() const { return PLUGIN_NAME; }
-	virtual QString version() const { return "1.3.1"; }
-	virtual QString description() const { return tr("Open custom URL"); }
-	virtual QompOptionsPage* options();
-	virtual TuneURLResolveStrategy* urlResolveStrategy() const { return 0; }
-	virtual void setEnabled(bool /*enabled*/) {}
-	virtual void unload(){}
-	virtual QList<QompPluginAction*> getTunesActions();
-	virtual bool processUrl(const QString &, QList<Tune*> *);
+	virtual QString name() const Q_DECL_FINAL { return PLUGIN_NAME; }
+	virtual QString version() const Q_DECL_FINAL { return "1.3.1"; }
+	virtual QString description() const Q_DECL_FINAL { return tr("Open custom URL"); }
+	virtual QompOptionsPage* options() Q_DECL_FINAL;
+	virtual TuneURLResolveStrategy* urlResolveStrategy() const Q_DECL_FINAL { return 0; }
+	virtual void setEnabled(bool /*enabled*/) Q_DECL_FINAL {}
+	virtual void unload() Q_DECL_FINAL {}
+	virtual QList<QompPluginAction*> getTunesActions() Q_DECL_FINAL;
+	virtual bool processUrl(const QString &, QList<Tune*> *) Q_DECL_FINAL;
 
 private slots:
 	void getTunes(QompPluginAction* act);

@@ -37,14 +37,14 @@ class MprisPlugin : public QObject, public QompPlugin, public QompPlayerStatusPl
 public:
 	MprisPlugin();
 	~MprisPlugin() {}
-	virtual QString name() const { return tr("MPRIS Plugin"); }
-	virtual QString version() const { return "1.3.1"; }
-	virtual QString description() const { return tr("Interface to MPRIS"); }
-	virtual QompOptionsPage* options() { return 0; }
-	virtual void qompPlayerChanged(QompPlayer* player);
-	virtual void playerControlChanged(QompPlayerControl* control);
-	virtual void setEnabled(bool enabled);
-	virtual void unload();
+	virtual QString name() const Q_DECL_FINAL { return tr("MPRIS Plugin"); }
+	virtual QString version() const Q_DECL_FINAL { return "1.3.1"; }
+	virtual QString description() const Q_DECL_FINAL { return tr("Interface to MPRIS"); }
+	virtual QompOptionsPage* options() Q_DECL_FINAL { return 0; }
+	virtual void qompPlayerChanged(QompPlayer* player) Q_DECL_FINAL;
+	virtual void playerControlChanged(QompPlayerControl* control) Q_DECL_FINAL;
+	virtual void setEnabled(bool enabled) Q_DECL_FINAL;
+	virtual void unload() Q_DECL_FINAL;
 
 private slots:
 	void playerStatusChanged(Qomp::State state);
