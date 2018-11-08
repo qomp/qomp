@@ -42,7 +42,7 @@ signals:
 
 public slots:
 	void itemClicked(const QVariant &row);
-	void selectAllClicked();
+	void selectAllClicked(const QVariant& select);
 };
 
 PoiskmPluginGetTunesDialog::Private::Private() : QObject()
@@ -50,7 +50,7 @@ PoiskmPluginGetTunesDialog::Private::Private() : QObject()
 	item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/PoiskmResultView.qml"));
 	connect(item, SIGNAL(itemCheckClick(QVariant)), SLOT(itemClicked(QVariant)));
 	connect(item, SIGNAL(actNext()), SIGNAL(next()));
-	connect(item, SIGNAL(selectAllClicked()), SLOT(selectAllClicked()));
+	connect(item, SIGNAL(selectAllClicked(QVariant)), SLOT(selectAllClicked(QVariant)));
 }
 
 PoiskmPluginGetTunesDialog::Private::~Private()
@@ -63,12 +63,19 @@ void PoiskmPluginGetTunesDialog::Private::itemClicked(const QVariant &row)
 	emit itemClicked(i);
 }
 
-void PoiskmPluginGetTunesDialog::Private::selectAllClicked()
+void PoiskmPluginGetTunesDialog::Private::selectAllClicked(const QVariant& select)
 {
 	auto model = QQmlProperty::read(item, "model").value<QAbstractItemModel*>();
 	if(model) {
+		bool sel = select.toBool();
 		for(int i = 0; i < model->rowCount(); ++i) {
-			model->setData(model->index(i, 0), QompCon::DataToggle, Qt::CheckStateRole);
+			const QModelIndex ind = model->index(i, 0);
+			bool curSel = model->data(ind, Qt::CheckStateRole).toInt() == Qt::Checked;
+			if(sel != curSel) {
+				model->setData(ind, sel ? QompCon::DataSelect : QompCon::DataUnselect,
+						Qt::CheckStateRole);
+				emit itemClicked(ind);
+			}
 		}
 	}
 }

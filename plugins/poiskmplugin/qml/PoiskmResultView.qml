@@ -12,7 +12,7 @@ Item {
 
 	signal itemCheckClick(var index)
 	signal actNext()
-	signal selectAllClicked()
+	signal selectAllClicked(var select)
 
 	Row {
 		id: checkboxRow
@@ -29,7 +29,7 @@ Item {
 			id: selecAll
 
 			anchors.verticalCenter: parent.verticalCenter
-			onCheckedChanged: selectAllClicked()
+			onCheckedChanged: selectAllClicked(checked)
 		}
 
 		Text {
