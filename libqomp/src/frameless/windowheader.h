@@ -33,7 +33,7 @@ class WindowHeader : public QWidget
 {
 	Q_OBJECT
 public:
-	WindowHeader(QWidget* p);
+	explicit WindowHeader(QWidget* p);
 	~WindowHeader();
 
 	void setCaption(const QString& caption);

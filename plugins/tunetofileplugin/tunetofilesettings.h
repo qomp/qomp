@@ -31,14 +31,14 @@ class TuneToFileSettings : public QompOptionsPage
 	Q_OBJECT
 
 public:
-	explicit TuneToFileSettings(QObject *parent = 0);
+	explicit TuneToFileSettings(QObject *parent = nullptr);
 	~TuneToFileSettings();
-	virtual QString name() const;
-	virtual void retranslate();
-	virtual QObject* page() const;
+	virtual QString name() const Q_DECL_FINAL;
+	virtual void retranslate() Q_DECL_FINAL;
+	virtual QObject* page() const Q_DECL_FINAL;
 
 public slots:
-	virtual void applyOptions();
+	virtual void applyOptions() Q_DECL_FINAL;
 	virtual void restoreOptions();
 
 private slots:

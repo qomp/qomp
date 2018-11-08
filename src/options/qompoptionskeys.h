@@ -28,17 +28,17 @@ class QompOptionsKeys : public QompOptionsPage
 {
 	Q_OBJECT
 public:
-	explicit QompOptionsKeys(QObject *parent = 0);
+	explicit QompOptionsKeys(QObject *parent = nullptr);
 	~QompOptionsKeys();
 
-	virtual QString name() const { return tr("Shortcuts"); }
-	virtual void retranslate();
+	virtual QString name() const Q_DECL_FINAL { return tr("Shortcuts"); }
+	virtual void retranslate()  Q_DECL_FINAL;
 
-	virtual QObject* page() const;
+	virtual QObject* page() const  Q_DECL_FINAL;
 
 public slots:
-	virtual void applyOptions();
-	virtual void restoreOptions();
+	virtual void applyOptions() Q_DECL_FINAL;
+	virtual void restoreOptions() Q_DECL_FINAL;
 
 private slots:
 	void getShortcut(QTreeWidgetItem*);

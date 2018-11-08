@@ -40,7 +40,7 @@ class LastFmPlugin : public QObject, public QompPlugin, public QompPlayerStatusP
 	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1" FILE "metadata.json")
 #endif
 public:
-	explicit LastFmPlugin();
+	LastFmPlugin();
 	~LastFmPlugin() {}
 	virtual QString name() const { return LASTFM_NAME; }
 	virtual QString version() const { return LASTFM_VER; }

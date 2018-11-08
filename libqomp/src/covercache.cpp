@@ -37,7 +37,7 @@ class CoverCache::Private
 {
 public:
 	Private();
-	~Private();
+	virtual ~Private();
 
 	void loadCache();
 	void saveCache();

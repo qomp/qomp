@@ -49,26 +49,28 @@ public:
 		return instance_;
 	}
 
-	virtual QUrl getUrl(const Tune *t)
-	{
-		if(!t->file.isEmpty())
-			return QUrl::fromLocalFile(t->file);
-
-		return QUrl(t->url);
-	}
-
-	virtual QString name() const
-	{
-		return simpleStrategyName;
-	}
+	virtual QUrl getUrl(const Tune *t) Q_DECL_OVERRIDE;
+	virtual QString name() const Q_DECL_OVERRIDE;
 
 private:
 	static SimpleStrategy* instance_;
 	SimpleStrategy() : TuneURLResolveStrategy(QCoreApplication::instance()){}
 };
 
-SimpleStrategy* SimpleStrategy::instance_ = 0;
+SimpleStrategy* SimpleStrategy::instance_ = nullptr;
 
+QUrl SimpleStrategy::getUrl(const Tune *t)
+{
+	if(!t->file.isEmpty())
+		return QUrl::fromLocalFile(t->file);
+
+	return QUrl(t->url);
+}
+
+QString SimpleStrategy::name() const
+{
+	return simpleStrategyName;
+}
 
 
 
@@ -78,7 +80,7 @@ Tune::Tune(bool canSave) :
 	length(0),
 	played(false),
 	canSave_(canSave),
-	strategy_(0),
+	strategy_(nullptr),
 	metadataResolved_(false)
 {
 	id_ = lastId_++;

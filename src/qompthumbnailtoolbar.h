@@ -30,7 +30,7 @@ class QompThumbnailToolBar : public QWinThumbnailToolBar
 {
 	Q_OBJECT
 public:
-	QompThumbnailToolBar(QObject* p = nullptr);
+	explicit QompThumbnailToolBar(QObject* p = nullptr);
 
 	void setCurrentState(Qomp::State state);
 

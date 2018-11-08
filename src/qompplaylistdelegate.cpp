@@ -31,16 +31,16 @@ QompPlaylistDelegate::QompPlaylistDelegate(QObject *parent) :
 {
 }
 
-void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o, const QModelIndex &index) const
+void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	if(!index.isValid())
 		return;
 
 	painter->save();
-	QRect rect = o.rect;
-	QPalette palette = o.palette;
-	QFont font = o.font;
-	QBrush brush(o.palette.color(QPalette::Base));
+	QRect rect = option.rect;
+	QPalette palette = option.palette;
+	QFont font = option.font;
+	QBrush brush(option.palette.color(QPalette::Base));
 	if(index.data(QompPlayListModel::IsCurrentTuneRole).toBool()) {
 		QLinearGradient grad(rect.left(), 0, rect.right(), 0);
 		grad.setColorAt(0, palette.color(QPalette::Base));
@@ -73,10 +73,10 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 		}
 	}
 
-	painter->fillRect(rect, (o.state & QStyle::State_Selected) ?
+	painter->fillRect(rect, (option.state & QStyle::State_Selected) ?
 				  palette.color(QPalette::Highlight) : brush);
 
-	painter->setPen(QPen((o.state & QStyle::State_Selected) ?
+	painter->setPen(QPen((option.state & QStyle::State_Selected) ?
 				     palette.color(QPalette::HighlightedText) : palette.color(QPalette::Text)));
 	painter->setFont(font);
 

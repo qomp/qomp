@@ -34,7 +34,7 @@ class NotificationsPlugin : public QObject, public QompPlugin, public QompPlayer
 #endif
 
 public:
-	explicit NotificationsPlugin();
+	NotificationsPlugin();
 	~NotificationsPlugin();
 
 	virtual QString name() const { return tr("Notifications"); }

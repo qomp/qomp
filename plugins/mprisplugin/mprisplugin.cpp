@@ -42,11 +42,12 @@
 static const QSize maxArtSize(510,510);
 
 MprisPlugin::MprisPlugin() :
-	player_(0),
+	player_(nullptr),
 	enabled_(true),
-	mpris_(0),
-	tune_(0),
-	lastTune_(0)
+	mpris_(nullptr),
+	tune_(nullptr),
+	lastTune_(nullptr),
+	artFile_(nullptr)
 {
 }
 

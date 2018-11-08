@@ -29,7 +29,7 @@ class QompMenu : public QMenu
 {
 	Q_OBJECT
 protected:
-	QompMenu(const QString& name, QWidget *parent = 0);
+	QompMenu(const QString& name, QWidget *parent = nullptr);
 	~QompMenu();
 
 	virtual void buildMenu() {}
@@ -45,13 +45,13 @@ class QompGetTunesMenu : public QompMenu
 {
 	Q_OBJECT
 public:
-	QompGetTunesMenu(const QString& name, QWidget *parent = 0);
+	QompGetTunesMenu(const QString& name, QWidget *parent = nullptr);
 
 signals:
 	void tunes(const QList<Tune*>&);
 
 private:
-	virtual void buildMenu() Q_DECL_OVERRIDE;
+	virtual void buildMenu() Q_DECL_FINAL;
 
 private slots:
 	void updateIcons();
@@ -61,7 +61,7 @@ class QompMainMenu : public QompMenu
 {
 	Q_OBJECT
 public:
-	explicit QompMainMenu(QWidget* p = 0);
+	explicit QompMainMenu(QWidget* p = nullptr);
 
 	QompGetTunesMenu* tunesMenu() const;
 
@@ -81,7 +81,7 @@ private slots:
 	void updateIcons();
 
 private:
-	virtual void buildMenu() Q_DECL_OVERRIDE;
+	virtual void buildMenu() Q_DECL_FINAL;
 private:
 	QompGetTunesMenu* _tunesMenu;
 	QAction *_actToggle, *_actUpdates, *_actBugs, *_actQuit, *_actAboutQt, *_actOptions, *_actHome;
@@ -92,7 +92,7 @@ class QompTrackMenu : public QompMenu
 {
 	Q_OBJECT
 public:
-	QompTrackMenu(const QModelIndexList& list, QWidget* p = 0);
+	QompTrackMenu(const QModelIndexList& list, QWidget* p = nullptr);
 
 signals:
 	void togglePlayState(Tune*);
@@ -108,7 +108,7 @@ private slots:
 	void actOpenDirectActivated();
 
 private:
-	virtual void buildMenu() Q_DECL_OVERRIDE;
+	virtual void buildMenu() Q_DECL_FINAL;
 
 private:
 	QModelIndexList list_;
@@ -119,14 +119,14 @@ class QompRemoveTunesMenu : public QompMenu
 {
 	Q_OBJECT
 public:
-	explicit QompRemoveTunesMenu(QWidget* p = 0);
+	explicit QompRemoveTunesMenu(QWidget* p = nullptr);
 
 signals:
 	void removeAll();
 	void removeSelected();
 
 private:
-	virtual void buildMenu() Q_DECL_OVERRIDE;
+	virtual void buildMenu() Q_DECL_FINAL;
 };
 
 #endif // QOMPMENU_H

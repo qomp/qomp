@@ -35,7 +35,7 @@ class UrlPlugin::Private: public QObject
 {
 	Q_OBJECT
 public:
-	Private(QompPluginAction* p) : QObject(p), _act(p)
+	explicit Private(QompPluginAction* p) : QObject(p), _act(p)
 	{
 #ifdef Q_OS_ANDROID
 		_item = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/GetUrlDlg.qml"));

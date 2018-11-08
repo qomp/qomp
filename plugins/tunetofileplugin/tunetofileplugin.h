@@ -37,7 +37,7 @@ class TuneToFilePlugin : public QObject, public QompPlugin, public QompPlayerSta
 #endif
 
 public:
-	explicit TuneToFilePlugin();
+	TuneToFilePlugin();
 
 	virtual QString name() const { return tr("Tune to File"); }
 	virtual QString version() const { return "1.3.1"; }

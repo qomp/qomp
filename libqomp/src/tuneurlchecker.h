@@ -34,7 +34,7 @@ class LIBQOMPSHARED_EXPORT TuneUrlChecker : public QObject
 {
 	Q_OBJECT
 public:
-	TuneUrlChecker(QNetworkAccessManager* nam, const QUrl& url, QObject *parent = 0);
+	TuneUrlChecker(QNetworkAccessManager* nam, const QUrl& url, QObject *parent = nullptr);
 	bool result() const;
 
 private slots:

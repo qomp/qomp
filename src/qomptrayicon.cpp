@@ -87,7 +87,7 @@ class ToggleVisibilityAction : public QompTrayAction
 public:
 	explicit ToggleVisibilityAction(QompMainWin* win) : QompTrayAction(win) {}
 
-	void exequte()
+	virtual void exequte() Q_DECL_OVERRIDE
 	{
 		win_->toggleVisibility();
 		deleteLater();

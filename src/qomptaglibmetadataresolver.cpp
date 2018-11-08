@@ -142,7 +142,7 @@ TagLib::MPEG::File *QompTagLibMetaDataResolver::createFile(const QString& url, T
 		stream->seek(0);
 		return new TagLib::MPEG::File(stream, TagLib::ID3v2::FrameFactory::instance());
 	//}
-		return 0;
+	//	return nullptr;
 }
 
 void QompTagLibMetaDataResolver::processData(const QUrl &url, const TagLib::ByteVector &data)

@@ -45,7 +45,7 @@ class NotificationsPlugin::Private
 public:
 	explicit Private(NotificationsPlugin* plugin) :
 		plugin_(plugin),
-		tune_(0)
+		tune_(nullptr)
 	{
 #ifdef Q_OS_MAC
 		growl_ = new GrowlNotifier(QStringList() << notificationName,

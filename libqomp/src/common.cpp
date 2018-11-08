@@ -97,8 +97,7 @@ QString encodePassword(const QString &pass, const QString &key)
 
 	for (n1 = 0, n2 = 0; n1 < pass.length(); ++n1) {
 		ushort x = pass.at(n1).unicode() ^ key.at(n2++).unicode();
-		QString hex;
-		hex.sprintf("%04x", x);
+		QString hex = QString::asprintf("%04x", x);
 		result += hex;
 		if(n2 >= key.length()) {
 			n2 = 0;
@@ -121,10 +120,10 @@ QString decodePassword(const QString &pass, const QString &key)
 		if(n1 + 4 > pass.length()) {
 			break;
 		}
-		x += QString(pass.at(n1)).toInt(NULL,16)*4096;
-		x += QString(pass.at(n1+1)).toInt(NULL,16)*256;
-		x += QString(pass.at(n1+2)).toInt(NULL,16)*16;
-		x += QString(pass.at(n1+3)).toInt(NULL,16);
+		x += QString(pass.at(n1)).toInt(nullptr,16)*4096;
+		x += QString(pass.at(n1+1)).toInt(nullptr,16)*256;
+		x += QString(pass.at(n1+2)).toInt(nullptr,16)*16;
+		x += QString(pass.at(n1+3)).toInt(nullptr,16);
 		QChar c(x ^ key.at(n2++).unicode());
 		result += c;
 		if(n2 >= key.length()) {

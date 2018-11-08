@@ -33,8 +33,8 @@ class QWidget;
 
 namespace Qomp {
 
-LIBQOMPSHARED_EXPORT QString encodePassword(const QString& str, const QString &key);
-LIBQOMPSHARED_EXPORT QString decodePassword(const QString& str, const QString &key);
+LIBQOMPSHARED_EXPORT QString encodePassword(const QString& pass, const QString &key);
+LIBQOMPSHARED_EXPORT QString decodePassword(const QString& pass, const QString &key);
 
 LIBQOMPSHARED_EXPORT QString durationSecondsToString(uint sec);
 LIBQOMPSHARED_EXPORT QString durationMiliSecondsToString(qint64 ms);

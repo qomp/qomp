@@ -29,18 +29,18 @@ class QompOptionsMain : public QompOptionsPage
 	Q_OBJECT
 	
 public:
-	explicit QompOptionsMain(QObject *parent = 0);
+	explicit QompOptionsMain(QObject *parent = nullptr);
 	~QompOptionsMain();
 
-	virtual QString name() const override { return tr("Main"); }
-	virtual void retranslate() override;
+	virtual QString name() const  Q_DECL_FINAL { return tr("Main"); }
+	virtual void retranslate()  Q_DECL_FINAL;
 
-	virtual void init(QompPlayer* player) override;
-	virtual QObject* page() const override;
+	virtual void init(QompPlayer* player)  Q_DECL_FINAL;
+	virtual QObject* page() const  Q_DECL_FINAL;
 
 public slots:
-	virtual void applyOptions() override;
-	virtual void restoreOptions() override;
+	virtual void applyOptions()  Q_DECL_FINAL;
+	virtual void restoreOptions()  Q_DECL_FINAL;
 	
 private:
 	class Private;

@@ -243,7 +243,7 @@ QList<QompPluginAction *> PluginManager::tunesActions()
 	return l;
 }
 
-TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) const
+TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &strategyName) const
 {
 	for(const PluginPair& pp: plugins_) {
 		if(!pp.second)
@@ -251,7 +251,7 @@ TuneURLResolveStrategy *PluginManager::urlResolveStrategy(const QString &name) c
 		QompTunePlugin *p = qobject_cast<QompTunePlugin*>(pp.first->instance());
 		if(p) {
 			TuneURLResolveStrategy *rs = p->urlResolveStrategy();
-			if(rs && rs->name() == name)
+			if(rs && rs->name() == strategyName)
 				return rs;
 		}
 	}

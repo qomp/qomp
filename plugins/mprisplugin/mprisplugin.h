@@ -35,7 +35,7 @@ class MprisPlugin : public QObject, public QompPlugin, public QompPlayerStatusPl
 	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1" FILE "metadata.json")
 #endif
 public:
-	explicit MprisPlugin();
+	MprisPlugin();
 	~MprisPlugin() {}
 	virtual QString name() const { return tr("MPRIS Plugin"); }
 	virtual QString version() const { return "1.3.1"; }

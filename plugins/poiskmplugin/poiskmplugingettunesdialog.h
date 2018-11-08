@@ -29,14 +29,14 @@ class PoiskmPluginGetTunesDialog : public QompPluginGettunesDlg
 	Q_OBJECT
 	
 public:
-	explicit PoiskmPluginGetTunesDialog(QObject *parent = 0);
+	explicit PoiskmPluginGetTunesDialog(QObject *parent = nullptr);
 	~PoiskmPluginGetTunesDialog();
 
 	int page() const;
-	void setPage(int p);
+	void setPage(int page);
 
 	int totalPages() const;
-	void setTotalPages(int p);
+	void setTotalPages(int pages);
 
 	void enableNext(bool enabled);
 	void enablePrev(bool enabled);

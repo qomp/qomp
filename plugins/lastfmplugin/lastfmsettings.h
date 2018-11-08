@@ -28,15 +28,15 @@ class LastFmSettings : public QompOptionsPage
 	Q_OBJECT
 	
 public:
-	explicit LastFmSettings(QObject *parent = 0);
+	explicit LastFmSettings(QObject *parent = nullptr);
 	~LastFmSettings();
 	virtual QString name() const { return LASTFM_NAME; }
 	virtual void retranslate();
 	virtual QObject* page() const;
 
 public slots:
-	virtual void applyOptions();
-	virtual void restoreOptions();
+	virtual void applyOptions() Q_DECL_FINAL;
+	virtual void restoreOptions() Q_DECL_FINAL;
 
 signals:
 	void doLogin();

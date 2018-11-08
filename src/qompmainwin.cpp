@@ -395,9 +395,9 @@ void QompMainWin::Private::doMainContextMenu()
 	mainMenu_->exec(QCursor::pos());
 }
 
-void QompMainWin::Private::doTrackContextMenu(const QPoint& val)
+void QompMainWin::Private::doTrackContextMenu(const QPoint& p)
 {
-	QModelIndex index = ui->playList->indexAt(val);
+	QModelIndex index = ui->playList->indexAt(p);
 	if(!index.isValid())
 		return;
 

@@ -30,8 +30,8 @@ class PoiskmController : public QompPluginController
 {
 	Q_OBJECT
 public:
-	explicit PoiskmController(QObject *parent = 0);
-	virtual ~PoiskmController();
+	explicit PoiskmController(QObject *parent = nullptr);
+	~PoiskmController();
 
 protected slots:
 	virtual void doSearch(const QString& text) Q_DECL_OVERRIDE;
@@ -41,7 +41,7 @@ protected slots:
 	virtual void suggestionsFinished() Q_DECL_OVERRIDE;
 
 protected:
-	virtual void init() Q_DECL_OVERRIDE;
+	virtual void init() Q_DECL_FINAL;
 	virtual QList<Tune*> prepareTunes() const Q_DECL_OVERRIDE;
 
 private slots:

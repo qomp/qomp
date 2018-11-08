@@ -35,7 +35,7 @@ class QompPluginGettunesDlg::Private : public QObject
 {
 	Q_OBJECT
 public:
-	explicit Private(QompPluginGettunesDlg* p = 0);
+	explicit Private(QompPluginGettunesDlg* p = nullptr);
 	~Private();
 
 public slots:
@@ -51,7 +51,7 @@ public:
 
 QompPluginGettunesDlg::Private::Private(QompPluginGettunesDlg *p) :
 	QObject(p),
-	item_(0),
+	item_(nullptr),
 	mainDlg_(p)
 {
 	item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qmlshared/GetTunesDlg.qml"));
@@ -119,7 +119,7 @@ QompPluginGettunesDlg::QompPluginGettunesDlg(QObject *parent) :
 QompPluginGettunesDlg::~QompPluginGettunesDlg()
 {
 	delete d;
-	d = 0;
+	d = nullptr;
 }
 
 void QompPluginGettunesDlg::go()

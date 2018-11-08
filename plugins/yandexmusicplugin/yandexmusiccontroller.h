@@ -35,11 +35,11 @@ class YandexMusicController : public QompPluginController
 {
 	Q_OBJECT
 public:
-	explicit YandexMusicController(QObject *parent = 0);
+	explicit YandexMusicController(QObject *parent = nullptr);
 	virtual ~YandexMusicController();
 
 protected slots:
-	void doSearch(const QString& text);
+	void doSearch(const QString& txt);
 	QompPluginGettunesDlg* view() const;
 	void itemSelected(QompPluginModelItem* item);
 	void getSuggestions(const QString& text);
@@ -65,7 +65,7 @@ private:
 	void search(const QString& text, const QString& type, const char* slot, int page = 0);
 	bool searchNextPage(const QByteArray &reply, const QString& type, const char* slot);
 	QNetworkRequest creatNetworkRequest(const QUrl& url) const;
-	bool checkCaptcha(const QUrl& url, const QByteArray& reply, const char *slot, QompPluginTreeModel* model = nullptr);
+	bool checkCaptcha(const QUrl& replyUrl, const QByteArray& reply, const char *slot, QompPluginTreeModel* model = nullptr);
 	QPixmap getCaptcha(const QString& captchaUrl, QString* key);
 
 private:
@@ -79,7 +79,7 @@ private:
 	QString searchText_;
 
 	struct PendingRequst {
-		PendingRequst(const QUrl u, const char* s, QompPluginTreeModel* m) :
+		PendingRequst(const QUrl& u, const char* s, QompPluginTreeModel* m) :
 			url(u), slot(s), model(m)
 		{}
 

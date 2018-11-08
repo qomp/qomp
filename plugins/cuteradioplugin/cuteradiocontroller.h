@@ -31,8 +31,8 @@ class CuteRadioController : public QompPluginController
 {
 	Q_OBJECT
 public:
-	explicit CuteRadioController(QObject *parent = 0);
-	virtual ~CuteRadioController();
+	explicit CuteRadioController(QObject *parent = nullptr);
+	~CuteRadioController();
 
 signals:
 	void countriesChanged(DataPairs*);
@@ -46,7 +46,7 @@ protected slots:
 	virtual void suggestionsFinished() Q_DECL_OVERRIDE;
 
 protected:
-	virtual void init() Q_DECL_OVERRIDE;
+	virtual void init() Q_DECL_FINAL;
 	virtual QList<Tune*> prepareTunes() const Q_DECL_OVERRIDE;
 
 private slots:

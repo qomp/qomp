@@ -51,7 +51,7 @@ static QDomElement documentElemet(QNetworkReply* r)
 	return ret;
 }
 
-static QString MD5(const QString str)
+static QString MD5(const QString& str)
 {
 	QByteArray arr = QCryptographicHash::hash(str.toUtf8(), QCryptographicHash::Md5).toHex();
 	return QString::fromLatin1(arr).rightJustified(32, '0').toLower();
@@ -59,8 +59,8 @@ static QString MD5(const QString str)
 
 
 LastFmPlugin::LastFmPlugin() :
-	player_(0),
-	currentTune_(0),
+	player_(nullptr),
+	currentTune_(nullptr),
 	scrobbleTimer_(new QTimer(this)),
 	nowPlayingTimer_(new QTimer(this)),
 	enabled_(false)

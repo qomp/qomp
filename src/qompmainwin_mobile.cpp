@@ -58,7 +58,7 @@ public slots:
 	void indexActivate(int val);
 	void doToggle(int val);
 	void removeTune(int val);
-	void downloadTune(int index, const QString &dir);
+	void downloadTune(int row, const QString &dir);
 	void loadPlaylistActivate(const QString& file);
 	void savePlaylistActivate(const QString& file);
 	void copyUrl(const QVariant& tune);

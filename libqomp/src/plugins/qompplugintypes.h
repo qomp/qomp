@@ -115,7 +115,7 @@ private:
 class LIBQOMPSHARED_EXPORT QompPluginTune : public QompPluginModelItem
 {
 public:
-	explicit QompPluginTune(QompPluginModelItem* parent = 0);
+	explicit QompPluginTune(QompPluginModelItem* parent = nullptr);
 
 	QString title;
 	QString artist;
@@ -140,7 +140,7 @@ public:
 class LIBQOMPSHARED_EXPORT QompPluginAlbum : public QompPluginModelItem
 {
 public:
-	explicit QompPluginAlbum(QompPluginModelItem* parent = 0);
+	explicit QompPluginAlbum(QompPluginModelItem* parent = nullptr);
 
 	QString album;
 	QString artist;
@@ -160,7 +160,7 @@ public:
 class LIBQOMPSHARED_EXPORT QompPluginArtist : public QompPluginModelItem
 {
 public:
-	explicit QompPluginArtist(QompPluginModelItem* parent = 0);
+	explicit QompPluginArtist(QompPluginModelItem* parent = nullptr);
 
 	QString artist;
 	bool tunesReceived;

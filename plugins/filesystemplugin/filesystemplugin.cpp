@@ -197,11 +197,12 @@ class FilesystemPlugin::Private : public QObject, public PlayerContainer
 {
 	Q_OBJECT
 public:
-	explicit Private(QObject* p = 0) : QObject(p)
+	explicit Private(QObject* p = nullptr) : QObject(p)
 #ifdef QOMP_MOBILE
 		,item_(0)
 #endif
 		,_tThread(nullptr)
+		,_act(nullptr)
 	{
 		setPlayer(nullptr);
 	}

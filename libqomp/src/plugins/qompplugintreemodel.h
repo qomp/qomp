@@ -35,7 +35,7 @@ public:
 	 * Class designed for hold and manage search results.
 	 * Represents a tree of QompPluginModelItem's
 	 */
-	explicit QompPluginTreeModel(QObject *parent = 0);
+	explicit QompPluginTreeModel(QObject *parent = nullptr);
 
 	/**
 	 * Destructor removes all top level items.
@@ -64,7 +64,7 @@ public:
 	 * If parent not given recursive search over all items will be performed
 	 * Return 0 if not found.
 	 */
-	QompPluginModelItem* itemForId(const QString& id, QompPluginModelItem* parent = 0);
+	QompPluginModelItem* itemForId(const QString& id, QompPluginModelItem* parent = nullptr);
 
 	/**
 	 * Return pointer on QompPluginModelItem, which represented by given QModelIndex.
@@ -75,7 +75,7 @@ public:
 	/**
 	 * Return list of selected items
 	 */
-	QList<QompPluginModelItem*> selectedItems(QompPluginModelItem* parent = 0) const;
+	QList<QompPluginModelItem*> selectedItems(QompPluginModelItem* parent = nullptr) const;
 
 	/**
 	 * Return QModelIndex, which representing given  QompPluginModelItem
@@ -85,7 +85,7 @@ public:
 	/**
 	 * Delete all stored items
 	 */
-	virtual void reset();
+	void reset();
 
 	/**
 	 * Notify connected views than some items inside has changed

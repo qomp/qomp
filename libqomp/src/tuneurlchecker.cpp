@@ -38,7 +38,7 @@ TuneUrlChecker::TuneUrlChecker(QNetworkAccessManager *nam, const QUrl &url, QObj
 	loop_(new QEventLoop(this)),
 	url_(url),
 	timer_(new QTimer(this)),
-	reply_(0)
+	reply_(nullptr)
 {
 	if(url_.toString().right(1) == ";") {//SHOUTcast server
 		QString u = url_.toString();
