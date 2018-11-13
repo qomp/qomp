@@ -219,5 +219,11 @@ set(LIB_PATHS
 	"${ZLIB_ROOT}/bin"
 	"${OPENSSL_ROOT}/bin"
 )
+if(USE_MXE)
+	list(APPEND LIB_PATHS
+		${CMAKE_PREFIX_PATH}/bin
+		${CMAKE_PREFIX_PATH}/lib
+	)
+endif()
 
 find_lib("${FILE_LIST}" "${LIB_PATHS}" "${EXECUTABLE_OUTPUT_PATH}/")
