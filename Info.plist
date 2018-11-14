@@ -7,7 +7,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleGetInfoString</key>
-        <string>qomp 1.3.1</string>
+        <string>qomp 1.4</string>
 	<key>CFBundleSignature</key>
 	<string>qomp</string>
 	<key>CFBundleExecutable</key>

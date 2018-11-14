@@ -38,7 +38,7 @@ public:
 	MprisPlugin();
 	~MprisPlugin() {}
 	virtual QString name() const Q_DECL_FINAL { return tr("MPRIS Plugin"); }
-	virtual QString version() const Q_DECL_FINAL { return "1.3.1"; }
+	virtual QString version() const Q_DECL_FINAL { return "1.4"; }
 	virtual QString description() const Q_DECL_FINAL { return tr("Interface to MPRIS"); }
 	virtual QompOptionsPage* options() Q_DECL_FINAL { return 0; }
 	virtual void qompPlayerChanged(QompPlayer* player) Q_DECL_FINAL;

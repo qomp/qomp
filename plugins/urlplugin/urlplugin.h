@@ -35,7 +35,7 @@ class UrlPlugin : public QObject, public QompPlugin, public QompTunePlugin
 public:
 	UrlPlugin();
 	virtual QString name() const Q_DECL_FINAL { return PLUGIN_NAME; }
-	virtual QString version() const Q_DECL_FINAL { return "1.3.1"; }
+	virtual QString version() const Q_DECL_FINAL { return "1.4"; }
 	virtual QString description() const Q_DECL_FINAL { return tr("Open custom URL"); }
 	virtual QompOptionsPage* options() Q_DECL_FINAL;
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const Q_DECL_FINAL { return 0; }
