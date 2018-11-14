@@ -93,7 +93,7 @@ do_plugin()
 			plugfile=${plugin_path}/$1.h
 			if [ -f "${plugfile}" ];then
 				echo -e "${blue}Patching file ${yellow}${plugfile}${blue}...${nocolor}"
-				sed -e 's/version()[[:space:]]const[[:space:]][\{][[:space:]]return[[:space:]]\"\([0-9]\.\)\+[0-9]/version() const \{ return \"'${version}'/' -i ${plugfile}
+				sed -e 's/version()[[:space:]]const[[:space:]]Q_DECL_FINAL[[:space:]][\{][[:space:]]return[[:space:]]\"\([0-9]\.\)\+[0-9]/version() const Q_DECL_FINAL \{ return \"'${version}'/' -i ${plugfile} || echo "error in ${plugfile}"
 			fi
 		fi
 		metadata=${plugin_path}/metadata.json
