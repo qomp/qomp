@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.4 - 2018-11-14
+  + added new Poiskm plugin (poiskm.me)
+  - dropped Prostopleer plugin (site is unavailable)
+  + added integration with some google services (analytics, firebase)
+  * updated Notifications plugin (added 'Album art' support)
+  * optimizations for MPRIS plugin
+  * android: pausing playback on audio focus loss
+  * updated Qt libs to 5.9.7 (Android)
+  * updated Qt libs to 5.11.2 (OS X, Windows)
+  * other minor fixes
+
 ## 1.3.1 - 2017-12-19
   + added support for native linux icon themes (new linux_native theme)
   * updated Myzuka plugin url (myzuka.club)
