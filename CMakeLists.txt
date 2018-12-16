@@ -16,20 +16,14 @@ project( qomp )
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
-option( USE_QT5 "Use Qt5" ON ) #Was left for compatibility with build scripts
 option( DEV_MODE "Enable development mode" OFF )
 option( BUILD_THEMES "Build qomp themes" ON )
 option( USE_CCACHE "Use ccache utility" OFF )
 set( BUILD_PLUGINS "ALL" CACHE STRING "List of plugins to build" )
 set( LIB_SUFFIX "" CACHE STRING "Define suffix of lib directory name (32/64)" )
 set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Directory where libs will be installed" )
-option(USE_MXE "Use MXE toolkit" OFF)
+option( USE_MXE "Use MXE toolkit" OFF )
 option( USE_CPACK "Enable CPack" OFF )
-
-if( NOT USE_QT5 )
-	message(AUTHOR_WARNING "Qt4 support stopped since 1.1 version. Flag USE_QT5 always enabled")
-	set(USE_QT5 ON)
-endif()
 
 set( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
@@ -44,7 +38,7 @@ else()
 endif()
 message(STATUS "Build type - ${CMAKE_BUILD_TYPE}")
 
-include( ${PROJECT_SOURCE_DIR}/cmake/modules/version.cmake )
+include( "${PROJECT_SOURCE_DIR}/cmake/modules/version.cmake" )
 set( LIBQOMP_LIBRARY libqomp )
 add_subdirectory( ${LIBQOMP_LIBRARY} )
 add_subdirectory( plugins )
@@ -76,9 +70,9 @@ if( WIN32 )
 endif()
 
 find_package( TagLib REQUIRED )
-list(APPEND EXTRA_LIBS ${TAGLIB_LIBRARY} )
+list( APPEND EXTRA_LIBS ${TAGLIB_LIBRARY} )
 
-set( CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}" )
+set(CMAKE_CXX_STANDARD 11)
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -202,7 +196,7 @@ qt5_wrap_ui(main_UIS
 	${qomp_UIS}
 )
 add_definitions(
-	-DHAVE_QT5
+	-DHAVE_QT5 #TODO DELETE HAVE_QT5 DEFINITIONS FROM SOURCES
 	-DHAVE_QTMULTIMEDIA
 )
 set(QT_DEPLIBS
