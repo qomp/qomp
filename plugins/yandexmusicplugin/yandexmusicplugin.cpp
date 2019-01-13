@@ -63,7 +63,3 @@ QList<QompPluginAction *> YandexMusicPlugin::getTunesActions()
 	l.append(act);
 	return l;
 }
-
-#ifndef HAVE_QT5
-Q_EXPORT_PLUGIN2(yandexmusicplugin, YandexMusicPlugin)
-#endif

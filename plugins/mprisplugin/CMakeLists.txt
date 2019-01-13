@@ -29,9 +29,6 @@ if( LINUX )
 		${PROJECT_BINARY_DIR}/include
 	)
 	find_package( Qt5 COMPONENTS Widgets DBus REQUIRED )
-	add_definitions(
-		-DHAVE_QT5
-	)
 	set( QT_DEPLIBS
 		Qt5::Widgets
 		Qt5::DBus

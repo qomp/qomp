@@ -30,9 +30,7 @@ class ProstoPleerPlugin : public QObject, public QompPlugin, public QompTunePlug
 {
 	Q_OBJECT
 	Q_INTERFACES(QompPlugin QompTunePlugin)
-#ifdef HAVE_QT5
 	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1" FILE "metadata.json")
-#endif
 public:
 	ProstoPleerPlugin();
 	virtual QString name() const { return PROSTOPLEER_PLUGIN_NAME; }

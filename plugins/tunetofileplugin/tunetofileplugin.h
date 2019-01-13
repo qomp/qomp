@@ -32,9 +32,7 @@ class TuneToFilePlugin : public QObject, public QompPlugin, public QompPlayerSta
 {
 	Q_OBJECT
 	Q_INTERFACES(QompPlugin QompPlayerStatusPlugin)
-#ifdef HAVE_QT5
 	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1" FILE "metadata.json")
-#endif
 
 public:
 	TuneToFilePlugin();

@@ -291,7 +291,3 @@ void MprisPlugin::disableMpris()
 	tune_ = 0;
 	lastTune_ = 0;
 }
-
-#ifndef HAVE_QT5
-Q_EXPORT_PLUGIN2(mprisplugin, MprisPlugin)
-#endif

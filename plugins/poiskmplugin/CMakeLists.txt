@@ -33,9 +33,6 @@ include_directories(
 )
 
 find_package( Qt5 COMPONENTS Widgets Network REQUIRED )
-add_definitions(
-	-DHAVE_QT5
-)
 qt5_wrap_ui( UIS ${poiskmplugin_UIS} )
 set( QT_DEPLIBS
 	Qt5::Widgets

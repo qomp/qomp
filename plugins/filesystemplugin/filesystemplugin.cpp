@@ -439,9 +439,4 @@ void FilesystemPlugin::qompPlayerChanged(QompPlayer *player)
 	d->setPlayer(player);
 }
 
-
-#ifndef HAVE_QT5
-Q_EXPORT_PLUGIN2(filesystemplugin, FilesystemPlugin)
-#endif
-
 #include "filesystemplugin.moc"

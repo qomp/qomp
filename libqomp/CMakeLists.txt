@@ -168,9 +168,7 @@ include_directories(
 
 find_package( Qt5 REQUIRED Widgets Network Concurrent )
 qt5_wrap_ui( libqomp_UIS ${libqomp_UIFILES} )
-add_definitions(
-	-DHAVE_QT5
-)
+
 set( QT_DEPLIBS
 	Qt5::Widgets
 	Qt5::Network

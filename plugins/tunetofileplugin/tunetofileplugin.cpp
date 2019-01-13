@@ -96,8 +96,3 @@ void TuneToFilePlugin::init()
 	connect(Options::instance(), SIGNAL(updateOptions()), SLOT(optionsUpdate()));
 	optionsUpdate();
 }
-
-#ifndef HAVE_QT5
-Q_EXPORT_PLUGIN2(tunetofileplugin, TuneToFilePlugin)
-#endif
-

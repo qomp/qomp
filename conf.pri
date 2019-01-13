@@ -36,7 +36,6 @@ CONFIG(debug, debug|release) {
 
 !android:  QT += widgets
 
-DEFINES += HAVE_QT5
 CONFIG += c++11
 
 android {

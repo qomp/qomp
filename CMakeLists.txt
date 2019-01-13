@@ -196,7 +196,6 @@ qt5_wrap_ui(main_UIS
 	${qomp_UIS}
 )
 add_definitions(
-	-DHAVE_QT5 #TODO DELETE HAVE_QT5 DEFINITIONS FROM SOURCES
 	-DHAVE_QTMULTIMEDIA
 )
 set(QT_DEPLIBS

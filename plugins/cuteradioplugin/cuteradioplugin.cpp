@@ -62,7 +62,3 @@ QList<QompPluginAction *> CuteRadioPlugin::getTunesActions()
 	l.append(act);
 	return l;
 }
-
-#ifndef HAVE_QT5
-Q_EXPORT_PLUGIN2(cuteradioplugin, CuteRadioPlugin)
-#endif

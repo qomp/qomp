@@ -28,9 +28,7 @@ class MyzukaruPlugin : public QObject, public QompPlugin, public QompTunePlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QompPlugin QompTunePlugin)
-#ifdef HAVE_QT5
 	Q_PLUGIN_METADATA(IID "Qomp.QompPlugin/0.1" FILE "metadata.json")
-#endif
 public:
 	MyzukaruPlugin();
 	virtual QString name() const Q_DECL_FINAL { return MYZUKA_PLUGIN_NAME; }

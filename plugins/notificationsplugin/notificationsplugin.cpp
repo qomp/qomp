@@ -162,7 +162,3 @@ void NotificationsPlugin::playerStatusChanged(Qomp::State state)
 void NotificationsPlugin::init()
 {
 }
-
-#ifndef HAVE_QT5
-Q_EXPORT_PLUGIN2(notificationsplugin, NotificationsPlugin)
-#endif

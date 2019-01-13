@@ -129,9 +129,4 @@ bool UrlPlugin::processUrl(const QString &url, QList<Tune *> *tunes)
 	return false;
 }
 
-#ifndef HAVE_QT5
-Q_EXPORT_PLUGIN2(urlplugin, UrlPlugin)
-#endif
-
-
 #include "urlplugin.moc"

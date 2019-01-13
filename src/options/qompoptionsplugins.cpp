@@ -71,9 +71,7 @@ void QompOptionsPlugins::Private::restoreOptions()
 		QTreeWidgetItem* it = new QTreeWidgetItem(ui->tw_plugins);
 		it->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable |
 			     Qt::ItemIsEnabled |
-#ifdef HAVE_QT5
 			     Qt::ItemNeverHasChildren |
-#endif
 			     Qt::ItemIsDragEnabled);
 		it->setData(0, Qt::CheckStateRole, PluginManager::instance()->isPluginEnabledByName(name) ? 2 : 0);
 		it->setText(0, name);

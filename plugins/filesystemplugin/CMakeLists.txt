@@ -30,9 +30,6 @@ include_directories(
 )
 
 find_package( Qt5 COMPONENTS Widgets Multimedia REQUIRED)
-add_definitions(
-	-DHAVE_QT5
-)
 set( QT_DEPLIBS
 	Qt5::Widgets
 	Qt5::Multimedia

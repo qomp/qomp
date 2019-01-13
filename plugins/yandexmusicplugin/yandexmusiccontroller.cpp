@@ -333,11 +333,7 @@ bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray 
 				 .arg(pr.url.scheme(), pr.url.host(), key, ref,
 				      QUrl::toPercentEncoding(dlg.result())), QUrl::StrictMode);
 #ifdef DEBUG_OUTPUT
-	#ifdef HAVE_QT5
 			qDebug() << url.toString(QUrl::FullyEncoded);
-	#else
-			qDebug() << url.toEncoded();
-	#endif
 #endif
 			QNetworkRequest nr(url);
 			nr.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");

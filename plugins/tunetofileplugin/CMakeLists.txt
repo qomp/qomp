@@ -28,9 +28,6 @@ include_directories(
 )
 
 find_package( Qt5 COMPONENTS Widgets REQUIRED )
-add_definitions(
-	-DHAVE_QT5
-)
 qt5_wrap_ui( UIS ${tunetofileplugin_UIS} )
 set( QT_DEPLIBS
 	Qt5::Widgets
