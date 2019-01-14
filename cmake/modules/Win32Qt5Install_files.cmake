@@ -168,6 +168,10 @@ else()
 		qjpeg${D}.dll
 	)
 	find_lib("${IMAGE_PLUGS}" "${QT_PLUGINS_DIR}/imageformats/" "${EXECUTABLE_OUTPUT_PATH}/imageformats/")
+	set(GENERIC_PLUGS
+		qtuiotouchplugin${D}.dll
+	)
+	find_lib("${GENERIC_PLUGS}" "${QT_PLUGINS_DIR}/generic/" "${EXECUTABLE_OUTPUT_PATH}/generic/")
 endif()
 #install mingw and other needed libs
 set( FILE_LIST
@@ -198,6 +202,10 @@ if(USE_MXE)
 		libpcre-1.dll
 		libpng16-16.dll
 		libtiff-5.dll
+		libssl-1_1-x64.dll
+		libcrypto-1_1-x64.dll
+		libssl-1_1.dll
+		libcrypto-1_1.dll
 	)
 endif()
 
