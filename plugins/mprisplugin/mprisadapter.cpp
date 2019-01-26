@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny, Vitaly Tonkacheyev
+ * Copyright (C) 2013-2019  Khryukin Evgeny, Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,7 +62,7 @@ void MprisAdapter::setMetadata(const QompMetaData &tune)
 		metaDataMap_["xesam:album"] = tune.album;
 	}
 	if (!tune.artist.isEmpty()) {
-		metaDataMap_["xesam:artist"] = QStringList() << tune.artist;
+		metaDataMap_["xesam:artist"] = QStringList({tune.artist});
 	}
 	metaDataMap_["xesam:url"] = tune.url;
 	metaDataMap_["xesam:trackNumber"] = tune.trackNumber;
@@ -87,7 +87,12 @@ QString MprisAdapter::playbackStatus() const
 
 void MprisAdapter::updateProperties()
 {
-	QVariantMap map;
+	QVariantMap map({{"CanGoNext", canGoNext()},
+		     {"CanGoPrevious", canGoPrevious()},
+		     {"CanPlay", canPlay()},
+		     {"CanPause", canPause()},
+		     {"CanSeek", canSeek()},
+		     {"Volume", getVolume()}});
 	if (!playerStatus_.isEmpty() && statusChanged_) {
 		map.insert("PlaybackStatus", playbackStatus());
 	}
@@ -95,15 +100,7 @@ void MprisAdapter::updateProperties()
 		map.insert("Metadata", metadata());
 		metadataChanged_ = false;
 	}
-	map.insert("CanGoNext", canGoNext());
-	map.insert("CanGoPrevious", canGoPrevious());
-	map.insert("CanPlay", canPlay());
-	map.insert("CanPause", canPause());
-	map.insert("CanSeek", canSeek());
-	map.insert("Volume", getVolume());
-	if (map.isEmpty()) {
-		return;
-	}
+
 	QDBusMessage msg = QDBusMessage::createSignal("/org/mpris/MediaPlayer2",
 						      "org.freedesktop.DBus.Properties",
 						      "PropertiesChanged");

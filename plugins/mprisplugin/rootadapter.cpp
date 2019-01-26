@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Khryukin Evgeny, Vitaly Tonkacheyev
+ * Copyright (C) 2016-2019  Khryukin Evgeny, Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,16 +31,12 @@ RootAdapter::RootAdapter(MprisController *p)
 
 void RootAdapter::setData()
 {
-	QVariantMap map;
-	map.insert("SupportedMimeTypes", getMimeTypes());
-	map.insert("Identity", getIdentity());
-	map.insert("CanQuit", canQuit());
-	map.insert("CanRaise", canRaise());
-	map.insert("CanSetFullscreen", canSetFullscreen());
-	map.insert("HasTrackList", hasTrackList());
-	if (map.isEmpty()) {
-		return;
-	}
+	QVariantMap map({{"SupportedMimeTypes", getMimeTypes()},
+			 {"Identity", getIdentity()},
+			 {"CanQuit", canQuit()},
+			 {"CanRaise", canRaise()},
+			 {"CanSetFullscreen", canSetFullscreen()},
+			 {"HasTrackList", hasTrackList()}});
 	QDBusMessage msg = QDBusMessage::createSignal("/org/mpris/MediaPlayer2",
 						      "org.freedesktop.DBus.Properties",
 						      "PropertiesChanged");
@@ -64,11 +60,11 @@ void RootAdapter::Raise()
 
 QStringList RootAdapter::getMimeTypes() const
 {
-	return QStringList() << "audio/aac" << "audio/x-flac"
-			     << "audio/flac" << "audio/mp3"
-			     << "audio/mpeg"<< "application/ogg"
-			     << "audio/x-vorbis+ogg" << "audio/x-ms-wma"
-			     << "audio/mp4" << "audio/MP4A-LATM"
-			     << "audio/mpeg4-generic" << "audio/m4a"
-			     << "audio/ac3";
+	return QStringList({"audio/aac", "audio/x-flac",
+			     "audio/flac", "audio/mp3",
+			     "audio/mpeg", "application/ogg",
+			     "audio/x-vorbis+ogg", "audio/x-ms-wma",
+			     "audio/mp4", "audio/MP4A-LATM",
+			     "audio/mpeg4-generic", "audio/m4a",
+			     "audio/ac3"});
 }
