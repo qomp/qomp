@@ -29,6 +29,7 @@ class RootAdapter : public QDBusAbstractAdaptor
 	Q_OBJECT
 	Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2")
 	Q_PROPERTY(QStringList SupportedMimeTypes READ getMimeTypes)
+	Q_PROPERTY(QStringList SupportedUriSchemes READ getUriSchemes)
 	Q_PROPERTY(QString Identity READ getIdentity)
 	Q_PROPERTY(QString DesktopEntry READ getDesktopEntry)
 	Q_PROPERTY(bool CanQuit READ canQuit)
@@ -42,6 +43,7 @@ public:
 
 private:
 	QStringList getMimeTypes() const;
+    QStringList getUriSchemes() const {return QStringList();}
 	QString getIdentity() const {return "Qomp";}
 	QString getDesktopEntry() const {return "qomp";}
 	bool canQuit() const {return true;}

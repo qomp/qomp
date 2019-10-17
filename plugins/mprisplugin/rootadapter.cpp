@@ -36,6 +36,7 @@ void RootAdapter::setData()
 			 {"CanQuit", canQuit()},
 			 {"CanRaise", canRaise()},
 			 {"CanSetFullscreen", canSetFullscreen()},
+			 {"SupportedUriSchemes", QStringList()},
 			 {"HasTrackList", hasTrackList()}});
 	QDBusMessage msg = QDBusMessage::createSignal("/org/mpris/MediaPlayer2",
 						      "org.freedesktop.DBus.Properties",
