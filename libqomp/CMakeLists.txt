@@ -1,9 +1,7 @@
 set( QOMP_LIB libqomp )
 cmake_minimum_required( VERSION 3.1.0 )
 
-if( POLICY CMP0071 )
-        cmake_policy(SET CMP0071 OLD)
-endif()
+include(../cmake/modules/policyRules.cmake)
 
 set( CMAKE_AUTOMOC ON )
 add_definitions( -DLIBQOMP_LIBRARY )
