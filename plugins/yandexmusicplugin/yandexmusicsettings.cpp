@@ -23,6 +23,7 @@
 #include "yandexmusicoauth.h"
 #include "yandexmusicplugin.h"
 
+#include <QDateTime>
 #ifndef Q_OS_ANDROID
 #include "ui_yandexmusicsettings.h"
 
@@ -35,16 +36,18 @@ public:
 		ui(new Ui::YandexMusicSettings)
 	{
 		ui->setupUi(widget_);
-		QObject::connect(ui->pb_authentication, &QPushButton::clicked, page_->_auth, &YandexMusicOauth::grant);
-		QObject::connect(page_->_auth, &YandexMusicOauth::granted, [&]() {
-			page_->restoreOptions();
-		});
+		QObject::connect(ui->pb_authentication, &QPushButton::clicked, page_, &YandexMusicSettings::doAuth);
+	}
+
+	~Private()
+	{
+		delete ui;
 	}
 
 	YandexMusicSettings* page_;
 	QWidget* widget_;
 	Ui::YandexMusicSettings* ui;
-};
+
 #else
 #include "qompqmlengine.h"
 #include <QQuickItem>
@@ -56,19 +59,56 @@ public:
 		page_(p)
 	{
 		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/YandexMusicOptionsPage.qml"));
-		QObject::connect(item_, SIGNAL(clicked()), page_, SIGNAL(doLogin()));
+		QObject::connect(item_, SIGNAL(clicked()), page_, SIGNAL(doAuth()));
 	}
 
 	YandexMusicSettings* page_;
 	QQuickItem* item_;
-};
+
 #endif
+
+	QString userName() const
+	{
+#ifndef Q_OS_ANDROID
+		return ui->leUser->text();
+#else
+		return "";
+#endif
+	}
+
+	QString password() const
+	{
+#ifndef Q_OS_ANDROID
+		return ui->lePassword->text();
+#else
+		return "";
+#endif
+	}
+
+	void setResult(const QString& result)
+	{
+#ifndef Q_OS_ANDROID
+		ui->lbResult->setText(result);
+#else
+		Q_UNUSED(result)
+#endif
+	}
+};
 
 YandexMusicSettings::YandexMusicSettings(QObject *parent) :
 	QompOptionsPage(parent),
 	_auth(new YandexMusicOauth(this))
 {
 	d = new Private(this);
+	connect(this, &YandexMusicSettings::authRequest, _auth, &YandexMusicOauth::grant);
+	QObject::connect(_auth, &YandexMusicOauth::granted, [&]() {
+		restoreOptions();
+		d->setResult(tr("Authentication succeeded."));
+	});
+	connect(_auth, &YandexMusicOauth::requestError, [&](const QString& error) {
+		restoreOptions();
+		d->setResult(error);
+	});
 	restoreOptions();
 }
 
@@ -79,9 +119,6 @@ QString YandexMusicSettings::name() const
 
 YandexMusicSettings::~YandexMusicSettings()
 {
-#ifndef Q_OS_ANDROID
-	delete d->ui;
-#endif
 	delete d;
 }
 
@@ -101,6 +138,11 @@ QObject *YandexMusicSettings::page() const
 #endif
 }
 
+void YandexMusicSettings::doAuth()
+{
+	emit authRequest(d->userName(), d->password());
+}
+
 void YandexMusicSettings::applyOptions()
 {
 }
@@ -108,7 +150,14 @@ void YandexMusicSettings::applyOptions()
 void YandexMusicSettings::restoreOptions()
 {
 #ifndef Q_OS_ANDROID
-	d->ui->lb_username->setText(_auth->userName());
+	d->ui->leUser->setText(_auth->userName());
+	d->ui->lePassword->setText("");
+	if(YandexMusicOauth::token().size() > 0) {
+		d->ui->lbStatus->setText(tr("Authenticated up to ") + YandexMusicOauth::tokenTtl().toString(Qt::SystemLocaleShortDate));
+	}
+	else {
+		d->ui->lbStatus->setText(tr("Not authenticated"));
+	}
 #else
 	d->item_->setProperty("login", _auth->user());
 #endif

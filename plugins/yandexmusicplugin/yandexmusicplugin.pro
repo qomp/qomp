@@ -5,13 +5,15 @@ HEADERS += $$PWD/yandexmusicplugin.h \
     $$PWD/yandexmusicurlresolvestrategy.h \
     $$PWD/yandexmusiccontroller.h \
     $$PWD/yandexmusicoauth.h \
-    $$PWD/yandexmusicsettings.h
+    $$PWD/yandexmusicsettings.h \
+    $$PWD/yandexmusiccaptcha.h
 
 SOURCES += $$PWD/yandexmusicplugin.cpp \
     $$PWD/yandexmusicurlresolvestrategy.cpp \
     $$PWD/yandexmusiccontroller.cpp \
     $$PWD/yandexmusicoauth.cpp \
-    $$PWD/yandexmusicsettings.cpp
+    $$PWD/yandexmusicsettings.cpp \
+    $$PWD/yandexmusiccaptcha.cpp
 
 
 OTHER_FILES += $$PWD/metadata.json
@@ -24,7 +26,7 @@ else {
     SOURCES += $$PWD/yandexmusicgettunsdlg.cpp
 }
 
-QT += xml networkauth
+QT += xml
 
 FORMS += \
     $$PWD/yandexmusicsettings.ui

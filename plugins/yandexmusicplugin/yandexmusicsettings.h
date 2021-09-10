@@ -40,7 +40,10 @@ public slots:
 	virtual void restoreOptions() Q_DECL_FINAL;
 
 signals:
-	void doLogin();
+	void authRequest(const QString&, const QString&);
+
+private slots:
+	void doAuth();
 	
 private:
 	YandexMusicOauth *_auth;

@@ -25,7 +25,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QNetworkCookieJar>
 #include <QRegExp>
 #include <QCryptographicHash>
 #include <QCoreApplication>
@@ -37,7 +36,7 @@
 #include <QJsonArray>
 #include <QDomComment>
 #include <QDomElement>
-#include <QNetworkCookie>
+#include <QtGlobal>
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
@@ -58,11 +57,9 @@ public:
 		tune_(const_cast<Tune*>(t))
 	{
 		nam_ = QompNetworkingFactory::instance()->getThreadedNAM();
-		nam_->cookieJar()->insertCookie(QNetworkCookie("yandex_login", YandexMusicURLResolveStrategy::instance()->auth_->userName().toLatin1()));
-		nam_->cookieJar()->insertCookie(QNetworkCookie("device_id", "a340fad50e4ff65306fb5119719b3d62ec368efa1"));
 		timer_->setSingleShot(true);
 		timer_->setInterval(TimerInterval);
-		connect(timer_, SIGNAL(timeout()), loop_, SLOT(quit()));
+		connect(timer_, &QTimer::timeout, loop_, &QEventLoop::quit);
 	}
 
 	~YandexMusicURLResolveStrategyPrivate()
@@ -86,10 +83,10 @@ public:
 		//tracks/{track_id}/download-info
 		QUrl url = QUrl(QString("%1/tracks/%2/download-info").arg(apiURL, tune_->url), QUrl::StrictMode);
 		QNetworkRequest nr(url);
-		YandexMusicURLResolveStrategy::instance()->setupRequest(&nr);
+		YandexMusicOauth::setupRequest(&nr);
 		QNetworkReply *reply = nam_->get(nr);
-		connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepOne()));
-		connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
+		connect(reply, &QNetworkReply::finished, this, &YandexMusicURLResolveStrategyPrivate::tuneUrlFinishedStepOne);
+		connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &YandexMusicURLResolveStrategyPrivate::requestError);
 		timer_->start();
 		loop_->exec();
 		if(timer_->isActive())
@@ -118,10 +115,10 @@ private slots:
 					QString u = arr.first().toObject().value("downloadInfoUrl").toString();
 					QUrl url(u, QUrl::StrictMode);
 					QNetworkRequest nr(url);
-					YandexMusicURLResolveStrategy::instance()->setupRequest(&nr);
+					YandexMusicOauth::setupRequest(&nr);
 					QNetworkReply *reply = nam_->get(nr);
-					connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepTwo()));
-					connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
+					connect(reply, &QNetworkReply::finished, this, &YandexMusicURLResolveStrategyPrivate::tuneUrlFinishedStepTwo);
+					connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &YandexMusicURLResolveStrategyPrivate::requestError);
 				}
 			}
 		}
@@ -168,7 +165,7 @@ private slots:
 		loop_->quit();
 	}
 
-	void requestError()
+	void requestError(QNetworkReply::NetworkError /*error*/)
 	{
 		QNetworkReply *reply = static_cast<QNetworkReply*>(sender());
 		reply->deleteLater();
@@ -204,21 +201,9 @@ void YandexMusicURLResolveStrategy::reset()
 	instance_ = 0;
 }
 
-void YandexMusicURLResolveStrategy::setupRequest(QNetworkRequest *nr)
-{
-	nr->setRawHeader("Accept", "*/*");
-	nr->setRawHeader("X-Requested-With", "XMLHttpRequest");
-	nr->setHeader(QNetworkRequest::UserAgentHeader, "Yandex-Music-API");
-	nr->setRawHeader("X-Yandex-Music-Client", "YandexMusicAndroid/23020251");
-	nr->setRawHeader("X-Current-UID", auth_->userId().toLatin1());
-//	nr->setRawHeader("Authorization", QString("OAuth %1").arg(YandexMusicOauth::token()).toLatin1());
-	nr->setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-}
-
 YandexMusicURLResolveStrategy::YandexMusicURLResolveStrategy() :
 	TuneURLResolveStrategy(QCoreApplication::instance()),
-	mutex_(new QMutex),
-	auth_(new YandexMusicOauth(this))
+	mutex_(new QMutex)
 {
 }
 

@@ -23,16 +23,13 @@
 #include "qompplugintypes.h"
 #include "common.h"
 #include "yandexmusicurlresolvestrategy.h"
-#include "qompplugincaptchadialog.h"
+#include "yandexmusicoauth.h"
+#include "yandexmusiccaptcha.h"
 
 #include <QNetworkAccessManager>
-#include <QNetworkCookieJar>
-#include <QNetworkCookie>
 #include <QNetworkReply>
 #include <QRegExp>
 #include <QStringList>
-#include <QEventLoop>
-#include <QPixmap>
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -172,7 +169,7 @@ YandexMusicController::YandexMusicController(QObject *parent) :
 	artistsModel_(new QompPluginTreeModel(this)),
 	dlg_(new YandexMusicGettunsDlg()),
 	mainUrl_(YA_MUSIC_URL),
-	captchaInProgress_(false)
+	captcha_(new YandexMusicCaptcha(nam(), dlg_))
 {
 	init();
 }
@@ -191,16 +188,17 @@ void YandexMusicController::init()
 	dlg_->setModel(artistsModel_, TabArtist);
 	dlg_->setCuuretnTab(TabArtist);
 
-	QNetworkCookie c("makeyourownkindofmusic", "optin");
-	QList<QNetworkCookie> l;
-	l.append(c);
-	nam()->cookieJar()->setCookiesFromUrl(l, mainUrl_);
+//	QNetworkCookie c("makeyourownkindofmusic", "optin");
+//	QList<QNetworkCookie> l;
+//	l.append(c);
+//	nam()->cookieJar()->setCookiesFromUrl(l, mainUrl_);
 
 	queries_.insert(0, {ARTISTS_NAME, SLOT(artistsSearchFinished())});
 	queries_.insert(1, {ALBUMS_NAME, SLOT(albumsSearchFinished())});
 	queries_.insert(2, {TRACKS_NAME, SLOT(tracksSearchFinished())});
 
 	connect(dlg_, &YandexMusicGettunsDlg::tabChanged, this, &YandexMusicController::makeQuery);
+	connect(captcha_, &YandexMusicCaptcha::captchaReady, this, &YandexMusicController::processCaptha);
 }
 
 QList<Tune*> YandexMusicController::prepareTunes() const
@@ -291,7 +289,7 @@ QNetworkRequest YandexMusicController::creatNetworkRequest(const QUrl &url) cons
 {
 	QNetworkRequest nr(url);
 
-	YandexMusicURLResolveStrategy::instance()->setupRequest(&nr);
+	YandexMusicOauth::setupRequest(&nr);
 //	nr.setRawHeader("Referer", mainUrl_.toLatin1());
 	return nr;
 }
@@ -299,95 +297,15 @@ QNetworkRequest YandexMusicController::creatNetworkRequest(const QUrl &url) cons
 bool YandexMusicController::checkCaptcha(const QUrl& replyUrl, const QByteArray &reply,
 					 const char *slot, QompPluginTreeModel *model)
 {
-	QJsonDocument doc = QJsonDocument::fromJson(reply);
-	QJsonObject root = doc.object();
-	if(!root.contains("type") || root.value("type").toString() != QStringLiteral("captcha"))
+	auto res = captcha_->checkCaptcha(replyUrl, reply);
+	if(res == YandexMusicCaptcha::NoCaptcha) {
 		return false;
-
-	QJsonObject captcha = root.value("captcha").toObject();
-
-	const QString status = captcha.value("status").toString();
-	if(status == "success") {
-		return true;
 	}
-
-	pendingRequests_.append({replyUrl, slot, model});
-
-	if(captchaInProgress_)
-		return true;
-
-	captchaInProgress_ = true;
-
-	const QString imageURL = captcha.value("img-url").toString();
-	const QString page = captcha.value("captcha-page").toString();
-	const QString ref = QUrl(page).query(QUrl::FullyEncoded);
-
-	QString key = captcha.value("key").toString();
-
-#ifdef DEBUG_OUTPUT
-		qDebug() << "YandexMusicController::checkCaptcha():  " << imageURL <<  key << page << ref;
-#endif
-
-	QString key2;
-	QPixmap px = getCaptcha(imageURL, &key2);
-	QompPluginCaptchaDialog dlg(px, dlg_);
-	if(dlg.start()) {
-		for(const PendingRequst& pr: pendingRequests_) {
-			QUrl url(QString("%1://%2/checkcaptcha?key=%3&%4&rep=%5")
-				 .arg(pr.url.scheme(), pr.url.host(), key, ref,
-				      QUrl::toPercentEncoding(dlg.result())), QUrl::StrictMode);
-#ifdef DEBUG_OUTPUT
-			qDebug() << url.toString(QUrl::FullyEncoded);
-#endif
-			QNetworkRequest nr(url);
-			nr.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-			nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-			QNetworkReply* r = nam()->get(nr);
-			connect(r, SIGNAL(finished()), pr.slot);
-			requests_.insert(r, pr.model);
-			dlg_->startBusyWidget();
-		}
+	else if(res == YandexMusicCaptcha::Resolving) {
+		pendingRequests_.append({replyUrl, slot, model});
 	}
-
-	pendingRequests_.clear();
-	captchaInProgress_ = false;
 
 	return true;
-}
-
-QPixmap YandexMusicController::getCaptcha(const QString &captchaUrl, QString *key)
-{
-#ifdef DEBUG_OUTPUT
-		qDebug() << "YandexMusicController::getCaptcha():  " << captchaUrl;
-#endif
-	QUrl url(captchaUrl);
-	QNetworkRequest nr = creatNetworkRequest(url);
-	QNetworkReply* r = nam()->get(nr);
-
-	dlg_->startBusyWidget();
-	QEventLoop el;
-	connect(r, SIGNAL(finished()), &el, SLOT(quit()));
-	el.exec();
-	dlg_->stopBusyWidget();
-	r->deleteLater();
-
-	QPixmap pix;
-	if (r->error() == QNetworkReply::NoError) {
-		if(url.hasQuery()) {
-			const QString queries = url.query();
-
-			foreach(const QString& query, queries.split("&")) {
-				QStringList data = query.split("=");
-				if(data.at(0) == "key" && data.size() == 2) {
-					*key = data.at(1);
-				}
-			}
-		}
-		QByteArray ba = r->readAll();
-		pix.loadFromData(ba);
-	}
-
-	return pix;
 }
 
 void YandexMusicController::artistsSearchFinished()
@@ -545,6 +463,16 @@ void YandexMusicController::makeQuery(int num)
 
 		searched_[num] = true;
 	}
+}
+
+void YandexMusicController::processCaptha(QNetworkReply *r)
+{
+	for(const PendingRequst& pr: pendingRequests_) {
+		connect(r, SIGNAL(finished()), pr.slot);
+		requests_.insert(r, pr.model);
+	}
+	dlg_->startBusyWidget();
+	pendingRequests_.clear();
 }
 
 void YandexMusicController::albumUrlFinished()

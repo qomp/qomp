@@ -28,8 +28,10 @@ class QompPluginTreeModel;
 class QNetworkReply;
 class YandexMusicGettunsDlg;
 class QNetworkRequest;
+class QNetworkReply;
 class QUrl;
 class QPixmap;
+class YandexMusicCaptcha;
 
 class YandexMusicController : public QompPluginController
 {
@@ -56,6 +58,7 @@ private slots:
 	void albumUrlFinished();
 	void artistUrlFinished();
 	void makeQuery(int num);
+	void processCaptha(QNetworkReply* r);
 
 signals:
 	void queryFinished();
@@ -66,7 +69,6 @@ private:
 	bool searchNextPage(const QByteArray &reply, const QString& type, const char* slot);
 	QNetworkRequest creatNetworkRequest(const QUrl& url) const;
 	bool checkCaptcha(const QUrl& replyUrl, const QByteArray& reply, const char *slot, QompPluginTreeModel* model = nullptr);
-	QPixmap getCaptcha(const QString& captchaUrl, QString* key);
 
 private:
 	QompPluginTreeModel *tracksModel_, *albumsModel_, *artistsModel_;
@@ -89,8 +91,8 @@ private:
 	};
 
 	QList<PendingRequst> pendingRequests_;
-	bool captchaInProgress_;
 	QHash<int, bool> searched_;
+	YandexMusicCaptcha *captcha_;
 };
 
 #endif // YANDEXMUSICCONTROLLER_H

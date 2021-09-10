@@ -35,7 +35,6 @@ public:
 	~YandexMusicURLResolveStrategy();
 
 	static void reset();
-	void setupRequest(QNetworkRequest *nr);
 
 	virtual QUrl getUrl(const Tune *t) Q_DECL_FINAL;
 	virtual QString name() const Q_DECL_FINAL;
@@ -43,9 +42,7 @@ public:
 private:
 	explicit YandexMusicURLResolveStrategy();
 	static YandexMusicURLResolveStrategy* instance_;
-	friend class YandexMusicURLResolveStrategyPrivate;
 	QMutex* mutex_;
-	YandexMusicOauth *auth_;
 };
 
 #endif // YANDEXMUSICURLRESOLVESTRATEGY_H

@@ -2,10 +2,10 @@
 #define YANDEXMUSICOAUTH_H
 
 #include <QObject>
-#include <QVariant>
 
 class QNetworkAccessManager;
-class QOAuth2AuthorizationCodeFlow;
+class QNetworkRequest;
+class YandexMusicCaptcha;
 
 class YandexMusicOauth : public QObject
 {
@@ -14,31 +14,29 @@ public:
 	explicit YandexMusicOauth(QObject *parent = nullptr);
 	virtual ~YandexMusicOauth();
 	QString userName();
-	QString userId();
-	QString userUid();
-
 
 	static QString token();
+	static QDateTime tokenTtl();
+
+	static void setupRequest(QNetworkRequest *nr);
 
 public slots:
-	void grant();
+	void grant(const QString& user, const QString& password);
 
 signals:
 	void granted();
+	void requestError(const QString&);
 
 private:
-	void startAuth();
-	void openAuthUrl();
-	void checkDevId();
-	void setupFlow();
 	void setupHandler();
 	void updateToken();
-	QJsonObject getUserInfo();
+
+private slots:
+	void grantRequestFinished();
 
 private:
 	QNetworkAccessManager *_nam;
-	QOAuth2AuthorizationCodeFlow *_flow;
-	QVariant _devId;
+	YandexMusicCaptcha *captcha_;
 
 };
 
