@@ -72,7 +72,7 @@ public:
 #ifndef Q_OS_ANDROID
 		return ui->leUser->text();
 #else
-		return "";
+		return item_->property("login").toString();
 #endif
 	}
 
@@ -81,7 +81,7 @@ public:
 #ifndef Q_OS_ANDROID
 		return ui->lePassword->text();
 #else
-		return "";
+		return item_->property("password").toString();
 #endif
 	}
 
@@ -90,7 +90,7 @@ public:
 #ifndef Q_OS_ANDROID
 		ui->lbResult->setText(result);
 #else
-		Q_UNUSED(result)
+		item_->setProperty("result", result);
 #endif
 	}
 };
@@ -149,16 +149,20 @@ void YandexMusicSettings::applyOptions()
 
 void YandexMusicSettings::restoreOptions()
 {
+	QString status;
+	if(YandexMusicOauth::token().size() > 0) {
+		status = tr("Authenticated up to ") + YandexMusicOauth::tokenTtl().toString(Qt::SystemLocaleShortDate);
+	}
+	else {
+		status = tr("Not authenticated");
+	}
 #ifndef Q_OS_ANDROID
 	d->ui->leUser->setText(_auth->userName());
 	d->ui->lePassword->setText("");
-	if(YandexMusicOauth::token().size() > 0) {
-		d->ui->lbStatus->setText(tr("Authenticated up to ") + YandexMusicOauth::tokenTtl().toString(Qt::SystemLocaleShortDate));
-	}
-	else {
-		d->ui->lbStatus->setText(tr("Not authenticated"));
-	}
+	d->ui->lbStatus->setText(status);
 #else
-	d->item_->setProperty("login", _auth->user());
+	d->item_->setProperty("login", _auth->userName());
+	d->item_->setProperty("password", "");
+	d->item_->setProperty("status", status);
 #endif
 }
