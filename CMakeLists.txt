@@ -179,7 +179,7 @@ if( LINUX )
 	add_definitions( -DHAVE_X11 -DQOMP_DATADIR="${QOMP_DATADIR}" )
 endif()
 
-find_package( Qt5 COMPONENTS Core Widgets Network Multimedia Concurrent REQUIRED )
+find_package( Qt5 COMPONENTS Core Widgets Network Multimedia Concurrent Xml REQUIRED )
 if (Qt5Widgets_FOUND)
 	message(STATUS "Qt5 version: ${Qt5Widgets_VERSION}")
 endif()

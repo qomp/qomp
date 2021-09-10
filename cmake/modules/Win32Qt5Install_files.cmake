@@ -206,6 +206,7 @@ if(USE_MXE)
 		libcrypto-1_1-x64.dll
 		libssl-1_1.dll
 		libcrypto-1_1.dll
+		libzstd.dll
 	)
 endif()
 
