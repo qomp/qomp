@@ -33,7 +33,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QDomComment>
+#include <QDomDocument>
 #include <QDomElement>
 #include <QtGlobal>
 
