@@ -17,35 +17,35 @@
  *
  */
 
-#ifndef YANDEXMUSICURLRESOLVESTRATEGY_H
-#define YANDEXMUSICURLRESOLVESTRATEGY_H
+#ifndef LASTFMSETTINGS_H
+#define LASTFMSETTINGS_H
 
-#include "tune.h"
-#include <QObject>
+#include "qompoptionspage.h"
 
-class QMutex;
-class QNetworkRequest;
 class YandexMusicOauth;
 
-class YandexMusicURLResolveStrategy : public TuneURLResolveStrategy
+class YandexMusicSettings : public QompOptionsPage
 {
 	Q_OBJECT
+	
 public:
-	static YandexMusicURLResolveStrategy* instance();
-	~YandexMusicURLResolveStrategy();
-
-	static void reset();
-	void setupRequest(QNetworkRequest *nr);
-
-	virtual QUrl getUrl(const Tune *t) Q_DECL_FINAL;
+	explicit YandexMusicSettings(QObject *parent = nullptr);
+	~YandexMusicSettings();
 	virtual QString name() const Q_DECL_FINAL;
+	virtual void retranslate() Q_DECL_FINAL;
+	virtual QObject* page() const Q_DECL_FINAL;
 
+public slots:
+	virtual void applyOptions() Q_DECL_FINAL;
+	virtual void restoreOptions() Q_DECL_FINAL;
+
+signals:
+	void doLogin();
+	
 private:
-	explicit YandexMusicURLResolveStrategy();
-	static YandexMusicURLResolveStrategy* instance_;
-	friend class YandexMusicURLResolveStrategyPrivate;
-	QMutex* mutex_;
-	YandexMusicOauth *auth_;
+	YandexMusicOauth *_auth;
+	class Private;
+	Private* d;
 };
 
-#endif // YANDEXMUSICURLRESOLVESTRATEGY_H
+#endif // LASTFMSETTINGS_H

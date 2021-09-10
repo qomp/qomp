@@ -21,6 +21,7 @@
 #include "yandexmusiccontroller.h"
 #include "yandexmusicurlresolvestrategy.h"
 #include "qomppluginaction.h"
+#include "yandexmusicsettings.h"
 
 #include <QtPlugin>
 
@@ -43,7 +44,7 @@ void YandexMusicPlugin::getTunes(QompPluginAction *act)
 
 QompOptionsPage *YandexMusicPlugin::options()
 {
-	return 0;
+	return new YandexMusicSettings(this);
 }
 
 TuneURLResolveStrategy *YandexMusicPlugin::urlResolveStrategy() const

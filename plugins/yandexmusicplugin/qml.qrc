@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>qml/YandexMusicResultsView.qml</file>
+        <file>qml/YandexMusicOptionsPage.qml</file>
     </qresource>
 </RCC>

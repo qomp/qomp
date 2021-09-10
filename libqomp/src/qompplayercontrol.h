@@ -23,10 +23,10 @@
 #include <QObject>
 #include "libqomp_global.h"
 
-class LIBQOMPSHARED_EXPORT QompPlayerControl
+class /*LIBQOMPSHARED_EXPORT*/ QompPlayerControl
 {
 public:
-	virtual ~QompPlayerControl(){}
+	virtual ~QompPlayerControl() {}
 
 public slots:
 	virtual void actPlayNext() = 0;

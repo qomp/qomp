@@ -19,24 +19,33 @@
 
 #include "yandexmusicurlresolvestrategy.h"
 #include "qompnetworkingfactory.h"
+#include "yandexmusicoauth.h"
 
 #include <QEventLoop>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkCookieJar>
 #include <QRegExp>
 #include <QCryptographicHash>
 #include <QCoreApplication>
 #include <QTimer>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QDomComment>
+#include <QDomElement>
+#include <QNetworkCookie>
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
 #endif
 
 static const int TimerInterval = 5000;
-
+//static const QString storageURL = "https://storage.mds.yandex.net";
+static const QString apiURL = "https://api.music.yandex.net";
 
 class YandexMusicURLResolveStrategyPrivate : public QObject
 {
@@ -49,6 +58,8 @@ public:
 		tune_(const_cast<Tune*>(t))
 	{
 		nam_ = QompNetworkingFactory::instance()->getThreadedNAM();
+		nam_->cookieJar()->insertCookie(QNetworkCookie("yandex_login", YandexMusicURLResolveStrategy::instance()->auth_->userName().toLatin1()));
+		nam_->cookieJar()->insertCookie(QNetworkCookie("device_id", "a340fad50e4ff65306fb5119719b3d62ec368efa1"));
 		timer_->setSingleShot(true);
 		timer_->setInterval(TimerInterval);
 		connect(timer_, SIGNAL(timeout()), loop_, SLOT(quit()));
@@ -72,11 +83,10 @@ public:
 #ifdef DEBUG_OUTPUT
 		qDebug() << "YandexMusicURLResolveStrategyPrivate::getUrl()";
 #endif
-		QUrl url = QUrl(QString("http://storage.music.yandex.ru/get/%1/2.xml").arg(tune_->url), QUrl::StrictMode);
+		//tracks/{track_id}/download-info
+		QUrl url = QUrl(QString("%1/tracks/%2/download-info").arg(apiURL, tune_->url), QUrl::StrictMode);
 		QNetworkRequest nr(url);
-		nr.setRawHeader("Accept", "*/*");
-		nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+		YandexMusicURLResolveStrategy::instance()->setupRequest(&nr);
 		QNetworkReply *reply = nam_->get(nr);
 		connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepOne()));
 		connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
@@ -99,22 +109,25 @@ private slots:
 		QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
 		reply->deleteLater();
 		if(reply->error() == QNetworkReply::NoError) {
-			const QString replyStr = QString::fromUtf8(reply->readAll());
-			QRegExp re("<track filename=\"([^\"]+)\"");
-			if(re.indexIn(replyStr) != -1) {
-				QString fileName = re.cap(1);
-				QUrl url(QString("http://storage.music.yandex.ru/download-info/%1/%2").arg(tune_->url, fileName));
-				QNetworkRequest nr(url);
-				nr.setRawHeader("Accept", "*/*");
-				nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-				nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-				QNetworkReply *reply = nam_->get(nr);
-				connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepTwo()));
-				connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
+			QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+			QJsonObject jo = doc.object();
+
+			if(jo.contains("result")) {
+				auto arr = jo.value("result").toArray();
+				if(arr.count() > 0) {
+					QString u = arr.first().toObject().value("downloadInfoUrl").toString();
+					QUrl url(u, QUrl::StrictMode);
+					QNetworkRequest nr(url);
+					YandexMusicURLResolveStrategy::instance()->setupRequest(&nr);
+					QNetworkReply *reply = nam_->get(nr);
+					connect(reply, SIGNAL(finished()), SLOT(tuneUrlFinishedStepTwo()));
+					connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(requestError()));
+				}
 			}
 		}
 		else {
 			loop_->quit();
+			qDebug() << reply->errorString();
 		}
 	}
 
@@ -126,27 +139,31 @@ private slots:
 		QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
 		reply->deleteLater();
 		if(reply->error() == QNetworkReply::NoError) {
-			QString replyStr = QString::fromUtf8(reply->readAll());
-			QRegExp re("<host>([^<]+)</host><path>([^<]+)</path><ts>([^<]+)</ts><region>([^<]+)</region><s>([^<]+)</s>");
-			if(re.indexIn(replyStr) != -1) {
-				const QString host = re.cap(1);
-				const QString path = re.cap(2);
-				const QString ts = re.cap(3);
-				const QString region = re.cap(4);
-				QString s = re.cap(5);
-				const QString id = reply->property("id").toString();
+			QDomDocument doc;
+			doc.setContent(reply->readAll());
+			auto elem = doc.documentElement();
+			if(elem.hasChildNodes()) {
+				const QString host	= elem.firstChildElement("host").text();
+				const QString path	= elem.firstChildElement("path").text();
+				const QString ts	= elem.firstChildElement("ts").text();
+				const QString s		= elem.firstChildElement("s").text();
+//				const QString region	= elem.firstChildElement("region").text();
+//				const QString id = reply->property("id").toString();
 
 				QByteArray md5 = QCryptographicHash::hash("XGRlBW9FXlekgbPrRHuSiA" + (path.right(path.length() - 1) + s).toLatin1(), QCryptographicHash::Md5);
 
-				url_ = QUrl(QString("http://%1/get-mp3/%2/%3%4?track-id=%5&region=%6&from=service-search")
+				url_ = QUrl(QString("https://%1/get-mp3/%2/%3%4") //?track-id=%5&region=%6&from=service-search
 					    .arg(host)
 					    .arg(QString(md5.toHex()))
 					    .arg(ts)
 					    .arg(path)
-					    .arg(id)
-					    .arg(region) );
-
+					    //					    .arg(id)
+					    //					    .arg(region)
+					    );
 			}
+		}
+		else {
+			qDebug() << reply->errorString();
 		}
 		loop_->quit();
 	}
@@ -187,9 +204,21 @@ void YandexMusicURLResolveStrategy::reset()
 	instance_ = 0;
 }
 
+void YandexMusicURLResolveStrategy::setupRequest(QNetworkRequest *nr)
+{
+	nr->setRawHeader("Accept", "*/*");
+	nr->setRawHeader("X-Requested-With", "XMLHttpRequest");
+	nr->setHeader(QNetworkRequest::UserAgentHeader, "Yandex-Music-API");
+	nr->setRawHeader("X-Yandex-Music-Client", "YandexMusicAndroid/23020251");
+	nr->setRawHeader("X-Current-UID", auth_->userId().toLatin1());
+//	nr->setRawHeader("Authorization", QString("OAuth %1").arg(YandexMusicOauth::token()).toLatin1());
+	nr->setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+}
+
 YandexMusicURLResolveStrategy::YandexMusicURLResolveStrategy() :
 	TuneURLResolveStrategy(QCoreApplication::instance()),
-	mutex_(new QMutex)
+	mutex_(new QMutex),
+	auth_(new YandexMusicOauth(this))
 {
 }
 

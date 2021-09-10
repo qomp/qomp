@@ -135,19 +135,24 @@ static QList<QompPluginModelItem*> parseTunes(const QJsonArray& arr)
 			if(!ja.isEmpty())
 				tune->artist = ja.first().toObject().value("name").toString();
 		}
+		QString albumId = "";
 		if(cur.contains(ALBUMS_NAME)){
 			QJsonArray ja = cur.value(ALBUMS_NAME).toArray();
 			if(!ja.isEmpty()) {
 				auto alb = ja.first().toObject();
-				tune->artist = alb.value("title").toString();
+				tune->album = alb.value("title").toString();
 				if(alb.contains("genre")) {
 					tune->genre = alb.value("genre").toString();
 				}
+				albumId = alb.value("id").toString();
 			}
 		}
 		tune->duration = safeJSONValue2String(cur.value("durationMs"));
 		tune->internalId = safeJSONValue2String(cur.value("id"));
-		tune->url = cur.value("storageDir").toString();
+		tune->url = tune->internalId;//cur.value("storageDir").toString();
+		if(albumId.length() > 0) {
+			tune->url += ":" + albumId;
+		}
 		tune->directUrl = YA_MUSIC_URL + QStringLiteral("track/") + tune->internalId;
 		tracks.append(tune);
 	}
@@ -285,10 +290,9 @@ bool YandexMusicController::searchNextPage(const QByteArray &reply, const QStrin
 QNetworkRequest YandexMusicController::creatNetworkRequest(const QUrl &url) const
 {
 	QNetworkRequest nr(url);
-	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
-	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
-	nr.setRawHeader("Referer", mainUrl_.toLatin1());
-	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+
+	YandexMusicURLResolveStrategy::instance()->setupRequest(&nr);
+//	nr.setRawHeader("Referer", mainUrl_.toLatin1());
 	return nr;
 }
 
