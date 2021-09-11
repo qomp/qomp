@@ -35,7 +35,9 @@
 #include <QJsonArray>
 #include <QDomDocument>
 #include <QDomElement>
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
 #include <QtGlobal>
+#endif
 
 #ifdef DEBUG_OUTPUT
 #include <QtDebug>
@@ -85,7 +87,11 @@ public:
 		YandexMusicOauth::setupRequest(&nr);
 		QNetworkReply *reply = nam_->get(nr);
 		connect(reply, &QNetworkReply::finished, this, &YandexMusicURLResolveStrategyPrivate::tuneUrlFinishedStepOne);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
 		connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &YandexMusicURLResolveStrategyPrivate::requestError);
+#else
+		connect(reply, &QNetworkReply::errorOccurred, this, &YandexMusicURLResolveStrategyPrivate::requestError);
+#endif
 		timer_->start();
 		loop_->exec();
 		if(timer_->isActive())
@@ -117,7 +123,11 @@ private slots:
 					YandexMusicOauth::setupRequest(&nr);
 					QNetworkReply *reply = nam_->get(nr);
 					connect(reply, &QNetworkReply::finished, this, &YandexMusicURLResolveStrategyPrivate::tuneUrlFinishedStepTwo);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
 					connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &YandexMusicURLResolveStrategyPrivate::requestError);
+#else
+					connect(reply, &QNetworkReply::errorOccurred, this, &YandexMusicURLResolveStrategyPrivate::requestError);
+#endif
 				}
 			}
 		}

@@ -83,7 +83,11 @@ void QompPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 	static const int margine = 5;
 	QRect durRect(rect);
 	QString dur = index.data(QompPlayListModel::DurationRole).toString();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+	int w = painter->fontMetrics().horizontalAdvance(dur);
+#else
 	int w = painter->fontMetrics().width(dur);
+#endif
 	durRect.setWidth(w + 1);
 	durRect.moveRight(rect.right() - margine);
 	rect.setRight(durRect.left() - 2);

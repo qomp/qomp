@@ -336,7 +336,13 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 
 void QompQtMultimediaPlayer::setPlayerMediaContent(const QUrl &url)
 {
-	if(player_->media().isNull() || player_->media().canonicalUrl() != url) {
+	if(player_->media().isNull() ||
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+			player_->media().canonicalUrl() != url)
+#else
+			player_->media().request().url() != url)
+#endif
+	{
 		if(url.isLocalFile() || url.isEmpty()) {
 			player_->setMedia(QMediaContent(url));
 		}
