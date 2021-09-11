@@ -179,7 +179,7 @@ QompQmlEngine::QompQmlEngine() :
 	QAndroidJniObject act = QtAndroid::androidActivity();
 	QAndroidJniEnvironment jni;
 	jclass clazz = jni->GetObjectClass(act.object());
-	JNINativeMethod methods[] = { "menuKeyDown", "()V", (void*)menuKeyDown };
+	JNINativeMethod methods[] = {{ "menuKeyDown", "()V", (void*)menuKeyDown }};
 	jni->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0]));
 	jni->DeleteLocalRef(clazz);
 #endif

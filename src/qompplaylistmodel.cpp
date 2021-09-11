@@ -394,7 +394,7 @@ void QompPlayListModel::saveTunes(const QString &fileName)
 		QTextStream ts(&file);
 		ts.setCodec("UTF-8");
 		foreach(Tune* t, tunes_) {
-			ts << t->toString() << endl;
+			ts << t->toString() << Qt::endl;
 		}
 	}
 }
@@ -465,7 +465,7 @@ void QompPlayListModel::move(int oldRow, int newRow)
 	if (oldRow < newRow)
 		++tmpRow;
 	if( beginMoveRows(QModelIndex(), oldRow, oldRow, QModelIndex(), tmpRow) ) {
-		tunes_.swap(oldRow, newRow);
+		tunes_.swapItemsAt(oldRow, newRow);
 		endMoveRows();
 		updateTuneTracks();
 	}

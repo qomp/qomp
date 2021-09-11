@@ -34,7 +34,7 @@
 static const QString iconsExpression = "Icons\\s*\\{\\s*path:\\s*(\\S+[^;]*);\\s*\\}";
 static const QString nativeIconsExpression = "NativeIcons\\s*\\{\\s*([^\\}]+)\\}";
 static const QString borderExpression = "UseWindowBorder\\s*\\{\\s*use:\\s*([\\d]);\\s*\\}";
-static const QString themePathExpression = "<theme_path>";
+static const QByteArray themePathExpression = "<theme_path>";
 static const QString resourceFileName = "*.rcc";
 
 
@@ -109,8 +109,8 @@ void ThemeManager::prepareTheme(QFile *file)
 	re.setPattern(nativeIconsExpression);
 	if(re.indexIn(content) != -1) {
 		const QString ni = re.cap(1).trimmed();
-		for(const QString& line: ni.split(";", QString::SkipEmptyParts)) {
-			const QStringList vals = line.split(":", QString::SkipEmptyParts);
+		for(const QString& line: ni.split(";", Qt::SkipEmptyParts)) {
+			const QStringList vals = line.split(":", Qt::SkipEmptyParts);
 			if(vals.count() == 2) {
 				nativeIcons_.insert(vals.at(0).trimmed(), vals.at(1).trimmed());
 			}

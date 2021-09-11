@@ -211,7 +211,7 @@ QList<Tune *> PlaylistParser::parsePLS(QByteArray *data)
 		if(!line.contains("="))
 			continue;
 
-		QStringList sl = line.split("=", QString::SkipEmptyParts);
+		QStringList sl = line.split("=", Qt::SkipEmptyParts);
 
 		if (sl.first().startsWith("File")) {
 			QRegExp re("File(\\d+)");

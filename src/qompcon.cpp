@@ -897,7 +897,7 @@ void QompCon::stopPlayer()
 	mainWin_->setCurrentPosition(0);
 	playerStateChanged(Qomp::StateStopped);
 
-	QTime t = QTime::currentTime();
+	QElapsedTimer t;
 	t.start();
 	while (player_->state() != Qomp::StateStopped && t.elapsed() < stop_timeout) {
 		QThread::msleep(1);
