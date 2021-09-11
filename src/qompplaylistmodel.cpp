@@ -379,7 +379,11 @@ void QompPlayListModel::restoreState()
 		setCurrentTune(tune(ind));
 	}
 }
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+#define ENDL_NS
+#else
+#define ENDL_NS Qt
+#endif
 void QompPlayListModel::saveTunes(const QString &fileName)
 {
 	if(fileName.isEmpty())
@@ -394,7 +398,7 @@ void QompPlayListModel::saveTunes(const QString &fileName)
 		QTextStream ts(&file);
 		ts.setCodec("UTF-8");
 		foreach(Tune* t, tunes_) {
-			ts << t->toString() << Qt::endl;
+			ts << t->toString() << ENDL_NS::endl;
 		}
 	}
 }

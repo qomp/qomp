@@ -1,5 +1,5 @@
-equals(QT_MAJOR_VERSION, 4) {
-    error("Qt4 support is deprecated!")
+!equals(QT_MAJOR_VERSION, 5) {
+    error("Qt5 only supported!")
 }
 
 TEMPLATE = subdirs

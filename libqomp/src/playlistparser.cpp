@@ -190,7 +190,11 @@ QList<Tune *> PlaylistParser::parseM3U(QByteArray *data, const QUrl &fileLocatio
 
 	return list;
 }
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+#define SEP_NS QString
+#else
+#define SEP_NS Qt
+#endif
 QList<Tune *> PlaylistParser::parsePLS(QByteArray *data)
 {
 	QList<Tune*> list;
@@ -211,7 +215,7 @@ QList<Tune *> PlaylistParser::parsePLS(QByteArray *data)
 		if(!line.contains("="))
 			continue;
 
-		QStringList sl = line.split("=", Qt::SkipEmptyParts);
+		QStringList sl = line.split("=", SEP_NS::SkipEmptyParts);
 
 		if (sl.first().startsWith("File")) {
 			QRegExp re("File(\\d+)");

@@ -59,6 +59,7 @@
 #include <QTimer>
 #include <QDesktopServices>
 #include <QClipboard>
+#include <QElapsedTimer>
 
 #ifdef HAVE_QTMULTIMEDIA
 #include "qompqtmultimediaplayer.h"

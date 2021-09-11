@@ -79,6 +79,11 @@ void ThemeManager::loadThemes()
 		}
 	}
 }
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+#define SEP_NS QString
+#else
+#define SEP_NS Qt
+#endif
 
 void ThemeManager::prepareTheme(QFile *file)
 {
@@ -109,8 +114,8 @@ void ThemeManager::prepareTheme(QFile *file)
 	re.setPattern(nativeIconsExpression);
 	if(re.indexIn(content) != -1) {
 		const QString ni = re.cap(1).trimmed();
-		for(const QString& line: ni.split(";", Qt::SkipEmptyParts)) {
-			const QStringList vals = line.split(":", Qt::SkipEmptyParts);
+		for(const QString& line: ni.split(";",SEP_NS::SkipEmptyParts)) {
+			const QStringList vals = line.split(":", SEP_NS::SkipEmptyParts);
 			if(vals.count() == 2) {
 				nativeIcons_.insert(vals.at(0).trimmed(), vals.at(1).trimmed());
 			}
