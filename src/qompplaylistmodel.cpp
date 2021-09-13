@@ -469,7 +469,11 @@ void QompPlayListModel::move(int oldRow, int newRow)
 	if (oldRow < newRow)
 		++tmpRow;
 	if( beginMoveRows(QModelIndex(), oldRow, oldRow, QModelIndex(), tmpRow) ) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+		tunes_.swap(oldRow, newRow);
+#else
 		tunes_.swapItemsAt(oldRow, newRow);
+#endif
 		endMoveRows();
 		updateTuneTracks();
 	}
