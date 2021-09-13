@@ -328,6 +328,7 @@ void QompQtMultimediaPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus status
 	case QMediaPlayer::EndOfMedia:
 		emit mediaFinished();
 		//break; we wont emit next  signal
+		// fall through
 	default:
 		emit QompPlayer::stateChanged(state());
 		break;

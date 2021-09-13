@@ -206,8 +206,8 @@ bool QompTrayIcon::eventFilter(QObject *o, QEvent *e)
 {
 	if(o == icon_ && e->type() == QEvent::Wheel) {
 		QWheelEvent *we = static_cast<QWheelEvent*>(e);
-		int delta = ((we->delta() / 8) / 1.5);
-		emit trayWheeled(delta);
+		QPoint delta = (we->angleDelta() / 8 / 15 * 10);
+		emit trayWheeled(delta.rx());
 	}
 	return QObject::eventFilter(o, e);
 }

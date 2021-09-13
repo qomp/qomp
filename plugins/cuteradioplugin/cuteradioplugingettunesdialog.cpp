@@ -24,6 +24,7 @@
 #include "ui_cuteradioplugingettunesdialog.h"
 
 #include <QKeyEvent>
+#include <QtGlobal>
 
 
 class CuteRadioPluginGetTunesDialog::Private :public QObject
@@ -41,25 +42,16 @@ public:
 		_ui->cb_countries->setHorizontalHeaderLabels({tr("Country"),tr("Count")});
 		_ui->cb_genres->setHorizontalHeaderLabels({tr("Genre"),tr("Count")});
 
-		connect(_ui->cb_countries, static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
-			this, &Private::countryChanged);
-		connect(_ui->cb_genres, static_cast<void(QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
-			this, &Private::genreChanged);
+		connect(_ui->cb_countries, QOverload<int>::of(&QComboBox::currentIndexChanged), [&](int index) {
+			Options::instance()->setOption(OPTION_CUTERADIO_COUNTRY, _ui->cb_countries->itemText(index));
+		});
+		connect(_ui->cb_genres, QOverload<int>::of(&QComboBox::currentIndexChanged), [&](int index){
+			Options::instance()->setOption(OPTION_CUTERADIO_GENRE, _ui->cb_genres->itemText(index));
+		});
 	}
 
 	Ui::CuteRadioPluginGetTunesDialog* _ui;
 	QWidget* _widget;
-
-public slots:
-	void countryChanged(const QString& country)
-	{
-		Options::instance()->setOption(OPTION_CUTERADIO_COUNTRY, country);
-	}
-
-	void genreChanged(const QString& genre)
-	{
-		Options::instance()->setOption(OPTION_CUTERADIO_GENRE, genre);
-	}
 };
 
 
