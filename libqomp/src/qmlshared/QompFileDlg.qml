@@ -1,5 +1,5 @@
-import QtQuick 2.9
-import Qt.labs.folderlistmodel 2.2
+import QtQuick 2.12
+import Qt.labs.folderlistmodel 2.12
 import QtQuick.Dialogs 1.2
 
 FocusScope {
