@@ -137,6 +137,8 @@ android {
     $$PWD/../android/gradle/wrapper/gradle-wrapper.jar \
     $$PWD/../android/gradlew \
     $$PWD/../android/res/values/libs.xml \
+    $$PWD/../android/res/values/strings.xml \
+    $$PWD/../android/res/values-ru/strings.xml \
     $$PWD/../android/build.gradle \
     $$PWD/../android/gradle/wrapper/gradle-wrapper.properties \
     $$PWD/../android/gradlew.bat \
