@@ -23,10 +23,15 @@
 #include "yandexmusicoauth.h"
 #include "yandexmusicplugin.h"
 
-#include <QDateTime>
 #ifndef Q_OS_ANDROID
 #include "ui_yandexmusicsettings.h"
+#else
+#include "qompqmlengine.h"
+#include <QQuickItem>
+#endif
+#include <QDateTime>
 
+#ifndef Q_OS_ANDROID
 class YandexMusicSettings::Private
 {
 public:
@@ -51,9 +56,6 @@ public:
 	Ui::YandexMusicSettings* ui;
 
 #else
-#include "qompqmlengine.h"
-#include <QQuickItem>
-
 class YandexMusicSettings::Private
 {
 public:
