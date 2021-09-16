@@ -14,7 +14,7 @@ CONFIG(debug, debug|release) {
     macx:  CONFIG -= app_bundle
 }
 
-include(src.pri)
+include($$PWD/src.pri)
 include($$PWD/../translations.pri)
 include($$PWD/../themes.pri)
 
@@ -171,6 +171,14 @@ mac {
 }
 else {
     LIBS += -ltag
+}
+
+win32 {
+    QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$TAG_BIN/libtag.dll) $$shell_path($$OUT_PWD/../bin) \
+                $$escape_expand(\\n\\t)
+
+    QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$CUE_BIN/cue.dll) $$shell_path($$OUT_PWD/../bin) \
+                $$escape_expand(\\n\\t)
 }
 
 INCLUDEPATH += $$PWD/../libqomp/include

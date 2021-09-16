@@ -12,6 +12,10 @@ android {
     system( $$QMAKE_MKDIR $$shell_path($$TRDESTDIR) )
 }
 
+#CONFIG += lrelease
+#QM_FILES_INSTALL_PATH = $$LANG_PATH
+#QMAKE_LRELEASE_FLAGS =
+
 QMAKE_PRE_LINK += $$shell_path($$[QT_INSTALL_BINS]/lrelease) $$shell_path($$PWD/qomp.pro) \
                   $$escape_expand(\\n\\t)
 

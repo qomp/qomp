@@ -62,6 +62,7 @@ win32|android|macx {
 
     TAG_INCLUDE = $$shell_path($$TAG_PATH/include)
     TAG_LIB     = $$shell_path($$TAG_PATH/lib)
+    TAG_BIN     = $$shell_path($$TAG_PATH/bin)
 
     #libcue staff
     isEmpty(CUE_PATH) {
@@ -70,4 +71,5 @@ win32|android|macx {
 
     CUE_INCLUDE = $$shell_path($$CUE_PATH/include)
     CUE_LIB     = $$shell_path($$CUE_PATH/lib)
+    CUE_BIN     = $$shell_path($$CUE_PATH/bin)
 }
