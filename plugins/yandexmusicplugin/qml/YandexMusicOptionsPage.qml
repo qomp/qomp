@@ -4,11 +4,13 @@ import "qrc:///qmlshared"
 Item {
 	id: root
 
-	property alias login: user.text
-	property alias password: password.text
+	property alias login: user.value
+	property alias password: pass.value
 	property alias status: authStatus.text
-	property alias result: user.text
-	signal clicked()
+	property alias result: result.text
+	signal doAuth()
+
+	property bool busy: false
 
 	height: col.height
 
@@ -29,10 +31,9 @@ Item {
 				id: authStatus
 
 				anchors.verticalCenter: parent.verticalCenter
-				anchors.left: txt.right
-				clip: true
 				anchors.leftMargin: 10 * scaler.scaleX
-				font.pointSize: 8
+				clip: true
+				font.pointSize: 18
 				text: qsTr("Not authenticated")
 			}
 		}
@@ -52,43 +53,89 @@ Item {
 			TextLineEdit {
 				id: pass
 				text: qsTr("Password*")
-				input.echoMode: TextInput.Password
 				anchors.verticalCenter: parent.verticalCenter
-			}
-
-			Text {
-				anchors {
-					top: pass.bottom
-				}
-
-				anchors.left: parent.left
-				clip: true
-				anchors.leftMargin: 10 * scaler.scaleX
-				text: qsTr("*qomp doesn't save your password")
+				input.echoMode: TextInput.Password
 			}
 		}
 
 		OptionsEntry {
-			QompButton {
 
+			Text {
+				anchors {
+					top: parent.top
+					left: parent.left
+					margins: 10 * scaler.scaleX
+				}
+				font.pointSize: 10
+				font.bold: true
+				text: qsTr("*qomp doesn't save your password")
+			}
+
+			Text {
+				id: result
+
+				anchors {
+					left: parent.left
+					bottom: parent.bottom
+					margins: 10 * scaler.scaleX
+				}
+				clip: true
+				font.pointSize: 18
+
+				onTextChanged: root.busy = false
+			}
+
+			QompBusyIndicator {
+				id: busyInd
+
+				anchors {
+					verticalCenter: parent.verticalCenter
+					right: parent.right
+					margins: 10 * scaler.scaleX
+				}
+				height: parent.height / 2
+				width: height
+				visible: false
+			}
+		}
+
+		OptionsEntry {
+
+			QompButton {
+				id: btAuth
 				width: parent.width * 0.7
 				anchors.verticalCenter: parent.verticalCenter
 				anchors.horizontalCenter: parent.horizontalCenter
 				text: qsTr("Update Authentication")
-				onClicked: root.clicked()
-			}
-		}
-
-		OptionsEntry {
-			Text {
-				id: result
-
-				anchors.verticalCenter: parent.verticalCenter
-				anchors.left: txt.right
-				clip: true
-				anchors.leftMargin: 10 * scaler.scaleX
-				font.pointSize: 18
+				onClicked: {
+					Qt.inputMethod.commit()
+					Qt.inputMethod.hide()
+					root.doAuth()
+					root.busy = true
+				}
 			}
 		}
 	}
+
+	states: [
+		State {
+			name: "busy"
+			when: root.busy
+
+			PropertyChanges {
+				target: busyInd
+				visible: true
+			}
+		},
+		State {
+			name: "normal"
+			when: !root.busy
+
+			PropertyChanges {
+				target: busyInd
+				visible: false
+			}
+		}
+	]
+
 }

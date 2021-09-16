@@ -59,7 +59,7 @@ public:
 		page_(p)
 	{
 		item_ = QompQmlEngine::instance()->createItem(QUrl("qrc:///qml/YandexMusicOptionsPage.qml"));
-		QObject::connect(item_, SIGNAL(clicked()), page_, SIGNAL(doAuth()));
+		QObject::connect(item_, SIGNAL(doAuth()), page_, SLOT(doAuth()));
 	}
 
 	YandexMusicSettings* page_;
@@ -101,7 +101,7 @@ YandexMusicSettings::YandexMusicSettings(QObject *parent) :
 {
 	d = new Private(this);
 	connect(this, &YandexMusicSettings::authRequest, _auth, &YandexMusicOauth::grant);
-	QObject::connect(_auth, &YandexMusicOauth::granted, [&]() {
+	connect(_auth, &YandexMusicOauth::granted, [&]() {
 		restoreOptions();
 		d->setResult(tr("Authentication succeeded."));
 	});
