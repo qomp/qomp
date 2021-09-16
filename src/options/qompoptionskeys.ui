@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -28,11 +28,11 @@
      <property name="expandsOnDoubleClick">
       <bool>false</bool>
      </property>
-     <attribute name="headerDefaultSectionSize">
-      <number>200</number>
-     </attribute>
      <attribute name="headerMinimumSectionSize">
       <number>100</number>
+     </attribute>
+     <attribute name="headerDefaultSectionSize">
+      <number>200</number>
      </attribute>
      <attribute name="headerStretchLastSection">
       <bool>true</bool>
@@ -42,7 +42,7 @@
        <string>Action</string>
       </property>
       <property name="textAlignment">
-       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+       <set>AlignCenter</set>
       </property>
      </column>
      <column>
@@ -50,7 +50,7 @@
        <string>Shortcut</string>
       </property>
       <property name="textAlignment">
-       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+       <set>AlignCenter</set>
       </property>
      </column>
     </widget>

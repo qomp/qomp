@@ -23,7 +23,7 @@ SUBDIRS +=  \
 #sub_deezerplugin.subdir = deezerplugin
 #SUBDIRS += sub_deezerplugin
 
-!android {   
+!android {
     sub_tunetofileplugin.subdir = tunetofileplugin
     SUBDIRS += sub_tunetofileplugin
 }
