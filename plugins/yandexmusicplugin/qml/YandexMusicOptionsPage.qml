@@ -110,8 +110,9 @@ Item {
 				onClicked: {
 					Qt.inputMethod.commit()
 					Qt.inputMethod.hide()
-					root.doAuth()
+					result.text = ""
 					root.busy = true
+					root.doAuth()
 				}
 			}
 		}

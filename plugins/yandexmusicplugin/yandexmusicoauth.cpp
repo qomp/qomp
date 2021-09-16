@@ -122,7 +122,7 @@ void YandexMusicOauth::grantRequestFinished()
 	if(reply->error() == QNetworkReply::NoError) {
 		const QByteArray info = reply->readAll();
 #ifdef DEBUG_OUTPUT
-		qDebug() << info;
+		qDebug() << "YandexMusicOauth::grantRequestFinished()" << info;
 #endif
 		auto res = captcha_->checkCaptcha(reply->url(), info);
 		if(res != YandexMusicCaptcha::NoCaptcha)  {
@@ -146,8 +146,8 @@ void YandexMusicOauth::grantRequestFinished()
 	}
 	else {
 #ifdef DEBUG_OUTPUT
-		qDebug() << reply->errorString();
-		emit requestError(reply->errorString());
+		qDebug() << "YandexMusicOauth::grantRequestFinished()" << reply->errorString();
 #endif
+		emit requestError(reply->errorString());
 	}
 }

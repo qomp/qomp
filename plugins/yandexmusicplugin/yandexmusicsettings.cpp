@@ -36,7 +36,9 @@ public:
 		ui(new Ui::YandexMusicSettings)
 	{
 		ui->setupUi(widget_);
-		QObject::connect(ui->pb_authentication, &QPushButton::clicked, page_, &YandexMusicSettings::doAuth);
+		ui->lbBusy->changeText(QObject::tr("Executing the request..."));
+		QObject::connect(ui->pbAuthentication, &QPushButton::clicked, page_, &YandexMusicSettings::doAuth);
+		QObject::connect(ui->pbAuthentication, &QPushButton::clicked, ui->lbBusy, &QompBusyLabel::start);
 	}
 
 	~Private()
@@ -89,6 +91,7 @@ public:
 	{
 #ifndef Q_OS_ANDROID
 		ui->lbResult->setText(result);
+		ui->lbBusy->stop();
 #else
 		item_->setProperty("result", result);
 #endif
