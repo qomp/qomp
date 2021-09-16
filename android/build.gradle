@@ -26,6 +26,7 @@ apply plugin: 'com.google.firebase.crashlytics'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
+    implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation platform('com.google.firebase:firebase-bom:28.4.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
@@ -47,9 +48,8 @@ android {
      *******************************************************/
 
     compileSdkVersion androidCompileSdkVersion.toInteger()
-
     buildToolsVersion androidBuildToolsVersion
-    ndkVersion androidNdkVersion
+    //ndkVersion androidNdkVersion
 
     sourceSets {
         main {
@@ -81,10 +81,26 @@ android {
         //preDexLibraries = false
     }
 
+    // Do not compress Qt binary resources file
+    aaptOptions {
+        noCompress 'rcc'
+    }
+
     defaultConfig {
         applicationId "net.sourceforge.qomp" // Used by Firebase auto-config (the google-services.json from Firebase console)
 
+        //minSdkVersion qtMinSdkVersion
+        //targetSdkVersion qtTargetSdkVersion
+
         // Enabling multidex support.
         //multiDexEnabled = true
+    }
+
+    buildTypes {
+        debug {
+            firebaseCrashlytics {
+                mappingFileUploadEnabled false
+            }
+        }
     }
 }

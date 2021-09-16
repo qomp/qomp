@@ -1,7 +1,22 @@
 <?xml version="1.0"?>
-<manifest android:versionName="1.4" xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="preferExternal" android:versionCode="17" package="net.sourceforge.qomp">
-    <application android:allowBackup="false" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:icon="@drawable/icon" android:hardwareAccelerated="true" android:label="@string/app_name" android:theme="@android:style/Theme.Holo">
-        <activity android:name="net.sourceforge.qomp.Qomp" android:launchMode="singleTask" android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation" android:label="@string/app_name">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.sourceforge.qomp"
+    android:versionName="1.4"
+    android:versionCode="17"
+    android:installLocation="auto" >
+
+    <application android:name="org.qtproject.qt5.android.bindings.QtApplication"
+        android:allowBackup="false"
+        android:icon="@drawable/icon"
+        android:hardwareAccelerated="true"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Holo" >
+
+        <activity android:name="net.sourceforge.qomp.Qomp"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation"
+            android:label="@string/app_name" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -23,6 +38,7 @@
             <!-- Run with local libs -->
             <meta-data android:name="android.app.use_local_qt_libs" android:value="-- %%USE_LOCAL_QT_LIBS%% --"/>
             <meta-data android:name="android.app.libs_prefix" android:value="/data/local/tmp/qt/"/>
+            <!-- <meta-data android:name="android.app.load_local_libs" android:value="- - %%INSERT_LOCAL_LIBS%% - -"/> -->
             <meta-data android:name="android.app.load_local_libs" android:value="plugins/platforms/android/libqtforandroid.so:plugins/mediaservice/libqtmedia_android.so"/>
             <meta-data android:name="android.app.load_local_jars" android:value="-- %%INSERT_LOCAL_JARS%% --"/>
             <meta-data android:name="android.app.static_init_classes" android:value="-- %%INSERT_INIT_CLASSES%% --"/>
@@ -77,7 +93,11 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".QompService" android:enabled="true" android:exported="false" android:label="@string/srv_name" android:icon="@drawable/icon"/>
+        <service android:name=".QompService"
+            android:enabled="true"
+            android:exported="false"
+            android:label="@string/srv_name"
+            android:icon="@drawable/icon" />
 
         <receiver android:name=".MediaButtonReceiver">
             <intent-filter>

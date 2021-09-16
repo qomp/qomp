@@ -10,3 +10,6 @@
 [submodule "ga"]
 	path = ga
 	url = https://github.com/wadealer/qt-google-analytics.git
+[submodule "android_openssl"]
+	path = android_openssl
+	url = https://github.com/KDAB/android_openssl.git

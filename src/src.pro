@@ -54,6 +54,9 @@ macx {
 }
 
 android {
+#  ANDROID_MIN_SDK_VERSION = 16
+#  ANDROID_TARGET_SDK_VERSION = 19
+#  ANDROID_ABI = armeabi-v7a
   LIBS += -L$$OUT_PWD/../libqomp -lqomp-shared
   ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
   ANDROID_EXTRA_LIBS += \
@@ -61,7 +64,10 @@ android {
         $$CUE_LIB/libcue.so \
         $$OUT_PWD/../libqomp/libqomp-shared.so
 
-  !isEmpty(SSL_PATH) {
+  isEmpty(SSL_PATH) {
+    include($$PWD/../android_openssl/openssl.pri)
+  }
+  else {
     ANDROID_EXTRA_LIBS += \
         $$SSL_PATH/lib/libcrypto.so \
         $$SSL_PATH/lib/libssl.so
