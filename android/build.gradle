@@ -5,7 +5,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.0'
+        //classpath 'com.android.tools.build:gradle:3.6.0'
+        classpath 'com.android.tools.build:gradle:3.3.0'
         classpath 'com.google.gms:google-services:4.3.10'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
     }
@@ -89,8 +90,8 @@ android {
     defaultConfig {
         applicationId "net.sourceforge.qomp" // Used by Firebase auto-config (the google-services.json from Firebase console)
 
-        //minSdkVersion qtMinSdkVersion
-        //targetSdkVersion qtTargetSdkVersion
+        minSdkVersion 16 //qtMinSdkVersion
+        targetSdkVersion 19 //qtTargetSdkVersion
 
         // Enabling multidex support.
         //multiDexEnabled = true
