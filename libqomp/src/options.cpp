@@ -24,6 +24,9 @@
 #include <QSettings>
 #include <QCoreApplication>
 
+#ifdef DEBUG_OUTPUT
+#include <QDebug>
+#endif
 
 Options* Options::instance_ = 0;
 
@@ -35,7 +38,7 @@ Options* Options::instance()
 
 	return instance_;
 }
-#include <QDebug>
+
 Options::Options()
 	: QObject(qApp)
 	, set_(0)
@@ -49,6 +52,9 @@ Options::Options()
 #else
 	set_ = new QSettings(QSettings::IniFormat, QSettings::UserScope,
 			     qApp->organizationName(), qApp->applicationName(), this);
+#endif
+#ifdef DEBUG_OUTPUT
+	qDebug() << "Options()" << set_->fileName();
 #endif
 }
 

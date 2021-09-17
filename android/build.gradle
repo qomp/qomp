@@ -90,8 +90,8 @@ android {
     defaultConfig {
         applicationId "net.sourceforge.qomp" // Used by Firebase auto-config (the google-services.json from Firebase console)
 
-        minSdkVersion 16 //qtMinSdkVersion
-        targetSdkVersion 19 //qtTargetSdkVersion
+        minSdkVersion 19 //qtMinSdkVersion
+        targetSdkVersion 28 //qtTargetSdkVersion
 
         // Enabling multidex support.
         //multiDexEnabled = true

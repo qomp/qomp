@@ -54,8 +54,8 @@ macx {
 }
 
 android {
-#  ANDROID_MIN_SDK_VERSION = 16
-#  ANDROID_TARGET_SDK_VERSION = 19
+#  ANDROID_MIN_SDK_VERSION = 19
+#  ANDROID_TARGET_SDK_VERSION = 28
 #  ANDROID_ABI = armeabi-v7a
   LIBS += -L$$OUT_PWD/../libqomp -lqomp-shared
   ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android

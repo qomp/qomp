@@ -38,7 +38,7 @@ Rectangle {
 	property bool busy: false
 	property bool repeat: false
 	property bool shuffle: false
-	property string totalDuration;
+	property string totalDuration
 	property string currentFolder
 
 	color: "lightblue"

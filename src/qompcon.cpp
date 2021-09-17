@@ -77,6 +77,10 @@
 static const int ADDING_INTERVAL = 2000;
 
 #ifdef Q_OS_ANDROID
+
+static const QString permissionWrite = "android.permission.WRITE_EXTERNAL_STORAGE";
+
+using namespace QtAndroid;
 static QompCon* _instance;
 
 #ifdef TEST_ANDROID
@@ -162,6 +166,19 @@ static void audioFocusLoss(JNIEnv */*env*/, jobject /*thiz*/, jboolean isTransie
 	QMetaObject::invokeMethod(_instance, "audioFocusLoss", Qt::QueuedConnection,
 					  Q_ARG(bool, trans), Q_ARG(bool, duck));
 }
+
+bool requestPermisstions()
+{
+	if(checkPermission(permissionWrite) != PermissionResult::Granted) {
+//		if(shouldShowRequestPermissionRationale(permissionWrite)) {
+//		}
+//		else {
+			auto res = requestPermissionsSync({{permissionWrite}});
+			return res.value(permissionWrite) == PermissionResult::Granted;
+//		}
+	}
+	return true;
+}
 #endif
 
 
@@ -178,6 +195,16 @@ QompCon::QompCon(QObject *parent) :
 	qRegisterMetaType<QList<Tune*>>();
 #ifdef Q_OS_ANDROID
 	_instance = this;
+
+	if(!requestPermisstions()) {
+		QAndroidJniObject str = QAndroidJniObject::fromString(tr("qomp will not work without write permissions"));
+		androidActivity().callMethod<void>("showNotification", "(Ljava/lang/String;)V", str.object<jstring>());
+
+		QTimer::singleShot(2000, []() {
+			qApp->exit(1);
+		});
+		return;
+	}
 
 #ifdef TEST_ANDROID
 	if(f.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {

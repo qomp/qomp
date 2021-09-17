@@ -45,8 +45,6 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
         // Log.i("Qomp", "onCreated");
         super.onCreate(savedInstanceState);
 
-        checkRights();
-
         mediaComponent_ = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
 
 //        registerCallReceiver();
@@ -220,17 +218,6 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
             bundle.putString(keys.get(i), values.get(i));
         }
         FirebaseAnalytics.getInstance(this).logEvent(eventName, bundle);
-    }
-
-    @SuppressLint("NewApi")
-    private void checkRights() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                /*|| ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED*/) )
-        {
-                String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE/*, Manifest.permission.READ_PHONE_STATE*/};
-                requestPermissions(perms, PermissionsRequest);
-        }
     }
 
     private static native void menuKeyDown();
