@@ -35,6 +35,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QSignalBlocker>
+#include <QAudio>
 #ifdef Q_OS_WIN
 #include <QtWinExtras>
 #include "qompthumbnailtoolbar.h"
@@ -385,9 +386,11 @@ void QompMainWin::Private::actClearActivated()
 
 void QompMainWin::Private::volumeSliderMoved(int vol)
 {
-	qreal newVol = qreal(vol)/1000;
+	qreal linearVolume = QAudio::convertVolume(vol / qreal(ui->volumeSlider->maximum()),
+						QAudio::LogarithmicVolumeScale,
+						QAudio::LinearVolumeScale);
 	updateVolumSliderToolTip();
-	emit parentWin_->volumeSliderMoved(newVol);
+	emit parentWin_->volumeSliderMoved(linearVolume);
 }
 
 void QompMainWin::Private::doMainContextMenu()
@@ -609,7 +612,9 @@ void QompMainWin::setMuteState(bool mute)
 void QompMainWin::volumeChanged(qreal vol)
 {
 	QSignalBlocker b(d->ui->volumeSlider);
-	d->ui->volumeSlider->setValue(vol*1000);
+	int logVolume = QAudio::convertVolume(vol, QAudio::LinearVolumeScale,
+						QAudio::LogarithmicVolumeScale) * d->ui->volumeSlider->maximum();
+	d->ui->volumeSlider->setValue(logVolume);
 	d->updateVolumSliderToolTip();
 }
 
