@@ -32,6 +32,9 @@
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
 #endif
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator>
+#endif
 
 #define STOPPED "Stopped"
 #define PAUSED "Paused"
@@ -129,7 +132,7 @@ void MprisPlugin::next()
 		if (mainWin) {
 			QToolButton *nextBtn = mainWin->findChild<QToolButton *>(nextButtonName);
 			if(nextBtn) {
-				nextBtn->clicked();
+				emit nextBtn->clicked();
 			}
 		}
 	}
@@ -142,7 +145,7 @@ void MprisPlugin::previous()
 		if (mainWin) {
 			QToolButton *prevBtn = mainWin->findChild<QToolButton *>(prevButtonName);
 			if(prevBtn) {
-				prevBtn->clicked();
+				emit prevBtn->clicked();
 			}
 		}
 	}
@@ -251,7 +254,11 @@ QString MprisPlugin::getAlbumArtFile(const QImage &art)
 			   || (scaledArt.size().height() > maxArtSize.height())) {
 				scaledArt = scaledArt.scaled(maxArtSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 			}
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 			artFile_->setFileName(tmpPath + "/qomp_" + QString::number(qrand()) + "_cover.png");
+#else
+			artFile_->setFileName(tmpPath + "/qomp_" + QString::number(QRandomGenerator::global()->generate()) + "_cover.png");
+#endif
 			if (artFile_->open()) {
 				if (!scaledArt.save(artFile_, "PNG")) {
 					artFile_->close();
