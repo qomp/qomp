@@ -21,14 +21,17 @@ FocusScope {
 	Keys.onReleased: {
 		if (event.key === Qt.Key_Back) {
 			event.accepted = true
-			if(rootView.header !== null)
+			if(rootView.header != null)
 				__back()
 			else
 				root.rejected()
 		}
 	}
 
-	Component.onCompleted: drives.updateModel()
+	Component.onCompleted: {
+		driveConnection.enabled = true
+		drives.text = fh.driveForPath(folder)
+	}
 
 	FilesystemHelper {
 		id: fh
@@ -42,14 +45,17 @@ FocusScope {
 		sortField: FolderListModel.Name
 
 		onFolderChanged: {
-			if(!fh.checkChildPath(rootFolder, folder)) {
-				folder = rootFolder
-			}
+			drives.text = fh.driveForPath(folder)
 		}
 
 		function canUp() {
 			return fh.checkChildPath(rootFolder, parentFolder)
 		}
+
+		function validPath() {
+			return fh.checkChildPath(rootFolder, folder)
+		}
+
 	}
 
 	Timer {
@@ -168,10 +174,10 @@ FocusScope {
 					if(fileIsDir)
 						return "qrc:///filedialog-folder"
 
-					if(/\.qomp$/.exec(fileName) !== null)
+					if(/\.qomp$/.exec(fileName) != null)
 						return "qrc:///filedialog-playlist"
 
-					if(/\.(mp3|flac|ogg|wav)$/.exec(fileName) !== null)
+					if(/\.(mp3|flac|ogg|wav)$/.exec(fileName) != null)
 						return "qrc:///icons/tune"
 
 					return "qrc:///filedialog-file"
@@ -298,14 +304,19 @@ FocusScope {
 		model: fh.drivePathes
 		onExpandedChanged: filterBox.expanded = false
 
-		onTextChanged: updateModel()
+		Connections {
+			id: driveConnection
 
-		function updateModel() {
-			folderModel.rootFolder = fh.convertPath2LocalUrl(text)
-			if(!fh.checkChildPath(folderModel.rootFolder, folderModel.folder)) {
-				folderModel.folder = folderModel.rootFolder
+			onTextChanged: updateModel(drives.text)
+			enabled: false
+
+			function updateModel(text) {
+				folderModel.rootFolder = fh.pathForDrive(text)
+				if(!folderModel.validPath()) {
+					folderModel.folder = folderModel.rootFolder
+				}
+				updateTimer.start()
 			}
-			updateTimer.start()
 		}
 	}
 

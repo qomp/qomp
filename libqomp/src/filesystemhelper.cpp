@@ -32,7 +32,7 @@ FilesystemHelper::FilesystemHelper(QObject *parent) : QObject(parent)
 
 QStringList FilesystemHelper::drivePathes() const
 {
-	return _pathes;
+	return _pathes.keys();
 }
 
 bool FilesystemHelper::checkChildPath(const QString &root, const QString &path) const
@@ -47,6 +47,22 @@ QString FilesystemHelper::convertPath2LocalUrl(const QString &path) const
 	return QUrl::fromLocalFile(path).toString();
 }
 
+QString FilesystemHelper::driveForPath(const QUrl &path) const
+{
+	for(auto k = _pathes.keyValueBegin(); k != _pathes.keyValueEnd(); ++k) {
+		if(checkChildPath((*k).second, path.toLocalFile())) {
+			return (*k).first;
+		}
+	}
+
+	return _pathes.keys().at(0);
+}
+
+QString FilesystemHelper::pathForDrive(const QString &drive) const
+{
+	return convertPath2LocalUrl(_pathes[drive]);
+}
+
 void FilesystemHelper::loadPathes()
 {
 	_pathes.clear();
@@ -56,6 +72,15 @@ void FilesystemHelper::loadPathes()
 	const jsize len = jni->GetArrayLength(pathes.object<jarray>());
 	for(int i = 0; i < len; ++i) {
 		const jobject path = jni->GetObjectArrayElement(pathes.object<jobjectArray>(), i);
-		_pathes.append(QAndroidJniObject(path).toString());
+		QString drive;
+		switch(i) {
+			case 0: drive = tr("Internal Memory");
+				break;
+			case 1: drive = tr("Memory Card");
+				break;
+			default:
+				drive = tr("Memory Card %1").arg(i);
+		}
+		_pathes[drive] = QAndroidJniObject(path).toString();
 	}
 }

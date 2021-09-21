@@ -21,6 +21,7 @@
 #define FILESYSTEMHELPER_H
 
 #include <QObject>
+#include <QMap>
 
 class FilesystemHelper : public QObject
 {
@@ -32,6 +33,8 @@ public:
 	QStringList drivePathes() const;
 	Q_INVOKABLE bool checkChildPath(const QString& root, const QString& path) const;
 	Q_INVOKABLE QString convertPath2LocalUrl(const QString& path) const;
+	Q_INVOKABLE QString driveForPath(const QUrl& path) const;
+	Q_INVOKABLE QString pathForDrive(const QString& drive) const;
 
 signals:
 	void drivePathesChanged();
@@ -40,7 +43,7 @@ private:
 	void loadPathes();
 
 private:
-	QStringList _pathes;
+	QMap<QString, QString> _pathes;
 };
 
 #endif // FILESYSTEMHELPER_H
