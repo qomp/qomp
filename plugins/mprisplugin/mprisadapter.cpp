@@ -28,6 +28,9 @@
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
 #endif
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator>
+#endif
 
 MprisAdapter::MprisAdapter(MprisController *p) :
 	QDBusAbstractAdaptor(p),
@@ -67,7 +70,11 @@ void MprisAdapter::setMetadata(const QompMetaData &tune)
 	metaDataMap_["xesam:url"] = tune.url;
 	metaDataMap_["xesam:trackNumber"] = tune.trackNumber;
 	metaDataMap_["mpris:length"] = tune.trackLength;
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 	trackId_ = QDBusObjectPath(QString("/org/qomp/MediaPlayer2/Track/%1").arg(qrand()));
+#else
+	trackId_ = QDBusObjectPath(QString("/org/qomp/MediaPlayer2/Track/%1").arg(QRandomGenerator::global()->generate()));
+#endif
 	metaDataMap_["mpris:trackid"] = QVariant::fromValue<QDBusObjectPath>(trackId_);
 	if(!tune.cover.isEmpty()) {
 		metaDataMap_["mpris:artUrl"] = tune.cover.startsWith("http") ? tune.cover : "file://" + tune.cover;

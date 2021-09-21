@@ -104,7 +104,7 @@ QompTrayIcon::QompTrayIcon(QompMainWin *parent) :
 {
 	setIcon(ThemeManager::instance()->getIconFromTheme(":/icons/icons/qomp_stop.png"));
 	setToolTip(QString());
-	connect(icon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
+	connect(icon_, &QSystemTrayIcon::activated, this, &QompTrayIcon::trayActivated);
 
 	icon_->installEventFilter(this);
 }

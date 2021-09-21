@@ -48,7 +48,11 @@ public:
 		hasAlpha = img->hasAlphaChannel();
 		channels = img->isGrayscale()?1:hasAlpha?4:3;
 		bitsPerSample = img->depth()/channels;
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 		image.append((char*)img->rgbSwapped().bits(),img->byteCount());
+#else
+		image.append((char*)img->rgbSwapped().bits(),img->sizeInBytes());
+#endif
 	}
 	iiibiiay(){}
 	static const int id;
