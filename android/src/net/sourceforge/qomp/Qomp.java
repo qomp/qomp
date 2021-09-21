@@ -14,6 +14,8 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import androidx.core.content.ContextCompat;
 import android.view.KeyEvent;
+import 	java.io.File;
+//import android.util.Log;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -218,6 +220,33 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
             bundle.putString(keys.get(i), values.get(i));
         }
         FirebaseAnalytics.getInstance(this).logEvent(eventName, bundle);
+    }
+
+    public String[] drivePathes() {
+        //https://stackoverflow.com/questions/9340332/how-can-i-get-the-list-of-mounted-external-storage-of-android-device
+        File[] externalStorageFiles = ContextCompat.getExternalFilesDirs(this, null);
+        String[] res = new String[externalStorageFiles.length];
+
+        for (int i = 0; i < externalStorageFiles.length; i++) {
+            File file = externalStorageFiles[i];
+            if(file == null) {
+                res[i] = null;
+            }
+            else {
+                res[i] = file.getAbsolutePath().replaceAll("/Android/data/" + getPackageName() + "/files", "");
+//                final long totalSpace = file.getTotalSpace();
+//                while(true) {
+//                    final File parentFile = file.getParentFile();
+//                    if(parentFile == null || parentFile.getTotalSpace() != totalSpace) {
+//                        res[i] = file.getAbsolutePath();
+//                        break;
+//                    }
+//                    file = parentFile;
+//                }
+            }
+        }
+
+        return res;
     }
 
     private static native void menuKeyDown();

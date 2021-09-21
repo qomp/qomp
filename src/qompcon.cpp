@@ -40,6 +40,7 @@
 #include <QApplication>
 #else
 #include "qompqmlengine.h"
+#include "filesystemhelper.h"
 
 //#define TEST_ANDROID
 
@@ -230,6 +231,8 @@ QompCon::QompCon(QObject *parent) :
 	jni->DeleteLocalRef(clazz);
 
 	qmlRegisterType<UpdatesChecker>("net.sourceforge.qomp", 1, 0, "UpdatesChecker");
+	qmlRegisterType<FilesystemHelper>("net.sourceforge.qomp", 1, 0, "FilesystemHelper");
+
 #endif
 
 	commandLine_ = new QompCommandLine(this);

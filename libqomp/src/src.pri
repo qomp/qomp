@@ -36,10 +36,12 @@ RESOURCES += $$PWD/icons.qrc
 
 android {
     HEADERS += $$PWD/qompqmlengine.h  \
-         $$PWD/scaler.h
+         $$PWD/scaler.h \
+         $$PWD/filesystemhelper.h
 
     SOURCES += $$PWD/qompqmlengine.cpp  \
          $$PWD/scaler.cpp \
+         $$PWD/filesystemhelper.cpp
 
     RESOURCES += $$PWD/qml.qrc
 }

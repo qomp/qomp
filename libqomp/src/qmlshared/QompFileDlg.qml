@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import Qt.labs.folderlistmodel 2.12
 import QtQuick.Dialogs 1.2
+import net.sourceforge.qomp 1.0
 
 FocusScope {
 	id: root
@@ -27,12 +28,28 @@ FocusScope {
 		}
 	}
 
+	Component.onCompleted: drives.updateModel()
+
+	FilesystemHelper {
+		id: fh
+	}
+
 	FolderListModel {
 		id: folderModel
 
 		showDirsFirst: true
 		showFiles: !root.selectFolders
 		sortField: FolderListModel.Name
+
+		onFolderChanged: {
+			if(!fh.checkChildPath(rootFolder, folder)) {
+				folder = rootFolder
+			}
+		}
+
+		function canUp() {
+			return fh.checkChildPath(rootFolder, parentFolder)
+		}
 	}
 
 	Timer {
@@ -264,6 +281,35 @@ FocusScope {
 	}
 
 	QompComboBox {
+		id: drives
+
+		availableHeight: root.height - y - height - ok.height*2
+		readOnly: true
+		z: 1000
+
+		anchors {
+			top: le.bottom
+			left: parent.left
+			right: parent.right
+			margins: 10 * scaler.scaleMargins
+		}
+
+		height: 50 * scaler.scaleY
+		model: fh.drivePathes
+		onExpandedChanged: filterBox.expanded = false
+
+		onTextChanged: updateModel()
+
+		function updateModel() {
+			folderModel.rootFolder = fh.convertPath2LocalUrl(text)
+			if(!fh.checkChildPath(folderModel.rootFolder, folderModel.folder)) {
+				folderModel.folder = folderModel.rootFolder
+			}
+			updateTimer.start()
+		}
+	}
+
+	QompComboBox {
 		id: filterBox
 
 		availableHeight: root.height - y - height - ok.height*2
@@ -272,7 +318,7 @@ FocusScope {
 		readonly property var filters: /\(([^\)]+)\)/
 
 		anchors {
-			top: le.bottom
+			top: drives.bottom
 			left: parent.left
 			right: parent.right
 			margins: 10 * scaler.scaleMargins
@@ -328,7 +374,7 @@ FocusScope {
 		le.text = ""
 		fullPath.text = String(folderModel.folder).replace("file://", "")
 
-		rootView.header = String(folderModel.parentFolder).length > 0 ? headerComp : null
+		rootView.header = folderModel.canUp() ? headerComp : null
 
 		if(!root.selectFolders && folderModel.count > 0 &&
 				!folderModel.get(rootView.currentIndex, "fileIsDir"))
