@@ -121,14 +121,12 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 static void notifyIcon(const QString& text)
 {
 	QAndroidJniObject str = QAndroidJniObject::fromString(text);
-	QAndroidJniObject act = QtAndroid::androidActivity();
-	act.callMethod<void>("showStatusIcon", "(Ljava/lang/String;)V", str.object<jstring>());
+	androidActivity().callMethod<void>("showStatusIcon", "(Ljava/lang/String;)V", str.object<jstring>());
 }
 
 static void deInitActivity()
 {
-	QAndroidJniObject act = QtAndroid::androidActivity();
-	act.callMethod<void>("deInit", "()V");
+	androidActivity().callMethod<void>("deInit", "()V");
 }
 
 static void setUrl(JNIEnv */*env*/, jobject /*thiz*/, const jstring url)
@@ -215,10 +213,8 @@ QompCon::QompCon(QObject *parent) :
 		qWarning() << "Error setup message handler!";
 	}
 #endif
-
-	QAndroidJniObject act = QtAndroid::androidActivity();
 	QAndroidJniEnvironment jni;
-	jclass clazz = jni->GetObjectClass(act.object());
+	jclass clazz = jni->GetObjectClass(androidActivity().object());
 	JNINativeMethod methods[] = {
 //			{ "incomingCallStart",  "()V", (void*)incomingCallStart  },
 //			{ "incomingCallFinish", "()V", (void*)incomingCallFinish },
@@ -1038,8 +1034,7 @@ void QompCon::mediaFinished(bool afterError)
 
 #ifdef Q_OS_ANDROID
 	if(qApp->applicationState() != Qt::ApplicationActive) {
-		QAndroidJniObject act = QtAndroid::androidActivity();
-		act.callMethod<void>("makeWakeLock", "(I)V", 20*1000);
+		androidActivity().callMethod<void>("makeWakeLock", "(I)V", 20*1000);
 	}
 #endif
 

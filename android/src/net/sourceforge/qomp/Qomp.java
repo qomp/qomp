@@ -229,10 +229,7 @@ public class Qomp extends org.qtproject.qt5.android.bindings.QtActivity
 
         for (int i = 0; i < externalStorageFiles.length; i++) {
             File file = externalStorageFiles[i];
-            if(file == null) {
-                res[i] = null;
-            }
-            else {
+            if(file != null) {
                 res[i] = file.getAbsolutePath().replaceAll("/Android/data/" + getPackageName() + "/files", "");
 //                final long totalSpace = file.getTotalSpace();
 //                while(true) {

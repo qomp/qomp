@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import QtQuick.Dialogs 1.2
 import "qrc:///qmlshared"
 
 Item {
@@ -42,7 +43,7 @@ Item {
 
 			TextLineEdit {
 				id: user
-				text: qsTr("User name")
+				text: qsTr("Login")
 				anchors.verticalCenter: parent.verticalCenter
 				Keys.onReturnPressed: pass.focus = true
 			}
@@ -118,6 +119,12 @@ Item {
 		}
 	}
 
+	MessageDialog {
+		id: alertDlg
+		visible: false
+		icon: StandardIcon.Warning
+	}
+
 	states: [
 		State {
 			name: "busy"
@@ -139,4 +146,9 @@ Item {
 		}
 	]
 
+	function showError(error) {
+		root.busy = false
+		alertDlg.text = error
+		alertDlg.open()
+	}
 }

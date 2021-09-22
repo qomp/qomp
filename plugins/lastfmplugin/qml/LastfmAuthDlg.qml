@@ -38,10 +38,13 @@ ButtonsPage {
 
 		QompBusyIndicator {
 			id: busy
-			anchors.bottom: parent.bottom
+
+			property int size: Math.min(parent.width, parent.height - txt.height) - 10 * scaler.scaleMargins
+
 			anchors.top: txt.bottom
 			anchors.horizontalCenter: parent.horizontalCenter
-			width: height
+			width: size
+			height: size
 			visible: false
 		}
 	]

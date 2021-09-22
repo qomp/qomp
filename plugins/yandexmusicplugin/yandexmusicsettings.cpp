@@ -89,13 +89,19 @@ public:
 #endif
 	}
 
-	void setResult(const QString& result)
+	void setResult(const QString& result, bool ok = true)
 	{
 #ifndef Q_OS_ANDROID
+		Q_UNUSED(ok)
 		ui->lbResult->setText(result);
 		ui->lbBusy->stop();
 #else
-		item_->setProperty("result", result);
+		if(ok) {
+			item_->setProperty("result", result);
+		}
+		else {
+			QMetaObject::invokeMethod(item_, "showError", Q_ARG(QVariant, QVariant::fromValue(result)));
+		}
 #endif
 	}
 };
@@ -112,7 +118,7 @@ YandexMusicSettings::YandexMusicSettings(QObject *parent) :
 	});
 	connect(_auth, &YandexMusicOauth::requestError, [&](const QString& error) {
 		restoreOptions();
-		d->setResult(error);
+		d->setResult(error, false);
 	});
 	restoreOptions();
 }

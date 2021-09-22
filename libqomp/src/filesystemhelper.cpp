@@ -25,6 +25,10 @@
 #include <QFileInfo>
 #include <QUrl>
 
+#ifdef DEBUG_OUTPUT
+#include <QtDebug>
+#endif
+
 FilesystemHelper::FilesystemHelper(QObject *parent) : QObject(parent)
 {
 	loadPathes();
@@ -72,15 +76,21 @@ void FilesystemHelper::loadPathes()
 	const jsize len = jni->GetArrayLength(pathes.object<jarray>());
 	for(int i = 0; i < len; ++i) {
 		const jobject path = jni->GetObjectArrayElement(pathes.object<jobjectArray>(), i);
-		QString drive;
-		switch(i) {
-			case 0: drive = tr("Internal Memory");
-				break;
-			case 1: drive = tr("Memory Card");
-				break;
-			default:
-				drive = tr("Memory Card %1").arg(i);
+		const QString strPath = QAndroidJniObject(path).toString();
+#ifdef DEBUG_OUTPUT
+		qDebug() << "loadPathes()" << strPath;
+#endif
+		if(!strPath.isEmpty() && !_pathes.values().contains(strPath)) {
+			QString drive;
+			switch(i) {
+				case 0: drive = tr("Internal Memory");
+					break;
+				case 1: drive = tr("Memory Card");
+					break;
+				default:
+					drive = tr("Memory Card %1").arg(i);
+			}
+			_pathes[drive] = strPath;
 		}
-		_pathes[drive] = QAndroidJniObject(path).toString();
 	}
 }
