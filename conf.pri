@@ -73,3 +73,11 @@ win32|android|macx {
     CUE_LIB     = $$shell_path($$CUE_PATH/lib)
     CUE_BIN     = $$shell_path($$CUE_PATH/bin)
 }
+
+android {
+    greaterThan(QT_MINOR_VERSION, 13) {
+        ANDROID_ABI = armeabi-v7a
+        ANDROID_ABIS = \
+            armeabi-v7a
+    }
+}

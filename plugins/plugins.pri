@@ -10,7 +10,13 @@ INCLUDEPATH += $$PWD/../libqomp/include
 DEPENDPATH += $$PWD/../libqomp/include
 
 android {
-    LIBS += -L$$OUT_PWD/../../libqomp -lqomp-shared
+    LIBS += -L$$OUT_PWD/../../libqomp
+    greaterThan(QT_MINOR_VERSION, 13) {
+        LIBS += -lqomp-shared_$${QT_ARCH}
+    }
+    else {
+        LIBS += -lqomp-shared
+    }
 
     target.path = /libs/$$ANDROID_TARGET_ARCH
     INSTALLS += target
