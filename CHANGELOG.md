@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5 - 2021-09-23
+  * fixed Yandex.Music plugin
+  + Yandex.Music plugin now supports authentication (wia settings)
+  * updated Qt libs to 5.12.11 (Android)
+  * updated Qt libs to 5.15.2 (OS X, Windows)
+  * other minor fixes
+
 ## 1.4 - 2018-11-14
   + added new Poiskm plugin (poiskm.me)
   - dropped Prostopleer plugin (site is unavailable)
