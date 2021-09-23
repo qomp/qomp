@@ -55,7 +55,7 @@ macx {
 
 android {
     greaterThan(QT_MINOR_VERSION, 12) {
-        ANDROID_MIN_SDK_VERSION = 19
+        ANDROID_MIN_SDK_VERSION = 21
         ANDROID_TARGET_SDK_VERSION = 28
     }
     LIBS += -L$$OUT_PWD/../libqomp
