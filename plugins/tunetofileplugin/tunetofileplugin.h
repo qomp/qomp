@@ -38,7 +38,7 @@ public:
 	TuneToFilePlugin();
 
 	virtual QString name() const Q_DECL_FINAL { return tr("Tune to File"); }
-	virtual QString version() const Q_DECL_FINAL { return "1.4"; }
+	virtual QString version() const Q_DECL_FINAL { return "1.5"; }
 	virtual QString description() const Q_DECL_FINAL { return tr("Store current tune into file. Usefull for publishing tune in status"); }
 	virtual QompOptionsPage* options() Q_DECL_FINAL;
 	virtual void qompPlayerChanged(QompPlayer* player) Q_DECL_FINAL;

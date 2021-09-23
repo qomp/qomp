@@ -36,7 +36,7 @@ public:
 	~NotificationsPlugin();
 
 	virtual QString name() const Q_DECL_FINAL { return tr("Notifications"); }
-	virtual QString version() const Q_DECL_FINAL { return "1.4"; }
+	virtual QString version() const Q_DECL_FINAL { return "1.5"; }
 	virtual QString description() const Q_DECL_FINAL { return tr("Shows baloon notifications about current track"); }
 	virtual QompOptionsPage* options() Q_DECL_FINAL;
 	virtual void qompPlayerChanged(QompPlayer* player) Q_DECL_FINAL;

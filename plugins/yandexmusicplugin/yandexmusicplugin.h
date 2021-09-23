@@ -31,7 +31,7 @@ class YandexMusicPlugin : public QObject, public QompPlugin, public QompTunePlug
 public:
 	explicit YandexMusicPlugin(QObject *parent = nullptr);
 	virtual QString name() const Q_DECL_FINAL { return "Yandex.Music"; }
-	virtual QString version() const Q_DECL_FINAL { return "1.4"; }
+	virtual QString version() const Q_DECL_FINAL { return "1.5"; }
 	virtual QString description() const Q_DECL_FINAL;
 	virtual QompOptionsPage* options() Q_DECL_FINAL;
 	virtual TuneURLResolveStrategy* urlResolveStrategy() const Q_DECL_FINAL;
