@@ -1,5 +1,5 @@
 set( QOMP_LIB libqomp )
-cmake_minimum_required( VERSION 3.1.0 )
+cmake_minimum_required( VERSION 3.7.0 )
 
 include(../cmake/modules/policyRules.cmake)
 
@@ -67,6 +67,9 @@ set( libqomp_HDRS
 	src/thememanager.h
 	src/tune.h
 	src/playlistparser.h
+)
+
+list(APPEND libqomp_HDRS
 	${plugins_HDRS}
 	${options_HDRS}
 	${frameless_HDRS}
@@ -124,6 +127,8 @@ set( libqomp_SRCS
 	src/tune.cpp
 	src/tuneurlchecker.cpp
 	src/playlistparser.cpp
+)
+list(APPEND libqomp_SRCS
 	${plugins_SRCS}
 	${frameless_SRCS}
 	${g_analytics_SRCS}

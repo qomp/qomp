@@ -1,11 +1,11 @@
-cmake_minimum_required( VERSION 3.1.0 )
+cmake_minimum_required( VERSION 3.7.0 )
 
 include(cmake/modules/policyRules.cmake)
 
 #Hack to determine Qt by qtchooser utility
 option(USE_QTCHOOSER "Use qtchooser utility to determine Qt environment" OFF)
 if(USE_QTCHOOSER)
-    include( ${CMAKE_CURRENT_LIST_DIR}/cmake/modules/qtchooser.cmake )
+	include( ${CMAKE_CURRENT_LIST_DIR}/cmake/modules/qtchooser.cmake )
 endif()
 
 project( qomp )
@@ -41,7 +41,8 @@ set( LIBQOMP_LIBRARY libqomp )
 add_subdirectory( ${LIBQOMP_LIBRARY} )
 add_subdirectory( plugins )
 
-add_definitions( -DQAPPLICATION_CLASS=QApplication )
+
+add_compile_definitions( QAPPLICATION_CLASS=QApplication )
 
 if( (CMAKE_CROSSCOMPILING) AND (DEFINED MSYS) )
 	message(STATUS "MXE environment detected")
@@ -61,7 +62,8 @@ endif()
 
 if( WIN32 )
 	set(EXTRA_LIBS
-		-luser32
+		user32
+		advapi32
 	)
 	set( TAGLIB_ROOT "C:\\build\\taglib" CACHE STRING "TagLib root path" )
 	set( LIBCUE_ROOT "C:\\build\\libcue" CACHE STRING "LibCue root path" )
@@ -76,6 +78,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PROJECT_BINARY_DIR}/include
 	src/options
+	src/singleapplication
 	src
 	thirdparty/QHotkey
 	${TAGLIB_INCLUDE_DIR}
@@ -102,9 +105,12 @@ set( options_UIS
 	src/options/qompoptionsmain.ui
 	src/options/qompoptionsplugins.ui
 )
+
 set( singleapp_SRCS
 	src/singleapplication/singleapplication.cpp
+	src/singleapplication/singleapplication_p.cpp
 )
+
 set( hotkey_SRCS
 	thirdparty/QHotkey/qhotkey.cpp
 )
@@ -144,11 +150,14 @@ set( qomp_SRCS
 	src/qompplaylistview.cpp
 	src/qompmenu.cpp
 	src/qompqtmultimediaplayer.cpp
+)
+list(APPEND qomp_SRCS
 	${options_SRCS}
 	${singleapp_SRCS}
 	${hotkey_SRCS}
 	${hotkey_HDRS}
 )
+
 if( WIN32 )
 	list(APPEND qomp_SRCS
 		src/qompthumbnailtoolbar.cpp
@@ -158,8 +167,8 @@ endif()
 set( qomp_UIS
 	src/qompmainwin.ui
 	src/aboutdlg.ui
-	${options_UIS}
 )
+list(APPEND qomp_UIS ${options_UIS})
 
 if( DEV_MODE )
 	set( EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/${PROJECT_NAME}" )
