@@ -41,8 +41,11 @@ set( LIBQOMP_LIBRARY libqomp )
 add_subdirectory( ${LIBQOMP_LIBRARY} )
 add_subdirectory( plugins )
 
-
-add_compile_definitions( QAPPLICATION_CLASS=QApplication )
+if(${CMAKE_VERSION} VERSION_LESS "3.12.0")
+	add_definitions( -DQAPPLICATION_CLASS=QApplication )
+else()
+	add_compile_definitions( QAPPLICATION_CLASS=QApplication )
+endif()
 
 if( (CMAKE_CROSSCOMPILING) AND (DEFINED MSYS) )
 	message(STATUS "MXE environment detected")
