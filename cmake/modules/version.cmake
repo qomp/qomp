@@ -1,11 +1,11 @@
-cmake_minimum_required( VERSION 3.1.0 )
+cmake_minimum_required( VERSION 3.7.0 )
 
 set(VER_FILE "${PROJECT_SOURCE_DIR}/libqomp/src/defines.h")
 if(EXISTS "${VER_FILE}")
 	message(STATUS "Found qomp version in file: ${VER_FILE}")
 	file(STRINGS "${VER_FILE}" VER_LINES)
 	string(REGEX MATCHALL "#define APPLICATION_VERSION \"([0-9])+\\.([0-9])+\\.?([0-9])*" FVER_LINE ${VER_LINES})
-	if(${CMAKE_MATCH_COUNT} EQUAL 3 OR (${CMAKE_MATCH_COUNT} EQUAL 2))
+	if(${CMAKE_MATCH_COUNT} GREATER_EQUAL 2)
 		set(QOMP_VERSION_MAJOR ${CMAKE_MATCH_1})
 		set(QOMP_VERSION_MINOR ${CMAKE_MATCH_2})
 		if(CMAKE_MATCH_3)

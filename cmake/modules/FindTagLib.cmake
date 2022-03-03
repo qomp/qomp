@@ -3,21 +3,21 @@ if (TAGLIB_INCLUDE_DIR AND TAGLIB_LIBRARY)
 	set(TAGLIB_FIND_QUIETLY TRUE)
 endif ()
 
-if ( UNIX AND NOT( APPLE OR CYGWIN ) )
+if ( UNIX AND NOT ( APPLE OR CYGWIN ) )
 	find_package( PkgConfig QUIET )
 	pkg_check_modules( PC_TAGLIB QUIET taglib )
 	set ( TAGLIB_DEFINITIONS ${PC_TAGLIB_CFLAGS_OTHER} )
-endif ( UNIX AND NOT( APPLE OR CYGWIN ) )
+endif ()
 
-if ( ${WIN32} )
-	set ( LIBINCS 
+if ( WIN32 )
+	set ( LIBINCS
 		taglib/taglib.h
 	)
-else ( ${WIN32} )
-	set ( LIBINCS 
+else ()
+	set ( LIBINCS
 		taglib.h
 	)
-endif( ${WIN32} )
+endif()
 find_path(
 	TAGLIB_INCLUDE_DIR ${LIBINCS}
 	HINTS
@@ -26,15 +26,15 @@ find_path(
 	${PC_TAGLIB_INCLUDE_DIRS}
 	PATH_SUFFIXES
 	""
-	if ( NOT ${WIN32} )
+	if ( NOT WIN32 )
 	taglib
-	endif ( NOT ${WIN32} )
+	endif ()
 )
 
 find_library(
 	TAGLIB_LIBRARY
 	NAMES taglib tag tag_c
-	HINTS 
+	HINTS
 	${PC_TAGLIB_LIBDIR}
 	${PC_TAGLIB_LIBRARY_DIRS}
 	${TAGLIB_ROOT}/lib
@@ -50,6 +50,6 @@ find_package_handle_standard_args(
 if ( TAGLIB_FOUND )
 	set ( TAGLIB_LIBRARIES ${TAGLIB_LIBRARY} )
 	set ( TAGLIB_INCLUDE_DIRS ${TAGLIB_INCLUDE_DIR} )
-endif ( TAGLIB_FOUND )
+endif ()
 
 mark_as_advanced( TAGLIB_INCLUDE_DIR TAGLIB_LIBRARY )

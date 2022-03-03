@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.7.0 )
 
-include(cmake/modules/policyRules.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/modules/policyRules.cmake)
 
 #Hack to determine Qt by qtchooser utility
 option(USE_QTCHOOSER "Use qtchooser utility to determine Qt environment" OFF)
@@ -8,7 +8,7 @@ if(USE_QTCHOOSER)
 	include( ${CMAKE_CURRENT_LIST_DIR}/cmake/modules/qtchooser.cmake )
 endif()
 
-project( qomp )
+project( qomp LANGUAGES CXX )
 
 #common part
 set( CMAKE_AUTOMOC ON )
@@ -23,7 +23,7 @@ set( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "Dire
 option( USE_MXE "Use MXE toolkit" OFF )
 option( USE_CPACK "Enable CPack" OFF )
 
-set( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
+list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
 if( NOT CMAKE_BUILD_TYPE )
 	set(CMAKE_BUILD_TYPE Release)
@@ -36,7 +36,7 @@ else()
 endif()
 message(STATUS "Build type - ${CMAKE_BUILD_TYPE}")
 
-include( "${PROJECT_SOURCE_DIR}/cmake/modules/version.cmake" )
+include(version)
 set( LIBQOMP_LIBRARY libqomp )
 add_subdirectory( ${LIBQOMP_LIBRARY} )
 add_subdirectory( plugins )
@@ -61,9 +61,7 @@ if( UNIX AND NOT (APPLE OR CYGWIN) )
 	set(EXTRA_LIBS
 		${X11_LIBRARIES}
 	)
-endif()
-
-if( WIN32 )
+elseif( WIN32 )
 	set(EXTRA_LIBS
 		user32
 		advapi32
@@ -121,13 +119,11 @@ if( WIN32 )
 	list(APPEND hotkey_SRCS
 		thirdparty/QHotkey/qhotkey_win.cpp
 	)
-endif()
-if( APPLE )
+elseif( APPLE )
 	list(APPEND hotkey_SRCS
 		thirdparty/QHotkey/qhotkey_mac.cpp
 	)
-endif()
-if( LINUX )
+elseif( LINUX )
 	list(APPEND hotkey_SRCS
 		thirdparty/QHotkey/qhotkey_x11.cpp
 	)
@@ -219,8 +215,7 @@ if( LINUX )
 	list(APPEND QT_DEPLIBS
 		Qt5::X11Extras
 	)
-endif()
-if( WIN32 )
+elseif( WIN32 )
 	find_package(Qt5WinExtras REQUIRED)
 	list(APPEND QT_DEPLIBS
 		Qt5::WinExtras
@@ -234,6 +229,11 @@ if(USE_CCACHE)
 		set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE_PATH})
 		set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE_PATH})
 	endif()
+endif()
+
+if(NOT DEV_MODE AND LINUX)
+	set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+	list(APPEND CMAKE_INSTALL_RPATH "${LIB_INSTALL_DIR}")
 endif()
 
 add_executable(
@@ -270,10 +270,8 @@ if(BUILD_THEMES)
 	endif()
 endif()
 
-set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-
 if(USE_CPACK)
-	include( ${PROJECT_SOURCE_DIR}/cmake/modules/qomp-packaging.cmake )
+	include(qomp-packaging)
 endif()
 
 target_link_libraries(
@@ -298,9 +296,7 @@ if( WIN32 )
 	if(THEMES_EXISTS)
 		INSTALL( FILES ${THEMES_RCC} DESTINATION ${CMAKE_INSTALL_PREFIX}/themes )
 	endif()
-endif()
-
-if( LINUX )
+elseif( LINUX )
 	INSTALL( TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 
 	set( DESKTOP_PATH ${DATADIR_PATH}/applications )

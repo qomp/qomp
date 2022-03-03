@@ -1,14 +1,9 @@
 set( PLUGIN mprisplugin )
 cmake_minimum_required( VERSION 3.7.0 )
 
-include(../../cmake/modules/policyRules.cmake)
-
-if( UNIX AND NOT (APPLE OR CYGWIN) )
-	set(LINUX ON)
-endif()
 if( LINUX )
-	set( CMAKE_AUTOMOC TRUE )
-	add_definitions( -DQT_PLUGIN -DHAVE_DBUS )
+	include(pluginsCommon)
+	add_definitions( -DHAVE_DBUS )
 	set( mprisplugin_HDRS
 		mprisadapter.h
 		mpriscontroller.h
@@ -45,10 +40,7 @@ if( LINUX )
 	install(
 		TARGETS
 		${PLUGIN}
-		LIBRARY
-		DESTINATION
-		${LIB_INSTALL_DIR}/qomp/plugins
-		RUNTIME DESTINATION
-		${LIB_INSTALL_DIR}/qomp/plugins
+		LIBRARY DESTINATION ${PLUGINS_INSTALL_PATH}
+		RUNTIME DESTINATION ${PLUGINS_INSTALL_PATH}
 	)
 endif()

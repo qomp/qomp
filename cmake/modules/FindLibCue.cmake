@@ -7,7 +7,7 @@ if ( UNIX AND NOT( APPLE OR CYGWIN ) )
 	find_package( PkgConfig QUIET )
 	pkg_check_modules( PC_LIBCUE QUIET libcue )
 	set ( LIBCUE_DEFINITIONS ${PC_LIBCUE_CFLAGS_OTHER} )
-endif ( UNIX AND NOT( APPLE OR CYGWIN ) )
+endif ()
 
 set ( LIBINCS 
 	libcue.h
@@ -21,10 +21,10 @@ find_path(
 	${PC_LIBCUE_INCLUDE_DIRS}
 	PATH_SUFFIXES
 	""
-	if ( NOT ${WIN32} )
+	if ( NOT WIN32 )
 	libcue
 	libcue-1.4/libcue
-	endif ( NOT ${WIN32} )
+	endif ()
 )
 
 find_library(
@@ -46,6 +46,6 @@ find_package_handle_standard_args(
 if ( LIBCUE_FOUND )
 	set ( LIBCUE_LIBRARIES ${LIBCUE_LIBRARY} )
 	set ( LIBCUE_INCLUDE_DIRS ${LIBCUE_INCLUDE_DIR} )
-endif ( LIBCUE_FOUND )
+endif ()
 
 mark_as_advanced( LIBCUE_INCLUDE_DIR LIBCUE_LIBRARY )

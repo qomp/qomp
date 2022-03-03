@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.0.2 )
+cmake_minimum_required( VERSION 3.7.0 )
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(D "d")
 	add_definitions(-DALLOW_QT_PLUGINS_DIR)

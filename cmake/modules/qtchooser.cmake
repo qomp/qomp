@@ -1,6 +1,6 @@
 if(UNIX AND NOT (APPLE OR CYGWIN))
 	find_program(QTCHOOSER_PATH qtchooser DOC "Path to qtchooser")
-	if(QTCHOOSER_PATH)
+	if(NOT "${QTCHOOSER_PATH}" STREQUAL "QTCHOOSER_PATH-NOTFOUND")
 		message(STATUS "Found qtchooser: ${QTCHOOSER_PATH}")
 		execute_process(COMMAND "${QTCHOOSER_PATH}" -print-env
 				OUTPUT_VARIABLE Qt5_ENV)

@@ -1,13 +1,8 @@
 set( PLUGIN notificationsplugin )
 cmake_minimum_required( VERSION 3.7.0 )
 
-include(../../cmake/modules/policyRules.cmake)
+include(pluginsCommon)
 
-set( CMAKE_AUTOMOC ON )
-add_definitions( -DQT_PLUGIN )
-if( UNIX AND NOT (APPLE OR CYGWIN) )
-	set(LINUX ON)
-endif()
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -19,6 +14,12 @@ set( notificationsplugin_HDRS
 set( notificationsplugin_SRCS
 	${PLUGIN}.cpp
 )
+
+find_package( Qt5 COMPONENTS Widgets REQUIRED )
+set( QT_DEPLIBS
+	Qt5::Widgets
+)
+
 if( LINUX )
 	add_definitions( -DHAVE_X11 )
 	list( APPEND notificationsplugin_HDRS
@@ -27,13 +28,6 @@ if( LINUX )
 	list( APPEND notificationsplugin_SRCS
 		dbusnotifier.cpp
 	)
-endif()
-
-find_package( Qt5 COMPONENTS Widgets REQUIRED )
-set( QT_DEPLIBS
-	Qt5::Widgets
-)
-if( LINUX )
 	find_package( Qt5DBus REQUIRED )
 	include_directories( ${Qt5DBus_INCLUDES} )
 	add_definitions(
@@ -57,25 +51,9 @@ target_link_libraries(
 )
 add_dependencies(${PLUGIN} libqomp qomp )
 
-if( WIN32 )
-	install (
-		TARGETS
-		${PLUGIN}
-		LIBRARY
-		DESTINATION
-		${CMAKE_INSTALL_PREFIX}/plugins
-		RUNTIME DESTINATION
-		${CMAKE_INSTALL_PREFIX}/plugins
-	)
-endif()
-if( LINUX )
-	install(
-		TARGETS
-		${PLUGIN}
-		LIBRARY
-		DESTINATION
-		${LIB_INSTALL_DIR}/qomp/plugins
-		RUNTIME DESTINATION
-		${LIB_INSTALL_DIR}/qomp/plugins
-	)
-endif()
+install(
+	TARGETS
+	${PLUGIN}
+	LIBRARY DESTINATION ${PLUGINS_INSTALL_PATH}
+	RUNTIME DESTINATION ${PLUGINS_INSTALL_PATH}
+)

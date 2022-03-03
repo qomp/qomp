@@ -1,8 +1,7 @@
 set ( PLUGIN deezerplugin )
-cmake_minimum_required( VERSION 3.1.0 )
-include(../../cmake/modules/policyRules.cmake)
-set ( CMAKE_AUTOMOC ON )
-add_definitions ( -Wall )
+cmake_minimum_required( VERSION 3.7.0 )
+include(pluginsCommon)
+
 set ( deezerplugin_HDRS
 	${PLUGIN}.h
 	deezergettunesdlg.h
@@ -44,23 +43,9 @@ target_link_libraries ( ${${PLUGIN}}
 	${QT_DEPLIBS}
 )
 add_dependencies( ${PLUGIN} libqomp qomp )
-if ( ${WIN32} )
-	install (
-		TARGETS
-		${PLUGIN}
-		LIBRARY
-		DESTINATION
-		${CMAKE_INSTALL_PREFIX}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/plugins
-	)
-endif ()
-
-if ( ${UNIX} )
-	install (
-		TARGETS
-		${PLUGIN}
-		LIBRARY
-		DESTINATION
-		${CMAKE_INSTALL_PREFIX}/share/qomp/plugins
-	)
-endif()
+install(
+	TARGETS
+	${PLUGIN}
+	LIBRARY DESTINATION ${PLUGINS_INSTALL_PATH}
+	RUNTIME DESTINATION ${PLUGINS_INSTALL_PATH}
+)

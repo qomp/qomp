@@ -1,13 +1,8 @@
 set( PLUGIN cuteradioplugin )
 cmake_minimum_required( VERSION 3.7.0 )
 
-include(../../cmake/modules/policyRules.cmake)
+include(pluginsCommon)
 
-if( UNIX AND NOT (APPLE OR CYGWIN) )
-	set(LINUX ON)
-endif()
-set( CMAKE_AUTOMOC TRUE )
-add_definitions( -DQT_PLUGIN )
 set( cuteradioplugin_HDRS
 	cuteradioplugingettunesdialog.h
 	cuteradioplugindefines.h
@@ -47,25 +42,9 @@ target_link_libraries(
 	libqomp
 )
 add_dependencies( ${PLUGIN} libqomp qomp )
-if( WIN32 )
-	install(
-		TARGETS
-		${PLUGIN}
-		LIBRARY
-		DESTINATION
-		${CMAKE_INSTALL_PREFIX}/plugins
-		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/plugins
-	)
-endif()
-
-if( LINUX )
-	install(
-		TARGETS
-		${PLUGIN}
-		LIBRARY
-		DESTINATION
-		${LIB_INSTALL_DIR}/qomp/plugins
-		RUNTIME DESTINATION
-		${LIB_INSTALL_DIR}/qomp/plugins
-	)
-endif()
+install(
+	TARGETS
+	${PLUGIN}
+	LIBRARY DESTINATION ${PLUGINS_INSTALL_PATH}
+	RUNTIME DESTINATION ${PLUGINS_INSTALL_PATH}
+)

@@ -1,7 +1,7 @@
 set( QOMP_LIB libqomp )
 cmake_minimum_required( VERSION 3.7.0 )
 
-include(../cmake/modules/policyRules.cmake)
+include(policyRules)
 
 set( CMAKE_AUTOMOC ON )
 add_definitions( -DLIBQOMP_LIBRARY )
@@ -200,6 +200,7 @@ set_target_properties(
 )
 target_link_libraries(
 	${QOMP_LIB}
+	PRIVATE
 	${QT_DEPLIBS}
 	${TAGLIB_LIBRARY}
 )
@@ -212,15 +213,11 @@ if( LINUX )
 		${LIB_INSTALL_DIR}
 		NAMELINK_SKIP
 	)
-endif()
-
-if( WIN32 )
+elseif( WIN32 )
 	install(
 		TARGETS
 		${QOMP_LIB}
-		LIBRARY
-		DESTINATION
-		${CMAKE_INSTALL_PREFIX}
+		LIBRARY	DESTINATION ${CMAKE_INSTALL_PREFIX}
 		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}
 	)
 endif()
