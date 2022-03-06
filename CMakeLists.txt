@@ -25,6 +25,8 @@ option( USE_CPACK "Enable CPack" OFF )
 
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" )
 
+include(qtvars)
+
 if( NOT CMAKE_BUILD_TYPE )
 	set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -148,8 +150,16 @@ set( qomp_SRCS
 	src/updateschecker.cpp
 	src/qompplaylistview.cpp
 	src/qompmenu.cpp
-	src/qompqtmultimediaplayer.cpp
 )
+
+if(USE_QT6)
+	list(APPEND qomp_SRCS src/qompqt6multimediaplayer.cpp)
+	list(APPEND qomp_HDRS src/qompqt6multimediaplayer.h)
+else()
+	list(APPEND qomp_SRCS src/qompqtmultimediaplayer.cpp)
+	list(APPEND qomp_HDRS src/qompqtmultimediaplayer.h)
+endif()
+
 list(APPEND qomp_SRCS
 	${options_SRCS}
 	${singleapp_SRCS}
@@ -187,39 +197,40 @@ if( LINUX )
 	add_definitions( -DHAVE_X11 -DQOMP_DATADIR="${QOMP_DATADIR}" )
 endif()
 
-find_package( Qt5 COMPONENTS Core Widgets Network Multimedia Concurrent Xml REQUIRED )
-if (Qt5Widgets_FOUND)
-	message(STATUS "Qt5 version: ${Qt5Widgets_VERSION}")
+set(QT_LIB_LIST Core Gui Widgets Network Multimedia Concurrent Xml)
+find_qt_package("${QT_LIB_LIST}" REQUIRED)
+if (Qt${QT_PKG_VER}Widgets_FOUND)
+	message(STATUS "Qt${QT_PKG_VER} version: ${Qt${QT_PKG_VER}Widgets_VERSION}")
 endif()
-find_package( Qt5LinguistTools )
-qt5_add_resources( RSCS ${qomp_RSCS} )
-if( Qt5LinguistTools_FOUND )
-	qt5_add_translation( TRS ${qomp_TRS} )
+find_qt_package(LinguistTools QUIET)
+
+add_qt_resources(RSCS "${qomp_RSCS}")
+if( Qt${QT_PKG_VER}LinguistTools_FOUND )
+	add_qt_translation( TRS "${qomp_TRS}" )
 else()
-	message(WARNING "Qt5LinguistTools module not found. The translations files will not be created")
+	message(WARNING "Qt${QT_PKG_VER}LinguistTools module not found. The translations files will not be created")
 endif()
-qt5_wrap_ui(main_UIS
-	${qomp_UIS}
-)
+wrap_qt_ui(main_UIS "${qomp_UIS}")
+
+if(USE_QT6)
+	find_qt_package(Core5Compat REQUIRED)
+	add_qt_library(QT_DEPLIBS Core5Compat)
+endif()
+
 add_definitions(
 	-DHAVE_QTMULTIMEDIA
 )
-set(QT_DEPLIBS
-	Qt5::Widgets
-	Qt5::Network
-	Qt5::Multimedia
-	Qt5::Concurrent
-)
-if( LINUX )
+
+add_qt_library(QT_DEPLIBS "${QT_LIB_LIST}")
+
+if( LINUX AND (NOT USE_QT6) )
 	find_package(Qt5X11Extras REQUIRED)
-	list(APPEND QT_DEPLIBS
-		Qt5::X11Extras
-	)
+	add_qt_library(QT_DEPLIBS X11Extras)
+elseif( LINUX )
+    add_qt_library(QT_DEPLIBS CorePrivate)
 elseif( WIN32 )
-	find_package(Qt5WinExtras REQUIRED)
-	list(APPEND QT_DEPLIBS
-		Qt5::WinExtras
-	)
+	find_qt_package(WinExtras REQUIRED)
+	add_qt_library(QT_DEPLIBS WinExtras)
 endif()
 
 if(USE_CCACHE)
@@ -247,7 +258,11 @@ add_executable(
 )
 
 macro(create_themes _sources _output)
-	qt5_add_binary_resources(build_theme_rcc "${_sources}" OPTIONS -binary DESTINATION "${_output}")
+	if(USE_QT6)
+		qt6_add_binary_resources(build_theme_rcc "${_sources}" OPTIONS -binary DESTINATION "${_output}")
+	else()
+		qt5_add_binary_resources(build_theme_rcc "${_sources}" OPTIONS -binary DESTINATION "${_output}")
+	endif()
 	add_custom_target(build_themes_rcc DEPENDS "${_output}" SOURCES "${_sources}")
 	add_dependencies(${PROJECT_NAME} build_themes_rcc)
 endmacro()
@@ -310,12 +325,12 @@ elseif( LINUX )
 	set( ICON_128 src/icons/qomp.png )
 	set( TRS_PATH ${APPDATA_PATH}/translations )
 
-	INSTALL( FILES ${ICON_16} DESTINATION ${ICONS_PREFIX}/16x16/apps RENAME qomp.png )
-	INSTALL( FILES ${ICON_128} DESTINATION ${ICONS_PREFIX}/128x128/apps RENAME qomp.png )
-	INSTALL( FILES ${ICON_24} DESTINATION ${ICONS_PREFIX}/24x24/apps RENAME qomp.png )
-	INSTALL( FILES ${ICON_32} DESTINATION ${ICONS_PREFIX}/32x32/apps RENAME qomp.png )
-	INSTALL( FILES ${ICON_48} DESTINATION ${ICONS_PREFIX}/48x48/apps RENAME qomp.png )
-	INSTALL( FILES ${ICON_64} DESTINATION ${ICONS_PREFIX}/64x64/apps RENAME qomp.png )
+	set(SIZES 16 24 32 48 64)
+	foreach(SIZE ${SIZES})
+		set(ICON_${SIZE} src/icons/qomp_${SIZE}.png)
+		INSTALL( FILES ${ICON_${SIZE}} DESTINATION ${ICONS_PREFIX}/${SIZE}x${SIZE}/apps RENAME qomp.png )
+	endforeach()
+
 	INSTALL( FILES ${TRS} DESTINATION ${TRS_PATH} )
 	INSTALL( FILES ${DESKTOPFILES} DESTINATION ${DESKTOP_PATH} )
 	if(THEMES_EXISTS)

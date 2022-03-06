@@ -528,9 +528,13 @@ void MyzukaruController::getTuneUrl(QompPluginModelItem *item)
 		model->emitUpdateSignal(model->index(item));
 	});
 
-
+#ifdef HAVE_QT6
 	QFuture<QUrl> f = QtConcurrent::run(&MyzukaruResolveStrategy::getBaseUrl,
-					     MyzukaruResolveStrategy::instance(), t);
+                                            MyzukaruResolveStrategy::instance(), t);
+#else
+	QFuture<QUrl> f = QtConcurrent::run(MyzukaruResolveStrategy::instance(),
+                                            &MyzukaruResolveStrategy::getBaseUrl, t);
+#endif
 	w->setFuture(f);
 }
 

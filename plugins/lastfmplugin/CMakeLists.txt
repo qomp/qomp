@@ -24,13 +24,10 @@ include_directories(
 	${PROJECT_BINARY_DIR}/include
 )
 
-find_package( Qt5 COMPONENTS Widgets Network Xml REQUIRED )
-qt5_wrap_ui(UIS ${lastfmplugin_UIS})
-set( QT_DEPLIBS
-	Qt5::Widgets
-	Qt5::Network
-	Qt5::Xml
-)
+set(QT_LIB_LIST Widgets Network Xml)
+find_qt_package("${QT_LIB_LIST}" REQUIRED )
+add_qt_library(QT_DEPLIBS "${QT_LIB_LIST}")
+wrap_qt_ui(UIS "${lastfmplugin_UIS}")
 
 add_library( ${PLUGIN} MODULE ${lastfmplugin_SRCS} ${UIS} )
 target_link_libraries(

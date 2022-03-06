@@ -16,15 +16,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include <QDBusConnection>
-#include <QDBusMessage>
-#include <QDBusInterface>
 #include <QDBusArgument>
+#include <QDBusConnection>
+#include <QDBusInterface>
+#include <QDBusMessage>
 #include <QDBusMetaType>
 #include <QDBusReply>
 #include <QImage>
 #include <QSize>
 #include <QStringList>
+#include <QVariant>
 
 #include "dbusnotifier.h"
 #include "defines.h"
@@ -51,11 +52,15 @@ public:
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 		image.append((char*)img->rgbSwapped().bits(),img->byteCount());
 #else
-		image.append((char*)img->rgbSwapped().bits(),img->sizeInBytes());
+		image.append((char*)img->rgbSwapped().constBits(), img->sizeInBytes());
 #endif
 	}
 	iiibiiay(){}
+#ifndef HAVE_QT6
 	static const int id;
+#else
+	static const QMetaType id;
+#endif
 	int width;
 	int height;
 	int rowstride;
@@ -66,7 +71,11 @@ public:
 };
 Q_DECLARE_METATYPE(iiibiiay)
 
+#ifndef HAVE_QT6
 const int iiibiiay::id(qDBusRegisterMetaType<iiibiiay>());
+#else
+const QMetaType iiibiiay::id(qDBusRegisterMetaType<iiibiiay>());
+#endif
 
 QDBusArgument &operator<<(QDBusArgument &a, const iiibiiay &i)
 {
@@ -150,9 +159,9 @@ bool DBusNotifier::checkServer()
 	//We'll need caps in the future
 	QDBusMessage m = createMessage("GetCapabilities");
 	QDBusMessage ret = QDBusConnection::sessionBus().call(m);
-	if(ret.type() != QDBusMessage::InvalidMessage && !ret.arguments().isEmpty()) {
-		QVariant v = ret.arguments().first();
-		if(v.type() == QVariant::StringList)
+	if (ret.type() != QDBusMessage::InvalidMessage && !ret.arguments().isEmpty()) {
+		QVariant v = ret.arguments().constFirst();
+		if (v.type() == QVariant::StringList)
 			caps_ = v.toStringList();
 	}
 	return true;

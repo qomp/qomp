@@ -2,6 +2,7 @@ set( QOMP_LIB libqomp )
 cmake_minimum_required( VERSION 3.7.0 )
 
 include(policyRules)
+include(qtvars)
 
 set( CMAKE_AUTOMOC ON )
 add_definitions( -DLIBQOMP_LIBRARY )
@@ -169,15 +170,17 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/ga
 )
 
-find_package( Qt5 REQUIRED Widgets Network Concurrent )
-qt5_wrap_ui( libqomp_UIS ${libqomp_UIFILES} )
+set(QT_LIB_LIST Core Widgets Network Concurrent)
+find_qt_package( "${QT_LIB_LIST}" REQUIRED )
+add_qt_library(QT_DEPLIBS "${QT_LIB_LIST}")
 
-set( QT_DEPLIBS
-	Qt5::Widgets
-	Qt5::Network
-	Qt5::Concurrent
-)
-qt5_add_resources( RSCS ${libqomp_RSCS} )
+if(USE_QT6)
+	find_qt_package(Core5Compat REQUIRED)
+	add_qt_library(QT_DEPLIBS Core5Compat)
+endif()
+wrap_qt_ui(libqomp_UIS "${libqomp_UIFILES}")
+add_qt_resources( RSCS "${libqomp_RSCS}" )
+
 if( DEV_MODE )
 	set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/qomp" )
 endif()

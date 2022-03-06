@@ -32,14 +32,14 @@ include_directories(
 	${PROJECT_BINARY_DIR}/include
 )
 
-find_package( Qt5 COMPONENTS Widgets Network Xml REQUIRED )
-set( QT_DEPLIBS
-	Qt5::Widgets
-	Qt5::Network
-	Qt5::Xml
-)
-
-qt5_wrap_ui( UIS ${yandexmusicplugin_UIS} )
+set(QT_LIB_LIST Widgets Network Xml)
+find_qt_package("${QT_LIB_LIST}" REQUIRED )
+add_qt_library(QT_DEPLIBS "${QT_LIB_LIST}")
+wrap_qt_ui( UIS "${yandexmusicplugin_UIS}" )
+if(USE_QT6)
+	find_qt_package(Core5Compat REQUIRED)
+	add_qt_library(QT_DEPLIBS Core5Compat)
+endif()
 
 add_library( ${PLUGIN} MODULE ${yandexmusicplugin_SRCS} ${UIS} )
 target_link_libraries(

@@ -15,10 +15,9 @@ set( notificationsplugin_SRCS
 	${PLUGIN}.cpp
 )
 
-find_package( Qt5 COMPONENTS Widgets REQUIRED )
-set( QT_DEPLIBS
-	Qt5::Widgets
-)
+set(QT_LIB_LIST Widgets)
+find_qt_package("${QT_LIB_LIST}" REQUIRED )
+add_qt_library(QT_DEPLIBS "${QT_LIB_LIST}")
 
 if( LINUX )
 	add_definitions( -DHAVE_X11 )
@@ -28,15 +27,13 @@ if( LINUX )
 	list( APPEND notificationsplugin_SRCS
 		dbusnotifier.cpp
 	)
-	find_package( Qt5DBus REQUIRED )
-	include_directories( ${Qt5DBus_INCLUDES} )
+	find_qt_package(DBus REQUIRED)
+	include_directories( ${${QT_PKG_VER}DBus_INCLUDES} )
 	add_definitions(
-		${Qt5DBus_DEFINITIONS}
+		${Qt${QT_PKG_VER}DBus_DEFINITIONS}
 		-DHAVE_DBUS
 	)
-	list( APPEND QT_DEPLIBS
-		Qt5::DBus
-	)
+	add_qt_library(QT_DEPLIBS DBus)
 endif()
 
 add_library(
