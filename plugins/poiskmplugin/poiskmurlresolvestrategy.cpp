@@ -76,7 +76,9 @@ public:
 		nr.setRawHeader("Accept", "*/*");
 		nr.setRawHeader("Referer", QString("https://%1").arg(POISKM_PLUGIN_URL).toLatin1());
 		nr.setRawHeader("Host", POISKM_PLUGIN_URL);
+#ifndef HAVE_QT6
 		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, false);
+#endif
 		QNetworkReply *reply = nam_->get(nr);
 		reply->setParent(nam_.data());
 		connect(reply, &QNetworkReply::finished, this, &PoiskmURLResolveStrategyPrivate::tuneUrlFinished);

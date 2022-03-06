@@ -83,7 +83,9 @@ void YandexMusicOauth::setupRequest(QNetworkRequest *nr)
 	nr->setRawHeader("X-Requested-With", "XMLHttpRequest");
 	nr->setHeader(QNetworkRequest::UserAgentHeader, "Yandex-Music-API");
 	nr->setRawHeader("X-Yandex-Music-Client", "YandexMusicAndroid/23020251");
+#ifndef HAVE_QT6
 	nr->setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 
 	const QString token = YandexMusicOauth::token();
 	if(token.size() > 0) {

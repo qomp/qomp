@@ -79,7 +79,9 @@ YandexMusicCaptcha::CheckResult YandexMusicCaptcha::checkCaptcha(const QUrl& rep
 #endif
 		QNetworkRequest nr(url);
 		nr.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+#ifndef HAVE_QT6
 		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 		QNetworkReply *r = nam_->get(nr);
 		emit captchaReady(r);
 	}

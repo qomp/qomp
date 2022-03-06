@@ -119,7 +119,9 @@ void PoiskmController::doSearchStepTwo()
 		url += QString("?page=%1").arg(QString::number(++page));
 	}
 	QNetworkRequest nr(url);
+#ifndef HAVE_QT6
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 	nr.setRawHeader("Referer", QString("https://%1").arg(POISKM_PLUGIN_URL).toLatin1());
 	nr.setRawHeader("Host", POISKM_PLUGIN_URL);
 	QNetworkReply *reply = nam()->get(nr);

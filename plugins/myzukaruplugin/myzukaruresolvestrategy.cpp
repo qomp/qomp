@@ -127,7 +127,9 @@ public:
 
 		QUrl url(QUrl::fromPercentEncoding(tune_->directUrl.toLatin1()));
 		QNetworkRequest nr(createRequest(url));
+#ifndef HAVE_QT6
 		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 		QNetworkReply *reply = nam_->get(nr);
 		connect(reply, &QNetworkReply::finished, this, &MyzukaruResolveStrategyPrivate::tunePageFinished);
 		return startLoop();

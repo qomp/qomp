@@ -162,7 +162,13 @@ void YandexMusicSettings::restoreOptions()
 {
 	QString status;
 	if(YandexMusicOauth::token().size() > 0) {
-		status = tr("Authenticated up to ") + YandexMusicOauth::tokenTtl().toString(Qt::SystemLocaleShortDate);
+		status = tr("Authenticated up to ") + YandexMusicOauth::tokenTtl().toString(
+#ifndef HAVE_QT6
+						Qt::SystemLocaleShortDate
+#else
+						QLocale::system().dateTimeFormat(QLocale::ShortFormat)
+#endif
+					);
 	}
 	else {
 		status = tr("Not authenticated");

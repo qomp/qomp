@@ -115,7 +115,9 @@ void CuteRadioController::doSearchStepTwo(const QString &str)
 	QString url = QString("%1/stations?%2").arg(CuteRadioUrl, str);
 
 	QNetworkRequest nr(url);
+#ifndef HAVE_QT6
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 	QNetworkReply *reply = nam()->get(nr);
 	connect(reply, &QNetworkReply::finished, this, &CuteRadioController::searchFinished);
 	connect(this, &CuteRadioController::destroyed, reply, &QNetworkReply::deleteLater);
@@ -163,7 +165,9 @@ void CuteRadioController::processTunes(QList<Tune *> tunes, QompPluginModelItem 
 		Tune* t = tunes.at(0);
 
 		QNetworkRequest nr(t->url);
+#ifndef HAVE_QT6
 		nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 		QNetworkReply *r = nam()->get(nr);
 		r->setProperty(TUNE_PROPERTY, QVariant::fromValue<qintptr>(reinterpret_cast<qintptr>(item)));
 		r->setProperty(STEP_PROPERTY, 2);
@@ -197,7 +201,9 @@ void CuteRadioController::loadCountries(int offset)
 void CuteRadioController::loadFilterData(const QString &urlPath, QList<QPair<QString, int> > *container)
 {
 	QNetworkRequest nr(CuteRadioUrl + urlPath);
+#ifndef HAVE_QT6
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 	QNetworkReply *reply = nam()->get(nr);
 	reply->setProperty(CONTAINER_PROPERTY, reinterpret_cast<qintptr>(container));
 	connect(reply, &QNetworkReply::finished, this, &CuteRadioController::getFilterDataFinished);
@@ -247,7 +253,13 @@ void CuteRadioController::searchFinished()
 					if(obj.contains("language"))
 						t->lang = obj.value("language").toString();
 
-					t->lastPlayed = dt.toString(Qt::SystemLocaleShortDate);
+					t->lastPlayed = dt.toString(
+#ifndef HAVE_QT6
+								Qt::SystemLocaleShortDate
+#else
+								QLocale::system().dateTimeFormat(QLocale::ShortFormat)
+#endif
+							);
 
 					model_->addTopLevelItems({t});
 				}
@@ -353,7 +365,9 @@ void CuteRadioController::itemSelected(QompPluginModelItem* item)
 		return;
 
 	QNetworkRequest nr(ct->internalId);
+#ifndef HAVE_QT6
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 	QNetworkReply *r = nam()->get(nr);
 	r->setProperty(TUNE_PROPERTY, QVariant::fromValue<qintptr>(reinterpret_cast<qintptr>(item)));
 	r->setProperty(STEP_PROPERTY, 1);

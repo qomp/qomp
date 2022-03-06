@@ -29,6 +29,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QRegExp>
+#ifdef HAVE_QT6
+#include <QRegularExpression>
+#endif
 #include <QStringList>
 #include <QtConcurrent/QtConcurrentRun>
 #include <QFutureWatcher>
@@ -328,7 +331,9 @@ void MyzukaruController::doSearch(const QString &txt)
 	nr.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
 	nr.setRawHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
 	nr.setRawHeader("Referer", MYZUKA_URL);
+#ifndef HAVE_QT6
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 	QNetworkReply* reply = nam()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(searchFinished()));
 	connect(this, &MyzukaruController::destroyed, reply, &QNetworkReply::deleteLater);
@@ -445,7 +450,9 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 	QNetworkRequest nr(url);
 	nr.setRawHeader("Accept", "*/*");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
+#ifndef HAVE_QT6
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 	QNetworkReply *reply = nam()->get(nr);
 	reply->setProperty("id", item->internalId);
 
@@ -458,14 +465,20 @@ void MyzukaruController::itemSelected(QompPluginModelItem* item)
 
 void MyzukaruController::getSuggestions(const QString &text)
 {
+#ifndef HAVE_QT6
 	static const QRegExp space("\\s+");
+#else
+	static const QRegularExpression space("\\s+");
+#endif
 	QUrl url(QString("%1Search/Suggestions?term=%2")
 		 .arg(MYZUKA_URL, QString(text).replace(space, "+")), QUrl::StrictMode);
 	QNetworkRequest nr(url);
 	nr.setRawHeader("Accept", "application/json, text/javascript, */*; q=0.01");
 	nr.setRawHeader("X-Requested-With", "XMLHttpRequest");
 	nr.setRawHeader("Referer", MYZUKA_URL);
+#ifndef HAVE_QT6
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 	QNetworkReply *reply = nam()->get(nr);
 	connect(reply, SIGNAL(finished()), SLOT(suggestionsFinished()));
 }
@@ -516,8 +529,8 @@ void MyzukaruController::getTuneUrl(QompPluginModelItem *item)
 	});
 
 
-	QFuture<QUrl> f = QtConcurrent::run(MyzukaruResolveStrategy::instance(),
-					    &MyzukaruResolveStrategy::getBaseUrl, t);
+	QFuture<QUrl> f = QtConcurrent::run(&MyzukaruResolveStrategy::getBaseUrl,
+					     MyzukaruResolveStrategy::instance(), t);
 	w->setFuture(f);
 }
 

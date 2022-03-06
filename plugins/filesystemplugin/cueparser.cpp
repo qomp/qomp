@@ -58,13 +58,22 @@ CueParser::CueParser(const QString &fname)
 		QTextStream stream(&f);
 
 		if(uc) {
+#ifndef HAVE_QT6
 			stream.setCodec(QTextCodec::codecForName("UTF-8"));
+#else
+			stream.setEncoding(QStringConverter::Utf8);
+#endif
 		}
 		else {
 			const QByteArray decoding = Options::instance()->getOption(OPTION_DEFAULT_ENCODING).toByteArray();
 			QTextCodec *tc = QTextCodec::codecForName(decoding);
-			if(tc)
+			if(tc) {
+#ifndef HAVE_QT6
 				stream.setCodec(tc);
+#else
+				stream.setEncoding(QStringConverter::encodingForName(tc->name()).value());
+#endif
+			}
 		}
 
 		_cd = cue_parse_string(stream.readAll().toUtf8().constData());
