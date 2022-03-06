@@ -9,7 +9,11 @@ class QHotkeyPrivateWin : public QHotkeyPrivate
 {
 public:
 	// QAbstractNativeEventFilter interface
+#ifdef HAVE_QT6
+	bool nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result) Q_DECL_OVERRIDE;
+#else
 	bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) Q_DECL_OVERRIDE;
+#endif
 
 protected:
 	// QHotkeyPrivate interface
@@ -23,7 +27,11 @@ private:
 };
 NATIVE_INSTANCE(QHotkeyPrivateWin)
 
+#ifdef HAVE_QT6
+bool QHotkeyPrivateWin::nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result)
+#else
 bool QHotkeyPrivateWin::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
+#endif
 {
 	Q_UNUSED(eventType);
 	Q_UNUSED(result);
