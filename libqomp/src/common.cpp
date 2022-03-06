@@ -206,7 +206,11 @@ QString dataDir()
 {
 	QString dir;
 
+#ifndef HAVE_QT6
 	QStringList list = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+#else
+	QStringList list = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+#endif
 	if(!list.isEmpty())
 		dir = list.first();
 	else

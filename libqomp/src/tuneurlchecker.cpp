@@ -57,7 +57,9 @@ bool TuneUrlChecker::result() const
 	qDebug() << "TuneUrlChecker::result()" << "start check";
 #endif
 	QNetworkRequest nr(url_);
+#ifndef HAVE_QT6
 	nr.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 	reply_ = nam_->get(nr);
 	connect(reply_, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(error()));
 	connect(reply_, SIGNAL(readyRead()), SLOT(readyRead()));

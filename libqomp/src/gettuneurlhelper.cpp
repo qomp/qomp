@@ -39,7 +39,11 @@ QFutureWatcher<QUrl> *GetTuneUrlHelper::getTuneUrlAsynchronously(Tune *t, bool w
 	withCheck_ = withCheck;
 	QFutureWatcher<QUrl>* watcher = new QFutureWatcher<QUrl>(this);
 	connect(watcher, SIGNAL(finished()), SLOT(urlFinished()));
+#ifndef HAVE_QT6
 	QFuture<QUrl> f = QtConcurrent::run(t, &Tune::getUrl);
+#else
+	QFuture<QUrl> f = QtConcurrent::run(&Tune::getUrl, t);
+#endif
 	watcher->setFuture(f);
 	return watcher;
 }

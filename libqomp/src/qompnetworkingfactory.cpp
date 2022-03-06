@@ -135,7 +135,11 @@ QNetworkAccessManager *QompNetworkingFactory::getThreadedNAM()
 
 bool QompNetworkingFactory::isNetworkAvailable() const
 {
+#ifndef HAVE_QT6
 	return manager_->networkAccessible() == QNetworkAccessManager::Accessible;
+#else
+	return true;
+#endif
 }
 
 void QompNetworkingFactory::logEvent(QNetworkReply *reply)

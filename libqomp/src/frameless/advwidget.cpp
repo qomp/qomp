@@ -33,6 +33,10 @@
 
 static const int resizeAccuracy = 5;
 
+#ifdef HAVE_QT6
+#define globalPos() globalPosition().toPoint()
+#endif
+
 
 template<class BaseClass>
 AdvancedWidget<BaseClass>::AdvancedWidget(QWidget *parent, Qt::WindowFlags f)

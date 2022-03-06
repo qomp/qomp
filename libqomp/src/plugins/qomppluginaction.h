@@ -24,6 +24,9 @@
 #include "libqomp_global.h"
 
 class Tune;
+#ifdef HAVE_QT6
+Q_MOC_INCLUDE("tune.h")
+#endif
 #ifndef Q_OS_ANDROID
 class QAction;
 #endif

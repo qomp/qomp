@@ -95,7 +95,11 @@ public:
 		const QModelIndex realIndex = model->mapToSource(view->currentIndex());
 		_parent->blockSignals(true);
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 12, 0)
 		model->setFilterRegExp(QString("^%1.").arg(text));
+#else
+		model->setFilterRegularExpression(QString("^%1.").arg(text));
+#endif
 		model->invalidate();
 		_parent->blockSignals(false);
 

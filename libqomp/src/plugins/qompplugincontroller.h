@@ -25,6 +25,9 @@
 #include "qompplugingettunesdlg.h"
 
 class Tune;
+#ifdef HAVE_QT6
+Q_MOC_INCLUDE("tune.h")
+#endif
 class QNetworkAccessManager;
 class QompPluginModelItem;
 

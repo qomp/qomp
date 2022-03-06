@@ -112,7 +112,11 @@ void QompPluginTreeView::activateItem(int action)
 
 QRect QompPluginTreeView::branchIndicatorRectAt(const QModelIndex &index) const
 {
+#ifndef HAVE_QT6
 	QStyleOptionViewItem opt = viewOptions();
+#else
+	QStyleOptionViewItem opt;
+#endif
 	opt.rect = visualRect(index);
 	QRect rect = style()->subElementRect(QStyle::SE_TreeViewDisclosureItem, &opt);
 	return rect;

@@ -247,7 +247,11 @@ QList<Tune*> Tune::tunesFromFile(const QString &fileName)
 	QFile f(fileName);
 	if(f.exists() && f.open(QFile::ReadOnly)) {
 		QTextStream str(&f);
+#ifndef HAVE_QT6
 		str.setCodec("UTF-8");
+#else
+		str.setEncoding(QStringConverter::Utf8);
+#endif
 		while(!str.atEnd()) {
 			Tune* t = new Tune;
 			if(t->fromString(str.readLine())) {

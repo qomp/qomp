@@ -28,6 +28,7 @@
 #include <QTextStream>
 #include <QBuffer>
 #include <QTextCodec>
+#include <QRegularExpression>
 
 #ifdef DEBUG_OUTPUT
 #include <QDebug>
@@ -124,8 +125,13 @@ QList<Tune *> PlaylistParser::parseM3U(QByteArray *data, const QUrl &fileLocatio
 	buf.open(QBuffer::ReadOnly);
 	QTextStream ts(&buf);
 
-	if(Qomp::checkIsUTF(*data))
+	if(Qomp::checkIsUTF(*data)) {
+#ifndef HAVE_QT6
 		ts.setCodec(QTextCodec::codecForName("UTF-8"));
+#else
+		ts.setEncoding(QStringConverter::Utf8);
+#endif
+	}
 
 	//Next piece of code partially get from qtmultimedia m3u plugin
 	while (!ts.atEnd()) {
@@ -137,7 +143,11 @@ QList<Tune *> PlaylistParser::parseM3U(QByteArray *data, const QUrl &fileLocatio
 		if(line.startsWith(EXTINF)) {
 			createNeededTunesCount(ic);
 			if(list.at(ic)->file.isEmpty()) {
+#ifndef HAVE_QT6
 				const QString title = line.replace(EXTINF, "").replace(QRegExp("^\\d+,"), "");
+#else
+				const QString title = line.replace(EXTINF, "").replace(QRegularExpression("^\\d+,"), "");
+#endif
 				list.at(ic)->title = title;
 			}
 			++ic;
@@ -207,8 +217,13 @@ QList<Tune *> PlaylistParser::parsePLS(QByteArray *data)
 	buf.open(QBuffer::ReadOnly);
 	QTextStream ts(&buf);
 
-	if(Qomp::checkIsUTF(*data))
+	if(Qomp::checkIsUTF(*data)) {
+#ifndef HAVE_QT6
 		ts.setCodec(QTextCodec::codecForName("UTF-8"));
+#else
+		ts.setEncoding(QStringConverter::Utf8);
+#endif
+	}
 
 	while (!ts.atEnd()) {
 		QString line = ts.readLine().trimmed();
@@ -218,9 +233,10 @@ QList<Tune *> PlaylistParser::parsePLS(QByteArray *data)
 		QStringList sl = line.split("=", SEP_NS::SkipEmptyParts);
 
 		if (sl.first().startsWith("File")) {
-			QRegExp re("File(\\d+)");
-			if(re.indexIn(sl.first()) != -1) {
-				int num = re.cap(1).toInt();
+			QRegularExpression re("File(\\d+)");
+			auto match = re.match(sl.first());
+			if(match.hasMatch()) {
+				int num = match.captured(1).toInt();
 				createNeededTunesCount(num);
 
 				QUrl url(sl.last());
@@ -233,19 +249,23 @@ QList<Tune *> PlaylistParser::parsePLS(QByteArray *data)
 			}
 		}
 		else if (sl.first().startsWith("Length")) {
-			QRegExp re("Length(\\d+)");
+			QRegularExpression re("Length(\\d+)");
 			int len = sl.last().toInt();
-			if(len != -1 && re.indexIn(sl.first()) != -1) {
-				int num = re.cap(1).toInt();
-				createNeededTunesCount(num);
-				if(list.at(num-1)->file.isEmpty())
-					list.at(num-1)->duration = Qomp::durationSecondsToString(len);
+			if(len != -1) {
+				auto match = re.match(sl.first());
+				if(match.hasMatch()) {
+					int num = match.captured(1).toInt();
+					createNeededTunesCount(num);
+					if(list.at(num-1)->file.isEmpty())
+						list.at(num-1)->duration = Qomp::durationSecondsToString(len);
+				}
 			}
 		}
 		else if (sl.first().startsWith("Title")) {
-			QRegExp re("Title(\\d+)");
-			if(re.indexIn(sl.first()) != -1) {
-				int num = re.cap(1).toInt();
+			QRegularExpression re("Title(\\d+)");
+			auto match = re.match(sl.first());
+			if(match.hasMatch()) {
+				int num = match.captured(1).toInt();
 				createNeededTunesCount(num);
 				if(list.at(num-1)->file.isEmpty())
 					list.at(num-1)->title = sl.last();
