@@ -26,6 +26,9 @@
 
 class QompPlayListModel;
 class Tune;
+#ifdef HAVE_QT6
+Q_MOC_INCLUDE("tune.h")
+#endif
 
 
 class QompMainWin : public QObject

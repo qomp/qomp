@@ -56,14 +56,21 @@ else {
 }
 
 qtmultimedia_backend {
-    HEADERS += $$PWD/qompqtmultimediaplayer.h #\
-       # $$PWD/qompqtmultimediametadataresolver.h
+    lessThan(QT_MAJOR_VERSION, 6) {
+        HEADERS += $$PWD/qompqtmultimediaplayer.h #\
+           # $$PWD/qompqtmultimediametadataresolver.h
 
-    SOURCES += $$PWD/qompqtmultimediaplayer.cpp #\
-       # $$PWD/qompqtmultimediametadataresolver.cpp
+        SOURCES += $$PWD/qompqtmultimediaplayer.cpp #\
+           # $$PWD/qompqtmultimediametadataresolver.cpp
+    }
+    else {
+        HEADERS += $$PWD/qompqt6multimediaplayer.h
+
+        SOURCES += $$PWD/qompqt6multimediaplayer.cpp
+    }
 }
 
-win32 {
+win32: lessThan(QT_MAJOR_VERSION, 6) {
     SOURCES += $$PWD/qompthumbnailtoolbar.cpp
 
     HEADERS += $$PWD/qompthumbnailtoolbar.h

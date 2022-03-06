@@ -333,7 +333,7 @@ void QompPlayListModel::processTunesDrop(int row, const QMimeData *data)
 void QompPlayListModel::processUrilistDrop(int row, const QMimeData *data)
 {
 	QList<Tune*> tl;
-	for(const QUrl url: data->urls()) {
+	for(const QUrl &url: data->urls()) {
 		PluginManager::instance()->processUrl(url.toLocalFile(), &tl);
 	}
 
@@ -396,7 +396,11 @@ void QompPlayListModel::saveTunes(const QString &fileName)
 	QFile file(f);
 	if(file.open(QFile::ReadWrite | QFile::Truncate)) {
 		QTextStream ts(&file);
+#ifndef HAVE_QT6
 		ts.setCodec("UTF-8");
+#else
+		ts.setEncoding(QStringConverter::Utf8);
+#endif
 		foreach(Tune* t, tunes_) {
 			ts << t->toString() << ENDL_NS::endl;
 		}

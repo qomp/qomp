@@ -98,8 +98,14 @@ private:
 
 	QKeySequence getKeySequence(QKeyEvent* event) const
 	{
+#ifndef HAVE_QT6
 		return QKeySequence((isValid(event->key()) ? event->key() : 0)
 				    + (event->modifiers() & ~Qt::KeypadModifier));
+#else
+		QKeyCombination kc((event->modifiers() & ~Qt::KeypadModifier),
+				   Qt::Key(isValid(event->key()) ? event->key() : 0));
+		return QKeySequence(kc);
+#endif
 	}
 
 	bool isValid(int key) const

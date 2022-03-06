@@ -181,4 +181,3 @@ qint64 CueParser::framesLenToMiliSecs(long frames)
 	//1 frame = 1/75 sec
 	return frames * 1000 / 75;
 }
-

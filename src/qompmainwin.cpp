@@ -37,8 +37,12 @@
 #include <QSignalBlocker>
 #include <QAudio>
 #ifdef Q_OS_WIN
+#ifndef HAVE_QT6
 #include <QtWinExtras>
 #include "qompthumbnailtoolbar.h"
+#else
+#include <QOperatingSystemVersion>
+#endif
 #endif
 
 class QompMainWin::Private : public QObject
@@ -99,7 +103,7 @@ public:
 	QompMainWin*  parentWin_;
 	QAction* actClearPlaylist_;
 	QAction* actRemoveSelected_;
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN) and (not defined HAVE_QT6)
 	QWinTaskbarButton *winTaskBar_;
 	QompThumbnailToolBar *thumbBar_;
 #endif
@@ -115,7 +119,7 @@ QompMainWin::Private::Private(QompMainWin *p) :
 	parentWin_(p),
 	actClearPlaylist_(nullptr),
 	actRemoveSelected_(nullptr)
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN) and (not defined HAVE_QT6)
 	, winTaskBar_(nullptr),
 	thumbBar_(nullptr)
 #endif
@@ -146,7 +150,12 @@ QompMainWin::Private::Private(QompMainWin *p) :
 #endif
 
 #ifdef Q_OS_WIN
+#ifndef HAVE_QT6
 	if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
+//#else
+//	QOperatingSystemVersion ver = QOperatingSystemVersion::current();
+//	if (ver >= QOperatingSystemVersion::Windows7) {
+//#endif
 		winTaskBar_ = new QWinTaskbarButton(this);
 		winTaskBar_->progress()->setMinimum(0);
 
@@ -155,6 +164,7 @@ QompMainWin::Private::Private(QompMainWin *p) :
 		connect(thumbBar_, &QompThumbnailToolBar::play, parentWin_, &QompMainWin::actPlayActivated);
 		connect(thumbBar_, &QompThumbnailToolBar::next, parentWin_, &QompMainWin::actNextActivated);
 	}
+#endif
 #endif
 
 	connect(ui->seekSlider, &QSlider::valueChanged, parentWin_, &QompMainWin::seekSliderMoved);
@@ -255,7 +265,7 @@ void QompMainWin::Private::hidePlaylist()
 
 void QompMainWin::Private::initTaskBar()
 {
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN) and (not defined HAVE_QT6)
 	static bool inited = false;
 	if(!inited) {
 		if(winTaskBar_)
@@ -461,7 +471,7 @@ void QompMainWin::Private::updateIcons(Qomp::State state)
 
 void QompMainWin::Private::updateProgress(Qomp::State state)
 {
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN) and (not defined HAVE_QT6)
 	if(!winTaskBar_)
 		return;
 
@@ -626,7 +636,7 @@ void QompMainWin::playerStateChanged(Qomp::State state)
 	d->updateIcons(state);
 	d->updateProgress(state);
 
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN) and (not defined HAVE_QT6)
 	d->thumbBar_->setCurrentState(state);
 #endif
 	currentState_ = state;
@@ -683,7 +693,7 @@ void QompMainWin::setCurrentPosition(qint64 ms)
 	d->ui->lcd->display(Qomp::durationMiliSecondsToString(ms));
 	QSignalBlocker b(d->ui->seekSlider);
 	d->ui->seekSlider->setValue(ms);
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN) and (not defined HAVE_QT6)
 	if(d->winTaskBar_)
 		d->winTaskBar_->progress()->setValue(ms / 1000);
 #endif
@@ -692,7 +702,7 @@ void QompMainWin::setCurrentPosition(qint64 ms)
 void QompMainWin::currentTotalTimeChanged(qint64 ms)
 {
 	d->ui->seekSlider->setMaximum(ms);
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN) and (not defined HAVE_QT6)
 	if(d->winTaskBar_)
 		d->winTaskBar_->progress()->setMaximum(ms / 1000);
 #endif

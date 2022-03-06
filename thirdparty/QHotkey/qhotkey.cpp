@@ -66,9 +66,14 @@ bool QHotkey::setShortcut(const QKeySequence &shortcut, bool autoRegister)
 							  "Only the first shortcut will be used!");
 	}
 
+#ifndef HAVE_QT6
 	return this->setShortcut(Qt::Key(shortcut[0] & ~Qt::KeyboardModifierMask),
 							 Qt::KeyboardModifiers(shortcut[0] & Qt::KeyboardModifierMask),
 							 autoRegister);
+#else
+	QKeyCombination kc = shortcut[0];
+	return setShortcut(kc.key(), kc.keyboardModifiers(), autoRegister);
+#endif
 }
 
 bool QHotkey::setShortcut(Qt::Key key, Qt::KeyboardModifiers modifiers, bool autoRegister)

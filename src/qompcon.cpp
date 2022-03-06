@@ -63,7 +63,11 @@
 #include <QElapsedTimer>
 
 #ifdef HAVE_QTMULTIMEDIA
+#ifdef HAVE_QT6
+#include "qompqt6multimediaplayer.h"
+#else
 #include "qompqtmultimediaplayer.h"
+#endif
 #endif
 
 #ifdef Q_OS_MAC

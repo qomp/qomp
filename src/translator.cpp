@@ -74,7 +74,11 @@ void Translator::retranslate(const QString& fileName)
 			currentTrans_ = fileName;
 
 			QStringList dirs;
+#ifndef HAVE_QT6
 			dirs << QLibraryInfo::location(QLibraryInfo::TranslationsPath) << dir;
+#else
+			dirs << QLibraryInfo::path(QLibraryInfo::TranslationsPath) << dir;
+#endif
 			foreach(const QString& d, dirs) {
 				if(qtTrans_->load("qt_"+fileName, d)) {
 					qApp->installTranslator(qtTrans_);

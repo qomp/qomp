@@ -44,7 +44,7 @@ unix:!android {
 
 win32 {
     RC_FILE += $$PWD/../qomp.rc
-    QT += winextras
+    lessThan(QT_MAJOR_VERSION, 6)): QT += winextras
 }
 
 macx {
