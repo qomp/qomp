@@ -255,6 +255,7 @@ void logEvent(const QString &name, const QMap<QString, QString> &data)
 {
 #ifdef DEBUG_OUTPUT
 	qDebug() << "logEvent" << name << data;
+	return;
 #endif
 #ifdef Q_OS_ANDROID
 	QAndroidJniEnvironment env;

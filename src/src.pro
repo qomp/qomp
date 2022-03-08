@@ -44,7 +44,7 @@ unix:!android {
 
 win32 {
     RC_FILE += $$PWD/../qomp.rc
-    lessThan(QT_MAJOR_VERSION, 6)): QT += winextras
+    lessThan(QT_MAJOR_VERSION, 6): QT += winextras
 }
 
 macx {
@@ -233,7 +233,7 @@ win32 {
     QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$TAG_BIN/libtag.dll) $$shell_path($$OUT_PWD/../bin) \
                 $$escape_expand(\\n\\t)
 
-    QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$CUE_BIN/cue.dll) $$shell_path($$OUT_PWD/../bin) \
+    QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$CUE_BIN/libcue.dll) $$shell_path($$OUT_PWD/../bin) \
                 $$escape_expand(\\n\\t)
 }
 
