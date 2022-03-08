@@ -20,11 +20,10 @@ include_directories(
 	${PROJECT_BINARY_DIR}/include
 )
 
-find_package( Qt5 COMPONENTS Widgets REQUIRED )
-qt5_wrap_ui( UIS ${tunetofileplugin_UIS} )
-set( QT_DEPLIBS
-	Qt5::Widgets
-)
+set(QT_LIB_LIST Widgets)
+find_qt_package("${QT_LIB_LIST}" REQUIRED )
+add_qt_library(QT_DEPLIBS "${QT_LIB_LIST}")
+wrap_qt_ui( UIS "${tunetofileplugin_UIS}" )
 
 add_library(
 	${PLUGIN}

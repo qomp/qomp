@@ -21,11 +21,11 @@ if( LINUX )
 		${CMAKE_CURRENT_BINARY_DIR}
 		${PROJECT_BINARY_DIR}/include
 	)
-	find_package( Qt5 COMPONENTS Widgets DBus REQUIRED )
-	set( QT_DEPLIBS
-		Qt5::Widgets
-		Qt5::DBus
-	)
+
+	set(QT_LIB_LIST Widgets DBus)
+	find_qt_package("${QT_LIB_LIST}" REQUIRED )
+	add_qt_library(QT_DEPLIBS "${QT_LIB_LIST}")
+
 	add_library(
 		${PLUGIN}
 		MODULE

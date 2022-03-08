@@ -22,11 +22,13 @@ include_directories(
 	${PROJECT_BINARY_DIR}/include
 )
 
-find_package( Qt5 COMPONENTS Widgets Network REQUIRED )
-set( QT_DEPLIBS
-	Qt5::Widgets
-	Qt5::Network
-)
+set(QT_LIB_LIST Widgets Network)
+find_qt_package("${QT_LIB_LIST}" REQUIRED )
+add_qt_library(QT_DEPLIBS "${QT_LIB_LIST}")
+if(USE_QT6)
+	find_qt_package(Core5Compat REQUIRED)
+	add_qt_library(QT_DEPLIBS Core5Compat)
+endif()
 
 add_library(
 	${PLUGIN}

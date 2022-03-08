@@ -24,12 +24,11 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PROJECT_BINARY_DIR}/include
 )
-find_package( Qt5 COMPONENTS Widgets Network REQUIRED )
-set( QT_DEPLIBS
-	Qt5::Widgets
-	Qt5::Network
-)
-qt5_wrap_ui( UIS ${cuteradioplugin_UIS} )
+set(QT_LIB_LIST Widgets Network )
+find_qt_package("${QT_LIB_LIST}" REQUIRED )
+add_qt_library(QT_DEPLIBS "${QT_LIB_LIST}")
+wrap_qt_ui( UIS "${cuteradioplugin_UIS}" )
+
 add_library(
 	${PLUGIN}
 	MODULE
