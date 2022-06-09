@@ -1,0 +1,16 @@
+BasedOnStyle: WebKit
+Language: Cpp
+BreakConstructorInitializers: BeforeColon
+PointerAlignment: Right
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignTrailingComments: true
+ColumnLimit: 120
+CompactNamespaces: false
+UseTab: AlignWithSpaces
+IndentWidth: 8
+TabWidth: 8
+EmptyLineBeforeAccessModifier: LogicalBlock
+SpaceBeforeCpp11BracedList: true
+BreakBeforeBraces: Allman
