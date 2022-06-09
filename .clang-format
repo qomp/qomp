@@ -13,4 +13,4 @@ IndentWidth: 8
 TabWidth: 8
 EmptyLineBeforeAccessModifier: LogicalBlock
 SpaceBeforeCpp11BracedList: true
-BreakBeforeBraces: Allman
+BreakBeforeBraces: AfterFunction
