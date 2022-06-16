@@ -508,6 +508,7 @@ void QompMainWin::Private::updateOptions()
 {
 	Options::instance()->setOption(OPTION_REPEAT_ALL, ui->tb_repeatAll->isChecked());
 	Options::instance()->setOption(OPTION_SHUFFLE, ui->tb_shuffle->isChecked());
+	emit Options::instance()->updateOptions();
 }
 
 void QompMainWin::Private::removeSelectedIndexes()

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny, Vitaly Tonkacheyev
+ * Copyright (C) 2013-2022  Khryukin Evgeny, Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -50,6 +50,8 @@ class MprisAdapter : public QDBusAbstractAdaptor
 	Q_PROPERTY(bool CanControl READ canControl)
 	Q_PROPERTY(qreal Volume READ getVolume WRITE setVolume)
 	Q_PROPERTY(qlonglong Position READ getPosition)
+	Q_PROPERTY(bool Shuffle READ shuffle WRITE sendShuffle)
+	Q_PROPERTY(QString LoopStatus READ loopAll WRITE sendLoopStatus)
 
 public:
 	explicit MprisAdapter(MprisController *p);
@@ -67,6 +69,7 @@ public:
 	void setStatus(const QString &status);
 	void setMetadata(const QompMetaData &tune);
 	void updateProperties();
+	void setLoopAndShuffle(bool loop, bool shuffle);
 
 private:
 	QVariantMap metadata() const;
@@ -80,6 +83,10 @@ private:
 	void setVolume(const qreal &volume);
 	qreal getVolume();
 	qreal getPosition();
+	bool shuffle() const {return shuffle_;};
+	QString loopAll() const {return loopAll_;};
+	void sendShuffle(bool shuffle);
+	void sendLoopStatus(const QString &status);
 
 private:
 	MprisController *controller_;
@@ -88,6 +95,8 @@ private:
 	bool statusChanged_;
 	bool metadataChanged_;
 	QDBusObjectPath trackId_;
+	bool shuffle_;
+	QString loopAll_;
 };
 
 #endif // MPRISADAPTER_H

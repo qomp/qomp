@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2019  Khryukin Evgeny, Vitaly Tonkacheyev
+ * Copyright (C) 2016-2022  Khryukin Evgeny, Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,23 +23,18 @@
 #include <QDBusConnection>
 #include <QDBusMessage>
 
-RootAdapter::RootAdapter(MprisController *p)
- :QDBusAbstractAdaptor(p),
-  controller_(p)
-{
-}
+RootAdapter::RootAdapter(MprisController *p) : QDBusAbstractAdaptor(p), controller_(p) { }
 
 void RootAdapter::setData()
 {
-	QVariantMap map({{"SupportedMimeTypes", getMimeTypes()},
-			 {"Identity", getIdentity()},
-			 {"CanQuit", canQuit()},
-			 {"CanRaise", canRaise()},
-			 {"CanSetFullscreen", canSetFullscreen()},
-			 {"SupportedUriSchemes", QStringList()},
-			 {"HasTrackList", hasTrackList()}});
-	QDBusMessage msg = QDBusMessage::createSignal("/org/mpris/MediaPlayer2",
-						      "org.freedesktop.DBus.Properties",
+	QVariantMap  map({ { "SupportedMimeTypes", getMimeTypes() },
+			   { "Identity", getIdentity() },
+			   { "CanQuit", canQuit() },
+			   { "CanRaise", canRaise() },
+			   { "CanSetFullscreen", canSetFullscreen() },
+			   { "SupportedUriSchemes", QStringList() },
+			   { "HasTrackList", hasTrackList() } });
+	QDBusMessage msg = QDBusMessage::createSignal("/org/mpris/MediaPlayer2", "org.freedesktop.DBus.Properties",
 						      "PropertiesChanged");
 	msg << "org.mpris.MediaPlayer2" << map << QStringList();
 	QDBusConnection::sessionBus().send(msg);
@@ -47,25 +42,19 @@ void RootAdapter::setData()
 
 void RootAdapter::Quit()
 {
-	if(canQuit()) {
+	if (canQuit())
 		controller_->emitSignal(QUIT);
-	}
 }
 
 void RootAdapter::Raise()
 {
-	if(canRaise()) {
+	if (canRaise())
 		controller_->emitSignal(RAISE);
-	}
 }
 
 QStringList RootAdapter::getMimeTypes() const
 {
-	return QStringList({"audio/aac", "audio/x-flac",
-			     "audio/flac", "audio/mp3",
-			     "audio/mpeg", "application/ogg",
-			     "audio/x-vorbis+ogg", "audio/x-ms-wma",
-			     "audio/mp4", "audio/MP4A-LATM",
-			     "audio/mpeg4-generic", "audio/m4a",
-			     "audio/ac3"});
+	return QStringList({ "audio/aac", "audio/x-flac", "audio/flac", "audio/mp3", "audio/mpeg", "application/ogg",
+			     "audio/x-vorbis+ogg", "audio/x-ms-wma", "audio/mp4", "audio/MP4A-LATM",
+			     "audio/mpeg4-generic", "audio/m4a", "audio/ac3" });
 }

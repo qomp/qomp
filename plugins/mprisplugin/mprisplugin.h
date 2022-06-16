@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Khryukin Evgeny
+ * Copyright (C) 2013-2022  Khryukin Evgeny
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -58,6 +58,9 @@ private slots:
 	void updatePosition();
 	void setPosition(const qreal &position);
 	void tuneUpdated(Tune *tune);
+	void optionsUpdated();
+	void updateShuffle();
+	void updateLoopAll();
 
 private:
 	void disableMpris();

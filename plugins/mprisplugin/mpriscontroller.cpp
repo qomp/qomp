@@ -22,12 +22,9 @@
 
 #include <QtDBus/QDBusConnection>
 
-MprisController::MprisController(QObject *parent)
-: QObject(parent),
-  rootAdapter_(new RootAdapter(this)),
-  mprisAdapter_(new MprisAdapter(this)),
-  volume_(0.0),
-  position_(0.0)
+MprisController::MprisController(QObject *parent) :
+    QObject(parent), rootAdapter_(new RootAdapter(this)), mprisAdapter_(new MprisAdapter(this)), volume_(0.0),
+    position_(0.0)
 {
 	QDBusConnection qompConnection = QDBusConnection::sessionBus();
 	qompConnection.registerObject("/org/mpris/MediaPlayer2", this);
@@ -35,10 +32,7 @@ MprisController::MprisController(QObject *parent)
 	rootAdapter_->setData();
 }
 
-MprisController::~MprisController()
-{
-	QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp");
-}
+MprisController::~MprisController() { QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.qomp"); }
 
 void MprisController::sendData(const QString &status, const QompMetaData &tune)
 {
@@ -50,7 +44,7 @@ void MprisController::sendData(const QString &status, const QompMetaData &tune)
 
 void MprisController::emitSignal(SignalType type, const qreal &userValue)
 {
-	switch(type) {
+	switch (type) {
 	case PLAY:
 		emit play();
 		break;
@@ -76,7 +70,13 @@ void MprisController::emitSignal(SignalType type, const qreal &userValue)
 		emit volumeChanged(userValue);
 		break;
 	case POSITION:
-		emit positionChanged(userValue/1000.0);
+		emit positionChanged(userValue / 1000.0);
+		break;
+	case SHUFFLE:
+		emit shuffleUpdated();
+		break;
+	case LOOPALL:
+		emit loopStatusUpdated();
 		break;
 	}
 }
@@ -93,12 +93,6 @@ qreal MprisController::getPosition()
 	return position_;
 }
 
-void MprisController::setVolume(const qreal &volume)
-{
-	volume_ = volume;
-}
+void MprisController::setVolume(const qreal &volume) { volume_ = volume; }
 
-void MprisController::setPosition(const qreal &pos)
-{
-	position_ = pos;
-}
+void MprisController::setPosition(const qreal &pos) { position_ = pos; }

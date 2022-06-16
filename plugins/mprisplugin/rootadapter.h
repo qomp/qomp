@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  Khryukin Evgeny, Vitaly Tonkacheyev
+ * Copyright (C) 2016-2022  Khryukin Evgeny, Vitaly Tonkacheyev
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,7 +43,7 @@ public:
 
 private:
 	QStringList getMimeTypes() const;
-    QStringList getUriSchemes() const {return QStringList();}
+	QStringList getUriSchemes() const {return QStringList();}
 	QString getIdentity() const {return "Qomp";}
 	QString getDesktopEntry() const {return "qomp";}
 	bool canQuit() const {return true;}

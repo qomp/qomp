@@ -34,7 +34,9 @@ enum SignalType {
 	VOLUME = 5,
 	QUIT = 6,
 	RAISE = 7,
-	POSITION = 8
+	POSITION = 8,
+	SHUFFLE = 9,
+	LOOPALL = 10
 };
 
 class MprisController : public QObject
@@ -50,6 +52,7 @@ public:
 	qreal getPosition();
 	void setVolume(const qreal &volume);
 	void setPosition(const qreal &pos);
+	void setLoopAndShuffle(bool loop, bool shuffle) { mprisAdapter_->setLoopAndShuffle(loop, shuffle); };
 
 signals:
 	void play();
@@ -63,6 +66,8 @@ signals:
 	void updateVolume();
 	void updatePosition();
 	void positionChanged(const qreal &position);
+	void shuffleUpdated();
+	void loopStatusUpdated();
 
 private:
 	RootAdapter *rootAdapter_;
