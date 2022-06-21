@@ -25,6 +25,7 @@
 #include "tune.h"
 
 #include <QApplication>
+#include <QFileInfo>
 #include <QMainWindow>
 #include <QStandardPaths>
 #include <QTemporaryFile>
@@ -219,10 +220,14 @@ void MprisPlugin::getMetaData(Tune *tune)
 		tune_->album	   = tune->album;
 		tune_->trackNumber = num;
 		tune_->trackLength = Qomp::durationStringToSeconds(tune->duration) * 1e6; // in microseconds
-		if (!tune->file.isEmpty())
+		if (!tune->file.isEmpty()) {
 			tune_->url = (tune->file.startsWith("file://")) ? tune->file : "file://" + tune->file;
+			// If tune title is empty (no tags) set filename without path and extension instead
+			if (tune_->title.isEmpty())
+				tune_->title = QFileInfo(tune->file).baseName();
+		}
 		else
-			tune_->url = QString();
+			tune_->url = (tune->directUrl.isEmpty()) ? QString() : tune->directUrl;
 		tune_->cover = getAlbumArtFile(tune->cover());
 	}
 }
@@ -262,9 +267,18 @@ QString MprisPlugin::getAlbumArtFile(const QImage &art)
 
 void MprisPlugin::tuneUpdated(Tune *tune)
 {
-	if (player_->state() == Qomp::StatePlaying) {
+	switch (player_->state()) {
+	case Qomp::StatePlaying:
+	case Qomp::StatePaused: // needed to update AlbumArt for remote object
 		getMetaData(tune);
 		sendMetadata(PLAYING);
+		break;
+	case Qomp::StateStopped:
+	case Qomp::StateError:
+	case Qomp::StateUnknown:
+	case Qomp::StateLoading:
+	case Qomp::StateBuffering:
+		return;
 	}
 }
 

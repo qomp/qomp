@@ -11,6 +11,22 @@ get_filename_component(QT_DIR "${QT_BIN_DIR}" DIRECTORY)
 set(QT_PLUGINS_DIR ${QT_DIR}/plugins)
 set(QT_TRANSLATIONS_DIR ${QT_DIR}/translations)
 
+
+set(LIB_PATHS
+	${QT_BIN_DIR}
+	${QT_PLUGINS_DIR}
+	"${TAGLIB_ROOT}/bin"
+	"${LIBCUE_ROOT}/bin"
+	"${ZLIB_ROOT}/bin"
+	"${OPENSSL_ROOT}/bin"
+)
+if(USE_MXE)
+	list(APPEND LIB_PATHS
+		${CMAKE_PREFIX_PATH}/bin
+		${CMAKE_PREFIX_PATH}/lib
+	)
+endif()
+
 function(copy SOURCE DEST TARGET)
 	if(EXISTS ${SOURCE})
 		set(OUT_TARGET_FILE "${CMAKE_BINARY_DIR}/${TARGET}.cmake")
@@ -116,21 +132,25 @@ if(NOT "${WINDEPLOYQTBIN}" STREQUAL "WINDEPLOYQTBIN-NOTFOUND")
 else()
 	set( ICU_LIBS_PREFIXES
 		icudt5
+		icudt6
+		icudt7
 		icuin5
+		icuin6
+		icuin7
 		icuuc5
+		icuuc6
+		icuuc7
 	)
 	set( ICU_LIBS "" )
 	foreach( icu_prefix ${ICU_LIBS_PREFIXES} )
 		foreach( icu_counter RANGE 9 )
-		find_file( ${icu_prefix}${icu_counter} "${icu_prefix}${icu_counter}.dll" )
-			if( NOT "${${icu_prefix}${icu_counter}}" STREQUAL "${icu_prefix}${icu_counter}-NOTFOUND" )
-				list(APPEND ICU_LIBS
-					"${icu_prefix}${icu_counter}.dll"
+			list(APPEND ICU_LIBS
+				"${icu_prefix}${icu_counter}.dll"
 				)
-			endif()
 		endforeach()
 	endforeach()
-	find_lib("${ICU_LIBS}" "${QT_BIN_DIR}" "${EXECUTABLE_OUTPUT_PATH}/")
+	find_lib("${ICU_LIBS}" "${LIB_PATHS}" "${EXECUTABLE_OUTPUT_PATH}/")
+	unset( ICU_LIBS )
 	set(QT_LIBS
 		Qt5Core${D}.dll
 		Qt5Gui${D}.dll
@@ -221,18 +241,5 @@ list(APPEND FILE_LIST
 
 set(ZLIB_ROOT "c:/build/zlib/" CACHE PATH "Path to zlib root dir")
 set(OPENSSL_ROOT "c:/build/openssl/" CACHE PATH "Path to zlib root dir")
-
-set(LIB_PATHS
-	"${TAGLIB_ROOT}/bin"
-	"${LIBCUE_ROOT}/bin"
-	"${ZLIB_ROOT}/bin"
-	"${OPENSSL_ROOT}/bin"
-)
-if(USE_MXE)
-	list(APPEND LIB_PATHS
-		${CMAKE_PREFIX_PATH}/bin
-		${CMAKE_PREFIX_PATH}/lib
-	)
-endif()
 
 find_lib("${FILE_LIST}" "${LIB_PATHS}" "${EXECUTABLE_OUTPUT_PATH}/")
