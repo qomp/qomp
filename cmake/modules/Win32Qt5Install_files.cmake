@@ -222,6 +222,8 @@ if(USE_MXE)
 		libpcre-1.dll
 		libpng16-16.dll
 		libtiff-5.dll
+		libbrotlicommon.dll
+		libbrotlidec.dll
 		libssl-1_1-x64.dll
 		libcrypto-1_1-x64.dll
 		libssl-1_1.dll
