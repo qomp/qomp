@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7.0 )
+cmake_minimum_required( VERSION 3.10.0 )
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/modules/policyRules.cmake)
 
@@ -232,6 +232,7 @@ if( LINUX AND (NOT USE_QT6) )
 	find_package(Qt5X11Extras REQUIRED)
 	add_qt_library(QT_DEPLIBS X11Extras)
 elseif( LINUX )
+	find_qt_package(CorePrivate REQUIRED)
     add_qt_library(QT_DEPLIBS CorePrivate)
 elseif( WIN32 )
 	find_qt_package(WinExtras REQUIRED)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 set( CMAKE_AUTOMOC ON )
 option(USE_QT6 "Build with Qt6 support" OFF)

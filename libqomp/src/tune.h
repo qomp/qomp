@@ -20,9 +20,10 @@
 #ifndef TUNE_H
 #define TUNE_H
 
-#include <QUrl>
-#include <QPointer>
 #include <QImage>
+#include <QObject>
+#include <QPointer>
+#include <QUrl>
 
 #include "libqomp_global.h"
 

@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7.0 )
+cmake_minimum_required( VERSION 3.10.0 )
 
 set(VER_FILE "${PROJECT_SOURCE_DIR}/libqomp/src/defines.h")
 if(EXISTS "${VER_FILE}")

@@ -20,8 +20,9 @@
 #ifndef QOMPPLUGINACTION_H
 #define QOMPPLUGINACTION_H
 
-#include <QIcon>
 #include "libqomp_global.h"
+#include <QIcon>
+#include <QObject>
 
 class Tune;
 #ifdef HAVE_QT6

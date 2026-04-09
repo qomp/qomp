@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7.0)
+cmake_minimum_required(VERSION 3.10.0)
 include(policyRules)
 set(CMAKE_AUTOMOC ON)
 add_definitions(-DQT_PLUGIN)
